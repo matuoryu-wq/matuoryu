@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>離婚関連費用 計算ツール</title>
+  <style>
+    :root {
+      --primary: #1d4ed8;
+      --primary-hover: #1e40af;
+      --primary-light: #eff6ff;
+      --secondary: #64748b;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --success-border: #6ee7b7;
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --border: #e2e8f0;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+
+    /* HEADER */
+    .header{background:linear-gradient(135deg,#1e3a8a,#1d4ed8);color:#fff;padding:18px 20px;text-align:center}
+    .header h1{font-size:20px;font-weight:700;letter-spacing:.02em}
+    .header p{font-size:12px;opacity:.8;margin-top:3px}
+
+    /* TABS */
+    .tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:10}
+    .tab-btn{flex:1;min-width:90px;padding:13px 6px;border:none;background:none;cursor:pointer;font-size:14px;font-weight:600;color:var(--text-muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+    .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-light)}
+    .tab-btn:hover:not(.active){color:var(--text);background:#f8fafc}
+
+    /* LAYOUT */
+    .container{max-width:720px;margin:0 auto;padding:16px 12px}
+    .panel{display:none}.panel.active{display:block}
+
+    /* CARD */
+    .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+    .card-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--text)}
+    .card-title .icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+    .icon-obligor{background:#dbeafe;color:#1d4ed8}
+    .icon-obligee{background:#fce7f3;color:#be185d}
+    .icon-child{background:#d1fae5;color:#059669}
+    .icon-asset{background:#fef3c7;color:#b45309}
+
+    /* PERSON CARD ACCENT */
+    .person-obligor .card-title{border-left:3px solid #1d4ed8;padding-left:10px;margin-left:-18px;padding-right:0;border-radius:0}
+    .person-obligee .card-title{border-left:3px solid #be185d;padding-left:10px;margin-left:-18px;padding-right:0;border-radius:0}
+
+    /* FORM */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    .form-row.one{grid-template-columns:1fr}
+    @media(max-width:480px){.form-row{grid-template-columns:1fr}}
+    .form-group{display:flex;flex-direction:column;gap:4px}
+    label{font-size:12px;font-weight:600;color:var(--text-muted);letter-spacing:.02em}
+    .input-wrap{display:flex;align-items:center;gap:6px}
+    .input-wrap input,.input-wrap select{flex:1}
+    .unit{font-size:13px;color:var(--text-muted);white-space:nowrap}
+    input[type=number],input[type=text],select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:14px;color:var(--text);background:#fff;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+    input[type=number]:focus,input[type=text]:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(29,78,216,.12)}
+    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:30px}
+    .extra-fields{background:#f8fafc;border-radius:8px;padding:12px;margin-top:8px;border:1px dashed var(--border)}
+
+    /* CHILDREN */
+    .children-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+    .child-row{display:flex;align-items:center;gap:8px;background:#f8fafc;border-radius:8px;padding:9px 12px;border:1px solid var(--border)}
+    .child-label{font-size:12px;font-weight:600;color:var(--text-muted);min-width:40px}
+    .child-row input{flex:1;max-width:100px}
+    .child-row .age-index{font-size:12px;color:var(--success);font-weight:600;min-width:50px;text-align:right}
+    .btn-remove{background:none;border:none;cursor:pointer;color:#9ca3af;padding:4px;border-radius:4px;font-size:17px;line-height:1;transition:color .2s}
+    .btn-remove:hover{color:var(--danger)}
+    .btn-add{width:100%;padding:9px;border:1.5px dashed var(--border);background:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--primary);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+    .btn-add:hover{background:var(--primary-light);border-color:var(--primary)}
+
+    /* CALC BUTTON */
+    .btn-calc{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:4px;letter-spacing:.03em}
+    .btn-calc:hover{background:var(--primary-hover)}
+    .btn-calc:active{transform:scale(.99)}
+
+    /* RESULT */
+    .result-box{background:var(--success-light);border:1.5px solid var(--success-border);border-radius:var(--radius);padding:20px;margin-bottom:14px}
+    .result-box.warning{background:var(--warning-light);border-color:#fcd34d}
+    .result-box.error{background:var(--danger-light);border-color:#fca5a5}
+    .result-label{font-size:13px;font-weight:600;color:var(--success);margin-bottom:2px}
+    .result-box.warning .result-label{color:var(--warning)}
+    .result-box.error .result-label{color:var(--danger)}
+    .result-amount{font-size:32px;font-weight:800;color:var(--success);line-height:1.1}
+    .result-box.warning .result-amount{color:var(--warning)}
+    .result-box.error .result-amount{color:var(--danger)}
+    .result-sub{font-size:13px;color:#065f46;margin-top:6px}
+    .result-box.warning .result-sub{color:#92400e}
+
+    /* BREAKDOWN */
+    .breakdown{background:#f8fafc;border-radius:8px;border:1px solid var(--border);padding:14px}
+    .breakdown-title{font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
+    .bk-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px dashed #e5e7eb;gap:8px;font-size:13px}
+    .bk-row:last-child{border-bottom:none}
+    .bk-key{color:var(--text-muted);flex:1}
+    .bk-val{font-weight:700;white-space:nowrap;color:var(--text)}
+    .bk-formula{font-size:11.5px;color:var(--text-muted);background:#f1f5f9;padding:6px 10px;border-radius:5px;font-family:'Courier New',monospace;margin-top:6px;line-height:1.8;word-break:break-all}
+    .toggle-detail{font-size:12px;color:var(--primary);cursor:pointer;background:none;border:none;padding:4px 0;display:flex;align-items:center;gap:4px;margin-top:6px}
+    .detail-content{display:none;margin-top:8px}.detail-content.open{display:block}
+
+    /* ASSET LIST (財産分与) */
+    .asset-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+    .asset-row{display:grid;grid-template-columns:1fr 120px auto;gap:8px;align-items:center;background:#f8fafc;border-radius:8px;padding:9px 12px;border:1px solid var(--border)}
+    @media(max-width:480px){.asset-row{grid-template-columns:1fr auto;grid-template-rows:auto auto}.asset-row input:first-child{grid-column:1 2}}
+    .asset-row input{width:100%}
+
+    /* RATIO */
+    .ratio-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .ratio-row input{width:72px}
+    .ratio-sep{font-size:16px;font-weight:700;color:var(--text-muted)}
+
+    /* SECTION DIVIDER */
+    .sec-title{font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
+    .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+    /* NOTE */
+    .note{font-size:12px;color:#78350f;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:8px 12px;margin-top:8px;display:flex;gap:6px}
+    .note-icon{flex-shrink:0}
+
+    /* ERROR */
+    .err-msg{background:var(--danger-light);border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;color:var(--danger);font-size:13px;margin-bottom:12px}
+
+    /* INFO TABLE */
+    .info-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px dashed #e5e7eb}
+    .info-row:last-child{border-bottom:none}
+    .info-key{color:var(--text-muted)}
+    .info-val{font-weight:600}
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <h1>離婚関連費用 計算ツール</h1>
+  <p>標準算定方式による婚姻費用・養育費・財産分与の計算</p>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" onclick="switchTab('konin',this)">💰 婚姻費用</button>
+  <button class="tab-btn" onclick="switchTab('youiku',this)">👶 養育費</button>
+  <button class="tab-btn" onclick="switchTab('zaisan',this)">🏠 財産分与</button>
+</nav>
+
+<div class="container">
+
+  <!-- ======== 婚姻費用 ======== -->
+  <div id="panel-konin" class="panel active">
+    <div class="card person-obligor">
+      <div class="card-title"><span class="icon icon-obligor">夫</span>義務者（婚姻費用を支払う側）</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>収入の種類</label>
+          <select id="k-ob-type" onchange="toggleExtra('k-ob')">
+            <option value="employee">給与所得者</option>
+            <option value="self">事業所得者（課税所得）</option>
+            <option value="mixed">給与＋事業所得（混在）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="k-ob-salary-label">年収（万円）</label>
+          <div class="input-wrap">
+            <input type="number" id="k-ob-salary" placeholder="例：500" min="0" step="1">
+            <span class="unit">万</span>
+          </div>
+        </div>
+      </div>
+      <div id="k-ob-extra" class="extra-fields" style="display:none">
+        <div class="form-row">
+          <div class="form-group">
+            <label>事業所得（万円）</label>
+            <div class="input-wrap">
+              <input type="number" id="k-ob-business" placeholder="例：100" min="0" step="1">
+              <span class="unit">万</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>社会保険料（万円）</label>
+            <div class="input-wrap">
+              <input type="number" id="k-ob-insurance" placeholder="例：15" min="0" step="1">
+              <span class="unit">万</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card person-obligee">
+      <div class="card-title"><span class="icon icon-obligee">妻</span>権利者（婚姻費用を受け取る側）</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>収入の種類</label>
+          <select id="k-ee-type" onchange="toggleExtra('k-ee')">
+            <option value="employee">給与所得者</option>
+            <option value="self">事業所得者（課税所得）</option>
+            <option value="mixed">給与＋事業所得（混在）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="k-ee-salary-label">年収（万円）</label>
+          <div class="input-wrap">
+            <input type="number" id="k-ee-salary" placeholder="例：200" min="0" step="1">
+            <span class="unit">万</span>
+          </div>
+        </div>
+      </div>
+      <div id="k-ee-extra" class="extra-fields" style="display:none">
+        <div class="form-row">
+          <div class="form-group">
+            <label>事業所得（万円）</label>
+            <div class="input-wrap">
+              <input type="number" id="k-ee-business" placeholder="例：100" min="0" step="1">
+              <span class="unit">万</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>社会保険料（万円）</label>
+            <div class="input-wrap">
+              <input type="number" id="k-ee-insurance" placeholder="例：15" min="0" step="1">
+              <span class="unit">万</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon icon-child">子</span>権利者と同居する子どもの年齢</div>
+      <div id="k-children-list" class="children-list"></div>
+      <button class="btn-add" onclick="addChild('k')">＋ 子どもを追加</button>
+      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>0〜14歳：指数62、15〜19歳：指数85（大人=100）</div>
+    </div>
+
+    <button class="btn-calc" onclick="calcKonin()">計算する</button>
+    <div id="k-result" style="display:none"></div>
+  </div>
+
+  <!-- ======== 養育費 ======== -->
+  <div id="panel-youiku" class="panel">
+    <div class="card person-obligor">
+      <div class="card-title"><span class="icon icon-obligor">夫</span>義務者（養育費を支払う側）</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>収入の種類</label>
+          <select id="y-ob-type" onchange="toggleExtra('y-ob')">
+            <option value="employee">給与所得者</option>
+            <option value="self">事業所得者（課税所得）</option>
+            <option value="mixed">給与＋事業所得（混在）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="y-ob-salary-label">年収（万円）</label>
+          <div class="input-wrap">
+            <input type="number" id="y-ob-salary" placeholder="例：500" min="0" step="1">
+            <span class="unit">万</span>
+          </div>
+        </div>
+      </div>
+      <div id="y-ob-extra" class="extra-fields" style="display:none">
+        <div class="form-row">
+          <div class="form-group">
+            <label>事業所得（万円）</label>
+            <div class="input-wrap">
+              <input type="number" id="y-ob-business" placeholder="例：100" min="0" step="1">
+              <span class="unit">万</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>社会保険料（万円）</label>
+            <div class="input-wrap">
+              <input type="number" id="y-ob-insurance" placeholder="例：15" min="0" step="1">
+              <span class="unit">万</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card person-obligee">
+      <div class="card-title"><span class="icon icon-obligee">妻</span>権利者（養育費を受け取る側）</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>収入の種類</label>
+          <select id="y-ee-type" onchange="toggleExtra('y-ee')">
+            <option value="employee">給与所得者</option>
+            <option value="self">事業所得者（課税所得）</option>
+            <option value="mixed">給与＋事業所得（混在）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="y-ee-salary-label">年収（万円）</label>
+          <div class="input-wrap">
+            <input type="number" id="y-ee-salary" placeholder="例：200" min="0" step="1">
+            <span class="unit">万</span>
+          </div>
+        </div>
+      </div>
+      <div id="y-ee-extra" class="extra-fields" style="display:none">
+        <div class="form-row">
+          <div class="form-group">
+            <label>事業所得（万円）</label>
+            <div class="input-wrap">
+              <input type="number" id="y-ee-business" placeholder="例：100" min="0" step="1">
+              <span class="unit">万</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>社会保険料（万円）</label>
+            <div class="input-wrap">
+              <input type="number" id="y-ee-insurance" placeholder="例：15" min="0" step="1">
+              <span class="unit">万</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon icon-child">子</span>養育対象の子ども（権利者と同居）</div>
+      <div id="y-children-list" class="children-list"></div>
+      <button class="btn-add" onclick="addChild('y')">＋ 子どもを追加</button>
+      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>0〜14歳：指数62、15〜19歳：指数85（大人=100）</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#f3e8ff;color:#7c3aed">＊</span>認知した子（婚外子）がいる場合</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>認知した子の年齢（歳）</label>
+          <div class="input-wrap">
+            <input type="number" id="y-ack-age" placeholder="なければ空欄" min="0" max="19">
+            <span class="unit">歳</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>その母の年収（万円）</label>
+          <div class="input-wrap">
+            <input type="number" id="y-ack-mother-income" placeholder="例：200" min="0">
+            <span class="unit">万</span>
+          </div>
+        </div>
+      </div>
+      <div class="note"><span class="note-icon">ℹ️</span>認知した子の母も扶養義務を負うため、修正生活費指数を使って計算します。</div>
+    </div>
+
+    <button class="btn-calc" onclick="calcYouiku()">計算する</button>
+    <div id="y-result" style="display:none"></div>
+  </div>
+
+  <!-- ======== 財産分与 ======== -->
+  <div id="panel-zaisan" class="panel">
+    <div class="card">
+      <div class="card-title"><span class="icon icon-asset">＋</span>共有財産（婚姻中に形成した財産）</div>
+      <div id="z-asset-list" class="asset-list"></div>
+      <button class="btn-add" onclick="addAsset()">＋ 財産を追加</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#fee2e2;color:#dc2626">－</span>共同の負債</div>
+      <div id="z-debt-list" class="asset-list"></div>
+      <button class="btn-add" onclick="addDebt()">＋ 負債を追加</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#f0fdf4;color:#16a34a">⚙</span>特有財産・分与条件</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>夫の特有財産（除外額・万円）</label>
+          <div class="input-wrap">
+            <input type="number" id="z-sep-husband" placeholder="0" min="0" step="1">
+            <span class="unit">万</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>妻の特有財産（除外額・万円）</label>
+          <div class="input-wrap">
+            <input type="number" id="z-sep-wife" placeholder="0" min="0" step="1">
+            <span class="unit">万</span>
+          </div>
+        </div>
+      </div>
+      <div class="sec-title">分与割合</div>
+      <div class="ratio-row">
+        <span style="font-size:13px;font-weight:600">夫</span>
+        <div class="input-wrap" style="width:80px"><input type="number" id="z-ratio-h" value="50" min="0" max="100" step="1"><span class="unit">%</span></div>
+        <span class="ratio-sep">:</span>
+        <span style="font-size:13px;font-weight:600">妻</span>
+        <div class="input-wrap" style="width:80px"><input type="number" id="z-ratio-w" value="50" min="0" max="100" step="1"><span class="unit">%</span></div>
+      </div>
+      <div class="sec-title" style="margin-top:14px">財産の現在の保有状況</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>夫が現在保有している財産（万円）</label>
+          <div class="input-wrap">
+            <input type="number" id="z-hold-husband" placeholder="例：3000" min="0" step="1">
+            <span class="unit">万</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>妻が現在保有している財産（万円）</label>
+          <div class="input-wrap">
+            <input type="number" id="z-hold-wife" placeholder="例：1000" min="0" step="1">
+            <span class="unit">万</span>
+          </div>
+        </div>
+      </div>
+      <div class="note"><span class="note-icon">ℹ️</span>特有財産：婚前財産・相続・贈与で取得した財産は分与対象外です。</div>
+    </div>
+
+    <button class="btn-calc" onclick="calcZaisan()">計算する</button>
+    <div id="z-result" style="display:none"></div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ─── CALCULATION ENGINE ───────────────────────────────────────────────────────
+
+const EMPLOYEE_RATES = [
+  [75,54],[100,50],[125,46],[175,44],[275,43],
+  [525,42],[725,41],[1325,40],[1475,39],[2000,38]
+];
+const SELF_RATES = [
+  [66,61],[82,60],[98,59],[256,58],[349,57],[392,56],
+  [496,55],[563,54],[784,53],[942,52],[1046,51],
+  [1179,50],[1482,49],[1567,48]
+];
+
+function getRate(income, table) {
+  for (const [max, rate] of table) {
+    if (income <= max) return rate;
+  }
+  return table[table.length - 1][1];
+}
+
+function childIndex(age) {
+  const n = Number(age);
+  if (n >= 0 && n <= 14) return 62;
+  if (n >= 15 && n <= 19) return 85;
+  return 0;
+}
+
+function fmt(val, decimals = 0) {
+  return val.toLocaleString('ja-JP', { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
+}
+function fmtMan(val) { return fmt(val, 3) + '万円'; }
+function fmtEnMan(val) { return '約' + fmt(Math.round(val * 10000)).replace(/\B(?=(\d{3})+(?!\d))/g,'') + '円'; }
+
+function calcBaseIncome(type, salary, business, insurance) {
+  salary   = Number(salary)   || 0;
+  business = Number(business) || 0;
+  insurance= Number(insurance)|| 0;
+  let totalIncome, rate, baseIncome, steps = [];
+
+  if (type === 'self') {
+    rate = getRate(salary, SELF_RATES);
+    baseIncome = salary * rate / 100;
+    totalIncome = salary;
+    steps.push(`課税所得 ${salary}万 × ${rate}% = ${baseIncome.toFixed(3)}万円`);
+  } else if (type === 'mixed') {
+    const bizConv = (business + insurance) / 0.85;
+    totalIncome = salary + bizConv;
+    rate = getRate(totalIncome, EMPLOYEE_RATES);
+    baseIncome = totalIncome * rate / 100;
+    steps.push(`事業所得の給与換算: (${business} + ${insurance}) ÷ 0.85 = ${bizConv.toFixed(3)}万円`);
+    steps.push(`給与合計: ${salary} + ${bizConv.toFixed(3)} = ${totalIncome.toFixed(3)}万円`);
+    steps.push(`${totalIncome.toFixed(3)}万 × ${rate}% = ${baseIncome.toFixed(3)}万円`);
+  } else {
+    rate = getRate(salary, EMPLOYEE_RATES);
+    baseIncome = salary * rate / 100;
+    totalIncome = salary;
+    steps.push(`給与 ${salary}万 × ${rate}% = ${baseIncome.toFixed(3)}万円`);
+  }
+  return { baseIncome, rate, totalIncome, steps };
+}
+
+// ─── 婚姻費用 ────────────────────────────────────────────────────────────────
+function calcKonin() {
+  const obType = v('k-ob-type'), eeType = v('k-ee-type');
+  const obSal  = nv('k-ob-salary'), eeSal = nv('k-ee-salary');
+  const obBiz  = nv('k-ob-business'), eeBiz = nv('k-ee-business');
+  const obIns  = nv('k-ob-insurance'), eeIns = nv('k-ee-insurance');
+  const childAges = getChildAges('k');
+
+  if (!obSal && obSal !== 0) return showErr('k-result', '義務者の収入を入力してください。');
+  if (eeSal === null || eeSal === undefined) return showErr('k-result', '権利者の収入を入力してください。');
+
+  const ob = calcBaseIncome(obType, obSal, obBiz, obIns);
+  const ee = calcBaseIncome(eeType, eeSal, eeBiz, eeIns);
+  const a = ob.baseIncome, b = ee.baseIncome;
+
+  const childSum = childAges.reduce((s, age) => s + childIndex(age), 0);
+  const eeIdx = 100 + childSum;
+  const obIdx = 100;
+  const annual = (a + b) * eeIdx / (eeIdx + obIdx) - b;
+  const monthly = annual / 12;
+
+  const html = `
+    <div class="result-box ${monthly < 0 ? 'warning' : ''}">
+      <div class="result-label">月額婚姻費用（目安）</div>
+      <div class="result-amount">${monthly < 0 ? '0円' : fmtEnMan(monthly)}</div>
+      <div class="result-sub">年額：${monthly < 0 ? '0円' : fmtEnMan(annual)}
+        ${monthly < 0 ? '<br>※権利者の収入が高いため婚姻費用は発生しません' : ''}
+      </div>
+    </div>
+    <div class="breakdown">
+      <div class="breakdown-title">計算内訳</div>
+      <div class="bk-row"><span class="bk-key">【ステップ1】義務者の基礎収入 (a)</span><span class="bk-val">${fmtMan(a)}</span></div>
+      <div class="bk-formula">${ob.steps.join('<br>')}</div>
+      <div class="bk-row" style="margin-top:6px"><span class="bk-key">【ステップ2】権利者の基礎収入 (b)</span><span class="bk-val">${fmtMan(b)}</span></div>
+      <div class="bk-formula">${ee.steps.join('<br>')}</div>
+      <div class="bk-row" style="margin-top:6px"><span class="bk-key">【ステップ3】子の指数合計</span><span class="bk-val">${childSum}</span></div>
+      ${childAges.length > 0 ? '<div class="bk-formula">' + childAges.map((a,i) => `第${i+1}子（${a}歳）: ${childIndex(a)}`).join('<br>') + '</div>' : ''}
+      <div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者側指数合計</span><span class="bk-val">100 + ${childSum} = ${eeIdx}</span></div>
+      <div class="bk-row"><span class="bk-key">義務者側指数合計</span><span class="bk-val">${obIdx}</span></div>
+      <div class="bk-row" style="margin-top:6px"><span class="bk-key">【ステップ4】婚姻費用（年額）</span><span class="bk-val">${fmtMan(annual)}</span></div>
+      <div class="bk-formula">(${fmtMan(a)} + ${fmtMan(b)}) × ${eeIdx} ÷ (${eeIdx} + ${obIdx}) − ${fmtMan(b)}<br>= ${fmtMan((a+b)*eeIdx/(eeIdx+obIdx))} − ${fmtMan(b)}<br>= ${fmtMan(annual)}</div>
+      <div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（÷12）</span><span class="bk-val">${fmtMan(monthly)}</span></div>
+    </div>`;
+
+  const el = document.getElementById('k-result');
+  el.innerHTML = html;
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ─── 養育費 ──────────────────────────────────────────────────────────────────
+function calcYouiku() {
+  const obType = v('y-ob-type'), eeType = v('y-ee-type');
+  const obSal  = nv('y-ob-salary'), eeSal = nv('y-ee-salary');
+  const obBiz  = nv('y-ob-business'), eeBiz = nv('y-ee-business');
+  const obIns  = nv('y-ob-insurance'), eeIns = nv('y-ee-insurance');
+  const childAges = getChildAges('y');
+
+  if (!obSal) return showErr('y-result', '義務者の収入を入力してください。');
+  if (childAges.length === 0) return showErr('y-result', '子どもの年齢を1人以上入力してください。');
+
+  const ob = calcBaseIncome(obType, obSal, obBiz, obIns);
+  const ee = calcBaseIncome(eeType, eeSal || 0, eeBiz, eeIns);
+
+  let a = ob.baseIncome;
+  let b = ee.baseIncome;
+  const correction = b > a;
+  const bOrig = b;
+  if (correction) b = a;
+
+  const childSum = childAges.reduce((s, age) => s + childIndex(age), 0);
+
+  // 認知した子の処理
+  const ackAge = nv('y-ack-age');
+  const ackMotherSal = nv('y-ack-mother-income');
+  let ackHtml = '';
+  let annual, monthly;
+
+  if (ackAge !== null && ackAge >= 0 && ackMotherSal) {
+    const baseIdx = childIndex(ackAge);
+    const W = calcBaseIncome('employee', ackMotherSal, 0, 0).baseIncome;
+    const beta = baseIdx * a / (a + W);
+    const alpha = childAges.reduce((s, age) => s + childIndex(age), 0);
+    const term1 = a * (100 + alpha) / (100 + alpha + 100 + beta) ;
+    const term2 = b * (100 + alpha) / (100 + alpha + 100);
+    annual = term1 + term2 - b;
+    monthly = annual / 12;
+    ackHtml = `
+      <div class="bk-row" style="margin-top:8px"><span class="bk-key">認知した子の元の生活費指数</span><span class="bk-val">${baseIdx}（${ackAge}歳）</span></div>
+      <div class="bk-row"><span class="bk-key">認知した子の母の基礎収入 (W)</span><span class="bk-val">${fmtMan(W)}</span></div>
+      <div class="bk-row"><span class="bk-key">修正生活費指数 (β)</span><span class="bk-val">${beta.toFixed(3)}</span></div>
+      <div class="bk-formula">${baseIdx} × ${fmtMan(a)} ÷ (${fmtMan(a)} + ${fmtMan(W)}) = ${beta.toFixed(3)}</div>
+      <div class="bk-row" style="margin-top:6px"><span class="bk-key">α（夫婦間の子の指数合計）</span><span class="bk-val">${alpha}</span></div>
+      <div class="bk-row" style="margin-top:6px"><span class="bk-key">義務者の分担額（年額）</span><span class="bk-val">${fmtMan(annual)}</span></div>
+      <div class="bk-formula">
+        第1項: ${fmtMan(a)} × (100+${alpha}) ÷ (100+${alpha}+100+${beta.toFixed(3)}) = ${fmtMan(term1)}<br>
+        第2項: ${fmtMan(b)} × (100+${alpha}) ÷ (100+${alpha}+100) = ${fmtMan(term2)}<br>
+        ${fmtMan(term1)} + ${fmtMan(term2)} − ${fmtMan(b)} = ${fmtMan(annual)}
+      </div>`;
+  } else {
+    const c = a * childSum / (100 + childSum);
+    annual = c * a / (a + b);
+    monthly = annual / 12;
+    ackHtml = `
+      <div class="bk-row" style="margin-top:6px"><span class="bk-key">子の生活費 (c)</span><span class="bk-val">${fmtMan(c)}</span></div>
+      <div class="bk-formula">${fmtMan(a)} × ${childSum} ÷ (100 + ${childSum}) = ${fmtMan(c)}</div>
+      <div class="bk-row" style="margin-top:6px"><span class="bk-key">義務者の養育費（年額）</span><span class="bk-val">${fmtMan(annual)}</span></div>
+      <div class="bk-formula">${fmtMan(c)} × ${fmtMan(a)} ÷ (${fmtMan(a)} + ${fmtMan(b)}) = ${fmtMan(annual)}</div>`;
+  }
+
+  const html = `
+    <div class="result-box">
+      <div class="result-label">月額養育費（目安）</div>
+      <div class="result-amount">${fmtEnMan(monthly)}</div>
+      <div class="result-sub">年額：${fmtEnMan(annual)}</div>
+    </div>
+    ${correction ? `<div class="note"><span class="note-icon">⚠️</span>権利者の基礎収入（${fmtMan(bOrig)}）が義務者（${fmtMan(a)}）より高いため、補正ルールにより b = ${fmtMan(a)} として計算しています。</div>` : ''}
+    <div class="breakdown">
+      <div class="breakdown-title">計算内訳</div>
+      <div class="bk-row"><span class="bk-key">【ステップ1】義務者の基礎収入 (a)</span><span class="bk-val">${fmtMan(a)}</span></div>
+      <div class="bk-formula">${ob.steps.join('<br>')}</div>
+      <div class="bk-row" style="margin-top:6px"><span class="bk-key">【ステップ2】権利者の基礎収入 (b)</span><span class="bk-val">${fmtMan(b)}</span></div>
+      <div class="bk-formula">${ee.steps.join('<br>')}${correction ? '<br>→ 補正後: ' + fmtMan(b) : ''}</div>
+      <div class="bk-row" style="margin-top:6px"><span class="bk-key">【ステップ3】子の指数合計</span><span class="bk-val">${childSum}</span></div>
+      ${childAges.length > 0 ? '<div class="bk-formula">' + childAges.map((a,i) => `第${i+1}子（${a}歳）: 指数${childIndex(a)}`).join('<br>') + '</div>' : ''}
+      ${ackHtml}
+      <div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（÷12）</span><span class="bk-val">${fmtMan(monthly)}</span></div>
+    </div>`;
+
+  const el = document.getElementById('y-result');
+  el.innerHTML = html;
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ─── 財産分与 ────────────────────────────────────────────────────────────────
+function calcZaisan() {
+  let totalAssets = 0;
+  document.querySelectorAll('.z-asset-val').forEach(el => { totalAssets += Number(el.value) || 0; });
+
+  let totalDebts = 0;
+  document.querySelectorAll('.z-debt-val').forEach(el => { totalDebts += Number(el.value) || 0; });
+
+  const sepH = nv('z-sep-husband') || 0;
+  const sepW = nv('z-sep-wife') || 0;
+  const ratioH = Number(v('z-ratio-h')) || 50;
+  const ratioW = Number(v('z-ratio-w')) || 50;
+  const holdH = nv('z-hold-husband') || 0;
+  const holdW = nv('z-hold-wife') || 0;
+
+  if (totalAssets === 0 && totalDebts === 0) return showErr('z-result', '財産または負債を入力してください。');
+
+  const netMarital = totalAssets - totalDebts - sepH - sepW;
+  const shouldGetH = netMarital * ratioH / 100;
+  const shouldGetW = netMarital * ratioW / 100;
+  const diff = holdH - shouldGetH;
+  const payerLabel = diff > 0 ? '夫→妻' : '妻→夫';
+  const payAmt = Math.abs(diff);
+
+  const html = `
+    <div class="result-box ${payAmt < 0 ? 'error' : ''}">
+      <div class="result-label">精算額（${payerLabel}）</div>
+      <div class="result-amount">${fmtEnMan(payAmt)}</div>
+      <div class="result-sub">${diff > 0 ? '夫から妻へ' : '妻から夫へ'} ${fmtMan(payAmt)} の支払いが必要です</div>
+    </div>
+    <div class="breakdown">
+      <div class="breakdown-title">財産分与計算内訳</div>
+      <div class="bk-row"><span class="bk-key">共有財産合計</span><span class="bk-val">${fmtMan(totalAssets)}</span></div>
+      <div class="bk-row"><span class="bk-key">共同負債合計</span><span class="bk-val">− ${fmtMan(totalDebts)}</span></div>
+      <div class="bk-row"><span class="bk-key">夫の特有財産（除外）</span><span class="bk-val">− ${fmtMan(sepH)}</span></div>
+      <div class="bk-row"><span class="bk-key">妻の特有財産（除外）</span><span class="bk-val">− ${fmtMan(sepW)}</span></div>
+      <div class="bk-row" style="padding-top:8px;border-top:2px solid var(--border)"><span class="bk-key" style="font-weight:700">分与対象純財産</span><span class="bk-val" style="color:var(--primary)">${fmtMan(netMarital)}</span></div>
+      <div class="bk-formula">${fmtMan(totalAssets)} − ${fmtMan(totalDebts)} − ${fmtMan(sepH)} − ${fmtMan(sepW)} = ${fmtMan(netMarital)}</div>
+      <div class="bk-row" style="margin-top:8px"><span class="bk-key">夫が取得すべき金額（${ratioH}%）</span><span class="bk-val">${fmtMan(shouldGetH)}</span></div>
+      <div class="bk-row"><span class="bk-key">妻が取得すべき金額（${ratioW}%）</span><span class="bk-val">${fmtMan(shouldGetW)}</span></div>
+      <div class="bk-row" style="margin-top:8px"><span class="bk-key">夫が現在保有している財産</span><span class="bk-val">${fmtMan(holdH)}</span></div>
+      <div class="bk-row"><span class="bk-key">夫の過不足</span><span class="bk-val">${diff > 0 ? '多い: ' : '少ない: '}${fmtMan(Math.abs(diff))}</span></div>
+      <div class="bk-formula">${fmtMan(holdH)} − ${fmtMan(shouldGetH)} = ${diff > 0 ? '+' : ''}${fmtMan(diff)}</div>
+    </div>`;
+
+  const el = document.getElementById('z-result');
+  el.innerHTML = html;
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ─── UI HELPERS ──────────────────────────────────────────────────────────────
+
+let childCounters = { k: 0, y: 0 };
+let assetCounter = 0, debtCounter = 0;
+
+function addChild(prefix) {
+  childCounters[prefix]++;
+  const id = childCounters[prefix];
+  const div = document.createElement('div');
+  div.className = 'child-row';
+  div.id = `${prefix}-child-${id}`;
+  div.innerHTML = `
+    <span class="child-label">第${id}子</span>
+    <input type="number" placeholder="年齢" min="0" max="19" step="1"
+      oninput="updateChildIndex(this,'${prefix}-cidx-${id}')"
+      id="${prefix}-cage-${id}">
+    <span class="unit">歳</span>
+    <span class="age-index" id="${prefix}-cidx-${id}">─</span>
+    <button class="btn-remove" onclick="removeChild('${prefix}-child-${id}')">✕</button>`;
+  document.getElementById(`${prefix}-children-list`).appendChild(div);
+}
+
+function removeChild(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function updateChildIndex(input, spanId) {
+  const age = Number(input.value);
+  const idx = childIndex(age);
+  const span = document.getElementById(spanId);
+  if (span) span.textContent = age >= 0 && age <= 19 ? `指数${idx}` : '─';
+}
+
+function getChildAges(prefix) {
+  const ages = [];
+  document.querySelectorAll(`[id^="${prefix}-cage-"]`).forEach(el => {
+    const v = el.value.trim();
+    if (v !== '') ages.push(Number(v));
+  });
+  return ages;
+}
+
+function addAsset() {
+  assetCounter++;
+  const id = assetCounter;
+  const div = document.createElement('div');
+  div.className = 'asset-row';
+  div.id = `z-asset-row-${id}`;
+  div.innerHTML = `
+    <input type="text" placeholder="財産名（例：預貯金）" class="z-asset-name">
+    <div class="input-wrap"><input type="number" placeholder="金額" min="0" step="1" class="z-asset-val"><span class="unit">万</span></div>
+    <button class="btn-remove" onclick="removeRow('z-asset-row-${id}')">✕</button>`;
+  document.getElementById('z-asset-list').appendChild(div);
+}
+
+function addDebt() {
+  debtCounter++;
+  const id = debtCounter;
+  const div = document.createElement('div');
+  div.className = 'asset-row';
+  div.id = `z-debt-row-${id}`;
+  div.innerHTML = `
+    <input type="text" placeholder="負債名（例：住宅ローン）" class="z-debt-name">
+    <div class="input-wrap"><input type="number" placeholder="残高" min="0" step="1" class="z-debt-val"><span class="unit">万</span></div>
+    <button class="btn-remove" onclick="removeRow('z-debt-row-${id}')">✕</button>`;
+  document.getElementById('z-debt-list').appendChild(div);
+}
+
+function removeRow(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function toggleExtra(prefix) {
+  const type = document.getElementById(`${prefix}-type`).value;
+  const extra = document.getElementById(`${prefix}-extra`);
+  const label = document.getElementById(`${prefix}-salary-label`);
+  extra.style.display = type === 'mixed' ? 'block' : 'none';
+  if (label) label.textContent = type === 'self' ? '課税所得（万円）' : type === 'mixed' ? '給与収入（万円）' : '年収（万円）';
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+  btn.classList.add('active');
+}
+
+function v(id) { const el = document.getElementById(id); return el ? el.value : null; }
+function nv(id) { const el = document.getElementById(id); return el && el.value !== '' ? Number(el.value) : null; }
+
+function showErr(resultId, msg) {
+  const el = document.getElementById(resultId);
+  el.innerHTML = `<div class="err-msg">⚠ ${msg}</div>`;
+  el.style.display = 'block';
+}
+
+// ─── INITIAL STATE ───────────────────────────────────────────────────────────
+// Pre-add one child row for each calculator
+addChild('k');
+addChild('y');
+addAsset();
+addDebt();
+</script>
+</body>
+</html>
