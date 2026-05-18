@@ -106,16 +106,9 @@
   </style>
 </head>
 <body>
-<header class="header">
-  <h1>離婚関連費用 計算ツール</h1>
-  <p>標準算定方式による婚姻費用・養育費・財産分与の計算</p>
-</header>
-<nav class="tabs">
-  <button class="tab-btn active" onclick="switchTab('konin',this)">💰 婚姻費用</button>
-  <button class="tab-btn" onclick="switchTab('youiku',this)">👶 養育費</button>
-  <button class="tab-btn" onclick="switchTab('zaisan',this)">🏠 財産分与</button>
-</nav>
-<div class="container">
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
 
   <!-- ===== 婚姻費用 ===== -->
   <div id="panel-konin" class="panel active">
@@ -352,6 +345,8 @@ const HELP={
   separate_property:{title:'特有財産とは',body:`<p><strong>特有財産</strong>とは、財産分与の対象とならない、各自の固有の財産のことです。</p><h4>特有財産の例</h4><ul><li>婚姻前から所有していた預貯金・不動産</li><li>婚姻中に相続によって取得した財産</li><li>婚姻中に贈与を受けた財産</li></ul><div class="help-note">特有財産であることの立証は、主張する側が行う必要があります。</div>`},
   base_income:{title:'基礎収入とは',body:`<p><strong>基礎収入</strong>とは、総収入から税金・社会保険料・職業費等を控除した後の、実際に生活費として使用できる収入の目安となる金額です。</p><h4>算定方法</h4><ul><li><strong>給与所得者</strong>：年収 × 38〜54%（収入が高いほど割合が低下）</li><li><strong>事業所得者</strong>：課税所得 × 48〜61%</li><li><strong>給与＋事業所得</strong>：多い方の所得に換算した上で合計</li></ul>`}
 };
+const frac = (n, d) => d === 0 ? '0' : (n === d ? '全部' : `${n}/${d}`);
+const pct = (n, d) => d === 0 ? '0%' : (n / d * 100).toFixed(2).replace(/\.?0+$/, '') + '%';
 
 function getRate(income,table){for(const[max,rate]of table){if(income<=max)return rate;}return table[table.length-1][1];}
 function childIndex(age){const n=Number(age);if(n>=0&&n<=14)return 62;if(n>=15&&n<=19)return 85;return 0;}
@@ -444,19 +439,39 @@ function calcZaisan(){
   const el=document.getElementById('z-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-// UI HELPERS
-let cc={k:0,y:0},oc={k:0,y:0},ac=0,dc=0,rc=0;
+// 遺留分割合（遺産全体に対する）
+// 直系尊属のみ → 1/3、それ以外 → 1/2
+function iryubunRate(type) {
+  return type === 6 ? [1, 3] : [1, 2];
+}
 
-function addChild(p){cc[p]++;const id=cc[p];const d=document.createElement('div');d.className='child-row';d.id=`${p}-child-${id}`;d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${p}-cage-${id}" oninput="updIdx(this,'${p}-cidx-${id}')"><span class="unit">歳</span><span class="age-index" id="${p}-cidx-${id}">─</span><button class="btn-remove" onclick="rmEl('${p}-child-${id}')">✕</button>`;document.getElementById(`${p}-children-list`).appendChild(d);}
+// ─── TAB1コンポーネント ─────────────────────────────
+function Tab1() {
+  const [estate, setEstate] = useState('');
+  const [heirType, setHeirType] = useState(2);
+  const [heirCount, setHeirCount] = useState(2);
 
-function addOtherChild(p){oc[p]++;const id=oc[p];const d=document.createElement('div');d.className='child-row';d.id=`${p}-other-${id}`;d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${p}-oage-${id}" oninput="updIdx(this,'${p}-oidx-${id}')"><span class="unit">歳</span><span class="age-index" id="${p}-oidx-${id}">─</span><button class="btn-remove" onclick="rmOther('${p}-other-${id}','${p}')">✕</button>`;document.getElementById(`${p}-other-list`).appendChild(d);document.getElementById(`${p}-other-parent-wrap`).style.display='block';}
+  const heirTypeLabel = {
+    1: '配偶者のみ',
+    2: '配偶者＋子',
+    3: '配偶者＋親',
+    4: '配偶者＋兄弟姉妹',
+    5: '子のみ',
+    6: '親のみ',
+    7: '兄弟姉妹のみ',
+  };
 
-function rmOther(id,p){rmEl(id);if(!document.querySelectorAll(`[id^="${p}-oage-"]`).length)document.getElementById(`${p}-other-parent-wrap`).style.display='none';}
+  const needsCount = heirType !== 1;
+  const maxCount = [3, 6].includes(heirType) ? 2 : 5;
+  const countLabel = {
+    2: '子の人数', 3: '親の人数', 4: '兄弟姉妹の人数',
+    5: '子の人数', 6: '親の人数', 7: '兄弟姉妹の人数',
+  }[heirType] || '';
 
-function updIdx(input,sid){const age=Number(input.value);const s=document.getElementById(sid);if(s)s.textContent=age>=0&&age<=19?`指数${childIndex(age)}`:'─';}
+  const estateYen = (parseFloat(estate) || 0) * 10000; // 万円 → 円
 
-function getChildAges(p){const a=[];document.querySelectorAll(`[id^="${p}-cage-"]`).forEach(el=>{if(el.value.trim()!=='')a.push(Number(el.value));});return a;}
-function getOtherAges(p){const a=[];document.querySelectorAll(`[id^="${p}-oage-"]`).forEach(el=>{if(el.value.trim()!=='')a.push(Number(el.value));});return a;}
+  const heirs = useMemo(() => calcLegalShares(heirType === 1 ? 0 : Number(heirCount), heirType), [heirType, heirCount]);
+  const [irNum, irDen] = iryubunRate(heirType);
 
 function addProperty(){
   rc++;const id=rc;
@@ -466,26 +481,689 @@ function addProperty(){
   document.getElementById('z-re-list').appendChild(d);
 }
 
-function updReEquity(rowId){const row=document.getElementById(rowId);if(!row)return;const val=Number(row.querySelector('.z-re-val').value)||0;const loan=Number(row.querySelector('.z-re-loan').value)||0;const net=val-loan;const span=row.querySelector('.re-equity');span.textContent=val||loan?fmtMan(net):'─';span.className='re-equity '+(net>=0?'pos':'neg');}
+  const results = useMemo(() => {
+    return heirs.map(h => {
+      const [sn, sd] = h.share;
+      const amount = estateYen * sn / sd;
+      const hasIryubun = iryubunRoles.has(h.role);
+      const iryubunAmount = hasIryubun ? estateYen * irNum / irDen * sn / sd : null;
+      return { ...h, amount, hasIryubun, iryubunAmount };
+    });
+  }, [heirs, estateYen, irNum, irDen]);
 
 function addAsset(){ac++;const id=ac;const d=document.createElement('div');d.className='asset-row';d.id=`z-asset-${id}`;d.innerHTML=`<input type="text" placeholder="財産名（例：銀行預金）"><div class="input-wrap"><input type="number" placeholder="金額" min="0" class="z-asset-val"><span class="unit">万</span></div><button class="btn-remove" onclick="rmEl('z-asset-${id}')">✕</button>`;document.getElementById('z-asset-list').appendChild(d);}
 
-function addDebt(){dc++;const id=dc;const d=document.createElement('div');d.className='asset-row';d.id=`z-debt-${id}`;d.innerHTML=`<input type="text" placeholder="負債名（例：カーローン）"><div class="input-wrap"><input type="number" placeholder="残高" min="0" class="z-debt-val"><span class="unit">万</span></div><button class="btn-remove" onclick="rmEl('z-debt-${id}')">✕</button>`;document.getElementById('z-debt-list').appendChild(d);}
+      {estateYen > 0 && results.length > 0 && (
+        <div className="result-section">
+          <h3>計算結果 — {heirTypeLabel[heirType]}（遺産 {fmt(Math.round(estateYen / 10000))} 万円）</h3>
 
-function rmEl(id){const el=document.getElementById(id);if(el)el.remove();}
+          {/* 法定相続分 */}
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, opacity: .85 }}>■ 法定相続分（民法第900条）</div>
+            <table className="result-table">
+              <thead>
+                <tr>
+                  <th>相続人</th>
+                  <th>割合</th>
+                  <th>相続額</th>
+                  <th>計算式</th>
+                </tr>
+              </thead>
+              <tbody>
+                {results.map((r, i) => (
+                  <tr key={i}>
+                    <td>{r.name}</td>
+                    <td className="highlight">{frac(r.share[0], r.share[1])}</td>
+                    <td>{fmt(Math.round(r.amount / 10000))} 万円</td>
+                    <td className="formula">{fmt(Math.round(estateYen / 10000))}万 × {r.share[0]}/{r.share[1]} = {fmt(Math.round(r.amount / 10000))}万円</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-function toggleExtra(prefix){const type=document.getElementById(`${prefix}-type`).value;document.getElementById(`${prefix}-extra`).style.display=type==='mixed'?'block':'none';const lbl=document.getElementById(`${prefix}-salary-label`);if(lbl)lbl.textContent=type==='self'?'課税所得（万円）':type==='mixed'?'給与収入（万円）':'年収（万円）';}
+          {/* 遺留分 */}
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, opacity: .85 }}>
+              ■ 遺留分（民法第1042条）— 遺産の{irNum}/{irDen}
+              {heirType === 6 && <span style={{ fontSize: 11, marginLeft: 8, opacity: .7 }}>（直系尊属のみのため遺産の1/3）</span>}
+              {heirType !== 6 && <span style={{ fontSize: 11, marginLeft: 8, opacity: .7 }}>（遺産の1/2）</span>}
+            </div>
+            <table className="result-table">
+              <thead>
+                <tr>
+                  <th>相続人</th>
+                  <th>遺留分割合</th>
+                  <th>遺留分額</th>
+                  <th>計算式</th>
+                </tr>
+              </thead>
+              <tbody>
+                {results.map((r, i) => (
+                  <tr key={i}>
+                    <td>{r.name}</td>
+                    {r.hasIryubun ? (
+                      <>
+                        <td className="highlight">{frac(r.share[0] * irNum, r.share[1] * irDen)}</td>
+                        <td>{fmt(Math.round(r.iryubunAmount / 10000))} 万円</td>
+                        <td className="formula">{fmt(Math.round(estateYen / 10000))}万 × {irNum}/{irDen} × {r.share[0]}/{r.share[1]}</td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="no-right" colSpan={3}>遺留分なし（兄弟姉妹には遺留分は認められません）</td>
+                      </>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+      {!estate && (
+        <div className="warning-note">
+          遺産総額を入力すると計算結果が表示されます。
+        </div>
+      )}
+    </div>
+  );
+}
 
-function switchTab(name,btn){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById(`panel-${name}`).classList.add('active');btn.classList.add('active');}
+// ─── 相続税速算表 ─────────────────────────────────
+const TAX_TABLE = [
+  { limit: 1000,   rate: 0.10, deduct: 0 },
+  { limit: 3000,   rate: 0.15, deduct: 50 },
+  { limit: 5000,   rate: 0.20, deduct: 200 },
+  { limit: 10000,  rate: 0.30, deduct: 700 },
+  { limit: 20000,  rate: 0.40, deduct: 1700 },
+  { limit: 30000,  rate: 0.45, deduct: 2700 },
+  { limit: 60000,  rate: 0.50, deduct: 4200 },
+  { limit: Infinity, rate: 0.55, deduct: 7200 },
+];
 
-function showHelp(key){const h=HELP[key];if(!h)return;document.getElementById('modal-title').textContent=h.title;document.getElementById('modal-body').innerHTML=h.body;document.getElementById('help-modal').classList.add('open');}
-function closeModal(){document.getElementById('help-modal').classList.remove('open');}
+function calcInheritanceTax(amountMan) {
+  const t = TAX_TABLE.find(t => amountMan <= t.limit);
+  if (!t) return 0;
+  return Math.max(0, amountMan * t.rate - t.deduct);
+}
 
-function v(id){const el=document.getElementById(id);return el?el.value:null;}
-function nv(id){const el=document.getElementById(id);return el&&el.value!==''?Number(el.value):null;}
-function showErr(id,msg){const el=document.getElementById(id);el.innerHTML=`<div class="err-msg">⚠ ${msg}</div>`;el.style.display='block';}
+// ─── TAB2コンポーネント ─────────────────────────────
+function Tab2() {
+  const [estate, setEstate] = useState('');
+  const [debt, setDebt] = useState('');
+  const [insurance, setInsurance] = useState('');
+  const [retirement, setRetirement] = useState('');
+  const [heirType, setHeirType] = useState(2);
+  const [heirCount, setHeirCount] = useState(2);
 
-addChild('k');addChild('y');addProperty();addAsset();addDebt();
+  // 配偶者有無・実際の相続割合
+  const hasSpouse = [1, 2, 3, 4].includes(heirType);
+  const [spouseActualPct, setSpouseActualPct] = useState('50');
+
+  // 各相続人の実際の相続割合（配偶者以外）
+  // 簡単のため、残りを法定相続分で均等按分
+  // 子/親/兄弟の実際の相続割合は法定相続分に基づいて按分
+
+  // 未成年控除
+  const [minorEnabled, setMinorEnabled] = useState(false);
+  const [minorAge, setMinorAge] = useState('');
+  const [minorCount, setMinorCount] = useState(1);
+
+  // 障害者控除
+  const [disabledEnabled, setDisabledEnabled] = useState(false);
+  const [disabledType, setDisabledType] = useState('general'); // 'general' | 'special'
+  const [disabledAge, setDisabledAge] = useState('');
+  const [disabledCount, setDisabledCount] = useState(1);
+
+  const heirTypeLabel = {
+    1: '配偶者のみ', 2: '配偶者＋子', 3: '配偶者＋親',
+    4: '配偶者＋兄弟姉妹', 5: '子のみ', 6: '親のみ', 7: '兄弟姉妹のみ',
+  };
+
+  const needsCount = heirType !== 1;
+  const maxCount = [3, 6].includes(heirType) ? 2 : 5;
+  const countLabel = {
+    2: '子の人数', 3: '親の人数', 4: '兄弟姉妹の人数',
+    5: '子の人数', 6: '親の人数', 7: '兄弟姉妹の人数',
+  }[heirType] || '';
+
+  const heirs = useMemo(() => calcLegalShares(heirType === 1 ? 0 : Number(heirCount), heirType), [heirType, heirCount]);
+  const legalHeirCount = heirs.length; // 法定相続人の数
+
+  // 実際の相続割合を決定
+  // 配偶者の実際の相続割合: spouseActualPct%
+  // 残りを他の相続人で均等按分
+  const actualShares = useMemo(() => {
+    const spousePct = parseFloat(spouseActualPct) || 0;
+    const nonSpouseCount = heirs.filter(h => h.role !== 'spouse').length;
+    const nonSpousePctEach = nonSpouseCount > 0 ? (100 - spousePct) / nonSpouseCount : 0;
+    return heirs.map(h => ({
+      ...h,
+      actualPct: h.role === 'spouse' ? spousePct : nonSpousePctEach,
+    }));
+  }, [heirs, spouseActualPct, hasSpouse]);
+
+  const calc = useMemo(() => {
+    const estateYen = (parseFloat(estate) || 0) * 10000;
+    const debtYen = (parseFloat(debt) || 0) * 10000;
+    const insuranceYen = (parseFloat(insurance) || 0) * 10000;
+    const retirementYen = (parseFloat(retirement) || 0) * 10000;
+    const n = legalHeirCount;
+
+    if (estateYen <= 0) return null;
+
+    // Step1: 課税価格
+    const insuranceExempt = 500 * 10000 * n;
+    const retirementExempt = 500 * 10000 * n;
+    const insuranceTaxable = Math.max(0, insuranceYen - insuranceExempt);
+    const retirementTaxable = Math.max(0, retirementYen - retirementExempt);
+    const taxableBase = estateYen - debtYen + insuranceTaxable + retirementTaxable;
+
+    // Step2: 基礎控除
+    const basicDeductionYen = (3000 + 600 * n) * 10000;
+    const taxableEstate = taxableBase - basicDeductionYen;
+
+    if (taxableEstate <= 0) {
+      return {
+        noTax: true,
+        taxableBase,
+        basicDeductionYen,
+        taxableEstate,
+        n,
+        insuranceTaxable,
+        retirementTaxable,
+      };
+    }
+
+    // Step3: 法定相続分で按分して合計税額計算
+    const taxableEstateMan = taxableEstate / 10000;
+    let totalTaxYen = 0;
+    const legalAmounts = heirs.map(h => {
+      const [sn, sd] = h.share;
+      const amountMan = taxableEstateMan * sn / sd;
+      const taxMan = calcInheritanceTax(amountMan);
+      totalTaxYen += taxMan * 10000;
+      return { ...h, legalAmountMan: amountMan, taxMan };
+    });
+
+    // Step4: 実際の相続割合で按分
+    // Step5: 各種控除
+    const minorAgeNum = parseInt(minorAge) || 0;
+    const disabledAgeNum = parseInt(disabledAge) || 0;
+    const minorDeductPerPerson = minorEnabled && minorAgeNum >= 0 && minorAgeNum < 18
+      ? Math.max(0, 18 - minorAgeNum) * 10 * 10000
+      : 0;
+    const disabledDeductPerPerson = disabledEnabled && disabledAgeNum >= 0 && disabledAgeNum < 85
+      ? Math.max(0, 85 - disabledAgeNum) * (disabledType === 'special' ? 20 : 10) * 10000
+      : 0;
+
+    const spouseLegalShare = heirs.find(h => h.role === 'spouse');
+    const spouseLegalSharePct = spouseLegalShare
+      ? spouseLegalShare.share[0] / spouseLegalShare.share[1]
+      : 0;
+    // 配偶者の法定相続分相当額
+    const spouseLegalSharedAmount = taxableBase * spouseLegalSharePct;
+    // 配偶者軽減: max(1.6億, 法定相続分相当額)
+    const spouseExemptLimit = Math.max(160000000, spouseLegalSharedAmount);
+
+    const heirResults = actualShares.map((h, idx) => {
+      const rawTax = totalTaxYen * (h.actualPct / 100);
+      let finalTax = rawTax;
+      let notes = [];
+
+      // 2割加算（配偶者・子・親以外）
+      const is2wari = h.role === 'sibling';
+      if (is2wari) {
+        finalTax = finalTax * 1.2;
+        notes.push('2割加算適用');
+      }
+
+      // 配偶者の税額軽減
+      let spouseRelief = 0;
+      if (h.role === 'spouse') {
+        const spouseActualAmount = taxableBase * (h.actualPct / 100);
+        const nonTaxableAmount = Math.min(spouseActualAmount, spouseExemptLimit);
+        // 非課税割合
+        const reliefRatio = spouseActualAmount > 0 ? Math.min(1, nonTaxableAmount / spouseActualAmount) : 0;
+        spouseRelief = finalTax * reliefRatio;
+        finalTax = Math.max(0, finalTax - spouseRelief);
+        notes.push(`配偶者の税額軽減 -${fmt(Math.round(spouseRelief / 10000))}万円`);
+      }
+
+      // 未成年者控除
+      let minorRelief = 0;
+      if (minorEnabled && h.role === 'child' && minorCount > 0) {
+        const perPerson = minorDeductPerPerson;
+        minorRelief = perPerson * Math.min(1, minorCount / heirs.filter(x => x.role === 'child').length);
+        finalTax = Math.max(0, finalTax - minorRelief);
+        if (minorRelief > 0) notes.push(`未成年者控除 -${fmt(Math.round(minorRelief / 10000))}万円`);
+      }
+
+      // 障害者控除
+      let disabledRelief = 0;
+      if (disabledEnabled && disabledCount > 0) {
+        const perPerson = disabledDeductPerPerson;
+        disabledRelief = perPerson * Math.min(1, disabledCount / heirs.length);
+        finalTax = Math.max(0, finalTax - disabledRelief);
+        if (disabledRelief > 0) notes.push(`障害者控除 -${fmt(Math.round(disabledRelief / 10000))}万円`);
+      }
+
+      return {
+        ...h,
+        rawTax,
+        finalTax,
+        notes,
+        is2wari,
+        spouseRelief,
+        minorRelief,
+        disabledRelief,
+      };
+    });
+
+    return {
+      noTax: false,
+      estateYen,
+      debtYen,
+      insuranceYen,
+      retirementYen,
+      insuranceTaxable,
+      retirementTaxable,
+      taxableBase,
+      basicDeductionYen,
+      taxableEstate,
+      taxableEstateMan,
+      totalTaxYen,
+      legalAmounts,
+      heirResults,
+      n,
+    };
+  }, [estate, debt, insurance, retirement, heirs, legalHeirCount, actualShares,
+      minorEnabled, minorAge, minorCount, disabledEnabled, disabledType, disabledAge, disabledCount]);
+
+  return (
+    <div>
+      {/* 入力カード1 */}
+      <div className="card">
+        <div className="card-title">財産・債務の入力</div>
+        <div className="form-row">
+          <div className="form-group">
+            <label>遺産総額（万円）</label>
+            <input type="number" min="0" value={estate} onChange={e => setEstate(e.target.value)} placeholder="例: 10000" />
+          </div>
+          <div className="form-group">
+            <label>債務・葬式費用（万円）</label>
+            <input type="number" min="0" value={debt} onChange={e => setDebt(e.target.value)} placeholder="例: 500" />
+          </div>
+        </div>
+        <div className="form-row">
+          <div className="form-group">
+            <label>生命保険金（万円）</label>
+            <input type="number" min="0" value={insurance} onChange={e => setInsurance(e.target.value)} placeholder="例: 2000" />
+          </div>
+          <div className="form-group">
+            <label>死亡退職金（万円）</label>
+            <input type="number" min="0" value={retirement} onChange={e => setRetirement(e.target.value)} placeholder="例: 1000" />
+          </div>
+        </div>
+      </div>
+
+      {/* 入力カード2: 相続人構成 */}
+      <div className="card">
+        <div className="card-title">相続人構成</div>
+        <div className="form-row">
+          <div className="form-group">
+            <label>相続人構成</label>
+            <select value={heirType} onChange={e => { setHeirType(Number(e.target.value)); setHeirCount(2); setSpouseActualPct('50'); }}>
+              {Object.entries(heirTypeLabel).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+            </select>
+          </div>
+          {needsCount && (
+            <div className="form-group" style={{ minWidth: 130, maxWidth: 160 }}>
+              <label>{countLabel}</label>
+              <select value={heirCount} onChange={e => setHeirCount(Number(e.target.value))}>
+                {Array.from({ length: maxCount }, (_, i) => i + 1).map(n => (
+                  <option key={n} value={n}>{n}人</option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+        {hasSpouse && (
+          <div className="sub-input-block">
+            <div className="sub-label">配偶者の実際の相続割合（%）</div>
+            <div className="form-row">
+              <div className="form-group" style={{ maxWidth: 180 }}>
+                <input type="number" min="0" max="100" value={spouseActualPct}
+                  onChange={e => setSpouseActualPct(e.target.value)} placeholder="例: 50" />
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', alignSelf: 'center' }}>
+                残り {Math.max(0, 100 - (parseFloat(spouseActualPct) || 0)).toFixed(1)}% を他の相続人で均等按分
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 入力カード3: 各種控除 */}
+      <div className="card">
+        <div className="card-title">税額控除の設定</div>
+
+        {/* 未成年者控除 */}
+        <div className="inline-check" style={{ marginBottom: 6 }}>
+          <input type="checkbox" id="minor" checked={minorEnabled} onChange={e => setMinorEnabled(e.target.checked)} />
+          <label htmlFor="minor" style={{ fontSize: 14, color: 'var(--text)', fontWeight: 600, cursor: 'pointer' }}>
+            未成年の相続人がいる
+          </label>
+        </div>
+        {minorEnabled && (
+          <div className="sub-input-block" style={{ marginBottom: 12 }}>
+            <div className="sub-label">未成年者控除 ＝（18歳 - 相続時の年齢）× 10万円</div>
+            <div className="form-row">
+              <div className="form-group" style={{ maxWidth: 150 }}>
+                <label>年齢（歳）</label>
+                <input type="number" min="0" max="17" value={minorAge}
+                  onChange={e => setMinorAge(e.target.value)} placeholder="例: 10" />
+              </div>
+              <div className="form-group" style={{ maxWidth: 130 }}>
+                <label>人数</label>
+                <select value={minorCount} onChange={e => setMinorCount(Number(e.target.value))}>
+                  {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}人</option>)}
+                </select>
+              </div>
+              {minorAge && parseInt(minorAge) < 18 && (
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', alignSelf: 'flex-end', paddingBottom: 8 }}>
+                  控除額: {fmt((18 - parseInt(minorAge)) * 10)}万円/人
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* 障害者控除 */}
+        <div className="inline-check" style={{ marginBottom: 6 }}>
+          <input type="checkbox" id="disabled" checked={disabledEnabled} onChange={e => setDisabledEnabled(e.target.checked)} />
+          <label htmlFor="disabled" style={{ fontSize: 14, color: 'var(--text)', fontWeight: 600, cursor: 'pointer' }}>
+            障害者の相続人がいる
+          </label>
+        </div>
+        {disabledEnabled && (
+          <div className="sub-input-block">
+            <div className="sub-label">障害者控除 ＝（85歳 - 相続時の年齢）× 10万円（特別障害者は×20万円）</div>
+            <div className="form-row">
+              <div className="form-group" style={{ maxWidth: 180 }}>
+                <label>障害種別</label>
+                <select value={disabledType} onChange={e => setDisabledType(e.target.value)}>
+                  <option value="general">一般障害者（× 10万円）</option>
+                  <option value="special">特別障害者（× 20万円）</option>
+                </select>
+              </div>
+              <div className="form-group" style={{ maxWidth: 130 }}>
+                <label>年齢（歳）</label>
+                <input type="number" min="0" max="84" value={disabledAge}
+                  onChange={e => setDisabledAge(e.target.value)} placeholder="例: 60" />
+              </div>
+              <div className="form-group" style={{ maxWidth: 100 }}>
+                <label>人数</label>
+                <select value={disabledCount} onChange={e => setDisabledCount(Number(e.target.value))}>
+                  {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}人</option>)}
+                </select>
+              </div>
+              {disabledAge && parseInt(disabledAge) < 85 && (
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', alignSelf: 'flex-end', paddingBottom: 8 }}>
+                  控除額: {fmt((85 - parseInt(disabledAge)) * (disabledType === 'special' ? 20 : 10))}万円/人
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 結果 */}
+      {calc && (
+        calc.noTax ? (
+          <div>
+            <div className="card">
+              <div className="card-title">計算過程</div>
+              <table className="result-table" style={{ color: 'var(--text)' }}>
+                <tbody>
+                  <tr>
+                    <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>法定相続人数</td>
+                    <td style={{ fontWeight: 700 }}>{calc.n}人</td>
+                    <td style={{ fontSize: 11, color: 'var(--text-muted)' }}>基礎控除計算に使用</td>
+                  </tr>
+                  {calc.insuranceTaxable > 0 && (
+                    <tr>
+                      <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>生命保険 課税分</td>
+                      <td>{fmt(Math.round(calc.insuranceTaxable / 10000))}万円</td>
+                      <td style={{ fontSize: 11, color: 'var(--text-muted)' }}>{fmt(Math.round((parseFloat(insurance) || 0)))}万 − 500万×{calc.n}人</td>
+                    </tr>
+                  )}
+                  {calc.retirementTaxable > 0 && (
+                    <tr>
+                      <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>死亡退職金 課税分</td>
+                      <td>{fmt(Math.round(calc.retirementTaxable / 10000))}万円</td>
+                      <td style={{ fontSize: 11, color: 'var(--text-muted)' }}>{fmt(Math.round((parseFloat(retirement) || 0)))}万 − 500万×{calc.n}人</td>
+                    </tr>
+                  )}
+                  <tr>
+                    <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>課税価格</td>
+                    <td style={{ fontWeight: 700 }}>{fmt(Math.round(calc.taxableBase / 10000))}万円</td>
+                    <td style={{ fontSize: 11, color: 'var(--text-muted)' }}>遺産 − 債務 + 課税保険 + 課税退職金</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>基礎控除</td>
+                    <td style={{ fontWeight: 700 }}>{fmt(Math.round(calc.basicDeductionYen / 10000))}万円</td>
+                    <td style={{ fontSize: 11, color: 'var(--text-muted)' }}>3,000万 + 600万 × {calc.n}人</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>課税遺産総額</td>
+                    <td style={{ fontWeight: 700, color: 'var(--success)' }}>{fmt(Math.round(calc.taxableEstate / 10000))}万円</td>
+                    <td style={{ fontSize: 11, color: 'var(--text-muted)' }}>課税価格 − 基礎控除</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="no-tax-msg">
+              相続税はかかりません（課税遺産総額が基礎控除以下）
+            </div>
+          </div>
+        ) : (
+          <div className="result-section">
+            <h3>相続税計算結果</h3>
+
+            {/* Step1-3サマリー */}
+            <div className="summary-grid">
+              <div className="summary-box">
+                <div className="label">法定相続人数</div>
+                <div className="value" style={{ fontSize: 24 }}>{calc.n}人</div>
+                <div className="sub">基礎控除計算に使用</div>
+              </div>
+              <div className="summary-box">
+                <div className="label">基礎控除額</div>
+                <div className="value">{fmt(Math.round(calc.basicDeductionYen / 10000))}万円</div>
+                <div className="sub">3,000万 + 600万×{calc.n}人</div>
+              </div>
+              <div className="summary-box">
+                <div className="label">課税遺産総額</div>
+                <div className="value">{fmt(Math.round(calc.taxableEstate / 10000))}万円</div>
+                <div className="sub">課税価格 − 基礎控除</div>
+              </div>
+              <div className="summary-box">
+                <div className="label">相続税の総額</div>
+                <div className="value">{fmt(Math.round(calc.totalTaxYen / 10000))}万円</div>
+                <div className="sub">法定相続分按分→速算表合計</div>
+              </div>
+            </div>
+
+            {/* 計算過程 */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, opacity: .85 }}>■ Step1〜3: 課税価格・基礎控除・税額計算</div>
+              <table className="result-table">
+                <tbody>
+                  <tr>
+                    <td>遺産総額</td>
+                    <td className="highlight">{fmt(Math.round(calc.estateYen / 10000))} 万円</td>
+                    <td className="formula">入力値</td>
+                  </tr>
+                  {calc.debtYen > 0 && (
+                    <tr>
+                      <td>− 債務・葬式費用</td>
+                      <td>▲{fmt(Math.round(calc.debtYen / 10000))} 万円</td>
+                      <td className="formula">入力値</td>
+                    </tr>
+                  )}
+                  {calc.insuranceTaxable > 0 && (
+                    <tr>
+                      <td>+ 生命保険金（課税分）</td>
+                      <td>{fmt(Math.round(calc.insuranceTaxable / 10000))} 万円</td>
+                      <td className="formula">{fmt(Math.round(calc.insuranceYen/10000))}万 − 500万×{calc.n}人 = {fmt(Math.round(calc.insuranceTaxable/10000))}万</td>
+                    </tr>
+                  )}
+                  {calc.retirementTaxable > 0 && (
+                    <tr>
+                      <td>+ 死亡退職金（課税分）</td>
+                      <td>{fmt(Math.round(calc.retirementTaxable / 10000))} 万円</td>
+                      <td className="formula">{fmt(Math.round(calc.retirementYen/10000))}万 − 500万×{calc.n}人 = {fmt(Math.round(calc.retirementTaxable/10000))}万</td>
+                    </tr>
+                  )}
+                  <tr>
+                    <td style={{ fontWeight: 700 }}>課税価格</td>
+                    <td className="highlight">{fmt(Math.round(calc.taxableBase / 10000))} 万円</td>
+                    <td className="formula">遺産 − 債務 + 課税生命保険 + 課税退職金</td>
+                  </tr>
+                  <tr>
+                    <td>− 基礎控除</td>
+                    <td>▲{fmt(Math.round(calc.basicDeductionYen / 10000))} 万円</td>
+                    <td className="formula">3,000万 + 600万 × {calc.n}人</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 700 }}>課税遺産総額</td>
+                    <td className="highlight">{fmt(Math.round(calc.taxableEstate / 10000))} 万円</td>
+                    <td className="formula">課税価格 − 基礎控除</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* 法定相続分按分・速算表 */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, opacity: .85 }}>■ Step3: 法定相続分按分 → 速算表</div>
+              <table className="result-table">
+                <thead>
+                  <tr>
+                    <th>相続人</th>
+                    <th>法定相続分</th>
+                    <th>取得金額</th>
+                    <th>税率</th>
+                    <th>算出税額</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {calc.legalAmounts.map((h, i) => {
+                    const t = TAX_TABLE.find(t => h.legalAmountMan <= t.limit);
+                    return (
+                      <tr key={i}>
+                        <td>{h.name}</td>
+                        <td>{frac(h.share[0], h.share[1])}</td>
+                        <td>{fmt(Math.round(h.legalAmountMan))} 万円</td>
+                        <td>{t ? (t.rate * 100).toFixed(0) + '%' : '-'}</td>
+                        <td className="highlight">{fmt(Math.round(h.taxMan))} 万円</td>
+                      </tr>
+                    );
+                  })}
+                  <tr>
+                    <td colSpan={4} style={{ fontWeight: 700 }}>相続税の総額</td>
+                    <td className="highlight" style={{ fontSize: 15 }}>{fmt(Math.round(calc.totalTaxYen / 10000))} 万円</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* 最終納付税額 */}
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, opacity: .85 }}>■ Step4〜5: 実際の相続割合で按分・各種控除後の納付税額</div>
+              <table className="result-table">
+                <thead>
+                  <tr>
+                    <th>相続人</th>
+                    <th>実際の割合</th>
+                    <th>按分税額</th>
+                    <th>控除等</th>
+                    <th>納付税額</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {calc.heirResults.map((h, i) => (
+                    <tr key={i}>
+                      <td>
+                        {h.name}
+                        {h.is2wari && <span className="badge badge-blue" style={{ marginLeft: 4 }}>2割加算</span>}
+                        {h.role === 'spouse' && <span className="badge badge-green" style={{ marginLeft: 4 }}>配偶者軽減</span>}
+                      </td>
+                      <td>{h.actualPct.toFixed(1)}%</td>
+                      <td>{fmt(Math.round(calc.totalTaxYen * h.actualPct / 100 / 10000))} 万円</td>
+                      <td className="formula" style={{ fontSize: 11 }}>
+                        {h.notes.length > 0 ? h.notes.join(' / ') : '−'}
+                      </td>
+                      <td className="highlight" style={{ fontSize: 15 }}>
+                        {fmt(Math.round(h.finalTax / 10000))} 万円
+                      </td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <td colSpan={4} style={{ fontWeight: 700 }}>合計納付税額</td>
+                    <td className="highlight" style={{ fontSize: 15 }}>
+                      {fmt(Math.round(calc.heirResults.reduce((s, h) => s + h.finalTax, 0) / 10000))} 万円
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="warning-note" style={{ marginTop: 16, background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.15)', color: 'rgba(255,255,255,.75)' }}>
+              本計算は概算です。配偶者の税額軽減の詳細要件・相次相続控除・贈与税額控除等は反映されていません。<br />
+              正確な申告は税理士にご相談ください。
+            </div>
+          </div>
+        )
+      )}
+      {!estate && (
+        <div className="warning-note">
+          遺産総額を入力すると計算結果が表示されます。
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── メインアプリ ──────────────────────────────────
+function App() {
+  const [tab, setTab] = useState(0);
+
+  return (
+    <div>
+      <div className="header">
+        <h1>相続計算ツール</h1>
+        <p>法定相続分・遺留分 / 相続税の概算計算（民法・国税庁No.4155準拠）</p>
+      </div>
+      <div className="tabs">
+        <button className={`tab-btn${tab === 0 ? ' active' : ''}`} onClick={() => setTab(0)}>
+          ① 法定相続分・遺留分
+        </button>
+        <button className={`tab-btn${tab === 1 ? ' active' : ''}`} onClick={() => setTab(1)}>
+          ② 相続税計算
+        </button>
+      </div>
+      <div className="container">
+        <div className={`panel${tab === 0 ? ' active' : ''}`}><Tab1 /></div>
+        <div className={`panel${tab === 1 ? ' active' : ''}`}><Tab2 /></div>
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
 </script>
 </body>
 </html>
