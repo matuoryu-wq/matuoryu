@@ -69,9 +69,11 @@
     .asset-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
     .asset-row{display:grid;grid-template-columns:1fr 120px auto;gap:8px;align-items:center;background:#f8fafc;border-radius:8px;padding:9px 12px;border:1px solid var(--border)}
     .asset-row input{width:100%}
-    .re-row{display:grid;grid-template-columns:1fr 90px 90px auto;gap:6px;align-items:center;background:#f8fafc;border-radius:8px;padding:9px 12px;border:1px solid var(--border);margin-bottom:8px}
-    @media(max-width:500px){.re-row{grid-template-columns:1fr auto;}.re-row .re-inputs{display:grid;grid-template-columns:1fr 1fr;gap:6px;grid-column:1/-1}}
+    .re-header{display:grid;grid-template-columns:1fr 110px 110px 68px 30px;gap:6px;padding:0 12px 6px;font-size:11px;font-weight:700;color:var(--text-muted)}
+    .re-row{display:grid;grid-template-columns:1fr 110px 110px 68px 30px;gap:6px;align-items:center;background:#f8fafc;border-radius:8px;padding:9px 12px;border:1px solid var(--border);margin-bottom:8px}
+    @media(max-width:500px){.re-header{grid-template-columns:1fr 85px 85px 56px 26px;font-size:10px}.re-row{grid-template-columns:1fr 85px 85px 56px 26px;gap:4px}}
     .re-row input{width:100%}
+    .bk-desc{font-size:11.5px;color:var(--text-muted);padding:2px 2px 4px;line-height:1.5}
     .re-equity{font-size:12px;font-weight:700;white-space:nowrap;min-width:60px;text-align:right}
     .re-equity.pos{color:var(--success)}.re-equity.neg{color:var(--danger)}
     .ratio-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -117,7 +119,7 @@
       <button class="help-btn" onclick="showHelp('konin')">詳しく</button>
     </div>
     <div class="card person-obligor">
-      <div class="card-title"><span class="icon icon-obligor">夫</span>義務者（婚姻費用を支払う側）<button class="help-btn" onclick="showHelp('obligor')">詳しく</button></div>
+      <div class="card-title"><span class="icon icon-obligor"></span>義務者（婚姻費用を支払う側）<button class="help-btn" onclick="showHelp('obligor')">詳しく</button></div>
       <div class="form-row">
         <div class="form-group"><label>収入の種類</label>
           <select id="k-ob-type" onchange="toggleExtra('k-ob')">
@@ -138,7 +140,7 @@
       </div>
     </div>
     <div class="card person-obligee">
-      <div class="card-title"><span class="icon icon-obligee">妻</span>権利者（婚姻費用を受け取る側）<button class="help-btn" onclick="showHelp('obligor')">詳しく</button></div>
+      <div class="card-title"><span class="icon icon-obligee"></span>権利者（婚姻費用を受け取る側）<button class="help-btn" onclick="showHelp('obligor')">詳しく</button></div>
       <div class="form-row">
         <div class="form-group"><label>収入の種類</label>
           <select id="k-ee-type" onchange="toggleExtra('k-ee')">
@@ -165,8 +167,8 @@
       <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>0〜14歳：指数62、15〜19歳：指数85（大人=100）</div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="icon icon-other">子</span>夫婦間の子以外の子（前妻との子、認知した子など）がおり、義務者と同居しておらず、適正な養育費を払っている場合</div>
-      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>他の子への養育費を義務者の基礎収入から差し引いて計算しています。ただし、まだ計算方法は確立しておらず、他の子への養育費支払いを全く考慮しない裁判例もあります。そのため、具体な事案については弁護士に相談してください。</div>
+      <div class="card-title"><span class="icon icon-other">子</span>義務者に夫婦間の子以外の子（前妻との子、認知した子など）がおり、義務者と同居しておらず、適正な養育費を払っている場合</div>
+      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>他の子に対する養育費を義務者の基礎収入から差し引く方法で計算しています。ただし、いまだ計算方法は十分に確立しておらず、他の子への養育費支払いを考慮しない裁判例もあります（この場合は権利者にとって有利に働きます）。具体的な事案については弁護士にご相談下さい。</div>
       <div id="k-other-list" class="children-list"></div>
       <button class="btn-add" onclick="addOtherChild('k')">＋ 他の子を追加</button>
       <div id="k-other-parent-wrap" style="display:none;margin-top:10px">
@@ -186,7 +188,7 @@
       <button class="help-btn" onclick="showHelp('youiku')">詳しく</button>
     </div>
     <div class="card person-obligor">
-      <div class="card-title"><span class="icon icon-obligor">夫</span>義務者（養育費を支払う側）<button class="help-btn" onclick="showHelp('obligor')">詳しく</button></div>
+      <div class="card-title"><span class="icon icon-obligor"></span>義務者（養育費を支払う側）<button class="help-btn" onclick="showHelp('obligor')">詳しく</button></div>
       <div class="form-row">
         <div class="form-group"><label>収入の種類</label>
           <select id="y-ob-type" onchange="toggleExtra('y-ob')">
@@ -207,7 +209,7 @@
       </div>
     </div>
     <div class="card person-obligee">
-      <div class="card-title"><span class="icon icon-obligee">妻</span>権利者（養育費を受け取る側）<button class="help-btn" onclick="showHelp('obligor')">詳しく</button></div>
+      <div class="card-title"><span class="icon icon-obligee"></span>権利者（養育費を受け取る側）<button class="help-btn" onclick="showHelp('obligor')">詳しく</button></div>
       <div class="form-row">
         <div class="form-group"><label>収入の種類</label>
           <select id="y-ee-type" onchange="toggleExtra('y-ee')">
@@ -234,8 +236,8 @@
       <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>0〜14歳：指数62、15〜19歳：指数85（大人=100）</div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="icon icon-other">子</span>夫婦間の子以外の子（前妻との子、認知した子など）がおり、義務者と同居しておらず、適正な養育費を払っている場合</div>
-      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>他の子への養育費を義務者の基礎収入から差し引いて計算しています。ただし、まだ計算方法は確立しておらず、他の子への養育費支払いを全く考慮しない裁判例もあります。そのため、具体な事案については弁護士に相談してください。</div>
+      <div class="card-title"><span class="icon icon-other">子</span>義務者に夫婦間の子以外の子（前妻との子、認知した子など）がおり、義務者と同居しておらず、適正な養育費を払っている場合</div>
+      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>他の子に対する養育費を義務者の基礎収入から差し引く方法で計算しています。ただし、いまだ計算方法は十分に確立しておらず、他の子への養育費支払いを考慮しない裁判例もあります（この場合は権利者にとって有利に働きます）。具体的な事案については弁護士にご相談下さい。</div>
       <div id="y-other-list" class="children-list"></div>
       <button class="btn-add" onclick="addOtherChild('y')">＋ 他の子を追加</button>
       <div id="y-other-parent-wrap" style="display:none;margin-top:10px">
@@ -257,8 +259,8 @@
 
     <div class="card">
       <div class="card-title"><span class="icon icon-re">家</span>不動産<button class="help-btn" onclick="showHelp('fudosan')">詳しく</button></div>
-      <div style="display:grid;grid-template-columns:1fr 90px 90px 72px auto;gap:6px;padding:0 0 6px;font-size:11px;font-weight:600;color:var(--text-muted)">
-        <span>物件名</span><span>査定額</span><span>ローン残高</span><span>純資産</span><span></span>
+      <div class="re-header">
+        <span>物件名</span><span>査定額（万）</span><span>ローン残高（万）</span><span>純資産</span><span></span>
       </div>
       <div id="z-re-list"></div>
       <button class="btn-add" onclick="addProperty()">＋ 不動産を追加</button>
@@ -308,7 +310,7 @@
         <div class="form-group"><label>ご自身の平均標準報酬月額（万円）</label><div class="input-wrap"><input type="number" id="z-nenkin-a" placeholder="例：30" min="0"><span class="unit">万</span></div></div>
         <div class="form-group"><label>相手方の平均標準報酬月額（万円）</label><div class="input-wrap"><input type="number" id="z-nenkin-b" placeholder="例：0" min="0"><span class="unit">万</span></div></div>
       </div>
-      <div class="note"><span class="note-icon">ℹ️</span>年金分割は財産分与とは別の制度です。この計算は概算であり、実際の分割には年金事務所への請求が必要です。</div>
+      <div class="note"><span class="note-icon">ℹ️</span>この計算は概算であり、実際の分割には年金事務所への請求が必要です。</div>
     </div>
 
     <button class="btn-calc" onclick="calcZaisan()">計算する</button>
@@ -330,13 +332,13 @@ const EMPLOYEE_RATES=[[75,54],[100,50],[125,46],[175,44],[275,43],[525,42],[725,
 const SELF_RATES=[[66,61],[82,60],[98,59],[256,58],[349,57],[392,56],[496,55],[563,54],[784,53],[942,52],[1046,51],[1179,50],[1482,49],[1567,48]];
 
 const HELP={
-  konin:{title:'婚姻費用について',body:`<p><strong>婚姻費用（こんいんひよう）</strong>とは、婚姻関係が続いている間（別居中を含む）、収入の多い一方が少ない一方（子どもの養育費含む）に対して支払う生活費のことです。</p><h4>いつから請求できますか？</h4><p>一般的に、請求または調停申立てをした月からとされています。時期が遅れると請求できる範囲が限られることがあります。</p><h4>請求の手順</h4><ol><li><strong>話し合い</strong>：まず相手方に対して直接請求します。</li><li><strong>調停の申立て</strong>：話し合いがまとまらない場合、家庭裁判所に「婚姻費用分担調停」を申し立てることができます。</li><li><strong>審判</strong>：調停で合意に至らない場合は審判に移行し、裁判官が金額を決定します。</li></ol><h4>支払われない場合</h4><p>調停調書や審判書がある場合、強制執行の手続きをとることができる場合があります。</p>`},
-  youiku:{title:'養育費について',body:`<p><strong>養育費（ようりくひ）</strong>とは、子どもと離れて暮らす親が、子どもを養育している親に対して支払う、子どもの生活・教育に必要な費用のことです。</p><h4>いつまで支払いますか？</h4><p>一般的には子どもが18歳（高校卒業時）になるまでとされることが多いですが、大学等進学の場合の取り決めは当事者間の合意によります。</p><h4>請求の手順</h4><ol><li><strong>話し合い</strong>：当事者間で協議して決定します。合意内容は書面に残しておくことが重要です。</li><li><strong>調停の申立て</strong>：協議がまとまらない場合、家庭裁判所に「養育費請求調停」を申し立てることができます。</li><li><strong>審判</strong>：調停で合意に至らない場合は審判に移行し、裁判官が決定します。</li></ol><h4>支払われない場合</h4><p>公正証書（強制執行認諾条項付き）や調停調書・審判書がある場合、強制執行の手続きをとることができる場合があります。また、家庭裁判所に履行勧告の申出をすることもできます。</p>`},
+  konin:{title:'婚姻費用について',body:`<p><strong>婚姻費用（こんいんひよう）</strong>とは、婚姻関係が続いている間（別居中を含む）、収入の多い一方が少ない一方（子どもの養育費含む）に対して支払う生活費のことです。</p><h4>いつから請求できますか？</h4><p>一般的に、請求または調停申立てをした月からとされています。時期が遅れると請求できる範囲が限られることがあります。</p><h4>請求の手順</h4><ol><li><strong>話し合い</strong>：まず相手方に対して直接請求します。</li><li><strong>調停の申立て</strong>：家庭裁判所に「婚姻費用分担調停」を申し立てることができます。</li><li><strong>審判</strong>：調停で合意に至らない場合は審判に移行し、裁判官が金額を決定します。</li></ol><h4>支払われない場合</h4><p>調停調書や審判書がある場合、強制執行の手続きをとることができる場合があります。</p>`},
+  youiku:{title:'養育費について',body:`<p><strong>養育費（ようりくひ）</strong>とは、子どもと離れて暮らす親が、子どもを養育している親に対して支払う、子どもの生活・教育に必要な費用のことです。</p><h4>いつまで支払いますか？</h4><p>一般的には子どもが18歳（高校卒業時）になるまでとされることが多いですが、大学等進学の場合の取り決めは当事者間の合意によります。</p><h4>請求の手順</h4><ol><li><strong>話し合い</strong>：当事者間で協議して決定します。合意内容は書面に残しておくことが重要です。</li><li><strong>調停の申立て</strong>：家庭裁判所に「養育費請求調停」を申し立てることができます。</li><li><strong>審判</strong>：調停で合意に至らない場合は審判に移行し、裁判官が決定します。</li></ol><h4>支払われない場合</h4><p>公正証書（強制執行認諾条項付き）や調停調書・審判書がある場合、強制執行の手続きをとることができる場合があります。また、家庭裁判所に履行勧告の申出をすることもできます。</p>`},
   zaisan:{title:'財産分与とは',body:`<p><strong>財産分与（ざいさんぶんよ）</strong>とは、婚姻中に夫婦が共同で形成した財産を、離婚の際に分配することです。</p><h4>対象になる財産（共有財産の例）</h4><ul><li>婚姻中に形成した預貯金・有価証券</li><li>婚姻中に購入した不動産・車両</li><li>婚姻中に取得した退職金（婚姻期間対応分）</li></ul><h4>対象にならない財産（特有財産）</h4><ul><li>婚姻前から所有していた財産</li><li>婚姻中に相続または贈与を受けた財産</li></ul><h4>分与の割合</h4><p>原則として2分の1ずつとされていますが、個別の事情により異なる場合があります。</p><h4>請求期限</h4><p>離婚成立後2年以内に請求する必要があります。</p>`},
   obligor:{title:'義務者・権利者とは',body:`<h4>義務者（ぎむしゃ）</h4><p>婚姻費用または養育費を「支払う義務を負う側」のことです。一般的に収入の多い方が義務者となります。</p><h4>権利者（けんりしゃ）</h4><p>婚姻費用または養育費を「受け取る権利を持つ側」のことです。一般的に収入の少ない方・子どもと暮らす方が権利者となります。</p><div class="help-note">義務者・権利者はどちらが夫・妻でも構いません。収入状況や子どもの居住状況によって決まります。</div>`},
   child_index:{title:'子の生活費指数とは',body:`<p>大人の生活費を<strong>100</strong>とした場合に、子どもの生活費がどの程度の割合になるかを示す数値です。標準算定方式で使用されます。</p><table><tr><th>年齢</th><th>生活費指数</th></tr><tr><td>0〜14歳</td><td>62</td></tr><tr><td>15〜19歳</td><td>85</td></tr></table><p style="margin-top:8px">この指数を用いて、各当事者がどの程度の生活費を負担すべきかを算出します。</p>`},
   fudosan:{title:'不動産の計算について',body:`<p>不動産の財産分与における価値は、<strong>査定額（時価）からローン残高を差し引いた純資産（オーバーローン）</strong>が基本となります。</p><h4>計算方法</h4><p>純資産 ＝ 査定額 − ローン残高</p><ul><li>純資産がプラスの場合：共有財産に加算されます</li><li>純資産がマイナス（オーバーローン）の場合：負債として扱われます</li></ul><div class="help-note">査定額は不動産会社への査定や路線価等で確認してください。ローン残高は金融機関に確認してください。</div>`},
-  nenkin:{title:'年金分割とは',body:`<p><strong>年金分割（ねんきんぶんかつ）</strong>とは、婚姻期間中に厚生年金に加入していた場合、その期間の標準報酬記録を離婚時に分割する制度です。財産分与とは別の制度です。</p><h4>合意分割</h4><p>当事者間の合意（または裁判所の決定）により、婚姻期間中の標準報酬記録を按分します。按分割合は最大50%です。</p><h4>3号分割</h4><p>2008年4月以降の期間について、第3号被保険者（主に専業主婦・主夫）であった方は、その期間分の標準報酬の2分の1を自動的に受け取ることができます。</p><div class="help-note">この計算は概算です。実際の分割請求は、離婚後2年以内に年金事務所へ行う必要があります。</div>`},
+  nenkin:{title:'年金分割とは',body:`<p><strong>年金分割（ねんきんぶんかつ）</strong>とは、婚姻期間中に厚生年金に加入していた場合、その期間の標準報酬記録を離婚時に分割する制度です。</p><h4>合意分割</h4><p>当事者間の合意（または裁判所の決定）により、婚姻期間中の標準報酬記録を按分します。按分割合は最大50%です。</p><h4>3号分割</h4><p>2008年4月以降の期間について、第3号被保険者（主に専業主婦・主夫）であった方は、その期間分の標準報酬の2分の1を自動的に受け取ることができます。</p><div class="help-note">この計算は概算です。実際の分割請求は、離婚後2年以内に年金事務所へ行う必要があります。</div>`},
   separate_property:{title:'特有財産とは',body:`<p><strong>特有財産（とくゆうざいさん）</strong>とは、財産分与の対象とならない、各自の固有の財産のことです。</p><h4>特有財産の例</h4><ul><li>婚姻前から所有していた預貯金・不動産</li><li>婚姻中に相続によって取得した財産</li><li>婚姻中に贈与を受けた財産</li></ul><div class="help-note">特有財産であることの立証は、主張する側が行う必要があります。</div>`},
   base_income:{title:'基礎収入とは',body:`<p><strong>基礎収入（きそしゅうにゅう）</strong>とは、総収入から税金・社会保険料・職業費等を控除した後の、実際に生活費として使用できる収入の目安となる金額です。</p><h4>算定方法</h4><ul><li><strong>給与所得者</strong>：年収 × 38〜54%（収入が高いほど割合が低下）</li><li><strong>事業所得者</strong>：課税所得 × 48〜61%</li><li><strong>給与＋事業所得</strong>：事業所得を給与換算した上で合計</li></ul>`}
 };
@@ -351,7 +353,7 @@ function calcBaseIncome(type,salary,business,insurance){
   salary=Number(salary)||0;business=Number(business)||0;insurance=Number(insurance)||0;
   let totalIncome,rate,baseIncome,steps=[];
   if(type==='self'){rate=getRate(salary,SELF_RATES);baseIncome=salary*rate/100;totalIncome=salary;steps.push(`課税所得 ${salary}万×${rate}%=${baseIncome.toFixed(3)}万円`);}
-  else if(type==='mixed'){const biz=(business+insurance)/0.85;totalIncome=salary+biz;rate=getRate(totalIncome,EMPLOYEE_RATES);baseIncome=totalIncome*rate/100;steps.push(`事業所得の給与換算: (${business}+${insurance})÷0.85=${biz.toFixed(3)}万円`);steps.push(`給与合計: ${salary}+${biz.toFixed(3)}=${totalIncome.toFixed(3)}万円`);steps.push(`${totalIncome.toFixed(3)}万×${rate}%=${baseIncome.toFixed(3)}万円`);}
+  else if(type==='mixed'){const bizToSal=(business+insurance)/0.85;if(salary>=bizToSal){totalIncome=salary+bizToSal;rate=getRate(totalIncome,EMPLOYEE_RATES);baseIncome=totalIncome*rate/100;steps.push(`給与所得(${salary}万)≥事業所得の給与換算(${bizToSal.toFixed(1)}万)のため給与所得換算で計算`);steps.push(`事業所得の給与換算: (${business}+${insurance})÷0.85=${bizToSal.toFixed(3)}万円`);steps.push(`給与合計: ${salary}+${bizToSal.toFixed(3)}=${totalIncome.toFixed(3)}万円`);steps.push(`基礎収入: ${totalIncome.toFixed(3)}万×${rate}%(給与所得割合)=${baseIncome.toFixed(3)}万円`);}else{const salToBiz=salary*0.85;totalIncome=business+salToBiz;rate=getRate(totalIncome,SELF_RATES);baseIncome=totalIncome*rate/100;steps.push(`事業所得の給与換算(${bizToSal.toFixed(1)}万)>給与所得(${salary}万)のため事業所得換算で計算`);steps.push(`給与所得の事業換算: ${salary}×0.85=${salToBiz.toFixed(3)}万円`);steps.push(`事業所得合計: ${business}+${salToBiz.toFixed(3)}=${totalIncome.toFixed(3)}万円`);steps.push(`基礎収入: ${totalIncome.toFixed(3)}万×${rate}%(事業所得割合)=${baseIncome.toFixed(3)}万円`);}}
   else{rate=getRate(salary,EMPLOYEE_RATES);baseIncome=salary*rate/100;totalIncome=salary;steps.push(`給与 ${salary}万×${rate}%=${baseIncome.toFixed(3)}万円`);}
   return{baseIncome,rate,totalIncome,steps};
 }
@@ -378,7 +380,7 @@ function calcKonin(){
   const ei=100+cs,oi=100;const ann=(ap+b)*ei/(ei+oi)-b;const mon=ann/12;
   let otherHtml='';
   if(otherCS.amount>0){otherHtml=`<div class="bk-row" style="margin-top:6px;background:#faf5ff;padding:5px 8px;border-radius:5px"><span class="bk-key">他の子への養育費（控除）</span><span class="bk-val" style="color:#7c3aed">−${fmtMan(otherCS.amount)}</span></div><div class="bk-formula">${otherCS.steps.join('<br>')}</div><div class="bk-row" style="margin-top:4px"><span class="bk-key">調整後の義務者基礎収入(a')</span><span class="bk-val">${fmtMan(ap)}</span></div>`;}
-  const html=`<div class="result-box ${mon<0?'warning':''}"><div class="result-label">月額婚姻費用（目安）</div><div class="result-amount">${mon<0?'0円':fmtEn(mon)}</div><div class="result-sub">年額：${mon<0?'0円':fmtEn(ann)}${mon<0?'<br>※権利者の収入が高いため婚姻費用は発生しません':''}</div></div><div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入 (a)</span><span class="bk-val">${fmtMan(a)}</span></div><div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入 (b)</span><span class="bk-val">${fmtMan(b)}</span></div><div class="bk-formula">${ee.steps.join('<br>')}</div>${otherHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div>${ages.length?'<div class="bk-formula">'+ages.map((a,i)=>`第${i+1}子(${a}歳):指数${childIndex(a)}`).join('<br>')+'</div>':''}<div class="bk-row" style="margin-top:4px"><span class="bk-key">権利者側指数合計</span><span class="bk-val">100+${cs}=${ei}</span></div><div class="bk-row"><span class="bk-key">義務者側指数合計</span><span class="bk-val">${oi}</span></div><div class="bk-row" style="margin-top:6px"><span class="bk-key">婚姻費用（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div><div class="bk-formula">(${fmtMan(ap)}+${fmtMan(b)})×${ei}÷(${ei}+${oi})−${fmtMan(b)}<br>=${fmtMan((ap+b)*ei/(ei+oi))}−${fmtMan(b)}=${fmtMan(ann)}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
+  const html=`<div class="result-box ${mon<0?'warning':''}"><div class="result-label">月額婚姻費用（目安）</div><div class="result-amount">${mon<0?'0円':fmtEn(mon)}</div><div class="result-sub">年額：${mon<0?'0円':fmtEn(ann)}${mon<0?'<br>※権利者の収入が高いため婚姻費用は発生しません':''}</div></div><div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入 (a)</span><span class="bk-val">${fmtMan(a)}</span></div><div class="bk-desc">義務者の収入に基礎収入割合を掛けて算出します。</div><div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入 (b)</span><span class="bk-val">${fmtMan(b)}</span></div><div class="bk-desc">権利者の収入に基礎収入割合を掛けて算出します。</div><div class="bk-formula">${ee.steps.join('<br>')}</div>${otherHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div><div class="bk-desc">各子どもの年齢に応じた生活費指数を合計します（0〜14歳=62、15〜19歳=85）。</div>${ages.length?'<div class="bk-formula">'+ages.map((a,i)=>`第${i+1}子(${a}歳):指数${childIndex(a)}`).join('<br>')+'</div>':''}<div class="bk-row" style="margin-top:4px"><span class="bk-key">権利者側指数合計</span><span class="bk-val">100+${cs}=${ei}</span></div><div class="bk-desc">権利者（大人=100）と子どもの指数を合計します。</div><div class="bk-row"><span class="bk-key">義務者側指数合計</span><span class="bk-val">${oi}</span></div><div class="bk-desc">義務者（大人のみ）の指数です。</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">婚姻費用（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div><div class="bk-desc">双方の基礎収入に各自の指数を掛けて生活費を按分し、権利者側の生活費から権利者の基礎収入を差し引いた額が婚姻費用です。</div><div class="bk-formula">(a'+b)×権利者側指数÷(権利者側指数+義務者側指数)−b<br>(${fmtMan(ap)}+${fmtMan(b)})×${ei}÷(${ei}+${oi})−${fmtMan(b)}<br>=${fmtMan((ap+b)*ei/(ei+oi))}−${fmtMan(b)}=${fmtMan(ann)}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
   const el=document.getElementById('k-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
@@ -394,7 +396,7 @@ function calcYouiku(){
   const c=ap*cs/(100+cs);const ann=c*ap/(ap+b);const mon=ann/12;
   let otherHtml='';
   if(otherCS.amount>0){otherHtml=`<div class="bk-row" style="margin-top:6px;background:#faf5ff;padding:5px 8px;border-radius:5px"><span class="bk-key">他の子への養育費（控除）</span><span class="bk-val" style="color:#7c3aed">−${fmtMan(otherCS.amount)}</span></div><div class="bk-formula">${otherCS.steps.join('<br>')}</div><div class="bk-row" style="margin-top:4px"><span class="bk-key">調整後の義務者基礎収入(a')</span><span class="bk-val">${fmtMan(ap)}</span></div>`;}
-  const html=`<div class="result-box"><div class="result-label">月額養育費（目安）</div><div class="result-amount">${fmtEn(mon)}</div><div class="result-sub">年額：${fmtEn(ann)}</div></div>${corr?`<div class="note"><span class="note-icon">⚠️</span>権利者の基礎収入(${fmtMan(bOrig)})が義務者を上回るため、b=${fmtMan(a)}として計算しています。</div>`:''}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入 (a)</span><span class="bk-val">${fmtMan(a)}</span></div><div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入 (b)</span><span class="bk-val">${fmtMan(b)}</span></div><div class="bk-formula">${ee.steps.join('<br>')}${corr?'<br>→補正後: '+fmtMan(b):''}</div>${otherHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div>${ages.length?'<div class="bk-formula">'+ages.map((a,i)=>`第${i+1}子(${a}歳):指数${childIndex(a)}`).join('<br>')+'</div>':''}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の生活費 (c)</span><span class="bk-val">${fmtMan(c)}</span></div><div class="bk-formula">${fmtMan(ap)}×${cs}÷(100+${cs})=${fmtMan(c)}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">養育費（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div><div class="bk-formula">${fmtMan(c)}×${fmtMan(ap)}÷(${fmtMan(ap)}+${fmtMan(b)})=${fmtMan(ann)}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
+  const html=`<div class="result-box"><div class="result-label">月額養育費（目安）</div><div class="result-amount">${fmtEn(mon)}</div><div class="result-sub">年額：${fmtEn(ann)}</div></div>${corr?`<div class="note"><span class="note-icon">⚠️</span>権利者の基礎収入(${fmtMan(bOrig)})が義務者を上回るため、b=${fmtMan(a)}として計算しています。</div>`:''}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入 (a)</span><span class="bk-val">${fmtMan(a)}</span></div><div class="bk-desc">義務者の収入に基礎収入割合を掛けて算出します。</div><div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入 (b)</span><span class="bk-val">${fmtMan(b)}</span></div><div class="bk-desc">権利者の収入に基礎収入割合を掛けて算出します。</div><div class="bk-formula">${ee.steps.join('<br>')}${corr?'<br>→補正後: '+fmtMan(b):''}</div>${otherHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div><div class="bk-desc">各子どもの年齢に応じた生活費指数を合計します（0〜14歳=62、15〜19歳=85）。</div>${ages.length?'<div class="bk-formula">'+ages.map((a,i)=>`第${i+1}子(${a}歳):指数${childIndex(a)}`).join('<br>')+'</div>':''}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の生活費 (c)</span><span class="bk-val">${fmtMan(c)}</span></div><div class="bk-desc">義務者の基礎収入(a')に子の指数を掛けて、子どもに必要な生活費を算出します。</div><div class="bk-formula">a'×子の指数÷(100+子の指数)<br>${fmtMan(ap)}×${cs}÷(100+${cs})=${fmtMan(c)}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">養育費（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div><div class="bk-desc">子の生活費を双方の基礎収入の比率で按分し、義務者が負担すべき額を算出します。</div><div class="bk-formula">c×a'÷(a'+b)<br>${fmtMan(c)}×${fmtMan(ap)}÷(${fmtMan(ap)}+${fmtMan(b)})=${fmtMan(ann)}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
   const el=document.getElementById('y-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
@@ -423,9 +425,9 @@ function calcZaisan(){
   if(years&&(aMon||bMon)){
     const aTotal=aMon*12*years,bTotal=bMon*12*years,combined=aTotal+bTotal;
     const newA=combined*(1-ratioN)/(12*years),newB=combined*ratioN/(12*years);
-    nenkinHtml=`<div class="breakdown"><div class="breakdown-title">年金分割の概算（参考値）</div><div class="bk-row"><span class="bk-key">対象期間の標準報酬総額（ご自身）</span><span class="bk-val">${fmtMan(aTotal)}</span></div><div class="bk-row"><span class="bk-key">対象期間の標準報酬総額（相手方）</span><span class="bk-val">${fmtMan(bTotal)}</span></div><div class="bk-row"><span class="bk-key">合計</span><span class="bk-val">${fmtMan(combined)}</span></div><div class="bk-row" style="margin-top:6px"><span class="bk-key">按分後のご自身の標準報酬月額相当</span><span class="bk-val">${fmtMan(newA)}</span></div><div class="bk-row"><span class="bk-key">按分後の相手方の標準報酬月額相当</span><span class="bk-val">${fmtMan(newB)}</span></div><div class="bk-formula">按分割合 ${Math.round(ratioN*100)}%（権利者側取得分）<br>ご自身: ${fmtMan(combined)}×${Math.round((1-ratioN)*100)}%÷(12×${years}年)=${fmtMan(newA)}/月<br>相手方: ${fmtMan(combined)}×${Math.round(ratioN*100)}%÷(12×${years}年)=${fmtMan(newB)}/月</div><div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>年金分割は財産分与とは別の制度です。この計算は概算であり、実際の手続きには年金事務所への照会・請求が必要です。</div></div>`;
+    nenkinHtml=`<div class="breakdown"><div class="breakdown-title">年金分割の概算（参考値）</div><div class="bk-row"><span class="bk-key">対象期間の標準報酬総額（ご自身）</span><span class="bk-val">${fmtMan(aTotal)}</span></div><div class="bk-desc">平均標準報酬月額×12ヶ月×婚姻年数で算出します。</div><div class="bk-row"><span class="bk-key">対象期間の標準報酬総額（相手方）</span><span class="bk-val">${fmtMan(bTotal)}</span></div><div class="bk-row"><span class="bk-key">合計</span><span class="bk-val">${fmtMan(combined)}</span></div><div class="bk-desc">双方の標準報酬総額を合算します。</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">按分後のご自身の標準報酬月額相当</span><span class="bk-val">${fmtMan(newA)}</span></div><div class="bk-desc">合算額に按分割合を掛け、月額に換算します。</div><div class="bk-row"><span class="bk-key">按分後の相手方の標準報酬月額相当</span><span class="bk-val">${fmtMan(newB)}</span></div><div class="bk-formula">按分割合 ${Math.round(ratioN*100)}%（権利者側取得分）<br>ご自身: ${fmtMan(combined)}×${Math.round((1-ratioN)*100)}%÷(12×${years}年)=${fmtMan(newA)}/月<br>相手方: ${fmtMan(combined)}×${Math.round(ratioN*100)}%÷(12×${years}年)=${fmtMan(newB)}/月</div><div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>この計算は概算であり、実際の手続きには年金事務所への照会・請求が必要です。</div></div>`;
   }
-  const html=`<div class="result-box"><div class="result-label">財産の精算額（${diff>0?'ご自身→相手方':'相手方→ご自身'}）</div><div class="result-amount">${fmtEn(Math.abs(diff))}</div><div class="result-sub">${diff>0?'ご自身から相手方へ':'相手方からご自身へ'} ${fmtMan(Math.abs(diff))} の支払いが必要です</div></div><div class="breakdown"><div class="breakdown-title">財産分与計算内訳</div>${reAssets>0?`<div class="bk-row"><span class="bk-key">不動産純資産合計（正）</span><span class="bk-val">${fmtMan(reAssets)}</span></div>`:''}${reDebts>0?`<div class="bk-row"><span class="bk-key">不動産オーバーローン（負債）</span><span class="bk-val">−${fmtMan(reDebts)}</span></div>`:''}<div class="bk-row"><span class="bk-key">その他の共有財産</span><span class="bk-val">${fmtMan(otherAssets)}</span></div><div class="bk-row"><span class="bk-key">その他の負債</span><span class="bk-val">−${fmtMan(otherDebts)}</span></div><div class="bk-row"><span class="bk-key">ご自身の特有財産（除外）</span><span class="bk-val">−${fmtMan(sepA)}</span></div><div class="bk-row"><span class="bk-key">相手方の特有財産（除外）</span><span class="bk-val">−${fmtMan(sepB)}</span></div><div class="bk-row" style="padding-top:8px;border-top:2px solid var(--border)"><span class="bk-key" style="font-weight:700">分与対象純財産</span><span class="bk-val" style="color:var(--primary)">${fmtMan(net)}</span></div><div class="bk-row" style="margin-top:8px"><span class="bk-key">ご自身が取得すべき金額（${ratioA}%）</span><span class="bk-val">${fmtMan(shouldA)}</span></div><div class="bk-row"><span class="bk-key">相手方が取得すべき金額（${ratioB}%）</span><span class="bk-val">${fmtMan(shouldB)}</span></div><div class="bk-row" style="margin-top:8px"><span class="bk-key">ご自身が現在保有している財産</span><span class="bk-val">${fmtMan(holdA)}</span></div><div class="bk-row"><span class="bk-key">ご自身の過不足</span><span class="bk-val">${diff>=0?'超過: ':'不足: '}${fmtMan(Math.abs(diff))}</span></div></div>${nenkinHtml}`;
+  const html=`<div class="result-box"><div class="result-label">財産の精算額（${diff>0?'ご自身→相手方':'相手方→ご自身'}）</div><div class="result-amount">${fmtEn(Math.abs(diff))}</div><div class="result-sub">${diff>0?'ご自身から相手方へ':'相手方からご自身へ'} ${fmtMan(Math.abs(diff))} の支払いが必要です</div></div><div class="breakdown"><div class="breakdown-title">財産分与計算内訳</div>${reAssets>0?`<div class="bk-row"><span class="bk-key">不動産純資産合計（正）</span><span class="bk-val">${fmtMan(reAssets)}</span></div><div class="bk-desc">各不動産の査定額からローン残高を差し引いた純資産の合計です。</div>`:''}${reDebts>0?`<div class="bk-row"><span class="bk-key">不動産オーバーローン（負債）</span><span class="bk-val">−${fmtMan(reDebts)}</span></div><div class="bk-desc">ローン残高が査定額を超える不動産の超過分（負債）の合計です。</div>`:''}<div class="bk-row"><span class="bk-key">その他の共有財産</span><span class="bk-val">${fmtMan(otherAssets)}</span></div><div class="bk-desc">婚姻中に形成した預貯金・株式・車などの合計です。</div><div class="bk-row"><span class="bk-key">その他の負債</span><span class="bk-val">−${fmtMan(otherDebts)}</span></div><div class="bk-desc">不動産ローン以外の共同の負債の合計です。</div><div class="bk-row"><span class="bk-key">ご自身の特有財産（除外）</span><span class="bk-val">−${fmtMan(sepA)}</span></div><div class="bk-row"><span class="bk-key">相手方の特有財産（除外）</span><span class="bk-val">−${fmtMan(sepB)}</span></div><div class="bk-desc">婚前財産・相続・贈与など分与対象外の財産を除外します。</div><div class="bk-row" style="padding-top:8px;border-top:2px solid var(--border)"><span class="bk-key" style="font-weight:700">分与対象純財産</span><span class="bk-val" style="color:var(--primary)">${fmtMan(net)}</span></div><div class="bk-desc">共有財産から負債と特有財産を差し引いた、分与の対象となる純財産です。</div><div class="bk-row" style="margin-top:8px"><span class="bk-key">ご自身が取得すべき金額（${ratioA}%）</span><span class="bk-val">${fmtMan(shouldA)}</span></div><div class="bk-desc">分与対象純財産に分与割合を掛けて計算します。</div><div class="bk-row"><span class="bk-key">相手方が取得すべき金額（${ratioB}%）</span><span class="bk-val">${fmtMan(shouldB)}</span></div><div class="bk-row" style="margin-top:8px"><span class="bk-key">ご自身が現在保有している財産</span><span class="bk-val">${fmtMan(holdA)}</span></div><div class="bk-row"><span class="bk-key">ご自身の過不足</span><span class="bk-val">${diff>=0?'超過: ':'不足: '}${fmtMan(Math.abs(diff))}</span></div><div class="bk-desc">現在保有している財産と取得すべき金額の差額分を相手方に精算します。</div></div>${nenkinHtml}`;
   const el=document.getElementById('z-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
