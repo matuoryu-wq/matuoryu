@@ -1,139 +1,442 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>相続計算ツール</title>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<style>
-:root{
-  --navy:#1a2744;
-  --navy-dark:#0f1a33;
-  --navy-light:#2d4170;
-  --accent:#3a6bc4;
-  --accent-light:#e8eef8;
-  --accent-border:#b0c4e8;
-  --success:#2d6a4f;
-  --success-light:#eaf4f0;
-  --warning:#7a5c00;
-  --warning-light:#fdf8e8;
-  --border:#d0d6e2;
-  --bg:#f0f2f7;
-  --card:#ffffff;
-  --text:#1a1f2e;
-  --text-muted:#5a6479;
-  --radius:10px;
-  --shadow:0 1px 4px rgba(26,39,68,.10);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
-.header{background:linear-gradient(135deg,var(--navy-dark),var(--navy-light));color:#fff;padding:20px;text-align:center}
-.header h1{font-size:22px;font-weight:700;letter-spacing:.05em}
-.header p{font-size:12px;opacity:.75;margin-top:4px}
-.tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:10}
-.tab-btn{flex:1;padding:14px 8px;border:none;background:none;cursor:pointer;font-size:14px;font-weight:600;color:var(--text-muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
-.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--accent-light)}
-.container{max-width:760px;margin:0 auto;padding:16px 12px}
-.panel{display:none}.panel.active{display:block}
-.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
-.card-title{font-size:15px;font-weight:700;margin-bottom:14px;color:var(--navy);border-left:4px solid var(--accent);padding-left:10px}
-.form-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;align-items:center}
-.form-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:160px}
-label{font-size:13px;font-weight:600;color:var(--text-muted)}
-input[type=number],select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:7px;font-size:14px;color:var(--text);background:#fff;transition:border .2s}
-input[type=number]:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(58,107,196,.15)}
-input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent)}
-.inline-check{display:flex;align-items:center;gap:8px;padding:4px 0}
-.result-section{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border-radius:var(--radius);padding:18px;margin-top:4px}
-.result-section h3{font-size:15px;font-weight:700;margin-bottom:14px;opacity:.9}
-.result-table{width:100%;border-collapse:collapse;margin-bottom:10px}
-.result-table th{background:rgba(255,255,255,.12);padding:8px 10px;font-size:12px;font-weight:600;text-align:left;border-bottom:1px solid rgba(255,255,255,.2)}
-.result-table td{padding:9px 10px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.08)}
-.result-table tr:last-child td{border-bottom:none}
-.result-table .highlight{font-weight:700;color:#ffd700}
-.result-table .no-right{color:#aab;font-style:italic}
-.formula{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px}
-.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px}
-.summary-box{background:rgba(255,255,255,.1);border-radius:8px;padding:12px;border:1px solid rgba(255,255,255,.15)}
-.summary-box .label{font-size:11px;opacity:.7;margin-bottom:3px}
-.summary-box .value{font-size:18px;font-weight:700;color:#ffd700}
-.summary-box .sub{font-size:11px;opacity:.65;margin-top:2px}
-.no-tax-msg{background:var(--success-light);border:1px solid #95c4a4;border-radius:8px;padding:14px;color:var(--success);font-weight:600;text-align:center;margin-top:8px}
-.warning-note{background:var(--warning-light);border:1px solid #e8d080;border-radius:8px;padding:12px 14px;color:var(--warning);font-size:12px;margin-top:10px;line-height:1.7}
-.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600}
-.badge-blue{background:#dbeafe;color:#1d4ed8}
-.badge-green{background:#d1fae5;color:#065f46}
-.badge-gray{background:#f1f5f9;color:#475569}
-.section-sub{font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.6}
-.divider{border:none;border-top:1px solid var(--border);margin:12px 0}
-.sub-input-block{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:8px}
-.sub-input-block .sub-label{font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:8px}
-@media(max-width:540px){.form-group{min-width:100%}.summary-grid{grid-template-columns:1fr 1fr}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>離婚関連費用 計算ツール</title>
+  <style>
+    :root{--primary:#7C5C3E;--primary-hover:#5D4230;--primary-light:#FAF3EC;--success:#4D7C5A;--success-light:#EEF7F1;--success-border:#95C4A4;--warning:#B07A3C;--warning-light:#FBF5EC;--danger:#B84040;--danger-light:#FEF2F2;--border:#DDD5C8;--bg:#F2EDE4;--card:#FEFCF9;--text:#2C1F14;--text-muted:#7A6555;--radius:10px;--shadow:0 1px 4px rgba(100,60,20,.10)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+    .header{background:linear-gradient(135deg,#3D2B1F,#7C5C3E);color:#fff;padding:18px 20px;text-align:center}
+    .header h1{font-size:20px;font-weight:700}.header p{font-size:12px;opacity:.8;margin-top:3px}
+    .tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:10}
+    .tab-btn{flex:1;min-width:90px;padding:13px 6px;border:none;background:none;cursor:pointer;font-size:14px;font-weight:600;color:var(--text-muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+    .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-light)}
+    .container{max-width:720px;margin:0 auto;padding:16px 12px}
+    .panel{display:none}.panel.active{display:block}
+    .info-banner{background:var(--primary-light);border:1px solid #C8A882;border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .info-banner p{font-size:13px;color:#5D3A1A;flex:1}
+    .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+    .card-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--text)}
+    .icon{width:26px;height:26px;border-radius:6px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+    .icon-obligor{background:#dbeafe;color:#1d4ed8}
+    .icon-obligee{background:#fce7f3;color:#be185d}
+    .icon-child{background:#d1fae5;color:#059669}
+    .icon-asset{background:#fef3c7;color:#b45309}
+    .icon-other{background:#f3e8ff;color:#7c3aed}
+    .icon-re{background:#e0f2fe;color:#0369a1}
+    .icon-nenkin{background:#fef9c3;color:#ca8a04}
+    .person-obligor .card-title{border-left:3px solid #1d4ed8;padding-left:10px;margin-left:-18px}
+    .person-obligee .card-title{border-left:3px solid #be185d;padding-left:10px;margin-left:-18px}
+    .help-btn{border:1px solid #C8A882;border-radius:20px;background:#FAF3EC;color:var(--text-muted);cursor:pointer;font-size:11px;font-weight:600;flex-shrink:0;margin-left:auto;padding:3px 9px;white-space:nowrap;transition:all .2s}
+    .help-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    @media(max-width:480px){.form-row{grid-template-columns:1fr}}
+    .form-group{display:flex;flex-direction:column;gap:4px}
+    label{font-size:12px;font-weight:600;color:var(--text-muted)}
+    .input-wrap{display:flex;align-items:center;gap:6px}.input-wrap input,.input-wrap select{flex:1}
+    .unit{font-size:13px;color:var(--text-muted);white-space:nowrap}
+    input[type=number],input[type=text],select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:14px;color:var(--text);background:#fff;transition:border-color .2s;-webkit-appearance:none}
+    input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(124,92,62,.12)}
+    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237A6555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:30px}
+    .extra-fields{background:#F7F0E8;border-radius:8px;padding:12px;margin-top:8px;border:1px dashed var(--border)}
+    .children-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+    .child-row{display:flex;align-items:center;gap:8px;background:#F7F0E8;border-radius:8px;padding:9px 12px;border:1px solid var(--border)}
+    .child-label{font-size:12px;font-weight:600;color:var(--text-muted);min-width:40px}
+    .child-row input{flex:1;max-width:100px}
+    .age-index{font-size:12px;color:var(--success);font-weight:600;min-width:50px;text-align:right}
+    .btn-remove{background:none;border:none;cursor:pointer;color:#9ca3af;padding:4px;font-size:17px;line-height:1}
+    .btn-remove:hover{color:var(--danger)}
+    .btn-add{width:100%;padding:9px;border:1.5px dashed var(--border);background:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:center;gap:6px}
+    .btn-add:hover{background:var(--primary-light);border-color:var(--primary)}
+    .btn-calc{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:4px}
+    .btn-calc:hover{background:var(--primary-hover)}
+    .result-box{background:var(--success-light);border:1.5px solid var(--success-border);border-radius:var(--radius);padding:20px;margin-bottom:14px}
+    .result-box.warning{background:var(--warning-light);border-color:#F0C070}
+    .result-label{font-size:13px;font-weight:600;color:var(--success);margin-bottom:2px}
+    .result-box.warning .result-label{color:var(--warning)}
+    .result-amount{font-size:32px;font-weight:800;color:var(--success);line-height:1.1}
+    .result-box.warning .result-amount{color:var(--warning)}
+    .result-sub{font-size:13px;color:#2D5E3A;margin-top:6px}
+    .result-box.warning .result-sub{color:#7A4A1E}
+    .formula-header{background:#EDE5D8;border:1px solid #C8A882;border-radius:8px;padding:12px 14px;margin-bottom:14px}
+    .formula-header .fh-title{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+    .formula-header .fh-eq{font-family:'Courier New',monospace;font-size:12px;color:var(--primary);font-weight:700;margin-bottom:4px;word-break:break-all;line-height:1.8}
+    .formula-header .fh-vars{font-size:11.5px;color:var(--text-muted);line-height:2;margin-top:8px;border-top:1px dashed #C8A882;padding-top:8px}
+    .breakdown{background:#F7F0E8;border-radius:8px;border:1px solid var(--border);padding:14px;margin-bottom:14px}
+    .breakdown-title{font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
+    .bk-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px dashed #DDD5C8;gap:8px;font-size:13px}
+    .bk-row:last-child{border-bottom:none}
+    .bk-key{color:var(--text-muted);flex:1}.bk-val{font-weight:700;white-space:nowrap;color:var(--text)}
+    .bk-desc{font-size:12px;color:var(--text);padding:3px 2px 6px;line-height:1.65;background:#fff;border-radius:5px;padding:6px 8px;margin:4px 0 6px;border-left:3px solid #C8A882}
+    .bk-formula{font-size:11.5px;color:var(--text-muted);background:#EDE5D8;padding:6px 10px;border-radius:5px;font-family:'Courier New',monospace;margin-top:2px;margin-bottom:6px;line-height:1.8;word-break:break-all}
+    .re-card{background:#F7F0E8;border-radius:8px;border:1px solid var(--border);padding:14px;margin-bottom:10px}
+    .re-card-top{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .re-card-top select{flex:1}
+    .re-equity-row{display:flex;align-items:center;gap:8px;font-size:13px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+    .re-equity-label{color:var(--text-muted);font-weight:600}
+    .re-equity{font-weight:700;font-size:15px}
+    .re-equity.pos{color:var(--success)}.re-equity.neg{color:var(--danger)}
+    .asset-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+    .asset-row{display:grid;grid-template-columns:1fr 120px auto;gap:8px;align-items:center;background:#F7F0E8;border-radius:8px;padding:9px 12px;border:1px solid var(--border)}
+    .asset-row input{width:100%}
+    .ratio-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .ratio-row input{width:72px}
+    .ratio-sep{font-size:16px;font-weight:700;color:var(--text-muted)}
+    .sec-title{font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
+    .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .note{font-size:12px;color:#7A4A1E;background:#FBF5EC;border:1px solid #F0C070;border-radius:7px;padding:8px 12px;margin-top:8px;display:flex;gap:6px}
+    .note-icon{flex-shrink:0}
+    .err-msg{background:var(--danger-light);border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;color:var(--danger);font-size:13px;margin-bottom:12px}
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:var(--card);border-radius:14px;padding:22px;max-width:500px;width:100%;margin:auto;position:relative;border:1px solid var(--border)}
+    .modal-close{position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:20px;color:var(--text-muted);padding:4px}
+    .modal-title{font-size:16px;font-weight:700;margin-bottom:14px;padding-right:30px;color:var(--primary)}
+    .modal-body{font-size:13px;line-height:1.75}
+    .modal-body h4{font-size:13px;font-weight:700;margin:12px 0 5px;color:var(--text)}
+    .modal-body p{margin-bottom:8px}
+    .modal-body ol,.modal-body ul{padding-left:16px;margin-bottom:8px}
+    .modal-body li{margin-bottom:5px}
+    .help-note{background:#FBF5EC;border-left:3px solid #C8A882;padding:8px 12px;border-radius:0 6px 6px 0;margin:10px 0;font-size:12px}
+    .modal-body table{width:100%;border-collapse:collapse;margin:8px 0}
+    .modal-body th,.modal-body td{padding:6px 8px;border:1px solid var(--border);font-size:12px}
+    .modal-body th{background:var(--primary-light);color:var(--primary)}
+  </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useMemo } = React;
 
-// ─── 共通ユーティリティ ─────────────────────────────
-const fmt = (n) => Math.round(n).toLocaleString('ja-JP');
-const fmtMan = (n) => {
-  const v = Math.round(n);
-  if (Math.abs(v) >= 10000) return (v / 10000).toFixed(2).replace(/\.?0+$/, '') + '億円';
-  return v.toLocaleString('ja-JP') + '万円';
+  <!-- ===== 婚姻費用 ===== -->
+  <div id="panel-konin" class="panel active">
+    <div class="info-banner">
+      <p>婚姻費用とは、別居中に収入の多い方が少ない方（子含む）に支払う生活費です。</p>
+      <button class="help-btn" onclick="showHelp('konin')">詳しく</button>
+    </div>
+    <div class="card person-obligor">
+      <div class="card-title"><span class="icon icon-obligor"></span>義務者（婚姻費用を支払う側）<button class="help-btn" onclick="showHelp('obligor')">詳しく</button></div>
+      <div class="form-row">
+        <div class="form-group"><label>収入の種類</label>
+          <select id="k-ob-type" onchange="toggleExtra('k-ob')">
+            <option value="employee">給与所得者</option>
+            <option value="self">事業所得者（課税所得）</option>
+            <option value="mixed">給与＋事業所得</option>
+          </select>
+        </div>
+        <div class="form-group"><label id="k-ob-salary-label">年収（万円）</label>
+          <div class="input-wrap"><input type="number" id="k-ob-salary" placeholder="例：500" min="0"><span class="unit">万</span></div>
+        </div>
+      </div>
+      <div id="k-ob-extra" class="extra-fields" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label>事業所得（万円）</label><div class="input-wrap"><input type="number" id="k-ob-business" placeholder="例：100" min="0"><span class="unit">万</span></div></div>
+          <div class="form-group"><label>社会保険料（万円）</label><div class="input-wrap"><input type="number" id="k-ob-insurance" placeholder="例：15" min="0"><span class="unit">万</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card person-obligee">
+      <div class="card-title"><span class="icon icon-obligee"></span>権利者（婚姻費用を受け取る側）<button class="help-btn" onclick="showHelp('obligor')">詳しく</button></div>
+      <div class="form-row">
+        <div class="form-group"><label>収入の種類</label>
+          <select id="k-ee-type" onchange="toggleExtra('k-ee')">
+            <option value="employee">給与所得者</option>
+            <option value="self">事業所得者（課税所得）</option>
+            <option value="mixed">給与＋事業所得</option>
+          </select>
+        </div>
+        <div class="form-group"><label id="k-ee-salary-label">年収（万円）</label>
+          <div class="input-wrap"><input type="number" id="k-ee-salary" placeholder="例：200" min="0"><span class="unit">万</span></div>
+        </div>
+      </div>
+      <div id="k-ee-extra" class="extra-fields" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label>事業所得（万円）</label><div class="input-wrap"><input type="number" id="k-ee-business" placeholder="例：100" min="0"><span class="unit">万</span></div></div>
+          <div class="form-group"><label>社会保険料（万円）</label><div class="input-wrap"><input type="number" id="k-ee-insurance" placeholder="例：15" min="0"><span class="unit">万</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon icon-child">子</span>養育対象の子ども（権利者と同居）<button class="help-btn" onclick="showHelp('child_index')">詳しく</button></div>
+      <div id="k-children-list" class="children-list"></div>
+      <button class="btn-add" onclick="addChild('k')">＋ 子どもを追加</button>
+      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>0〜14歳：指数62、15〜19歳：指数85（大人=100）</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon icon-other">子</span>義務者に夫婦間の子以外の子（前妻との子、認知した子など）がおり、義務者と同居しておらず、適正な養育費を払っている場合</div>
+      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>他の子のために支払う養育費を義務者の基礎収入から差し引いて計算します。ただし、計算方法は十分に確立しておらず、これを考慮しない裁判例もあります（この場合は権利者にとって有利に働きます）。具体的な事案については弁護士等の専門家にご相談下さい。</div>
+      <div id="k-other-list" class="children-list"></div>
+      <button class="btn-add" onclick="addOtherChild('k')">＋ 他の子を追加</button>
+      <div id="k-other-parent-wrap" style="display:none;margin-top:10px">
+        <div class="form-group"><label>他の子の養育者（他方の親）の年収（万円）</label>
+          <div class="input-wrap"><input type="number" id="k-other-parent-income" placeholder="例：200" min="0"><span class="unit">万</span></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-calc" onclick="calcKonin()">計算する</button>
+    <div id="k-result" style="display:none;margin-top:14px"></div>
+  </div>
+
+  <!-- ===== 養育費 ===== -->
+  <div id="panel-youiku" class="panel">
+    <div class="info-banner">
+      <p>養育費とは、子どもと別れて暮らす親が、子どもと暮らす親に支払う養育に必要な費用です。</p>
+      <button class="help-btn" onclick="showHelp('youiku')">詳しく</button>
+    </div>
+    <div class="card person-obligor">
+      <div class="card-title"><span class="icon icon-obligor"></span>義務者（養育費を支払う側）<button class="help-btn" onclick="showHelp('obligor')">詳しく</button></div>
+      <div class="form-row">
+        <div class="form-group"><label>収入の種類</label>
+          <select id="y-ob-type" onchange="toggleExtra('y-ob')">
+            <option value="employee">給与所得者</option>
+            <option value="self">事業所得者（課税所得）</option>
+            <option value="mixed">給与＋事業所得</option>
+          </select>
+        </div>
+        <div class="form-group"><label id="y-ob-salary-label">年収（万円）</label>
+          <div class="input-wrap"><input type="number" id="y-ob-salary" placeholder="例：500" min="0"><span class="unit">万</span></div>
+        </div>
+      </div>
+      <div id="y-ob-extra" class="extra-fields" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label>事業所得（万円）</label><div class="input-wrap"><input type="number" id="y-ob-business" placeholder="例：100" min="0"><span class="unit">万</span></div></div>
+          <div class="form-group"><label>社会保険料（万円）</label><div class="input-wrap"><input type="number" id="y-ob-insurance" placeholder="例：15" min="0"><span class="unit">万</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card person-obligee">
+      <div class="card-title"><span class="icon icon-obligee"></span>権利者（養育費を受け取る側）<button class="help-btn" onclick="showHelp('obligor')">詳しく</button></div>
+      <div class="form-row">
+        <div class="form-group"><label>収入の種類</label>
+          <select id="y-ee-type" onchange="toggleExtra('y-ee')">
+            <option value="employee">給与所得者</option>
+            <option value="self">事業所得者（課税所得）</option>
+            <option value="mixed">給与＋事業所得</option>
+          </select>
+        </div>
+        <div class="form-group"><label id="y-ee-salary-label">年収（万円）</label>
+          <div class="input-wrap"><input type="number" id="y-ee-salary" placeholder="例：200" min="0"><span class="unit">万</span></div>
+        </div>
+      </div>
+      <div id="y-ee-extra" class="extra-fields" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label>事業所得（万円）</label><div class="input-wrap"><input type="number" id="y-ee-business" placeholder="例：100" min="0"><span class="unit">万</span></div></div>
+          <div class="form-group"><label>社会保険料（万円）</label><div class="input-wrap"><input type="number" id="y-ee-insurance" placeholder="例：15" min="0"><span class="unit">万</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon icon-child">子</span>養育対象の子ども（権利者と同居）<button class="help-btn" onclick="showHelp('child_index')">詳しく</button></div>
+      <div id="y-children-list" class="children-list"></div>
+      <button class="btn-add" onclick="addChild('y')">＋ 子どもを追加</button>
+      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>0〜14歳：指数62、15〜19歳：指数85（大人=100）</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon icon-other">子</span>義務者に夫婦間の子以外の子（前妻との子、認知した子など）がおり、義務者と同居しておらず、適正な養育費を払っている場合</div>
+      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>他の子のために支払う養育費を義務者の基礎収入から差し引いて計算します。ただし、計算方法は十分に確立しておらず、これを考慮しない裁判例もあります（この場合は権利者にとって有利に働きます）。具体的な事案については弁護士等の専門家にご相談下さい。</div>
+      <div id="y-other-list" class="children-list"></div>
+      <button class="btn-add" onclick="addOtherChild('y')">＋ 他の子を追加</button>
+      <div id="y-other-parent-wrap" style="display:none;margin-top:10px">
+        <div class="form-group"><label>他の子の養育者（他方の親）の年収（万円）</label>
+          <div class="input-wrap"><input type="number" id="y-other-parent-income" placeholder="例：200" min="0"><span class="unit">万</span></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-calc" onclick="calcYouiku()">計算する</button>
+    <div id="y-result" style="display:none;margin-top:14px"></div>
+  </div>
+
+  <!-- ===== 財産分与 ===== -->
+  <div id="panel-zaisan" class="panel">
+    <div class="info-banner">
+      <p>財産分与とは、婚姻中に二人で築いた財産を離婚時に分け合うことです。</p>
+      <button class="help-btn" onclick="showHelp('zaisan')">詳しく</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon icon-re">家</span>不動産<button class="help-btn" onclick="showHelp('fudosan')">詳しく</button></div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">査定額からローン残高を差し引いた純資産を計算します。マイナスになる場合（オーバーローン）は負債として扱います。</p>
+      <div id="z-re-list"></div>
+      <button class="btn-add" onclick="addProperty()">＋ 不動産を追加</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon icon-asset">＋</span>その他の共有財産（預貯金・株式・退職金など）</div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">婚姻中に二人で形成した財産を入力してください。名義はどちらでも構いません。</p>
+      <div id="z-asset-list" class="asset-list"></div>
+      <button class="btn-add" onclick="addAsset()">＋ 財産を追加</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#fee2e2;color:#dc2626">－</span>共同の負債（不動産ローン以外）</div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">婚姻中に共同で負担した借金（カーローン・教育ローンなど）を入力してください。</p>
+      <div id="z-debt-list" class="asset-list"></div>
+      <button class="btn-add" onclick="addDebt()">＋ 負債を追加</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#f3e8ff;color:#7c3aed">除</span>特有財産（婚姻前から持っていた財産・相続や贈与で得た財産など）<button class="help-btn" onclick="showHelp('separate_property')">詳しく</button></div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">二人で築いた財産ではないため、分与の対象外として差し引きます。</p>
+      <div class="form-row">
+        <div class="form-group"><label>ご自身の特有財産（万円）</label><div class="input-wrap"><input type="number" id="z-sep-a" placeholder="0" min="0"><span class="unit">万</span></div></div>
+        <div class="form-group"><label>相手方の特有財産（万円）</label><div class="input-wrap"><input type="number" id="z-sep-b" placeholder="0" min="0"><span class="unit">万</span></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#f0fdf4;color:#16a34a">⚙</span>分与条件</div>
+      <div class="sec-title">分与割合</div>
+      <div class="ratio-row">
+        <span style="font-size:13px;font-weight:600">ご自身</span>
+        <div class="input-wrap" style="width:80px"><input type="number" id="z-ratio-a" value="50" min="0" max="100"><span class="unit">%</span></div>
+        <span class="ratio-sep">:</span>
+        <span style="font-size:13px;font-weight:600">相手方</span>
+        <div class="input-wrap" style="width:80px"><input type="number" id="z-ratio-b" value="50" min="0" max="100"><span class="unit">%</span></div>
+      </div>
+      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>通常は50%ずつ（2分の1ずつ）の分与が原則です。</div>
+      <div class="sec-title" style="margin-top:14px">現在の保有状況</div>
+      <div class="form-row">
+        <div class="form-group"><label>ご自身が現在保有している財産（万円）</label><div class="input-wrap"><input type="number" id="z-hold-a" placeholder="例：3000" min="0"><span class="unit">万</span></div></div>
+        <div class="form-group"><label>相手方が現在保有している財産（万円）</label><div class="input-wrap"><input type="number" id="z-hold-b" placeholder="例：1000" min="0"><span class="unit">万</span></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon icon-nenkin">年</span>年金分割（合意分割）の概算<button class="help-btn" onclick="showHelp('nenkin')">詳しく</button></div>
+      <div class="form-row">
+        <div class="form-group"><label>婚姻期間（年）</label><div class="input-wrap"><input type="number" id="z-nenkin-years" placeholder="例：10" min="0"><span class="unit">年</span></div></div>
+        <div class="form-group"><label>按分割合（権利者側の取得分・上限50%）</label><div class="input-wrap"><input type="number" id="z-nenkin-ratio" value="50" min="0" max="50"><span class="unit">%</span></div></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>ご自身の平均標準報酬月額（万円）</label><div class="input-wrap"><input type="number" id="z-nenkin-a" placeholder="例：30" min="0"><span class="unit">万</span></div></div>
+        <div class="form-group"><label>相手方の平均標準報酬月額（万円）</label><div class="input-wrap"><input type="number" id="z-nenkin-b" placeholder="例：0" min="0"><span class="unit">万</span></div></div>
+      </div>
+      <div class="note"><span class="note-icon">ℹ️</span>この計算は概算であり、実際の分割には年金事務所への請求が必要です。</div>
+    </div>
+
+    <button class="btn-calc" onclick="calcZaisan()">計算する</button>
+    <div id="z-result" style="display:none;margin-top:14px"></div>
+  </div>
+</div>
+
+<!-- モーダル -->
+<div id="help-modal" class="modal-overlay" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const EMPLOYEE_RATES=[[75,54],[100,50],[125,46],[175,44],[275,43],[525,42],[725,41],[1325,40],[1475,39],[2000,38]];
+const SELF_RATES=[[66,61],[82,60],[98,59],[256,58],[349,57],[392,56],[496,55],[563,54],[784,53],[942,52],[1046,51],[1179,50],[1482,49],[1567,48]];
+
+const HELP={
+  konin:{title:'婚姻費用について',body:`<p><strong>婚姻費用</strong>とは、婚姻関係が続いている間（別居中を含む）、収入の多い一方が少ない一方（子どもの養育費含む）に対して支払う生活費のことです。</p><h4>いつから請求できますか？</h4><p>一般的に、請求または調停申立てをした月からとされています。時期が遅れると請求できる範囲が限られることがあります。</p><h4>請求の手順</h4><ol><li><strong>話し合い</strong>：まず相手方に対して直接請求します。</li><li><strong>調停の申立て</strong>：家庭裁判所に「婚姻費用分担調停」を申し立てることができます。</li><li><strong>審判</strong>：調停で合意に至らない場合は審判に移行し、裁判官が金額を決定します。</li></ol><h4>支払われない場合</h4><p>調停調書や審判書がある場合、強制執行の手続きをとることができる場合があります。</p>`},
+  youiku:{title:'養育費について',body:`<p><strong>養育費</strong>とは、子どもと離れて暮らす親が、子どもを養育している親に対して支払う、子どもの生活・教育に必要な費用のことです。</p><h4>いつまで支払いますか？</h4><p>一般的には子どもが18歳（高校卒業時）になるまでとされることが多いですが、大学等進学の場合の取り決めは当事者間の合意によります。</p><h4>請求の手順</h4><ol><li><strong>話し合い</strong>：当事者間で協議して決定します。合意内容は書面に残しておくことが重要です。</li><li><strong>調停の申立て</strong>：家庭裁判所に「養育費請求調停」を申し立てることができます。</li><li><strong>審判</strong>：調停で合意に至らない場合は審判に移行し、裁判官が決定します。</li></ol><h4>支払われない場合</h4><p>公正証書（強制執行認諾条項付き）や調停調書・審判書がある場合、強制執行の手続きをとることができる場合があります。また、家庭裁判所に履行勧告の申出をすることもできます。</p>`},
+  zaisan:{title:'財産分与とは',body:`<p><strong>財産分与</strong>とは、婚姻中に夫婦が共同で形成した財産を、離婚の際に分配することです。</p><h4>対象になる財産（共有財産の例）</h4><ul><li>婚姻中に形成した預貯金・有価証券</li><li>婚姻中に購入した不動産・車両</li><li>婚姻中に取得した退職金（婚姻期間対応分）</li></ul><h4>対象にならない財産（特有財産）</h4><ul><li>婚姻前から所有していた財産</li><li>婚姻中に相続または贈与を受けた財産</li></ul><h4>分与の割合</h4><p>原則として2分の1ずつとされていますが、個別の事情により異なる場合があります。</p><h4>請求期限</h4><p>離婚成立後2年以内に請求する必要があります。</p>`},
+  obligor:{title:'義務者・権利者とは',body:`<h4>義務者</h4><p>婚姻費用または養育費を「支払う義務を負う側」のことです。一般的に収入の多い方が義務者となります。</p><h4>権利者</h4><p>婚姻費用または養育費を「受け取る権利を持つ側」のことです。一般的に収入の少ない方・子どもと暮らす方が権利者となります。</p><div class="help-note">義務者・権利者はどちらが夫・妻でも構いません。収入状況や子どもの居住状況によって決まります。</div>`},
+  child_index:{title:'子の生活費指数とは',body:`<p>大人の生活費を<strong>100</strong>とした場合に、子どもの生活費がどの程度の割合になるかを示す数値です。標準算定方式で使用されます。</p><table><tr><th>年齢</th><th>生活費指数</th></tr><tr><td>0〜14歳</td><td>62</td></tr><tr><td>15〜19歳</td><td>85</td></tr></table><p style="margin-top:8px">この指数を用いて、各当事者がどの程度の生活費を負担すべきかを算出します。</p>`},
+  fudosan:{title:'不動産の計算について',body:`<p>不動産の財産分与における価値は、<strong>査定額（時価）からローン残高を差し引いた純資産</strong>が基本となります。</p><h4>計算方法</h4><p>純資産 ＝ 査定額 − ローン残高</p><ul><li>純資産がプラスの場合：共有財産に加算されます</li><li>純資産がマイナス（オーバーローン）の場合：負債として扱われます</li></ul><div class="help-note">査定額は不動産会社への査定や路線価等で確認してください。ローン残高は金融機関に確認してください。</div>`},
+  nenkin:{title:'年金分割とは',body:`<p><strong>年金分割</strong>とは、婚姻期間中に厚生年金に加入していた場合、その期間の標準報酬記録を離婚時に分割する制度です。</p><h4>合意分割</h4><p>当事者間の合意（または裁判所の決定）により、婚姻期間中の標準報酬記録を按分します。按分割合は最大50%です。</p><h4>3号分割</h4><p>2008年4月以降の期間について、第3号被保険者（主に専業主婦・主夫）であった方は、その期間分の標準報酬の2分の1を自動的に受け取ることができます。</p><div class="help-note">この計算は概算です。実際の分割請求は、離婚後2年以内に年金事務所へ行う必要があります。</div>`},
+  separate_property:{title:'特有財産とは',body:`<p><strong>特有財産</strong>とは、財産分与の対象とならない、各自の固有の財産のことです。</p><h4>特有財産の例</h4><ul><li>婚姻前から所有していた預貯金・不動産</li><li>婚姻中に相続によって取得した財産</li><li>婚姻中に贈与を受けた財産</li></ul><div class="help-note">特有財産であることの立証は、主張する側が行う必要があります。</div>`},
+  base_income:{title:'基礎収入とは',body:`<p><strong>基礎収入</strong>とは、総収入から税金・社会保険料・職業費等を控除した後の、実際に生活費として使用できる収入の目安となる金額です。</p><h4>算定方法</h4><ul><li><strong>給与所得者</strong>：年収 × 38〜54%（収入が高いほど割合が低下）</li><li><strong>事業所得者</strong>：課税所得 × 48〜61%</li><li><strong>給与＋事業所得</strong>：多い方の所得に換算した上で合計</li></ul>`}
 };
 const frac = (n, d) => d === 0 ? '0' : (n === d ? '全部' : `${n}/${d}`);
 const pct = (n, d) => d === 0 ? '0%' : (n / d * 100).toFixed(2).replace(/\.?0+$/, '') + '%';
 
-// ─── 法定相続分テーブル ─────────────────────────────
-// returns [{name, share:[num,den]}, ...]
-function calcLegalShares(heirs, type) {
-  // type: 1=配偶者のみ, 2=配偶者+子, 3=配偶者+親, 4=配偶者+兄弟,
-  //       5=子のみ, 6=親のみ, 7=兄弟のみ
-  const n = heirs; // count of secondary heirs
-  switch (type) {
-    case 1: return [{ name: '配偶者', role: 'spouse', share: [1, 1] }];
-    case 2: {
-      const res = [{ name: '配偶者', role: 'spouse', share: [1, 2] }];
-      for (let i = 1; i <= n; i++)
-        res.push({ name: `子${n > 1 ? i : ''}`, role: 'child', share: [1, 2 * n] });
-      return res;
-    }
-    case 3: {
-      const res = [{ name: '配偶者', role: 'spouse', share: [2, 3] }];
-      for (let i = 1; i <= n; i++)
-        res.push({ name: `親${n > 1 ? i : ''}`, role: 'parent', share: [1, 3 * n] });
-      return res;
-    }
-    case 4: {
-      const res = [{ name: '配偶者', role: 'spouse', share: [3, 4] }];
-      for (let i = 1; i <= n; i++)
-        res.push({ name: `兄弟姉妹${n > 1 ? i : ''}`, role: 'sibling', share: [1, 4 * n] });
-      return res;
-    }
-    case 5: {
-      const res = [];
-      for (let i = 1; i <= n; i++)
-        res.push({ name: `子${n > 1 ? i : ''}`, role: 'child', share: [1, n] });
-      return res;
-    }
-    case 6: {
-      const res = [];
-      for (let i = 1; i <= n; i++)
-        res.push({ name: `親${n > 1 ? i : ''}`, role: 'parent', share: [1, n] });
-      return res;
-    }
-    case 7: {
-      const res = [];
-      for (let i = 1; i <= n; i++)
-        res.push({ name: `兄弟姉妹${n > 1 ? i : ''}`, role: 'sibling', share: [1, n] });
-      return res;
-    }
-    default: return [];
+function getRate(income,table){for(const[max,rate]of table){if(income<=max)return rate;}return table[table.length-1][1];}
+function childIndex(age){const n=Number(age);if(n>=0&&n<=14)return 62;if(n>=15&&n<=19)return 85;return 0;}
+function fmt(val,d=0){return val.toLocaleString('ja-JP',{maximumFractionDigits:d,minimumFractionDigits:d});}
+function fmtMan(val){return fmt(val,3)+'万円';}
+function fmtEn(val){return '約'+Math.round(val*10000).toLocaleString('ja-JP')+'円';}
+
+function calcBaseIncome(type,salary,business,insurance){
+  salary=Number(salary)||0;business=Number(business)||0;insurance=Number(insurance)||0;
+  let totalIncome,rate,baseIncome,steps=[];
+  if(type==='self'){rate=getRate(salary,SELF_RATES);baseIncome=salary*rate/100;totalIncome=salary;steps.push(`課税所得 ${salary}万×${rate}%=${baseIncome.toFixed(3)}万円`);}
+  else if(type==='mixed'){const bizToSal=(business+insurance)/0.85;if(salary>=bizToSal){totalIncome=salary+bizToSal;rate=getRate(totalIncome,EMPLOYEE_RATES);baseIncome=totalIncome*rate/100;steps.push(`給与所得(${salary}万)≥事業所得の給与換算(${bizToSal.toFixed(1)}万)のため給与所得換算で計算`);steps.push(`事業所得の給与換算: (${business}+${insurance})÷0.85=${bizToSal.toFixed(3)}万円`);steps.push(`給与合計: ${salary}+${bizToSal.toFixed(3)}=${totalIncome.toFixed(3)}万円`);steps.push(`基礎収入: ${totalIncome.toFixed(3)}万×${rate}%(給与所得割合)=${baseIncome.toFixed(3)}万円`);}else{const salToBiz=salary*0.85;totalIncome=business+salToBiz;rate=getRate(totalIncome,SELF_RATES);baseIncome=totalIncome*rate/100;steps.push(`事業所得の給与換算(${bizToSal.toFixed(1)}万)>給与所得(${salary}万)のため事業所得換算で計算`);steps.push(`給与所得の事業換算: ${salary}×0.85=${salToBiz.toFixed(3)}万円`);steps.push(`事業所得合計: ${business}+${salToBiz.toFixed(3)}=${totalIncome.toFixed(3)}万円`);steps.push(`基礎収入: ${totalIncome.toFixed(3)}万×${rate}%(事業所得割合)=${baseIncome.toFixed(3)}万円`);}}
+  else{rate=getRate(salary,EMPLOYEE_RATES);baseIncome=salary*rate/100;totalIncome=salary;steps.push(`給与 ${salary}万×${rate}%=${baseIncome.toFixed(3)}万円`);}
+  return{baseIncome,rate,totalIncome,steps};
+}
+
+function calcOtherCS(a,otherParentIncome,otherAges){
+  if(!otherAges.length)return{amount:0,steps:[],childSum:0};
+  const s=otherAges.reduce((t,ag)=>t+childIndex(ag),0);if(!s)return{amount:0,steps:[],childSum:0};
+  const bO=calcBaseIncome('employee',otherParentIncome||0,0,0).baseIncome;
+  const bU=bO>a?a:bO;const c=a*s/(100+s);const denom=a+bU;const amt=denom>0?c*a/denom:c;
+  const steps=[`他の子の指数合計: ${otherAges.map((ag,i)=>`第${i+1}子(${ag}歳)=${childIndex(ag)}`).join(', ')}→合計${s}`,`他方親の基礎収入: ${fmtMan(bO)}${bO>a?' (→補正'+fmtMan(bU)+')':''}`,`子の生活費: ${fmtMan(a)}×${s}÷(100+${s})=${fmtMan(c)}`,`養育費: ${fmtMan(c)}×${fmtMan(a)}÷(${fmtMan(a)}+${fmtMan(bU)})=${fmtMan(amt)}`];
+  return{amount:amt,steps,childSum:s};
+}
+
+function D(text){return `<div class="bk-desc">${text}</div>`;}
+
+function calcKonin(){
+  const obSal=nv('k-ob-salary'),eeSal=nv('k-ee-salary');
+  if(obSal===null)return showErr('k-result','義務者の収入を入力してください。');
+  if(eeSal===null)return showErr('k-result','権利者の収入を入力してください。');
+  const ob=calcBaseIncome(v('k-ob-type'),obSal,nv('k-ob-business'),nv('k-ob-insurance'));
+  const ee=calcBaseIncome(v('k-ee-type'),eeSal,nv('k-ee-business'),nv('k-ee-insurance'));
+  const a=ob.baseIncome,b=ee.baseIncome;
+  const otherCS=calcOtherCS(a,nv('k-other-parent-income'),getOtherAges('k'));
+  const ap=a-otherCS.amount;
+  const ages=getChildAges('k');const cs=ages.reduce((t,ag)=>t+childIndex(ag),0);
+  const ei=100+cs,oi=100;const ann=(ap+b)*ei/(ei+oi)-b;const mon=ann/12;
+  let otherHtml='';
+  if(otherCS.amount>0){otherHtml=`<div class="bk-row" style="margin-top:6px;background:#f5f0ff;padding:5px 8px;border-radius:5px"><span class="bk-key">他の子への養育費（控除額）</span><span class="bk-val" style="color:#7c3aed">−${fmtMan(otherCS.amount)}</span></div>${D('この金額を義務者の基礎収入から差し引いてから計算します。')}<div class="bk-formula">${otherCS.steps.join('<br>')}</div><div class="bk-row" style="margin-top:4px"><span class="bk-key">調整後の義務者基礎収入（a'）</span><span class="bk-val">${fmtMan(ap)}</span></div>${D('他の子への養育費を差し引いた後の、実際の計算に使う義務者の基礎収入です。')}`;}
+  const fml=`<div class="formula-header"><div class="fh-title">婚姻費用の計算式（標準算定方式）</div><div class="fh-eq">婚姻費用（年額）＝ (a' + b) × 権利者側指数 ÷ (権利者側指数 + 義務者側指数) − b</div><div class="fh-vars">a' ＝ 義務者の基礎収入（他の子の養育費控除後）／ b ＝ 権利者の基礎収入<br>権利者側指数 ＝ 100（権利者本人） ＋ 子の指数合計 ／ 義務者側指数 ＝ 100（義務者のみ）</div></div>`;
+  const html=`<div class="result-box ${mon<0?'warning':''}"><div class="result-label">月額婚姻費用（目安）</div><div class="result-amount">${mon<0?'0円':fmtEn(mon)}</div><div class="result-sub">年額：${mon<0?'0円':fmtEn(ann)}${mon<0?'<br>※権利者の収入が高いため婚姻費用は発生しません':''}</div></div>${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。収入が高いほど控除率が上がります。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}</div>${otherHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div>${D('各子どもの生活費を数値化したものです。大人を100として、0〜14歳は62、15〜19歳は85として計算します。複数の子がいる場合は合計します。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}<div class="bk-row" style="margin-top:4px"><span class="bk-key">権利者側の指数合計</span><span class="bk-val">100（権利者）＋${cs}（子）＝${ei}</span></div>${D('権利者自身（大人=100）と子どもたちの指数を合算した数値です。権利者と子どもが生活するために必要な費用の規模を表しています。')}<div class="bk-row"><span class="bk-key">義務者側の指数</span><span class="bk-val">${oi}（義務者本人のみ）</span></div>${D('義務者は子どもと別居しているため、本人分（大人=100）のみです。')}<div class="bk-row" style="margin-top:6px"><span class="bk-key">婚姻費用（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D('義務者と権利者の基礎収入を合わせた生活費総額を、それぞれの指数に応じて按分します。権利者側（子ども含む）に割り当てられた分から、権利者自身の基礎収入を差し引いた差額が、義務者が支払うべき婚姻費用です。')}<div class="bk-formula">(a'+b)×権利者側指数÷(権利者側指数+義務者側指数)−b<br>(${fmtMan(ap)}+${fmtMan(b)})×${ei}÷(${ei}+${oi})−${fmtMan(b)}<br>=${fmtMan((ap+b)*ei/(ei+oi))}−${fmtMan(b)}=${fmtMan(ann)}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
+  const el=document.getElementById('k-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function calcYouiku(){
+  const obSal=nv('y-ob-salary');if(obSal===null)return showErr('y-result','義務者の収入を入力してください。');
+  const ages=getChildAges('y');if(!ages.length)return showErr('y-result','子どもの年齢を1人以上入力してください。');
+  const ob=calcBaseIncome(v('y-ob-type'),obSal,nv('y-ob-business'),nv('y-ob-insurance'));
+  const ee=calcBaseIncome(v('y-ee-type'),nv('y-ee-salary')||0,nv('y-ee-business'),nv('y-ee-insurance'));
+  const a=ob.baseIncome;let b=ee.baseIncome;const corr=b>a;const bOrig=b;if(corr)b=a;
+  const otherCS=calcOtherCS(a,nv('y-other-parent-income'),getOtherAges('y'));
+  const ap=a-otherCS.amount;
+  const cs=ages.reduce((t,ag)=>t+childIndex(ag),0);
+  const c=ap*cs/(100+cs);const ann=c*ap/(ap+b);const mon=ann/12;
+  let otherHtml='';
+  if(otherCS.amount>0){otherHtml=`<div class="bk-row" style="margin-top:6px;background:#f5f0ff;padding:5px 8px;border-radius:5px"><span class="bk-key">他の子への養育費（控除額）</span><span class="bk-val" style="color:#7c3aed">−${fmtMan(otherCS.amount)}</span></div>${D('この金額を義務者の基礎収入から差し引いてから計算します。')}<div class="bk-formula">${otherCS.steps.join('<br>')}</div><div class="bk-row" style="margin-top:4px"><span class="bk-key">調整後の義務者基礎収入（a'）</span><span class="bk-val">${fmtMan(ap)}</span></div>${D('他の子への養育費を差し引いた後の、実際の計算に使う義務者の基礎収入です。')}`;}
+  const fml=`<div class="formula-header"><div class="fh-title">養育費の計算式（標準算定方式）</div><div class="fh-eq">① 子の生活費 c ＝ a' × 子の指数合計 ÷ (100 + 子の指数合計)</div><div class="fh-eq">② 養育費（年額）＝ c × a' ÷ (a' + b)</div><div class="fh-vars">a' ＝ 義務者の基礎収入（他の子の養育費控除後）／ b ＝ 権利者の基礎収入<br>子の指数合計 ＝ 各子どもの生活費指数の合計（0〜14歳=62、15〜19歳=85）</div></div>`;
+  const html=`<div class="result-box"><div class="result-label">月額養育費（目安）</div><div class="result-amount">${fmtEn(mon)}</div><div class="result-sub">年額：${fmtEn(ann)}</div></div>${corr?`<div class="note"><span class="note-icon">⚠️</span>権利者の基礎収入(${fmtMan(bOrig)})が義務者を上回るため、b=${fmtMan(a)}として計算しています。</div>`:''} ${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}${corr?'<br>→補正後: '+fmtMan(b):''}</div>${otherHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div>${D('各子どもの年齢に応じた生活費の指数を合計します。0〜14歳は62、15〜19歳は85です。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の生活費（c）</span><span class="bk-val">${fmtMan(c)}</span></div>${D('義務者・権利者双方の生活費の中から、子どもに必要な生活費の総額を取り出した金額です。義務者の基礎収入に子の指数の比率を掛けて算出します。')}<div class="bk-formula">a'×子の指数÷(100+子の指数)<br>${fmtMan(ap)}×${cs}÷(100+${cs})=${fmtMan(c)}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">養育費（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D('子の生活費（c）を、義務者と権利者の基礎収入の比率で按分した結果が、義務者が支払うべき養育費です。収入の多い義務者がより多く負担する仕組みです。')}<div class="bk-formula">c×a'÷(a'+b)<br>${fmtMan(c)}×${fmtMan(ap)}÷(${fmtMan(ap)}+${fmtMan(b)})=${fmtMan(ann)}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
+  const el=document.getElementById('y-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function calcZaisan(){
+  let reAssets=0,reDebts=0;
+  document.querySelectorAll('.z-re-card').forEach(row=>{
+    const val=Number(row.querySelector('.z-re-val').value)||0;
+    const loan=Number(row.querySelector('.z-re-loan').value)||0;
+    const net=val-loan;
+    if(net>=0)reAssets+=net; else reDebts+=Math.abs(net);
+  });
+  let otherAssets=0;document.querySelectorAll('.z-asset-val').forEach(el=>{otherAssets+=Number(el.value)||0;});
+  let otherDebts=0;document.querySelectorAll('.z-debt-val').forEach(el=>{otherDebts+=Number(el.value)||0;});
+  const totalAssets=reAssets+otherAssets;const totalDebts=reDebts+otherDebts;
+  const sepA=nv('z-sep-a')||0,sepB=nv('z-sep-b')||0;
+  const ratioA=Number(v('z-ratio-a'))||50,ratioB=Number(v('z-ratio-b'))||50;
+  const holdA=nv('z-hold-a')||0;
+  if(totalAssets===0&&totalDebts===0)return showErr('z-result','財産または負債を入力してください。');
+  const net=totalAssets-totalDebts-sepA-sepB;
+  const shouldA=net*ratioA/100,shouldB=net*ratioB/100;
+  const diff=holdA-shouldA;
+  let nenkinHtml='';
+  const years=nv('z-nenkin-years'),ratioN=(Number(v('z-nenkin-ratio'))||50)/100;
+  const aMon=nv('z-nenkin-a')||0,bMon=nv('z-nenkin-b')||0;
+  if(years&&(aMon||bMon)){
+    const aTotal=aMon*12*years,bTotal=bMon*12*years,combined=aTotal+bTotal;
+    const newA=combined*(1-ratioN)/(12*years),newB=combined*ratioN/(12*years);
+    nenkinHtml=`<div class="breakdown"><div class="breakdown-title">年金分割の概算（参考値）</div><div class="bk-row"><span class="bk-key">対象期間の標準報酬総額（ご自身）</span><span class="bk-val">${fmtMan(aTotal)}</span></div>${D('平均標準報酬月額×12ヶ月×婚姻年数で求めます。婚姻期間中に厚生年金の対象となった報酬の総額です。')}<div class="bk-row"><span class="bk-key">対象期間の標準報酬総額（相手方）</span><span class="bk-val">${fmtMan(bTotal)}</span></div><div class="bk-row"><span class="bk-key">双方の合計</span><span class="bk-val">${fmtMan(combined)}</span></div>${D('二人分の標準報酬総額を合算します。この合計額を按分割合で分け直します。')}<div class="bk-row" style="margin-top:6px"><span class="bk-key">按分後のご自身の標準報酬月額相当</span><span class="bk-val">${fmtMan(newA)}</span></div><div class="bk-row"><span class="bk-key">按分後の相手方の標準報酬月額相当</span><span class="bk-val">${fmtMan(newB)}</span></div>${D('合算額を按分割合で振り分け、月額に換算した参考値です。実際の年金額は年金事務所にご確認ください。')}<div class="bk-formula">按分割合 ${Math.round(ratioN*100)}%（権利者側取得分）<br>ご自身: ${fmtMan(combined)}×${Math.round((1-ratioN)*100)}%÷(12×${years}年)=${fmtMan(newA)}/月<br>相手方: ${fmtMan(combined)}×${Math.round(ratioN*100)}%÷(12×${years}年)=${fmtMan(newB)}/月</div><div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>この計算は概算であり、実際の手続きには年金事務所への照会・請求が必要です。</div></div>`;
   }
+  const html=`<div class="result-box"><div class="result-label">財産の精算額（${diff>0?'ご自身→相手方':'相手方→ご自身'}）</div><div class="result-amount">${fmtEn(Math.abs(diff))}</div><div class="result-sub">${diff>0?'ご自身から相手方へ':'相手方からご自身へ'} ${fmtMan(Math.abs(diff))} の支払いが必要です</div></div><div class="breakdown"><div class="breakdown-title">財産分与計算内訳</div>${reAssets>0?`<div class="bk-row"><span class="bk-key">不動産の純資産合計</span><span class="bk-val">${fmtMan(reAssets)}</span></div>${D('各不動産の現在価値（査定額）からローン残高を差し引いた、実質的な資産価値の合計です。')}`:''} ${reDebts>0?`<div class="bk-row"><span class="bk-key">不動産のオーバーローン合計</span><span class="bk-val" style="color:var(--danger)">−${fmtMan(reDebts)}</span></div>${D('査定額よりローン残高が多い不動産（オーバーローン）の超過額の合計です。売却しても借金が残るため、資産ではなく負債として計算します。')}`:''}<div class="bk-row"><span class="bk-key">その他の共有財産（不動産以外）</span><span class="bk-val">${fmtMan(otherAssets)}</span></div>${D('婚姻中に二人で形成した預貯金・投資・退職金・車などの合計です。どちらの名義であっても、婚姻中に形成された財産は原則として共有財産です。')}<div class="bk-row"><span class="bk-key">その他の共同の負債</span><span class="bk-val" style="color:var(--danger)">−${fmtMan(otherDebts)}</span></div>${D('不動産ローン以外で、婚姻中に共同で負担した借金（カーローン・教育ローンなど）の合計です。')}<div class="bk-row"><span class="bk-key">ご自身の特有財産（除外）</span><span class="bk-val" style="color:var(--text-muted)">−${fmtMan(sepA)}</span></div><div class="bk-row"><span class="bk-key">相手方の特有財産（除外）</span><span class="bk-val" style="color:var(--text-muted)">−${fmtMan(sepB)}</span></div>${D('婚姻前から持っていた財産や、相続・贈与で得た財産は二人で築いたものではないため、分与の対象外として差し引きます。')}<div class="bk-row" style="padding-top:8px;border-top:2px solid var(--border)"><span class="bk-key" style="font-weight:700;color:var(--primary)">分与対象の純財産</span><span class="bk-val" style="color:var(--primary);font-size:15px">${fmtMan(net)}</span></div>${D('これが二人で実際に分け合う財産の総額です。共有財産から共同の負債と特有財産をすべて差し引いた金額です。')}<div class="bk-row" style="margin-top:8px"><span class="bk-key">ご自身が取得すべき金額（${ratioA}%）</span><span class="bk-val">${fmtMan(shouldA)}</span></div>${D(`分与対象の純財産に、取り決めた分与割合（${ratioA}%）を掛けた金額です。これがご自身が本来受け取るべき金額です。`)}<div class="bk-row"><span class="bk-key">相手方が取得すべき金額（${ratioB}%）</span><span class="bk-val">${fmtMan(shouldB)}</span></div><div class="bk-row" style="margin-top:8px"><span class="bk-key">ご自身が現在保有している財産</span><span class="bk-val">${fmtMan(holdA)}</span></div><div class="bk-row"><span class="bk-key">ご自身の過不足</span><span class="bk-val" style="color:${diff>=0?'var(--danger)':'var(--success)'}">${diff>=0?'超過（支払い）: ':'不足（受取り）: '}${fmtMan(Math.abs(diff))}</span></div>${D('現在保有している財産と、取得すべき金額の差額です。超過している場合はその分を相手方に支払い、不足している場合は相手方から受け取ることで精算します。')}</div>${nenkinHtml}`;
+  const el=document.getElementById('z-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 // 遺留分割合（遺産全体に対する）
@@ -170,8 +473,13 @@ function Tab1() {
   const heirs = useMemo(() => calcLegalShares(heirType === 1 ? 0 : Number(heirCount), heirType), [heirType, heirCount]);
   const [irNum, irDen] = iryubunRate(heirType);
 
-  // 遺留分あり対象 role
-  const iryubunRoles = new Set(['spouse', 'child', 'parent']);
+function addProperty(){
+  rc++;const id=rc;
+  const d=document.createElement('div');
+  d.className='re-card z-re-card';d.id=`z-re-${id}`;
+  d.innerHTML=`<div class="re-card-top"><select class="re-type"><option>自宅</option><option>土地</option><option>マンション</option><option>アパート</option><option>その他の不動産</option></select><button class="btn-remove" onclick="rmEl('z-re-${id}')">✕</button></div><div class="form-row" style="margin-bottom:0"><div class="form-group"><label>査定額（万円）</label><div class="input-wrap"><input type="number" placeholder="例：3000" min="0" class="z-re-val" oninput="updReEquity('z-re-${id}')"><span class="unit">万</span></div></div><div class="form-group"><label>ローン残高（万円）</label><div class="input-wrap"><input type="number" placeholder="例：1500" min="0" class="z-re-loan" oninput="updReEquity('z-re-${id}')"><span class="unit">万</span></div></div></div><div class="re-equity-row"><span class="re-equity-label">純資産：</span><span class="re-equity" id="z-re-eq-${id}">─</span></div>`;
+  document.getElementById('z-re-list').appendChild(d);
+}
 
   const results = useMemo(() => {
     return heirs.map(h => {
@@ -183,36 +491,7 @@ function Tab1() {
     });
   }, [heirs, estateYen, irNum, irDen]);
 
-  return (
-    <div>
-      <div className="card">
-        <div className="card-title">入力</div>
-        <div className="form-row">
-          <div className="form-group">
-            <label>遺産総額（万円）</label>
-            <input type="number" min="0" value={estate} onChange={e => setEstate(e.target.value)} placeholder="例: 5000" />
-          </div>
-          <div className="form-group">
-            <label>相続人構成</label>
-            <select value={heirType} onChange={e => { setHeirType(Number(e.target.value)); setHeirCount(2); }}>
-              {Object.entries(heirTypeLabel).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-            </select>
-          </div>
-          {needsCount && (
-            <div className="form-group" style={{ minWidth: 120, maxWidth: 160 }}>
-              <label>{countLabel}</label>
-              <select value={heirCount} onChange={e => setHeirCount(Number(e.target.value))}>
-                {Array.from({ length: maxCount }, (_, i) => i + 1).map(n => (
-                  <option key={n} value={n}>{n}人</option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
-        <div className="section-sub">
-          ※ 民法900条の法定相続分・民法1042条の遺留分を自動計算します
-        </div>
-      </div>
+function addAsset(){ac++;const id=ac;const d=document.createElement('div');d.className='asset-row';d.id=`z-asset-${id}`;d.innerHTML=`<input type="text" placeholder="財産名（例：銀行預金）"><div class="input-wrap"><input type="number" placeholder="金額" min="0" class="z-asset-val"><span class="unit">万</span></div><button class="btn-remove" onclick="rmEl('z-asset-${id}')">✕</button>`;document.getElementById('z-asset-list').appendChild(d);}
 
       {estateYen > 0 && results.length > 0 && (
         <div className="result-section">
