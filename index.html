@@ -103,6 +103,15 @@
     .modal-body table{width:100%;border-collapse:collapse;margin:8px 0}
     .modal-body th,.modal-body td{padding:6px 8px;border:1px solid var(--border);font-size:12px}
     .modal-body th{background:var(--primary-light);color:var(--primary)}
+    .br-table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+    .br-table th{background:#EDE5D8;color:var(--primary);padding:7px 10px;text-align:left;font-weight:700;border-bottom:2px solid #C8A882}
+    .br-table td{padding:7px 10px;border-bottom:1px dashed var(--border);vertical-align:middle}
+    .br-table tr:last-child td{border-bottom:none}
+    .br-table .num{text-align:right;font-weight:700;white-space:nowrap}
+    .br-table .pos{color:var(--success)}.br-table .neg{color:var(--danger)}
+    .br-table tr.breakeven{background:#FFFBEC}
+    .phase-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:4px;vertical-align:middle}
+    .phase-badge.stop{background:#FEF2F2;color:var(--danger);border:1px solid #fca5a5}
   </style>
 </head>
 <body>
@@ -114,6 +123,7 @@
   <button class="tab-btn active" onclick="switchTab('konin',this)">💰 婚姻費用</button>
   <button class="tab-btn" onclick="switchTab('youiku',this)">👶 養育費</button>
   <button class="tab-btn" onclick="switchTab('zaisan',this)">🏠 財産分与</button>
+  <button class="tab-btn" onclick="switchTab('break',this)">⚖️ 損益分岐点</button>
 </nav>
 <div class="container">
 
@@ -368,6 +378,89 @@
     <button class="btn-calc" onclick="calcZaisan()">計算する</button>
     <div id="z-result" style="display:none;margin-top:14px"></div>
   </div>
+
+  <!-- ===== 損益分岐点 ===== -->
+  <div id="panel-break" class="panel">
+    <div class="info-banner">
+      <p>婚姻費用（離婚前）と養育費＋児童扶養手当（離婚後）を比較し、<strong>経済的に離婚が有利になる損益分岐点</strong>を計算します。</p>
+      <button class="help-btn" onclick="showHelp('break_overview')">詳しく</button>
+    </div>
+
+    <!-- 権利者の収入 -->
+    <div class="card person-obligee">
+      <div class="card-title"><span class="icon icon-obligee"></span>権利者（離婚後に養育費・手当を受け取る側）の年収</div>
+      <div class="form-row" style="margin-bottom:0">
+        <div class="form-group">
+          <label>年収（万円）<button class="help-btn" onclick="showHelp('break_income')">詳しく</button></label>
+          <div class="input-wrap"><input type="number" id="br-income" placeholder="例：200" min="0"><span class="unit">万</span></div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>給与所得者の年収（額面）を入力してください。事業所得者の場合は弁護士等にご相談ください。</div>
+    </div>
+
+    <!-- 子の情報 -->
+    <div class="card">
+      <div class="card-title"><span class="icon icon-child">子</span>子の情報</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>子の人数（扶養人数）</label>
+          <select id="br-child-count">
+            <option value="1">1人</option>
+            <option value="2">2人</option>
+            <option value="3">3人</option>
+            <option value="4">4人</option>
+            <option value="5">5人</option>
+          </select>
+        </div>
+      </div>
+      <div class="sec-title">末子（一番下の子）の誕生年月</div>
+      <div class="form-row" style="margin-bottom:0">
+        <div class="form-group">
+          <label>誕生年（西暦4桁）</label>
+          <div class="input-wrap"><input type="number" id="br-birth-year" placeholder="例：2018" min="2000" max="2030"><span class="unit">年</span></div>
+        </div>
+        <div class="form-group">
+          <label>誕生月</label>
+          <select id="br-birth-month">
+            <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option>
+            <option value="4">4月</option><option value="5">5月</option><option value="6">6月</option>
+            <option value="7">7月</option><option value="8">8月</option><option value="9">9月</option>
+            <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+          </select>
+        </div>
+      </div>
+      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>末子が18歳になる年度末（3月31日）まで児童扶養手当を受給できます。子が1人の場合はその子の誕生年月を入力してください。</div>
+    </div>
+
+    <!-- 月額・終期 -->
+    <div class="card">
+      <div class="card-title"><span class="icon icon-obligor"></span>婚姻費用・養育費の月額</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>婚姻費用（月額・万円）<button class="help-btn" onclick="showHelp('konin')">詳しく</button></label>
+          <div class="input-wrap"><input type="number" id="br-konin" placeholder="例：10" min="0" step="0.1"><span class="unit">万</span></div>
+        </div>
+        <div class="form-group">
+          <label>養育費（月額・万円）<button class="help-btn" onclick="showHelp('youiku')">詳しく</button></label>
+          <div class="input-wrap"><input type="number" id="br-youiku" placeholder="例：6" min="0" step="0.1"><span class="unit">万</span></div>
+        </div>
+      </div>
+      <div class="form-row" style="margin-bottom:0">
+        <div class="form-group">
+          <label>養育費の支払終期（末子が何歳まで）</label>
+          <select id="br-youiku-end-age">
+            <option value="18">18歳（高校卒業）</option>
+            <option value="20">20歳（成人）</option>
+            <option value="22">22歳（大学卒業）</option>
+          </select>
+        </div>
+      </div>
+      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>婚姻費用・養育費の金額は「婚姻費用」「養育費」タブで計算した金額を参照してください。</div>
+    </div>
+
+    <button class="btn-calc" onclick="calcBreakeven()">損益分岐点を計算する</button>
+    <div id="br-result" style="display:none;margin-top:14px"></div>
+  </div>
 </div>
 
 <!-- モーダル -->
@@ -393,7 +486,9 @@ const HELP={
   nenkin:{title:'年金分割とは',body:`<p><strong>年金分割</strong>とは、婚姻期間中に厚生年金に加入していた場合、その期間の標準報酬記録を離婚時に分割する制度です。</p><h4>合意分割</h4><p>当事者間の合意（または裁判所の決定）により、婚姻期間中の標準報酬記録を按分します。按分割合は最大50%です。</p><h4>3号分割</h4><p>2008年4月以降の期間について、第3号被保険者（主に専業主婦・主夫）であった方は、その期間分の標準報酬の2分の1を自動的に受け取ることができます。</p><div class="help-note">この計算は概算です。実際の分割請求は、離婚後2年以内に年金事務所へ行う必要があります。</div>`},
   separate_property:{title:'特有財産とは',body:`<p><strong>特有財産</strong>とは、財産分与の対象とならない、各自の固有の財産のことです。</p><h4>特有財産の例</h4><ul><li>婚姻前から所有していた預貯金・不動産</li><li>婚姻中に相続によって取得した財産</li><li>婚姻中に贈与を受けた財産</li></ul><div class="help-note">特有財産であることの立証は、主張する側が行う必要があります。</div>`},
   base_income:{title:'基礎収入とは',body:`<p><strong>基礎収入</strong>とは、総収入から税金・社会保険料・職業費等を控除した後の、実際に生活費として使用できる収入の目安となる金額です。</p><h4>算定方法</h4><ul><li><strong>給与所得者</strong>：年収 × 38〜54%（収入が高いほど割合が低下）</li><li><strong>事業所得者</strong>：課税所得 × 48〜61%</li><li><strong>給与＋事業所得</strong>：多い方の所得に換算した上で合計</li></ul>`},
-  ob_child:{title:'義務者と同居する子について',body:`<p>夫婦間の子のうち、義務者（支払う側）と同居している子がいる場合、その子の生活費指数を義務者側の指数に加算します。</p><p>これにより、義務者が養育する子のコストが考慮され、婚姻費用・養育費の金額が調整されます。</p>`}
+  ob_child:{title:'義務者と同居する子について',body:`<p>夫婦間の子のうち、義務者（支払う側）と同居している子がいる場合、その子の生活費指数を義務者側の指数に加算します。</p><p>これにより、義務者が養育する子のコストが考慮され、婚姻費用・養育費の金額が調整されます。</p>`},
+  break_overview:{title:'損益分岐点とは',body:`<p>離婚を検討する際、<strong>経済的な観点から「いつ離婚するのが得か」</strong>を判断するための計算です。</p><h4>比較の仕組み</h4><ul><li><strong>婚姻継続</strong>：毎月、婚姻費用を受け取る</li><li><strong>今すぐ離婚</strong>：毎月、養育費＋児童扶養手当を受け取る</li></ul><p>この差額を月ごとに累積し、累積差額が0を超えた時点が「損益分岐点」です。</p><h4>注意点</h4><ul><li>児童扶養手当は末子が18歳年度末（3月31日）を迎えると支給が終了します</li><li>養育費は合意した終期（18歳・20歳・22歳等）で終了します</li><li>経済的判断だけでなく、精神的・家庭的事情も重要です</li></ul><div class="help-note">この計算は概算です。具体的な判断は弁護士にご相談ください。</div>`},
+  break_income:{title:'児童扶養手当と収入について',body:`<p>児童扶養手当は、<strong>受け取る側（権利者）の前年の所得</strong>に基づいて支給額が決まります。</p><h4>所得の計算方法</h4><ol><li>年収から給与所得控除を引いて「給与所得」を算出</li><li>給与所得に養育費年額×80%を加算し、10万円＋8万円（社会保険料相当）を控除して「所得額」を算出</li><li>所得額と限度額を比較して支給区分を判定</li></ol><h4>所得制限限度額（2026年度）</h4><table><tr><th>子の人数</th><th>全部支給限度額</th><th>一部支給限度額</th></tr><tr><td>1人</td><td>107万円</td><td>246万円</td></tr><tr><td>2人</td><td>145万円</td><td>284万円</td></tr><tr><td>3人</td><td>183万円</td><td>322万円</td></tr></table>`}
 };
 
 function getRate(income,table){for(const[max,rate]of table){if(income<=max)return rate;}return table[table.length-1][1];}
@@ -723,6 +818,242 @@ function closeModal(){document.getElementById('help-modal').classList.remove('op
 function v(id){const el=document.getElementById(id);return el?el.value:null;}
 function nv(id){const el=document.getElementById(id);return el&&el.value!==''?Number(el.value):null;}
 function showErr(id,msg){const el=document.getElementById(id);el.innerHTML=`<div class="err-msg">⚠ ${msg}</div>`;el.style.display='block';}
+
+// ─── 損益分岐点 ──────────────────────────────────────────────
+
+// STEP 1: 給与所得
+function brKyuyoShotoku(income){
+  if(income<=190)return Math.max(0,income-65);
+  if(income<=360)return income-(income*0.30+8);
+  if(income<=660)return income-(income*0.20+44);
+  if(income<=850)return income-(income*0.10+110);
+  return income-195;
+}
+
+// STEP 2: 児童扶養手当上の所得額
+function brJidoShotoku(kyuyoShotoku,youikuNen){
+  // 給与所得 + 養育費年額×80% - 10万（給与控除）- 8万（社保）
+  return kyuyoShotoku + youikuNen*0.8 - 10 - 8;
+}
+
+// STEP 3: 所得制限限度額
+function brJidoLimits(n){
+  const base=[{full:107,partial:246},{full:145,partial:284},{full:183,partial:322},{full:221,partial:360}];
+  if(n<1)n=1;
+  if(n<=4)return base[n-1];
+  const b=base[3];return{full:b.full+(n-4)*38,partial:b.partial+(n-4)*38};
+}
+
+// STEP 4: 月額計算
+function brJidoAmount(shotoku,childCount){
+  const lim=brJidoLimits(childCount);
+  if(shotoku>=lim.partial)return{kyu:'none',amount:0,lim};
+  if(shotoku<lim.full){
+    const amt=48050+Math.max(0,childCount-1)*11350;
+    return{kyu:'full',amount:amt,lim};
+  }
+  // 一部支給: 差額は円単位で計算
+  const diff_en=(shotoku-lim.full)*10000;
+  const first=Math.round((48040-diff_en*0.0264029)/10)*10;
+  let total=Math.max(0,first);
+  for(let i=1;i<childCount;i++){
+    const add=Math.round((11340-diff_en*0.0040719)/10)*10;
+    total+=Math.max(0,add);
+  }
+  return{kyu:'partial',amount:Math.max(0,total),lim};
+}
+
+// STEP 5: 末子18歳年度末の年月
+function brJidoEndYM(birthYear,birthMonth){
+  const turn18Year=birthYear+18;
+  // 18歳に達した日以後の最初の3月31日
+  const endYear=birthMonth<=3?turn18Year:turn18Year+1;
+  return{year:endYear,month:3};
+}
+
+// 養育費終了年月
+function brYouikuEndYM(birthYear,birthMonth,endAge){
+  return{year:birthYear+endAge,month:birthMonth};
+}
+
+// 年月を通し月番号に変換
+function toMN(y,m){return y*12+m;}
+
+function calcBreakeven(){
+  const income=nv('br-income');
+  if(!income)return showErr('br-result','権利者の年収を入力してください。');
+  const koninMan=nv('br-konin')||0;
+  const youikuMan=nv('br-youiku')||0;
+  const childCount=parseInt(v('br-child-count'))||1;
+  const birthYear=parseInt(v('br-birth-year'))||0;
+  const birthMonth=parseInt(v('br-birth-month'))||1;
+  const endAge=parseInt(v('br-youiku-end-age'))||18;
+
+  if(!birthYear||birthYear<1990||birthYear>2030)
+    return showErr('br-result','末子の誕生年（西暦4桁）を正しく入力してください。');
+
+  const today=new Date();
+  const cy=today.getFullYear(),cm=today.getMonth()+1;
+
+  // STEP 1〜2
+  const kyuyoShotoku=brKyuyoShotoku(income);
+  const youikuNen=youikuMan*12; // 万円/年
+  const jidoShotoku=brJidoShotoku(kyuyoShotoku,youikuNen);
+
+  // STEP 4: 現在の月額
+  const jr=brJidoAmount(jidoShotoku,childCount);
+
+  // 終了年月
+  const jidoEndYM=brJidoEndYM(birthYear,birthMonth);
+  const youikuEndYM=brYouikuEndYM(birthYear,birthMonth,endAge);
+
+  const nowMN=toMN(cy,cm);
+  const jidoEndMN=toMN(jidoEndYM.year,jidoEndYM.month);
+  const youikuEndMN=toMN(youikuEndYM.year,youikuEndYM.month);
+
+  const totalMonths=youikuEndMN-nowMN;
+  if(totalMonths<=0)return showErr('br-result','末子の養育費終期がすでに過ぎています。誕生年月・終期を確認してください。');
+
+  const konin_en=koninMan*10000;
+  const youiku_en=youikuMan*10000;
+  const jido_en=jr.amount;
+  const divorce_total=youiku_en+jido_en;
+  const monthly_diff=divorce_total-konin_en;
+
+  // STEP 7: 年単位累積
+  const yearRows=[];
+  let cumTotal=0;
+  let breakEvenYear=null;
+  const totalYears=Math.ceil(totalMonths/12);
+
+  for(let yr=1;yr<=totalYears;yr++){
+    const mStart=(yr-1)*12; // 0-indexed from nowMN
+    const mEnd=Math.min(yr*12,totalMonths);
+    let yearSum=0;
+    for(let m=mStart;m<mEnd;m++){
+      const mn=nowMN+m;
+      const jidoThisMonth=mn<=jidoEndMN?jido_en:0;
+      const youikuThisMonth=mn<=youikuEndMN?youiku_en:0;
+      const diff=(youikuThisMonth+jidoThisMonth)-konin_en;
+      yearSum+=diff;
+    }
+    const prevCum=cumTotal;
+    cumTotal+=yearSum;
+    const jidoStopped=nowMN+mEnd-1>jidoEndMN;
+    yearRows.push({yr,yearSum,cumTotal,jidoStopped});
+    if(breakEvenYear===null&&prevCum<0&&cumTotal>=0)breakEvenYear=yr;
+    if(breakEvenYear===null&&prevCum===0&&cumTotal>0&&yr===1)breakEvenYear=yr;
+  }
+  // 初月からプラスの場合
+  if(breakEvenYear===null&&yearRows.length>0&&yearRows[0].cumTotal>0)breakEvenYear=1;
+
+  // HTML生成
+  const kyuLabel={full:'全部支給',partial:'一部支給',none:'支給停止'};
+  const kyuColor={full:'var(--success)',partial:'var(--warning)',none:'var(--danger)'};
+  const isDivAdv=monthly_diff>0;
+  const diffSign=monthly_diff>=0?'+':'';
+  const fmtEn=n=>(Math.round(n)).toLocaleString('ja-JP');
+
+  // 判定メッセージ
+  let verdictHtml;
+  if(isDivAdv){
+    verdictHtml=`<div class="result-box" style="margin-bottom:14px"><div class="result-label">月額判定</div><div class="result-amount">今すぐ離婚が有利</div><div class="result-sub">毎月 +${fmtEn(monthly_diff)}円 多く受け取れます（現時点）</div></div>`;
+  }else{
+    verdictHtml=`<div class="result-box warning" style="margin-bottom:14px"><div class="result-label">月額判定</div><div class="result-amount">現時点は婚姻継続が有利</div><div class="result-sub">毎月 ${fmtEn(Math.abs(monthly_diff))}円 少なくなります</div></div>`;
+  }
+
+  // 損益分岐点メッセージ
+  let bepHtml;
+  if(breakEvenYear!==null){
+    bepHtml=`<div style="background:#FFFBEC;border:1.5px solid #F0C070;border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-size:12px;font-weight:700;color:var(--warning);margin-bottom:4px">損益分岐点</div><div style="font-size:22px;font-weight:800;color:var(--warning)">${breakEvenYear}年目</div><div style="font-size:13px;color:#5D3A1A;margin-top:4px">${breakEvenYear}年後（累積差額がプラスに転じる年）以降は、今すぐ離婚した方が経済的に有利になります。</div></div>`;
+  }else if(isDivAdv){
+    bepHtml=`<div style="background:var(--success-light);border:1.5px solid var(--success-border);border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-size:22px;font-weight:800;color:var(--success)">即時から有利</div><div style="font-size:13px;color:#2D5E3A;margin-top:4px">毎月の差額がプラスのため、今すぐ離婚した方が経済的に有利です。</div></div>`;
+  }else{
+    bepHtml=`<div style="background:var(--danger-light);border:1.5px solid #fca5a5;border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-size:22px;font-weight:800;color:var(--danger)">損益分岐点なし</div><div style="font-size:13px;color:var(--danger);margin-top:4px">養育費終期（末子${endAge}歳）まで婚姻継続が経済的に有利です。</div></div>`;
+  }
+
+  // 所得計算内訳
+  const incomeDeduct=income-kyuyoShotoku;
+  const breakdown1=`
+    <div class="breakdown">
+      <div class="breakdown-title">STEP 1〜3 児童扶養手当の所得判定</div>
+      <div class="bk-row"><span class="bk-key">権利者の年収</span><span class="bk-val">${income}万円</span></div>
+      <div class="bk-desc">給与所得控除を差し引いて「給与所得」を算出します。</div>
+      <div class="bk-formula">給与所得 ＝ 年収（${income}万）− 給与所得控除（${fmtMan(incomeDeduct)}）＝ ${fmtMan(kyuyoShotoku)}</div>
+      <div class="bk-row"><span class="bk-key">給与所得</span><span class="bk-val">${fmtMan(kyuyoShotoku)}</span></div>
+      <div class="bk-desc">養育費の年間合計×80%を加え、10万円（給与所得者控除）と8万円（社会保険料相当）を差し引いて所得額を算出します。</div>
+      <div class="bk-formula">所得額 ＝ 給与所得（${fmtMan(kyuyoShotoku)}）＋ 養育費年額×80%（${fmtMan(youikuNen*0.8)}）− 18万円 ＝ ${fmtMan(jidoShotoku)}</div>
+      <div class="bk-row"><span class="bk-key">養育費年額×80%</span><span class="bk-val">＋${fmtMan(youikuNen*0.8)}</span></div>
+      <div class="bk-row"><span class="bk-key">給与・社保控除（10万＋8万）</span><span class="bk-val">−18万円</span></div>
+      <div class="bk-row" style="border-top:1.5px solid var(--border);padding-top:8px;margin-top:4px"><span class="bk-key" style="font-weight:700">児童扶養手当上の所得額</span><span class="bk-val" style="font-size:15px">${fmtMan(jidoShotoku)}</span></div>
+      <div class="bk-desc">子${childCount}人の場合の所得制限限度額：全部支給 ${jr.lim.full}万円 ／ 一部支給 ${jr.lim.partial}万円${jidoShotoku<jr.lim.full?'<br>→ 所得額が全部支給限度額未満 ✅ <strong>全部支給</strong>':jidoShotoku<jr.lim.partial?'<br>→ 所得額が一部支給限度額未満 ⚠️ <strong>一部支給</strong>':'<br>→ 所得額が一部支給限度額以上 ❌ <strong>支給停止</strong>'}</div>
+    </div>`;
+
+  // STEP 4 月額内訳
+  const breakdown2=`
+    <div class="breakdown">
+      <div class="breakdown-title">STEP 4 児童扶養手当の月額</div>
+      <div class="bk-row"><span class="bk-key">支給区分</span><span class="bk-val" style="color:${kyuColor[jr.kyu]};font-weight:700">${kyuLabel[jr.kyu]}</span></div>
+      <div class="bk-row"><span class="bk-key">児童扶養手当（月額）</span><span class="bk-val">${fmtEn(jr.amount)}円</span></div>
+      <div class="bk-desc">${jr.kyu==='full'?('全部支給：1人目48,050円'+(childCount>1?' + '+(childCount-1)+'人目以降×11,350円':'')):jr.kyu==='partial'?('一部支給：1人目 48,040 −（所得額'+fmtMan(jidoShotoku)+'−限度額'+jr.lim.full+'万円）×0.0264029 を10円単位に丸めた金額'):'所得額が一部支給限度額以上のため支給停止'}</div>
+      <div class="bk-row"><span class="bk-key" style="font-size:11px">支給終了予定</span><span class="bk-val" style="font-size:12px">末子18歳年度末：${jidoEndYM.year}年3月</span></div>
+    </div>`;
+
+  // STEP 6 月額比較
+  const breakdown3=`
+    <div class="breakdown">
+      <div class="breakdown-title">STEP 6 月額比較</div>
+      <div class="bk-row"><span class="bk-key">婚姻継続の場合（婚姻費用）</span><span class="bk-val">${fmtEn(konin_en)}円／月</span></div>
+      <div class="bk-row"><span class="bk-key">離婚した場合：養育費</span><span class="bk-val">${fmtEn(youiku_en)}円</span></div>
+      <div class="bk-row"><span class="bk-key">離婚した場合：児童扶養手当</span><span class="bk-val">${fmtEn(jido_en)}円</span></div>
+      <div class="bk-row"><span class="bk-key" style="font-weight:700">離婚した場合の合計</span><span class="bk-val" style="font-weight:700">${fmtEn(divorce_total)}円／月</span></div>
+      <div style="border-top:2px solid var(--border);margin-top:6px;padding-top:10px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:700;font-size:13px;color:${isDivAdv?'var(--success)':'var(--danger)'}">月額差額（離婚合計 − 婚姻費用）</span>
+        <span style="font-weight:800;font-size:18px;color:${isDivAdv?'var(--success)':'var(--danger)'}">${diffSign}${fmtEn(monthly_diff)}円</span>
+      </div>
+      <div class="bk-desc">${isDivAdv?`✅ 毎月 ${fmtEn(Math.abs(monthly_diff))}円 多く受け取れます（養育費＋手当が婚姻費用より多い）`:`⚠️ 毎月 ${fmtEn(Math.abs(monthly_diff))}円 少なくなります（養育費＋手当が婚姻費用より少ない）`}</div>
+    </div>`;
+
+  // STEP 7 累積表
+  const tableRows=yearRows.map(({yr,yearSum,cumTotal,jidoStopped})=>{
+    const isBEP=breakEvenYear===yr;
+    const cumClass=cumTotal>=0?'pos':'neg';
+    const yearClass=yearSum>=0?'pos':'neg';
+    const cs=cumTotal>=0?'+':'';const ys=yearSum>=0?'+':'';
+    const jBadge=jidoStopped?'<span class="phase-badge stop">手当停止後</span>':'';
+    return `<tr${isBEP?' class="breakeven"':''}>
+      <td style="font-weight:600">${yr}年目${jBadge}${isBEP?'<span class="phase-badge" style="background:#FFFBEC;color:var(--warning);border:1px solid #F0C070">← 損益分岐点</span>':''}</td>
+      <td class="num ${yearClass}">${ys}${fmtEn(Math.round(yearSum))}円</td>
+      <td class="num ${cumClass}">${cs}${fmtEn(Math.round(cumTotal))}円</td>
+    </tr>`;
+  }).join('');
+
+  const breakdown4=`
+    <div class="breakdown">
+      <div class="breakdown-title">STEP 7 累積差額（年単位）</div>
+      <div class="bk-desc">1年目から末子の養育費終期（${youikuEndYM.year}年${youikuEndYM.month}月・末子${endAge}歳）までの累積差額です。プラスは「その時点までの合計で離婚が有利」、マイナスは「婚姻継続が有利」を意味します。</div>
+      <div style="overflow-x:auto"><table class="br-table">
+        <thead><tr><th>期間</th><th style="text-align:right">その年の差額</th><th style="text-align:right">累積差額</th></tr></thead>
+        <tbody>${tableRows}</tbody>
+      </table></div>
+      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>児童扶養手当は${jidoEndYM.year}年3月以降0円。養育費は${youikuEndYM.year}年${youikuEndYM.month}月以降0円として計算。</div>
+    </div>`;
+
+  // 注記
+  const cautions=`
+    <div class="note" style="flex-direction:column;gap:6px;line-height:1.8">
+      <div style="font-weight:700">⚠️ 注意事項（必ずお読みください）</div>
+      <div>・同居の祖父母等の<strong>扶養義務者の所得が高い場合は支給停止になる可能性</strong>があります。</div>
+      <div>・<strong>事実婚や公的年金の受給がある場合も支給停止</strong>になる可能性があります。</div>
+      <div>・金額は<strong>2026年4月時点のもの</strong>であり、毎年4月に物価スライドで改定されます。</div>
+      <div>・この計算は概算であり、具体的な事案については弁護士等の専門家にご相談ください。</div>
+    </div>`;
+
+  const el=document.getElementById('br-result');
+  el.innerHTML=verdictHtml+bepHtml+breakdown1+breakdown2+breakdown3+breakdown4+cautions;
+  el.style.display='block';
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
 
 addChild('k');addChild('y');addProperty();addAsset();addDebt();
 </script>
