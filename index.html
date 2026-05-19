@@ -400,36 +400,9 @@
 
     <!-- 子の情報 -->
     <div class="card">
-      <div class="card-title"><span class="icon icon-child">子</span>子の情報</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>子の人数（扶養人数）</label>
-          <select id="br-child-count">
-            <option value="1">1人</option>
-            <option value="2">2人</option>
-            <option value="3">3人</option>
-            <option value="4">4人</option>
-            <option value="5">5人</option>
-          </select>
-        </div>
-      </div>
-      <div class="sec-title">末子（一番下の子）の誕生年月</div>
-      <div class="form-row" style="margin-bottom:0">
-        <div class="form-group">
-          <label>誕生年（西暦4桁）</label>
-          <div class="input-wrap"><input type="number" id="br-birth-year" placeholder="例：2018" min="2000" max="2030"><span class="unit">年</span></div>
-        </div>
-        <div class="form-group">
-          <label>誕生月</label>
-          <select id="br-birth-month">
-            <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option>
-            <option value="4">4月</option><option value="5">5月</option><option value="6">6月</option>
-            <option value="7">7月</option><option value="8">8月</option><option value="9">9月</option>
-            <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
-          </select>
-        </div>
-      </div>
-      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>末子が18歳になる年度末（3月31日）まで児童扶養手当を受給できます。子が1人の場合はその子の誕生年月を入力してください。</div>
+      <div class="card-title"><span class="icon icon-child">子</span>子の情報（誕生年月）</div>
+      <div class="note" style="margin-bottom:10px"><span class="note-icon">ℹ️</span>婚姻費用・養育費タブで子を追加すると、各子の欄がここに自動で表示されます。それぞれの誕生年月を入力してください。</div>
+      <div id="br-children-list"></div>
     </div>
 
     <!-- 月額・終期 -->
@@ -759,22 +732,37 @@ function addChild(p){
     d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${tab}-cage-${id}" oninput="updIdx(this,'${tab}-cidx-${id}');syncChildAge('${tab}',${id},this.value)"><span class="unit">歳</span><span class="age-index" id="${tab}-cidx-${id}">─</span><button class="btn-remove" onclick="rmSharedChild(${id})">✕</button>`;
     document.getElementById(`${tab}-children-list`).appendChild(d);
   });
-  updateBrChildCount();
+  addBrChild(id);
 }
+function addBrChild(id){
+  const list=document.getElementById('br-children-list');
+  if(!list)return;
+  const d=document.createElement('div');
+  d.id=`br-child-${id}`;
+  d.style.cssText='margin-bottom:10px;padding:10px 12px;background:#f8f9fa;border-radius:8px;border:1px solid var(--border)';
+  const opts=[1,2,3,4,5,6,7,8,9,10,11,12].map(m=>`<option value="${m}">${m}月</option>`).join('');
+  d.innerHTML=`<div style="font-weight:600;margin-bottom:8px;color:var(--primary)">第${id}子の誕生年月</div>
+    <div class="form-row" style="margin-bottom:0">
+      <div class="form-group">
+        <label>誕生年（西暦）</label>
+        <div class="input-wrap"><input type="number" id="br-year-${id}" placeholder="例：2018" min="2000" max="2040"><span class="unit">年</span></div>
+      </div>
+      <div class="form-group">
+        <label>誕生月</label>
+        <select id="br-month-${id}">${opts}</select>
+      </div>
+    </div>`;
+  list.appendChild(d);
+}
+function rmBrChild(id){rmEl(`br-child-${id}`);}
 function syncChildAge(srcP,id,val){
   if(_syncing)return;_syncing=true;
   const peer=srcP==='k'?'y':'k';
   const peerEl=document.getElementById(`${peer}-cage-${id}`);
   if(peerEl){peerEl.value=val;updIdx(peerEl,`${peer}-cidx-${id}`);}
-  updateBrChildCount();
   _syncing=false;
 }
-function rmSharedChild(id){rmEl(`k-child-${id}`);rmEl(`y-child-${id}`);updateBrChildCount();}
-function updateBrChildCount(){
-  const n=document.querySelectorAll('[id^="k-cage-"]').length;
-  const br=document.getElementById('br-child-count');
-  if(br)br.value=String(Math.min(5,Math.max(1,n)));
-}
+function rmSharedChild(id){rmEl(`k-child-${id}`);rmEl(`y-child-${id}`);rmBrChild(id);}
 
 function addOtherChild(p){oc[p]++;const id=oc[p];const d=document.createElement('div');d.className='child-row';d.id=`${p}-other-${id}`;d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${p}-oage-${id}" oninput="updIdx(this,'${p}-oidx-${id}')"><span class="unit">歳</span><span class="age-index" id="${p}-oidx-${id}">─</span><button class="btn-remove" onclick="rmOther('${p}-other-${id}','${p}')">✕</button>`;document.getElementById(`${p}-other-list`).appendChild(d);document.getElementById(`${p}-other-parent-wrap`).style.display='block';}
 
@@ -917,83 +905,124 @@ function calcBreakeven(){
   if(!income)return showErr('br-result','権利者の年収を入力してください。');
   const koninMan=nv('br-konin')||0;
   const youikuMan=nv('br-youiku')||0;
-  const childCount=parseInt(v('br-child-count'))||1;
-  const birthYear=parseInt(v('br-birth-year'))||0;
-  const birthMonth=parseInt(v('br-birth-month'))||1;
   const endAge=parseInt(v('br-youiku-end-age'))||18;
 
-  if(!birthYear||birthYear<1990||birthYear>2030)
-    return showErr('br-result','末子の誕生年（西暦4桁）を正しく入力してください。');
+  // 各子の誕生年月を収集
+  const brList=document.getElementById('br-children-list');
+  const childEls=brList?brList.querySelectorAll('[id^="br-child-"]'):[];
+  if(!childEls.length)return showErr('br-result','子の誕生年月を入力してください。（婚姻費用・養育費タブで子を追加してください）');
+  const children=[];
+  for(const el of childEls){
+    const cid=el.id.replace('br-child-','');
+    const yr=parseInt(document.getElementById(`br-year-${cid}`)?.value)||0;
+    const mo=parseInt(document.getElementById(`br-month-${cid}`)?.value)||1;
+    if(!yr||yr<1990||yr>2040)
+      return showErr('br-result',`第${cid}子の誕生年（西暦4桁）を正しく入力してください。`);
+    const jidoEndYM=brJidoEndYM(yr,mo);
+    children.push({cid,yr,mo,jidoEndYM,jidoEndMN:toMN(jidoEndYM.year,jidoEndYM.month)});
+  }
+
+  // 末子（最後に追加した子 = 最も若い子）の養育費終期
+  const lastChild=children[children.length-1];
+  const youikuEndYM=brYouikuEndYM(lastChild.yr,lastChild.mo,endAge);
 
   const today=new Date();
   const cy=today.getFullYear(),cm=today.getMonth()+1;
-
-  // STEP 1〜2
-  const kyuyoShotoku=brKyuyoShotoku(income);
-  const youikuNen=youikuMan*12; // 万円/年
-  const jidoShotoku=brJidoShotoku(kyuyoShotoku,youikuNen);
-
-  // STEP 4: 現在の月額
-  const jr=brJidoAmount(jidoShotoku,childCount);
-
-  // 終了年月
-  const jidoEndYM=brJidoEndYM(birthYear,birthMonth);
-  const youikuEndYM=brYouikuEndYM(birthYear,birthMonth,endAge);
-
   const nowMN=toMN(cy,cm);
-  const jidoEndMN=toMN(jidoEndYM.year,jidoEndYM.month);
   const youikuEndMN=toMN(youikuEndYM.year,youikuEndYM.month);
-
   const totalMonths=youikuEndMN-nowMN;
   if(totalMonths<=0)return showErr('br-result','末子の養育費終期がすでに過ぎています。誕生年月・終期を確認してください。');
 
+  // 所得計算（共通）
+  const kyuyoShotoku=brKyuyoShotoku(income);
+  const youikuNen=youikuMan*12;
+  const jidoShotoku=brJidoShotoku(kyuyoShotoku,youikuNen);
+
+  // 子の人数ごとの手当月額をキャッシュ
+  const jidoCache={};
+  function getJidoAmt(n){
+    if(n<=0)return 0;
+    if(jidoCache[n]!==undefined)return jidoCache[n];
+    jidoCache[n]=brJidoAmount(jidoShotoku,n).amount;
+    return jidoCache[n];
+  }
+
+  // 現在の対象子数・手当
+  const activeNow=children.filter(c=>c.jidoEndMN>=nowMN).length;
+  const jrNow=brJidoAmount(jidoShotoku,activeNow>0?activeNow:1);
+  const currentJidoAmt=activeNow>0?jrNow.amount:0;
+
+  // 年月変換
+  function mnToYM(mn){const m=mn%12||12;const y=(mn-m)/12;return{year:y,month:m};}
+
+  // フェーズ変化点（手当の子の数が変わるタイミング）
+  const changeMNSet=new Set([nowMN,youikuEndMN+1]);
+  children.forEach(c=>{if(c.jidoEndMN+1<=youikuEndMN+1)changeMNSet.add(c.jidoEndMN+1);});
+  const sortedChanges=[...changeMNSet].sort((a,b)=>a-b);
+
+  // フェーズ一覧（手当が変わる期間ごと）
+  const phases=[];
+  for(let i=0;i<sortedChanges.length-1;i++){
+    const startMN=sortedChanges[i];
+    const endMN=sortedChanges[i+1]-1;
+    const activeCount=children.filter(c=>c.jidoEndMN>=startMN).length;
+    const jidoAmt=getJidoAmt(activeCount);
+    const jrPhase=brJidoAmount(jidoShotoku,activeCount>0?activeCount:1);
+    const startYM=mnToYM(startMN);
+    const endYM=mnToYM(endMN);
+    // この変化を起こした子（直前フェーズで対象外になった子）
+    const triggerChild=i>0?children.find(c=>c.jidoEndMN===sortedChanges[i]-1):null;
+    phases.push({startMN,endMN,activeCount,jidoAmt,jrPhase,startYM,endYM,triggerChild});
+  }
+
+  // 年単位累積（フェーズ変化を月ごとに処理）
   const konin_en=koninMan*10000;
   const youiku_en=youikuMan*10000;
-  const jido_en=jr.amount;
-  const divorce_total=youiku_en+jido_en;
-  const monthly_diff=divorce_total-konin_en;
-
-  // STEP 7: 年単位累積
   const yearRows=[];
   let cumTotal=0;
   let breakEvenYear=null;
   const totalYears=Math.ceil(totalMonths/12);
 
   for(let yr=1;yr<=totalYears;yr++){
-    const mStart=(yr-1)*12; // 0-indexed from nowMN
-    const mEnd=Math.min(yr*12,totalMonths);
+    const mStart=nowMN+(yr-1)*12;
+    const mEnd=nowMN+Math.min(yr*12,totalMonths)-1;
     let yearSum=0;
-    for(let m=mStart;m<mEnd;m++){
-      const mn=nowMN+m;
-      const jidoThisMonth=mn<=jidoEndMN?jido_en:0;
+    for(let mn=mStart;mn<=mEnd;mn++){
+      const activeCount=children.filter(c=>c.jidoEndMN>=mn).length;
+      const jidoThisMonth=getJidoAmt(activeCount);
       const youikuThisMonth=mn<=youikuEndMN?youiku_en:0;
-      const diff=(youikuThisMonth+jidoThisMonth)-konin_en;
-      yearSum+=diff;
+      yearSum+=(youikuThisMonth+jidoThisMonth)-konin_en;
     }
     const prevCum=cumTotal;
     cumTotal+=yearSum;
-    const jidoStopped=nowMN+mEnd-1>jidoEndMN;
-    yearRows.push({yr,yearSum,cumTotal,jidoStopped});
+    // この年に含まれる手当フェーズ変化（nowMN以降の変化点）
+    const yearPhases=phases.filter(p=>p.triggerChild&&p.startMN>nowMN&&p.startMN>=mStart&&p.startMN<=mEnd+1);
+    yearRows.push({yr,yearSum,cumTotal,yearPhases});
     if(breakEvenYear===null&&prevCum<0&&cumTotal>=0)breakEvenYear=yr;
     if(breakEvenYear===null&&prevCum===0&&cumTotal>0&&yr===1)breakEvenYear=yr;
   }
-  // 初月からプラスの場合
   if(breakEvenYear===null&&yearRows.length>0&&yearRows[0].cumTotal>0)breakEvenYear=1;
 
-  // HTML生成
-  const kyuLabel={full:'全部支給',partial:'一部支給',none:'支給停止'};
-  const kyuColor={full:'var(--success)',partial:'var(--warning)',none:'var(--danger)'};
+  const jido_en=currentJidoAmt;
+  const divorce_total=youiku_en+jido_en;
+  const monthly_diff=divorce_total-konin_en;
   const isDivAdv=monthly_diff>0;
   const diffSign=monthly_diff>=0?'+':'';
   const fmtEn=n=>(Math.round(n)).toLocaleString('ja-JP');
+  const kyuLabel={full:'全部支給',partial:'一部支給',none:'支給停止'};
+  const kyuColor={full:'var(--success)',partial:'var(--warning)',none:'var(--danger)'};
 
-  // 児童扶養手当 金額ボックス
-  const jidoAmtColor=jr.kyu==='none'?'var(--danger)':jr.kyu==='partial'?'var(--warning)':'var(--success)';
-  const jidoResultHtml=`<div class="result-box${jr.kyu==='none'?' warning':''}" style="margin-bottom:14px">
-    <div class="result-label">児童扶養手当（月額）</div>
-    <div class="result-amount" style="color:${jidoAmtColor}">${fmtEn(jr.amount)}円</div>
-    <div class="result-sub" style="color:${jidoAmtColor}">支給区分：<strong>${kyuLabel[jr.kyu]}</strong>${jr.kyu!=='none'?`　支給終了：${jidoEndYM.year}年3月（末子18歳年度末）`:''}</div>
-    ${jr.kyu==='none'?`<div style="font-size:12px;margin-top:6px">所得額（${fmtEn(jidoShotoku*10000/10000)}万円）が一部支給限度額（${jr.lim.partial}万円）を超えているため支給されません</div>`:`<div style="font-size:12px;margin-top:6px">${jr.kyu==='full'?`全額支給：1人目48,050円${childCount>1?` ＋ ${childCount-1}人目以降×11,350円（合計${fmtEn(jr.amount)}円）`:''}`:` 1人目：48,040円から所得に応じて減額（差額×0.0264029を控除）`}</div>`}
+  // 末子の手当終了年月
+  const lastJidoEndMN=Math.max(...children.map(c=>c.jidoEndMN));
+  const lastJidoEndYM=mnToYM(lastJidoEndMN);
+
+  // 児童扶養手当ボックス（現時点）
+  const jidoAmtColor=jrNow.kyu==='none'?'var(--danger)':jrNow.kyu==='partial'?'var(--warning)':'var(--success)';
+  const jidoResultHtml=`<div class="result-box${jrNow.kyu==='none'?' warning':''}" style="margin-bottom:14px">
+    <div class="result-label">児童扶養手当（月額・現時点）</div>
+    <div class="result-amount" style="color:${jidoAmtColor}">${fmtEn(currentJidoAmt)}円</div>
+    <div class="result-sub" style="color:${jidoAmtColor}">支給区分：<strong>${kyuLabel[jrNow.kyu]}</strong>${activeNow>0?`　対象の子：${activeNow}人　手当終了：${lastJidoEndYM.year}年${lastJidoEndYM.month}月（末子18歳年度末）`:''}</div>
+    <div style="font-size:12px;margin-top:6px">${children.map(c=>`第${c.cid}子 〜${c.jidoEndYM.year}年${c.jidoEndYM.month}月`).join('　／　')}</div>
   </div>`;
 
   // 判定メッセージ
@@ -1004,7 +1033,7 @@ function calcBreakeven(){
     verdictHtml=`<div class="result-box warning" style="margin-bottom:14px"><div class="result-label">月額比較（現時点）</div><div class="result-amount">現時点は婚姻継続が有利</div><div class="result-sub">婚姻費用 ${fmtEn(konin_en)}円 → 養育費＋児童扶養手当 ${fmtEn(divorce_total)}円<br>毎月 <strong>${fmtEn(Math.abs(monthly_diff))}円</strong> 少なくなります</div></div>`;
   }
 
-  // 損益分岐点メッセージ
+  // 損益分岐点
   let bepHtml;
   if(breakEvenYear!==null){
     bepHtml=`<div style="background:#FFFBEC;border:1.5px solid #F0C070;border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-size:12px;font-weight:700;color:var(--warning);margin-bottom:4px">損益分岐点</div><div style="font-size:22px;font-weight:800;color:var(--warning)">${breakEvenYear}年目</div><div style="font-size:13px;color:#5D3A1A;margin-top:4px">${breakEvenYear}年後（累積差額がプラスに転じる年）以降は、今すぐ離婚した方が経済的に有利になります。</div></div>`;
@@ -1014,7 +1043,7 @@ function calcBreakeven(){
     bepHtml=`<div style="background:var(--danger-light);border:1.5px solid #fca5a5;border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-size:22px;font-weight:800;color:var(--danger)">損益分岐点なし</div><div style="font-size:13px;color:var(--danger);margin-top:4px">養育費終期（末子${endAge}歳）まで婚姻継続が経済的に有利です。</div></div>`;
   }
 
-  // 所得計算内訳
+  // STEP 1〜3 所得判定
   const incomeDeduct=income-kyuyoShotoku;
   const kyuyoTier=income<=162.5?`年収162.5万円以下：控除額＝55万円`:
     income<=180?`年収162.5〜180万円：控除額＝年収×40%−10万（${(income*0.40-10).toFixed(2)}万）`:
@@ -1034,23 +1063,32 @@ function calcBreakeven(){
       <div class="bk-row"><span class="bk-key">養育費年額×80%</span><span class="bk-val">＋${fmtMan(youikuNen*0.8)}</span></div>
       <div class="bk-row"><span class="bk-key">給与・社保控除（10万＋8万）</span><span class="bk-val">−18万円</span></div>
       <div class="bk-row" style="border-top:1.5px solid var(--border);padding-top:8px;margin-top:4px"><span class="bk-key" style="font-weight:700">児童扶養手当上の所得額</span><span class="bk-val" style="font-size:15px">${fmtMan(jidoShotoku)}</span></div>
-      <div class="bk-desc">子${childCount}人の場合の所得制限限度額：全部支給 ${jr.lim.full}万円 ／ 一部支給 ${jr.lim.partial}万円${jidoShotoku<jr.lim.full?'<br>→ 所得額が全部支給限度額未満 ✅ <strong>全部支給</strong>':jidoShotoku<jr.lim.partial?'<br>→ 所得額が一部支給限度額未満 ⚠️ <strong>一部支給</strong>':'<br>→ 所得額が一部支給限度額以上 ❌ <strong>支給停止</strong>'}</div>
+      <div class="bk-desc">現時点（子${activeNow}人）の所得制限限度額：全部支給 ${jrNow.lim.full}万円 ／ 一部支給 ${jrNow.lim.partial}万円${jidoShotoku<jrNow.lim.full?'<br>→ 所得額が全部支給限度額未満 ✅ <strong>全部支給</strong>':jidoShotoku<jrNow.lim.partial?'<br>→ 所得額が一部支給限度額未満 ⚠️ <strong>一部支給</strong>':'<br>→ 所得額が一部支給限度額以上 ❌ <strong>支給停止</strong>'}</div>
     </div>`;
 
-  // STEP 4 月額内訳
+  // STEP 4 月額内訳（フェーズ別）
+  const phaseRows=phases.map((p,i)=>{
+    const isFirst=(i===0);
+    const changeNote=p.triggerChild?`<span class="phase-badge stop">第${p.triggerChild.cid}子が18歳年度末 → 対象${p.activeCount}人へ</span>`:'';
+    const kyuStr=p.jrPhase.kyu==='full'?`全部支給 ${fmtEn(p.jidoAmt)}円（1人目48,050円${p.activeCount>1?' + '+(p.activeCount-1)+'人目以降×11,350円':''})`:
+      p.jrPhase.kyu==='partial'?`一部支給 ${fmtEn(p.jidoAmt)}円`:`支給停止（0円）`;
+    return `<div class="bk-row${!isFirst?' phase-change-row':''}" style="${!isFirst?'border-top:2px dashed var(--border);padding-top:10px;margin-top:10px':''}">
+      <span class="bk-key">${p.startYM.year}年${p.startYM.month}月 〜 ${p.endYM.year}年${p.endYM.month}月${changeNote}</span>
+      <span class="bk-val" style="color:${p.jidoAmt>0?'var(--success)':'var(--danger)'};white-space:nowrap">${fmtEn(p.jidoAmt)}円／月</span>
+    </div>
+    <div class="bk-desc">${kyuStr}</div>`;
+  }).join('');
+
   const breakdown2=`
     <div class="breakdown">
-      <div class="breakdown-title">STEP 4 児童扶養手当の月額</div>
-      <div class="bk-row"><span class="bk-key">支給区分</span><span class="bk-val" style="color:${kyuColor[jr.kyu]};font-weight:700">${kyuLabel[jr.kyu]}</span></div>
-      <div class="bk-row"><span class="bk-key">児童扶養手当（月額）</span><span class="bk-val">${fmtEn(jr.amount)}円</span></div>
-      <div class="bk-desc">${jr.kyu==='full'?('全部支給：1人目48,050円'+(childCount>1?' + '+(childCount-1)+'人目以降×11,350円':'')):jr.kyu==='partial'?('一部支給：1人目 48,040 −（所得額'+fmtMan(jidoShotoku)+'−限度額'+jr.lim.full+'万円）×0.0264029 を10円単位に丸めた金額'):'所得額が一部支給限度額以上のため支給停止'}</div>
-      <div class="bk-row"><span class="bk-key" style="font-size:11px">支給終了予定</span><span class="bk-val" style="font-size:12px">末子18歳年度末：${jidoEndYM.year}年3月</span></div>
+      <div class="breakdown-title">STEP 4 児童扶養手当の月額（期間別内訳）</div>
+      ${phaseRows}
     </div>`;
 
   // STEP 6 月額比較
   const breakdown3=`
     <div class="breakdown">
-      <div class="breakdown-title">STEP 6 月額比較</div>
+      <div class="breakdown-title">STEP 6 月額比較（現時点）</div>
       <div class="bk-row"><span class="bk-key">婚姻継続の場合（婚姻費用）</span><span class="bk-val">${fmtEn(konin_en)}円／月</span></div>
       <div class="bk-row"><span class="bk-key">離婚した場合：養育費</span><span class="bk-val">${fmtEn(youiku_en)}円</span></div>
       <div class="bk-row"><span class="bk-key">離婚した場合：児童扶養手当</span><span class="bk-val">${fmtEn(jido_en)}円</span></div>
@@ -1062,15 +1100,18 @@ function calcBreakeven(){
       <div class="bk-desc">${isDivAdv?`✅ 毎月 ${fmtEn(Math.abs(monthly_diff))}円 多く受け取れます（養育費＋手当が婚姻費用より多い）`:`⚠️ 毎月 ${fmtEn(Math.abs(monthly_diff))}円 少なくなります（養育費＋手当が婚姻費用より少ない）`}</div>
     </div>`;
 
-  // STEP 7 累積表
-  const tableRows=yearRows.map(({yr,yearSum,cumTotal,jidoStopped})=>{
+  // STEP 7 累積表（フェーズ変化マーカー付き）
+  const tableRows=yearRows.map(({yr,yearSum,cumTotal,yearPhases})=>{
     const isBEP=breakEvenYear===yr;
     const cumClass=cumTotal>=0?'pos':'neg';
     const yearClass=yearSum>=0?'pos':'neg';
     const cs=cumTotal>=0?'+':'';const ys=yearSum>=0?'+':'';
-    const jBadge=jidoStopped?'<span class="phase-badge stop">手当停止後</span>':'';
+    const phBadges=yearPhases.map(p=>{
+      const newAmt=fmtEn(p.jidoAmt);
+      return`<span class="phase-badge stop">第${p.triggerChild.cid}子手当終了（${p.startYM.year}年${p.startYM.month}月〜 ${newAmt}円）</span>`;
+    }).join('');
     return `<tr${isBEP?' class="breakeven"':''}>
-      <td style="font-weight:600">${yr}年目${jBadge}${isBEP?'<span class="phase-badge" style="background:#FFFBEC;color:var(--warning);border:1px solid #F0C070">← 損益分岐点</span>':''}</td>
+      <td style="font-weight:600">${yr}年目${phBadges}${isBEP?'<span class="phase-badge" style="background:#FFFBEC;color:var(--warning);border:1px solid #F0C070">← 損益分岐点</span>':''}</td>
       <td class="num ${yearClass}">${ys}${fmtEn(Math.round(yearSum))}円</td>
       <td class="num ${cumClass}">${cs}${fmtEn(Math.round(cumTotal))}円</td>
     </tr>`;
@@ -1084,10 +1125,9 @@ function calcBreakeven(){
         <thead><tr><th>期間</th><th style="text-align:right">その年の差額</th><th style="text-align:right">累積差額</th></tr></thead>
         <tbody>${tableRows}</tbody>
       </table></div>
-      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>児童扶養手当は${jidoEndYM.year}年3月以降0円。養育費は${youikuEndYM.year}年${youikuEndYM.month}月以降0円として計算。</div>
+      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>${children.map(c=>`第${c.cid}子：${c.jidoEndYM.year}年${c.jidoEndYM.month}月以降手当なし`).join('　')}。養育費は${youikuEndYM.year}年${youikuEndYM.month}月以降0円として計算。</div>
     </div>`;
 
-  // 注記
   const cautions=`
     <div class="note" style="flex-direction:column;gap:6px;line-height:1.8">
       <div style="font-weight:700">⚠️ 注意事項（必ずお読みください）</div>
