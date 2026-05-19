@@ -963,6 +963,15 @@ function calcBreakeven(){
   const diffSign=monthly_diff>=0?'+':'';
   const fmtEn=n=>(Math.round(n)).toLocaleString('ja-JP');
 
+  // 児童扶養手当 金額ボックス
+  const jidoAmtColor=jr.kyu==='none'?'var(--danger)':jr.kyu==='partial'?'var(--warning)':'var(--success)';
+  const jidoResultHtml=`<div class="result-box${jr.kyu==='none'?' warning':''}" style="margin-bottom:14px">
+    <div class="result-label">児童扶養手当（月額）</div>
+    <div class="result-amount" style="color:${jidoAmtColor}">${fmtEn(jr.amount)}円</div>
+    <div class="result-sub" style="color:${jidoAmtColor}">支給区分：<strong>${kyuLabel[jr.kyu]}</strong>${jr.kyu!=='none'?`　支給終了：${jidoEndYM.year}年3月（末子18歳年度末）`:''}</div>
+    ${jr.kyu==='none'?`<div style="font-size:12px;margin-top:6px">所得額（${fmtEn(jidoShotoku*10000/10000)}万円）が一部支給限度額（${jr.lim.partial}万円）を超えているため支給されません</div>`:`<div style="font-size:12px;margin-top:6px">${jr.kyu==='full'?`全額支給：1人目48,050円${childCount>1?` ＋ ${childCount-1}人目以降×11,350円（合計${fmtEn(jr.amount)}円）`:''}`:` 1人目：48,040円から所得に応じて減額（差額×0.0264029を控除）`}</div>`}
+  </div>`;
+
   // 判定メッセージ
   let verdictHtml;
   if(isDivAdv){
@@ -1059,7 +1068,7 @@ function calcBreakeven(){
     </div>`;
 
   const el=document.getElementById('br-result');
-  el.innerHTML=verdictHtml+bepHtml+breakdown1+breakdown2+breakdown3+breakdown4+cautions;
+  el.innerHTML=jidoResultHtml+verdictHtml+bepHtml+breakdown1+breakdown2+breakdown3+breakdown4+cautions;
   el.style.display='block';
   el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
