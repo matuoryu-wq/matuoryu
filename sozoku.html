@@ -135,6 +135,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .modal-body th{background:var(--primary-light);color:var(--primary)}
 .sec-title{font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
 .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.btn-add{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border:1.5px dashed var(--primary);border-radius:8px;background:var(--primary-light);color:var(--primary);cursor:pointer;font-size:13px;font-weight:600;margin-top:8px;transition:all .2s}
+.btn-add:hover{background:var(--primary);color:#fff}
+.haki-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed var(--border)}
+.haki-row:last-child{border-bottom:none}
+.haki-row label{font-size:13px;color:var(--text);cursor:pointer;flex:1}
+.haki-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--danger);cursor:pointer}
 </style>
 </head>
 <body>
@@ -174,7 +180,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="q-label">亡くなった方に<strong>子ども</strong>はいましたか？（養子・認知した子も含みます）</div>
     <div class="q-why">子どもは<strong>第1順位</strong>の相続人です。子がいる場合、親（父母）や兄弟姉妹は相続人になりません。子どもが亡くなっていても、その子（孫）が代わりに相続できる場合があります（代襲相続）。</div>
     <div class="q-choices">
-      <button class="q-choice" id="child-yes" onclick="setQ('child',true)">いる（または孫が代わりに相続）</button>
+      <button class="q-choice" id="child-yes" onclick="setQ('child',true)">いる（存命・または亡くなっている方を含む）</button>
       <button class="q-choice" id="child-no" onclick="setQ('child',false)">いない</button>
     </div>
     <div id="child-sub" class="q-sub">
@@ -187,21 +193,13 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="q-label" style="font-size:13px;margin-bottom:6px">子どものうち、<strong>亡くなっている方</strong>はいますか？（代襲相続の確認）</div>
       <div class="q-why" style="font-size:11px">亡くなった子に子ども（孫）がいる場合、その孫が「代わりに」相続します。これを「代襲相続」といいます。亡くなった子に子どもがいなければ、その枠はなかったものになります。</div>
       <div class="q-choices">
-        <button class="q-choice" id="gc-yes" onclick="setQ('gc',true)">亡くなっている子がいて、孫が代わりに相続する</button>
-        <button class="q-choice" id="gc-no" onclick="setQ('gc',false)">全員存命（または孫は相続しない）</button>
+        <button class="q-choice" id="gc-yes" onclick="setQ('gc',true)">亡くなっている子がいる（孫が代襲相続）</button>
+        <button class="q-choice" id="gc-no" onclick="setQ('gc',false)">全員存命</button>
       </div>
       <div id="gc-sub" style="display:none;margin-top:8px">
-        <div class="q-input-row">
-          <label>亡くなっている子の数：</label>
-          <input type="number" id="q-child-dead" value="1" min="1" max="10" onchange="syncQ()">
-          <span class="unit">人</span>
-        </div>
-        <div class="q-input-row">
-          <label>代わりに相続する孫の合計：</label>
-          <input type="number" id="q-grandchildren" value="1" min="1" max="10" onchange="syncQ()">
-          <span class="unit">人</span>
-        </div>
-        <div class="note" style="margin-top:6px"><span class="note-icon">ℹ️</span>孫が複数の亡くなった子に分かれる場合、割合が少し異なります。具体的なケースは弁護士にご相談ください。</div>
+        <div class="q-why" style="font-size:11px">亡くなった子ごとに、その子ども（孫）の人数を入力してください。孫が複数の亡くなった子に分かれる場合、それぞれの親の取り分をさらに分けます。</div>
+        <div id="dead-child-list"></div>
+        <button class="btn-add" onclick="addDeadChild()">＋ 亡くなっている子を追加</button>
       </div>
     </div>
   </div>
@@ -230,7 +228,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="q-label">亡くなった方に<strong>兄弟姉妹</strong>はいましたか？</div>
     <div class="q-why">子も親もいない場合、兄弟姉妹が<strong>第3順位</strong>の相続人になります。亡くなった兄弟姉妹がいる場合、その子ども（甥・姪）が代わりに相続できます（代襲相続）。ただし、甥・姪の子どもは代襲できません。また、兄弟姉妹には遺留分（最低保障の相続権）がありません。</div>
     <div class="q-choices">
-      <button class="q-choice" id="sib-yes" onclick="setQ('sib',true)">いる（または甥・姪が代わりに相続）</button>
+      <button class="q-choice" id="sib-yes" onclick="setQ('sib',true)">いる（存命・または亡くなっている方を含む）</button>
       <button class="q-choice" id="sib-no" onclick="setQ('sib',false)">いない</button>
     </div>
     <div id="sibling-sub" class="q-sub">
@@ -242,20 +240,13 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="q-divider"></div>
       <div class="q-label" style="font-size:13px;margin-bottom:6px">亡くなっている兄弟姉妹がいて、その子（甥・姪）が代わりに相続しますか？</div>
       <div class="q-choices">
-        <button class="q-choice" id="neph-yes" onclick="setQ('neph',true)">いる（甥・姪が代わりに相続）</button>
+        <button class="q-choice" id="neph-yes" onclick="setQ('neph',true)">いる（甥・姪がいる）</button>
         <button class="q-choice" id="neph-no" onclick="setQ('neph',false)">いない</button>
       </div>
       <div id="neph-sub" style="display:none;margin-top:8px">
-        <div class="q-input-row">
-          <label>亡くなっている兄弟姉妹の数：</label>
-          <input type="number" id="q-sib-dead" value="1" min="1" max="10" onchange="syncQ()">
-          <span class="unit">人</span>
-        </div>
-        <div class="q-input-row">
-          <label>代わりに相続する甥・姪の合計：</label>
-          <input type="number" id="q-nephews" value="1" min="1" max="10" onchange="syncQ()">
-          <span class="unit">人</span>
-        </div>
+        <div class="q-why" style="font-size:11px">亡くなった兄弟姉妹ごとに、その子（甥・姪）の人数を入力してください。亡くなった兄弟ごとに取り分が異なります。</div>
+        <div id="dead-sib-list"></div>
+        <button class="btn-add" onclick="addDeadSib()">＋ 亡くなっている兄弟姉妹を追加</button>
       </div>
     </div>
   </div>
@@ -301,6 +292,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   <div class="card">
     <div class="card-title"><span class="icon" style="background:#d1fae5;color:#059669">財</span>遺産の内訳<button class="help-btn" onclick="showHelp('estate-detail')">詳しく</button></div>
+    <div class="toggle-row" style="margin-bottom:12px">
+      <input type="checkbox" id="b-estate-simple-chk" onchange="toggleEstateMode()">
+      <label for="b-estate-simple-chk">遺産の合計額のみ入力する（簡単入力）</label>
+    </div>
+    <div id="b-estate-simple-wrap" style="display:none;margin-bottom:12px">
+      <label style="font-size:12px;font-weight:600;color:var(--text-muted)">遺産の合計額（プラスの財産）</label>
+      <div class="input-wrap" style="margin-top:4px"><input type="number" id="b-estate-total" placeholder="例：8000" min="0"><span class="unit">万円</span></div>
+    </div>
+    <div id="b-estate-detail-wrap">
     <div class="form-row">
       <div class="form-group">
         <label>不動産（土地・建物・マンション等）</label>
@@ -342,6 +342,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
     </div>
     <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>生命保険金・死亡退職金は「みなし相続財産」として相続税の計算に含まれますが、遺産分割の対象にはなりません。受取人が指定されている場合はその方が受け取ります。</div>
+    </div><!-- /b-estate-detail-wrap -->
   </div>
 
   <div class="card">
@@ -450,6 +451,22 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
   <div class="card">
+    <div class="card-title"><span class="icon" style="background:#fef3c7;color:#d97706">📅</span>期限日を計算する</div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">お亡くなりになった日と、あなたが相続を知った日を入力すると、各期限の具体的な日付とあと何日かが表示されます。</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label>お亡くなりになった日（相続開始日）</label>
+        <input type="date" id="jiko-death-date" onchange="updateDeadlines()">
+      </div>
+      <div class="form-group">
+        <label>相続を知った日</label>
+        <input type="date" id="jiko-known-date" onchange="updateDeadlines()">
+      </div>
+    </div>
+    <div id="jiko-deadline-display" style="display:none;margin-top:8px"></div>
+  </div>
+
+  <div class="card">
     <div class="card-title"><span class="icon" style="background:#fef2f2;color:#B84040">⏰</span>重要な期限一覧</div>
     <div class="timeline">
       <div class="tl-item">
@@ -539,10 +556,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 // ── State ──────────────────────────────────────────────────────
 const S = {
   spouse: null,
-  child: null, childAlive: 1, gc: null, childDead: 1, grandchildren: 1,
+  child: null, childAlive: 1, gc: null,
   parent: null, parentsAlive: 1,
-  sib: null, sibAlive: 1, neph: null, sibDead: 1, nephews: 1,
-  selfRole: null,
+  sib: null, sibAlive: 1, neph: null,
+  selfRole: null, selfId: null,
+  renouncedIds: new Set(),
   heirs: [],
   estateTotal: 0,
 };
@@ -568,6 +586,7 @@ function setQ(key, val) {
   }
   if (key === 'gc') {
     document.getElementById('gc-sub').style.display = val ? 'block' : 'none';
+    if (val && document.getElementById('dead-child-list').children.length === 0) addDeadChild();
   }
   if (key === 'parent') {
     const sub = document.getElementById('parent-sub');
@@ -581,6 +600,7 @@ function setQ(key, val) {
   }
   if (key === 'neph') {
     document.getElementById('neph-sub').style.display = val ? 'block' : 'none';
+    if (val && document.getElementById('dead-sib-list').children.length === 0) addDeadSib();
   }
 }
 
@@ -592,13 +612,59 @@ function resetQ(key) {
 }
 
 function syncQ() {
-  S.childAlive    = Math.max(0, parseInt(document.getElementById('q-child-alive')?.value || 1));
-  S.childDead     = Math.max(1, parseInt(document.getElementById('q-child-dead')?.value || 1));
-  S.grandchildren = Math.max(1, parseInt(document.getElementById('q-grandchildren')?.value || 1));
-  S.parentsAlive  = Math.max(1, parseInt(document.getElementById('q-parents')?.value || 1));
-  S.sibAlive      = Math.max(0, parseInt(document.getElementById('q-sib-alive')?.value || 1));
-  S.sibDead       = Math.max(1, parseInt(document.getElementById('q-sib-dead')?.value || 1));
-  S.nephews       = Math.max(1, parseInt(document.getElementById('q-nephews')?.value || 1));
+  S.childAlive   = Math.max(0, parseInt(document.getElementById('q-child-alive')?.value || 1));
+  S.parentsAlive = Math.max(1, parseInt(document.getElementById('q-parents')?.value || 1));
+  S.sibAlive     = Math.max(0, parseInt(document.getElementById('q-sib-alive')?.value || 1));
+}
+
+let deadChildCount = 0;
+function addDeadChild() {
+  deadChildCount++;
+  const id = deadChildCount;
+  const div = document.createElement('div');
+  div.id = `dead-child-${id}`;
+  div.style.cssText = 'display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap';
+  div.innerHTML = `<span style="font-size:13px;font-weight:600;min-width:70px">亡くなった子${id}人目</span>
+    <span style="font-size:12px;white-space:nowrap">孫（代わりに相続する子）：</span>
+    <input type="number" id="dc-gc-${id}" value="1" min="1" max="10" style="width:55px;padding:5px;border:1.5px solid var(--border);border-radius:6px;text-align:center;font-size:14px">
+    <span style="font-size:12px">人</span>
+    <button style="background:none;border:1px solid #ccc;border-radius:5px;padding:2px 8px;cursor:pointer;font-size:12px;color:var(--text-muted)" onclick="rmEl('dead-child-${id}')">✕</button>`;
+  document.getElementById('dead-child-list').appendChild(div);
+}
+
+let deadSibCount = 0;
+function addDeadSib() {
+  deadSibCount++;
+  const id = deadSibCount;
+  const div = document.createElement('div');
+  div.id = `dead-sib-${id}`;
+  div.style.cssText = 'display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap';
+  div.innerHTML = `<span style="font-size:13px;font-weight:600;min-width:70px">亡兄弟${id}人目</span>
+    <span style="font-size:12px;white-space:nowrap">甥・姪の人数：</span>
+    <input type="number" id="ds-neph-${id}" value="1" min="1" max="10" style="width:55px;padding:5px;border:1.5px solid var(--border);border-radius:6px;text-align:center;font-size:14px">
+    <span style="font-size:12px">人</span>
+    <button style="background:none;border:1px solid #ccc;border-radius:5px;padding:2px 8px;cursor:pointer;font-size:12px;color:var(--text-muted)" onclick="rmEl('dead-sib-${id}')">✕</button>`;
+  document.getElementById('dead-sib-list').appendChild(div);
+}
+
+function rmEl(id) { const el=document.getElementById(id); if(el) el.remove(); }
+
+function getDeadChildData() {
+  const entries = [];
+  document.querySelectorAll('[id^="dc-gc-"]').forEach(el => {
+    const n = parseInt(el.value) || 0;
+    if (n > 0) entries.push({grandchildren: n});
+  });
+  return entries;
+}
+
+function getDeadSibData() {
+  const entries = [];
+  document.querySelectorAll('[id^="ds-neph-"]').forEach(el => {
+    const n = parseInt(el.value) || 0;
+    if (n > 0) entries.push({nephews: n});
+  });
+  return entries;
 }
 
 // ── Heir building ──────────────────────────────────────────────
@@ -607,37 +673,43 @@ function buildHeirs() {
   const heirs = [];
   if (S.spouse) heirs.push({id:'spouse', name:'配偶者', role:'spouse'});
 
-  const gcCount = (S.gc && S.grandchildren > 0) ? S.grandchildren : 0;
-  const deadSlots = (S.gc && S.childDead > 0) ? S.childDead : 0;
-  const totalChildSlots = S.childAlive + deadSlots;
-  const hasChildren = S.child && totalChildSlots > 0;
+  if (S.child) {
+    const deadChildData = S.gc ? getDeadChildData() : [];
+    const totalChildSlots = S.childAlive + deadChildData.length;
 
-  if (hasChildren) {
     for (let i = 0; i < S.childAlive; i++) {
-      const label = S.childAlive === 1 && gcCount === 0 ? '子' : `子（${i+1}人目）`;
+      const label = totalChildSlots === 1 ? '子' : `子（${i+1}人目）`;
       heirs.push({id:`child${i+1}`, name: label, role:'child', totalChildSlots});
     }
-    for (let i = 0; i < gcCount; i++) {
-      const label = gcCount === 1 ? '孫（代襲相続）' : `孫（代襲${i+1}人目）`;
-      heirs.push({id:`gc${i+1}`, name: label, role:'grandchild', totalChildSlots, deadSlots, totalGC: gcCount});
-    }
+    deadChildData.forEach((dc, di) => {
+      for (let j = 0; j < dc.grandchildren; j++) {
+        const gcLabel = dc.grandchildren === 1
+          ? `孫（${di+1}人目の子の代襲）`
+          : `孫（${di+1}人目の子の代襲・${j+1}人目）`;
+        heirs.push({id:`gc${di+1}_${j+1}`, name: gcLabel, role:'grandchild', totalChildSlots, grandchildrenInSlot: dc.grandchildren});
+      }
+    });
   } else if (S.parent && S.parentsAlive > 0) {
     for (let i = 0; i < S.parentsAlive; i++) {
       const label = S.parentsAlive === 1 ? '親（父または母）' : (i === 0 ? '親（父）' : '親（母）');
       heirs.push({id:`parent${i+1}`, name: label, role:'parent', parentCount: S.parentsAlive});
     }
   } else if (S.sib) {
-    const nephCount = (S.neph && S.nephews > 0) ? S.nephews : 0;
-    const deadSibSlots = (S.neph && S.sibDead > 0) ? S.sibDead : 0;
-    const totalSibSlots = S.sibAlive + deadSibSlots;
+    const deadSibData = S.neph ? getDeadSibData() : [];
+    const totalSibSlots = S.sibAlive + deadSibData.length;
+
     for (let i = 0; i < S.sibAlive; i++) {
-      const label = S.sibAlive === 1 && nephCount === 0 ? '兄弟姉妹' : `兄弟姉妹（${i+1}人目）`;
+      const label = totalSibSlots === 1 ? '兄弟姉妹' : `兄弟姉妹（${i+1}人目）`;
       heirs.push({id:`sib${i+1}`, name: label, role:'sibling', totalSibSlots});
     }
-    for (let i = 0; i < nephCount; i++) {
-      const label = nephCount === 1 ? '甥・姪（代襲相続）' : `甥・姪（代襲${i+1}人目）`;
-      heirs.push({id:`neph${i+1}`, name: label, role:'nephew', totalSibSlots, deadSibSlots, totalNephews: nephCount});
-    }
+    deadSibData.forEach((ds, di) => {
+      for (let j = 0; j < ds.nephews; j++) {
+        const nephLabel = ds.nephews === 1
+          ? `甥・姪（${di+1}人目の兄弟の代襲）`
+          : `甥・姪（${di+1}人目の兄弟の代襲・${j+1}人目）`;
+        heirs.push({id:`neph${di+1}_${j+1}`, name: nephLabel, role:'nephew', totalSibSlots, nephewsInSlot: ds.nephews});
+      }
+    });
   }
   return heirs;
 }
@@ -665,9 +737,8 @@ function calcShareRatio(heir, allHeirs) {
     }
     case 'grandchild': {
       const tcs = heir.totalChildSlots || 1;
-      const ds  = heir.deadSlots || 1;
-      const tgc = heir.totalGC || 1;
-      return (othersBase * ds / tcs) / tgc;
+      const gcInSlot = heir.grandchildrenInSlot || 1;
+      return (othersBase / tcs) / gcInSlot;
     }
     case 'parent': {
       const pc = heir.parentCount || allHeirs.filter(h=>h.role==='parent').length || 1;
@@ -679,9 +750,8 @@ function calcShareRatio(heir, allHeirs) {
     }
     case 'nephew': {
       const tss = heir.totalSibSlots || 1;
-      const dss = heir.deadSibSlots || 1;
-      const tn  = heir.totalNephews || 1;
-      return (othersBase * dss / tss) / tn;
+      const nephInSlot = heir.nephewsInSlot || 1;
+      return (othersBase / tss) / nephInSlot;
     }
     default: return 0;
   }
@@ -702,6 +772,7 @@ function calcHeir() {
 
   const heirs = buildHeirs();
   S.heirs = heirs;
+  S.renouncedIds = new Set();
 
   if (heirs.length === 0) {
     const html = `<div class="err-msg">⚠ 相続人が見つかりません。配偶者も子も親も兄弟姉妹もいない場合、遺産は国庫に帰属します（特別縁故者への分与が認められる場合があります）。弁護士にご相談ください。</div>`;
@@ -733,12 +804,17 @@ function calcHeir() {
   const badges = heirs.map((h,i) => `<span class="heir-badge" style="background:${ROLE_COLORS[i%ROLE_COLORS.length]};color:#fff;border-color:transparent">${h.name}</span>`).join('');
   const reasonsHtml = reasons.map(r => `<div class="heir-reason-item"><span class="hr-mark ${r.ok?'ok':'ng'}">${r.ok?'✓':'✗'}</span><span>${r.text}</span></div>`).join('');
 
-  // ポジション選択
-  const uniqueRoles = [...new Set(heirs.map(h=>h.role))];
-  const posOptions = uniqueRoles.map(role => {
-    const icons = {spouse:'💑',child:'👶',grandchild:'👧',parent:'👴',sibling:'👨‍👧',nephew:'🧑'};
-    return `<div class="pos-card" id="pos-${role}" onclick="setSelf('${role}')">${ROLE_NAMES[role]}</div>`;
-  }).join('');
+  // ポジション選択（個別の相続人ごと）
+  const posOptions = heirs.map(h =>
+    `<div class="pos-card" id="pos-${h.id}" onclick="setSelf('${h.id}')">${h.name}</div>`
+  ).join('');
+
+  // 相続放棄チェックボックス
+  const hakiRows = heirs.map(h => `
+    <div class="haki-row">
+      <input type="checkbox" id="haki-${h.id}" onchange="applyHaki()">
+      <label for="haki-${h.id}">${h.name}（${ROLE_NAMES[h.role]}）が相続放棄する</label>
+    </div>`).join('');
 
   const html = `
     <div class="card" style="border:2px solid var(--primary)">
@@ -746,6 +822,12 @@ function calcHeir() {
       <div style="font-size:13px;font-weight:600;margin-bottom:8px">この相続の相続人：</div>
       <div class="heir-badges">${badges}</div>
       <div class="heir-reason-box">${reasonsHtml}</div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚠ 相続放棄の確認</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">相続放棄した方は遺産の分配から除外されます。放棄した子の孫は代わりに相続できません。</div>
+      ${hakiRows}
+      <div class="note" style="margin-top:10px"><span class="note-icon">📋</span>相続放棄は家庭裁判所への申立てが必要です（相続を知った日から3ヶ月以内）。放棄すると全ての遺産と借金の相続を免れます。</div>
     </div>
     <div class="card">
       <div class="card-title">あなたはどの相続人ですか？</div>
@@ -761,14 +843,49 @@ function calcHeir() {
   el.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
-function setSelf(role) {
-  S.selfRole = role;
+function setSelf(id) {
+  if (id === 'observer') {
+    S.selfId = null; S.selfRole = 'observer';
+  } else {
+    S.selfId = id;
+    const heir = S.heirs.find(h => h.id === id);
+    S.selfRole = heir?.role || 'observer';
+  }
   document.querySelectorAll('.pos-card').forEach(c => c.classList.remove('selected'));
-  const el = document.getElementById('pos-' + role);
+  const el = document.getElementById('pos-' + id);
   if (el) el.classList.add('selected');
 }
 
+function applyHaki() {
+  S.renouncedIds = new Set();
+  document.querySelectorAll('[id^="haki-"]').forEach(el => {
+    if (el.checked) S.renouncedIds.add(el.id.replace('haki-', ''));
+  });
+}
+
+function autoPopulateZei() {
+  const heirs = S.heirs;
+  if (!heirs || heirs.length === 0) return;
+  const hasSpouse = heirs.some(h => h.role === 'spouse');
+  const hasChild  = heirs.some(h => h.role === 'child' || h.role === 'grandchild');
+  const hasParent = heirs.some(h => h.role === 'parent');
+  const hasSib    = heirs.some(h => h.role === 'sibling' || h.role === 'nephew');
+  let type = 5;
+  if (hasSpouse && hasChild) type = 2;
+  else if (hasSpouse && hasParent) type = 3;
+  else if (hasSpouse && hasSib) type = 4;
+  else if (hasSpouse) type = 1;
+  else if (hasParent) type = 6;
+  else if (hasSib) type = 7;
+  const nonSpouseCount = heirs.filter(h => h.role !== 'spouse').length;
+  const typeEl  = document.getElementById('z-heir-type');
+  const countEl = document.getElementById('z-heir-count');
+  if (typeEl) { typeEl.value = type; updateZHeirCount(); }
+  if (countEl && nonSpouseCount > 0) countEl.value = nonSpouseCount;
+}
+
 function goBunkatsu() {
+  autoPopulateZei();
   updateBHeirFromState();
   switchTab('bunkatsu', document.querySelectorAll('.tab-btn')[1]);
 }
@@ -791,16 +908,21 @@ function buildPosGrid() {
   const grid = document.getElementById('b-pos-grid');
   if (!grid) return;
   const heirs = S.heirs.length > 0 ? S.heirs : getManualHeirs();
-  const uniqueRoles = [...new Set(heirs.map(h=>h.role))];
-  grid.innerHTML = uniqueRoles.map(role =>
-    `<div class="pos-card ${S.selfRole===role?'selected':''}" id="bpos-${role}" onclick="setBSelf('${role}')">${ROLE_NAMES[role]}</div>`
-  ).join('') + `<div class="pos-card ${S.selfRole==='observer'?'selected':''}" id="bpos-observer" onclick="setBSelf('observer')">参考として確認</div>`;
+  grid.innerHTML = heirs.map(h =>
+    `<div class="pos-card ${S.selfId===h.id?'selected':''}" id="bpos-${h.id}" onclick="setBSelf('${h.id}')">${h.name}</div>`
+  ).join('') + `<div class="pos-card ${S.selfRole==='observer'&&!S.selfId?'selected':''}" id="bpos-observer" onclick="setBSelf('observer')">参考として確認</div>`;
 }
 
-function setBSelf(role) {
-  S.selfRole = role;
+function setBSelf(id) {
+  if (id === 'observer') {
+    S.selfId = null; S.selfRole = 'observer';
+  } else {
+    S.selfId = id;
+    const heir = (S.heirs.length > 0 ? S.heirs : getManualHeirs()).find(h => h.id === id);
+    S.selfRole = heir?.role || 'observer';
+  }
   document.querySelectorAll('[id^="bpos-"]').forEach(c => c.classList.remove('selected'));
-  const el = document.getElementById('bpos-' + role);
+  const el = document.getElementById(`bpos-${id}`);
   if (el) el.classList.add('selected');
 }
 
@@ -825,32 +947,47 @@ function buildManualHeirs(type, count) {
 }
 
 function calcBunkatsu() {
-  const realestate = nv('b-realestate') || 0;
-  const deposit    = nv('b-deposit')    || 0;
-  const stocks     = nv('b-stocks')     || 0;
-  const insurance  = nv('b-insurance')  || 0;
-  const retirement = nv('b-retirement') || 0;
-  const other      = nv('b-other')      || 0;
-  const debt       = nv('b-debt')       || 0;
-  const funeral    = nv('b-funeral')    || 0;
-
-  const grossAssets = realestate + deposit + stocks + insurance + retirement + other;
-  const netEstate   = grossAssets - debt - funeral;
+  const simpleMode = document.getElementById('b-estate-simple-chk')?.checked;
+  let realestate, deposit, stocks, insurance, retirement, other, debt, funeral, grossAssets, netEstate;
+  if (simpleMode) {
+    const total = nv('b-estate-total') || 0;
+    realestate = deposit = stocks = insurance = retirement = other = debt = funeral = 0;
+    grossAssets = total; netEstate = total;
+  } else {
+    realestate = nv('b-realestate') || 0;
+    deposit    = nv('b-deposit')    || 0;
+    stocks     = nv('b-stocks')     || 0;
+    insurance  = nv('b-insurance')  || 0;
+    retirement = nv('b-retirement') || 0;
+    other      = nv('b-other')      || 0;
+    debt       = nv('b-debt')       || 0;
+    funeral    = nv('b-funeral')    || 0;
+    grossAssets = realestate + deposit + stocks + insurance + retirement + other;
+    netEstate   = grossAssets - debt - funeral;
+  }
 
   if (netEstate <= 0 && grossAssets <= 0) return showErr('b-result', '遺産額を入力してください。');
 
-  const heirs = S.heirs.length > 0 ? S.heirs : getManualHeirs();
+  let heirs = S.heirs.length > 0 ? S.heirs : getManualHeirs();
   if (heirs.length === 0) return showErr('b-result', '相続人の構成を確認してください。');
+
+  // Apply 相続放棄
+  if (S.renouncedIds && S.renouncedIds.size > 0) {
+    heirs = heirs.filter(h => !S.renouncedIds.has(h.id));
+    if (heirs.length === 0) return showErr('b-result', '全員が相続放棄した場合、遺産は国庫に帰属します。');
+  }
 
   S.estateTotal = netEstate;
 
-  // Compute shares
+  // Compute shares (normalize remaining after renouncement)
+  const rawShares = heirs.map(h => calcShareRatio(h, heirs));
+  const totalRaw = rawShares.reduce((s, r) => s + r, 0) || 1;
   const heirData = heirs.map((h, i) => {
-    const ratio   = calcShareRatio(h, heirs);
+    const ratio   = rawShares[i] / totalRaw;
     const amount  = netEstate * ratio;
     const irRatio = calcIryubunRatio(h, heirs, ratio);
     const irAmt   = irRatio !== null ? netEstate * irRatio : null;
-    const isSelf  = S.selfRole && S.selfRole !== 'observer' && h.role === S.selfRole;
+    const isSelf  = S.selfId ? h.id === S.selfId : (S.selfRole && S.selfRole !== 'observer' && h.role === S.selfRole);
     return {...h, ratio, amount, irRatio, irAmt, isSelf, color: ROLE_COLORS[i % ROLE_COLORS.length]};
   });
 
@@ -1257,6 +1394,67 @@ function switchTab(name, btn) {
     if (S.heirs.length > 0) updateBHeirFromState();
     buildPosGrid();
   }
+}
+
+// ── Estate mode toggle ────────────────────────────────────────
+function toggleEstateMode() {
+  const simple = document.getElementById('b-estate-simple-chk').checked;
+  document.getElementById('b-estate-simple-wrap').style.display = simple ? 'block' : 'none';
+  document.getElementById('b-estate-detail-wrap').style.display = simple ? 'none' : 'block';
+}
+
+// ── Deadline calculator ───────────────────────────────────────
+function updateDeadlines() {
+  const knownDate = document.getElementById('jiko-known-date')?.value;
+  const deathDate = document.getElementById('jiko-death-date')?.value;
+  const display = document.getElementById('jiko-deadline-display');
+  if (!knownDate && !deathDate) { display.style.display = 'none'; return; }
+
+  function addM(ds, m) {
+    if (!ds) return null;
+    const d = new Date(ds); d.setMonth(d.getMonth() + m);
+    return d;
+  }
+  function addY(ds, y) {
+    if (!ds) return null;
+    const d = new Date(ds); d.setFullYear(d.getFullYear() + y);
+    return d;
+  }
+  function fmt(d) {
+    if (!d) return '—';
+    return d.toLocaleDateString('ja-JP', {year:'numeric', month:'long', day:'numeric'});
+  }
+  function daysTag(d) {
+    if (!d) return '';
+    const today = new Date(); today.setHours(0,0,0,0);
+    const diff = Math.ceil((d - today) / 86400000);
+    if (diff < 0) return `<span style="color:var(--text-muted);font-size:12px">（${Math.abs(diff)}日経過）</span>`;
+    if (diff <= 14) return `<span style="color:var(--danger);font-weight:700;font-size:12px">（あと${diff}日！）</span>`;
+    if (diff <= 60) return `<span style="color:var(--warning);font-weight:700;font-size:12px">（あと${diff}日）</span>`;
+    return `<span style="color:var(--success);font-size:12px">（あと${diff}日）</span>`;
+  }
+
+  const rows = [];
+  if (knownDate) {
+    rows.push({t:'相続放棄・限定承認', d:addM(knownDate,3), note:'相続を知った日から3ヶ月以内', urgent:true});
+    rows.push({t:'準確定申告', d:addM(knownDate,4), note:'相続を知った日から4ヶ月以内', urgent:false});
+    rows.push({t:'相続税の申告・納付', d:addM(knownDate,10), note:'相続を知った日の翌日から10ヶ月以内', urgent:false});
+    rows.push({t:'遺留分侵害額請求（消滅時効）', d:addY(knownDate,1), note:'侵害を知った日から1年以内', urgent:false});
+  }
+  if (deathDate) {
+    rows.push({t:'不動産の相続登記', d:addY(deathDate,3), note:'相続開始から3年以内（義務化）', urgent:false});
+    rows.push({t:'遺留分侵害額請求（絶対的時効）', d:addY(deathDate,10), note:'相続開始から10年', urgent:false});
+  }
+
+  const html = rows.map(r => `
+    <div class="bk-row" style="align-items:center;gap:12px">
+      <span class="bk-key">${r.t}</span>
+      <span class="bk-val" style="${r.urgent?'color:var(--danger)':''}">${fmt(r.d)} ${daysTag(r.d)}</span>
+    </div>
+    <div class="bk-desc" style="font-size:11px">${r.note}</div>`).join('');
+
+  display.innerHTML = `<div class="breakdown" style="margin:0"><div class="breakdown-title">各期限の日付</div>${html}</div>`;
+  display.style.display = 'block';
 }
 
 // ── 遺産分割タブの手動入力 ────────────────────────────────────
