@@ -165,14 +165,35 @@
         </div>
       </div>
     </div>
+    <!-- ③ Changed label for 婚姻費用 child section -->
     <div class="card">
-      <div class="card-title"><span class="icon icon-child">子</span>養育対象の子ども（権利者と同居）<button class="help-btn" onclick="showHelp('child_index')">詳しく</button></div>
+      <div class="card-title"><span class="icon icon-child">子</span>夫婦間の子（権利者と同居）<button class="help-btn" onclick="showHelp('child_index')">詳しく</button></div>
       <div id="k-children-list" class="children-list"></div>
-      <button class="btn-add" onclick="addChild('k')">＋ 子どもを追加</button>
+      <button class="btn-add" onclick="addChild('k')">＋ 子を追加</button>
       <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>0〜14歳：指数62、15〜19歳：指数85（大人=100）</div>
     </div>
+    <!-- ④ New card: 夫婦間の子（義務者と同居）for 婚姻費用 -->
     <div class="card">
-      <div class="card-title"><span class="icon icon-other">子</span>義務者に夫婦間の子以外の子（前妻との子、認知した子など）がおり、義務者と同居しておらず、適正な養育費を払っている場合</div>
+      <div class="card-title"><span class="icon icon-child">子</span>夫婦間の子（義務者と同居）<button class="help-btn" onclick="showHelp('ob_child')">詳しく</button></div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">義務者と同居している夫婦間の子がいる場合は入力してください。義務者側の生活費指数に加算されます。</p>
+      <div id="k-ob-children-list" class="children-list"></div>
+      <button class="btn-add" onclick="addObChild('k')">＋ 子を追加</button>
+    </div>
+    <!-- ⑥ New card: 義務者が同居して養育する婚外子 for 婚姻費用 -->
+    <div class="card">
+      <div class="card-title"><span class="icon icon-other">子</span>義務者に権利者との間の子以外の子（前妻との子、認知した子など）がおり、義務者が同居して養育している場合</div>
+      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>義務者が同居して養育している婚外子がいる場合、その生活費の一部を考慮して計算します。ただし、計算方法は確立しておらず、具体的な事案については弁護士等の専門家にご相談ください。</div>
+      <div id="k-res-other-list" class="children-list"></div>
+      <button class="btn-add" onclick="addResOtherChild('k')">＋ 婚外子を追加</button>
+      <div id="k-res-other-parent-wrap" style="display:none;margin-top:10px">
+        <div class="form-group"><label>婚外子の他方の親の年収（万円）（不明な場合は空欄）</label>
+          <div class="input-wrap"><input type="number" id="k-res-other-income" placeholder="例：200" min="0"><span class="unit">万</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- ⑨ Renamed "他の子" card for 婚姻費用 -->
+    <div class="card">
+      <div class="card-title"><span class="icon icon-other">子</span>義務者に権利者との間の子以外の子（前妻との子、認知した子など）がおり、義務者が養育しておらず、適正な養育費を払っている場合</div>
       <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>他の子のために支払う養育費を義務者の基礎収入から差し引いて計算します。ただし、計算方法は十分に確立しておらず、これを考慮しない裁判例もあります（この場合は権利者にとって有利に働きます）。具体的な事案については弁護士等の専門家にご相談下さい。</div>
       <div id="k-other-list" class="children-list"></div>
       <button class="btn-add" onclick="addOtherChild('k')">＋ 他の子を追加</button>
@@ -189,7 +210,7 @@
   <!-- ===== 養育費 ===== -->
   <div id="panel-youiku" class="panel">
     <div class="info-banner">
-      <p>養育費とは、子どもと別れて暮らす親が、子どもと暮らす親に支払う養育に必要な費用です。</p>
+      <p>養育費とは、子と別れて暮らす親が、子と暮らす親に支払う養育に必要な費用です。</p>
       <button class="help-btn" onclick="showHelp('youiku')">詳しく</button>
     </div>
     <div class="card person-obligor">
@@ -234,14 +255,35 @@
         </div>
       </div>
     </div>
+    <!-- ③ Changed label for 養育費 child section -->
     <div class="card">
-      <div class="card-title"><span class="icon icon-child">子</span>養育対象の子ども（権利者と同居）<button class="help-btn" onclick="showHelp('child_index')">詳しく</button></div>
+      <div class="card-title"><span class="icon icon-child">子</span>(元)夫婦間の子（権利者と同居）<button class="help-btn" onclick="showHelp('child_index')">詳しく</button></div>
       <div id="y-children-list" class="children-list"></div>
-      <button class="btn-add" onclick="addChild('y')">＋ 子どもを追加</button>
+      <button class="btn-add" onclick="addChild('y')">＋ 子を追加</button>
       <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>0〜14歳：指数62、15〜19歳：指数85（大人=100）</div>
     </div>
+    <!-- ④ New card: 夫婦間の子（義務者と同居）for 養育費 -->
     <div class="card">
-      <div class="card-title"><span class="icon icon-other">子</span>義務者に夫婦間の子以外の子（前妻との子、認知した子など）がおり、義務者と同居しておらず、適正な養育費を払っている場合</div>
+      <div class="card-title"><span class="icon icon-child">子</span>夫婦間の子（義務者と同居）<button class="help-btn" onclick="showHelp('ob_child')">詳しく</button></div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">義務者と同居している夫婦間の子がいる場合は入力してください。義務者側の生活費指数に加算されます。</p>
+      <div id="y-ob-children-list" class="children-list"></div>
+      <button class="btn-add" onclick="addObChild('y')">＋ 子を追加</button>
+    </div>
+    <!-- ⑥ New card: 義務者が同居して養育する婚外子 for 養育費 -->
+    <div class="card">
+      <div class="card-title"><span class="icon icon-other">子</span>義務者に権利者との間の子以外の子（前妻との子、認知した子など）がおり、義務者が同居して養育している場合</div>
+      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>義務者が同居して養育している婚外子がいる場合、その生活費の一部を考慮して計算します。ただし、計算方法は確立しておらず、具体的な事案については弁護士等の専門家にご相談ください。</div>
+      <div id="y-res-other-list" class="children-list"></div>
+      <button class="btn-add" onclick="addResOtherChild('y')">＋ 婚外子を追加</button>
+      <div id="y-res-other-parent-wrap" style="display:none;margin-top:10px">
+        <div class="form-group"><label>婚外子の他方の親の年収（万円）（不明な場合は空欄）</label>
+          <div class="input-wrap"><input type="number" id="y-res-other-income" placeholder="例：200" min="0"><span class="unit">万</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- ⑨ Renamed "他の子" card for 養育費 -->
+    <div class="card">
+      <div class="card-title"><span class="icon icon-other">子</span>義務者に権利者との間の子以外の子（前妻との子、認知した子など）がおり、義務者が養育しておらず、適正な養育費を払っている場合</div>
       <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>他の子のために支払う養育費を義務者の基礎収入から差し引いて計算します。ただし、計算方法は十分に確立しておらず、これを考慮しない裁判例もあります（この場合は権利者にとって有利に働きます）。具体的な事案については弁護士等の専門家にご相談下さい。</div>
       <div id="y-other-list" class="children-list"></div>
       <button class="btn-add" onclick="addOtherChild('y')">＋ 他の子を追加</button>
@@ -342,15 +384,16 @@ const EMPLOYEE_RATES=[[75,54],[100,50],[125,46],[175,44],[275,43],[525,42],[725,
 const SELF_RATES=[[66,61],[82,60],[98,59],[256,58],[349,57],[392,56],[496,55],[563,54],[784,53],[942,52],[1046,51],[1179,50],[1482,49],[1567,48]];
 
 const HELP={
-  konin:{title:'婚姻費用について',body:`<p><strong>婚姻費用</strong>とは、婚姻関係が続いている間（別居中を含む）、収入の多い一方が少ない一方（子どもの養育費含む）に対して支払う生活費のことです。</p><h4>いつから請求できますか？</h4><p>一般的に、請求または調停申立てをした月からとされています。時期が遅れると請求できる範囲が限られることがあります。</p><h4>請求の手順</h4><ol><li><strong>話し合い</strong>：まず相手方に対して直接請求します。</li><li><strong>調停の申立て</strong>：家庭裁判所に「婚姻費用分担調停」を申し立てることができます。</li><li><strong>審判</strong>：調停で合意に至らない場合は審判に移行し、裁判官が金額を決定します。</li></ol><h4>支払われない場合</h4><p>調停調書や審判書がある場合、強制執行の手続きをとることができる場合があります。</p>`},
-  youiku:{title:'養育費について',body:`<p><strong>養育費</strong>とは、子どもと離れて暮らす親が、子どもを養育している親に対して支払う、子どもの生活・教育に必要な費用のことです。</p><h4>いつまで支払いますか？</h4><p>一般的には子どもが18歳（高校卒業時）になるまでとされることが多いですが、大学等進学の場合の取り決めは当事者間の合意によります。</p><h4>請求の手順</h4><ol><li><strong>話し合い</strong>：当事者間で協議して決定します。合意内容は書面に残しておくことが重要です。</li><li><strong>調停の申立て</strong>：家庭裁判所に「養育費請求調停」を申し立てることができます。</li><li><strong>審判</strong>：調停で合意に至らない場合は審判に移行し、裁判官が決定します。</li></ol><h4>支払われない場合</h4><p>公正証書（強制執行認諾条項付き）や調停調書・審判書がある場合、強制執行の手続きをとることができる場合があります。また、家庭裁判所に履行勧告の申出をすることもできます。</p>`},
+  konin:{title:'婚姻費用について',body:`<p><strong>婚姻費用</strong>とは、婚姻関係が続いている間（別居中を含む）、収入の多い一方が少ない一方（子の養育費含む）に対して支払う生活費のことです。</p><h4>いつから請求できますか？</h4><p>一般的に、請求または調停申立てをした月からとされています。時期が遅れると請求できる範囲が限られることがあります。</p><h4>請求の手順</h4><ol><li><strong>話し合い</strong>：まず相手方に対して直接請求します。</li><li><strong>調停の申立て</strong>：家庭裁判所に「婚姻費用分担調停」を申し立てることができます。</li><li><strong>審判</strong>：調停で合意に至らない場合は審判に移行し、裁判官が金額を決定します。</li></ol><h4>支払われない場合</h4><p>調停調書や審判書がある場合、強制執行の手続きをとることができる場合があります。</p>`},
+  youiku:{title:'養育費について',body:`<p><strong>養育費</strong>とは、子と離れて暮らす親が、子を養育している親に対して支払う、子の生活・教育に必要な費用のことです。</p><h4>いつまで支払いますか？</h4><p>一般的には子が18歳（高校卒業時）になるまでとされることが多いですが、大学等進学の場合の取り決めは当事者間の合意によります。</p><h4>請求の手順</h4><ol><li><strong>話し合い</strong>：当事者間で協議して決定します。合意内容は書面に残しておくことが重要です。</li><li><strong>調停の申立て</strong>：家庭裁判所に「養育費請求調停」を申し立てることができます。</li><li><strong>審判</strong>：調停で合意に至らない場合は審判に移行し、裁判官が決定します。</li></ol><h4>支払われない場合</h4><p>公正証書（強制執行認諾条項付き）や調停調書・審判書がある場合、強制執行の手続きをとることができる場合があります。また、家庭裁判所に履行勧告の申出をすることもできます。</p>`},
   zaisan:{title:'財産分与とは',body:`<p><strong>財産分与</strong>とは、婚姻中に夫婦が共同で形成した財産を、離婚の際に分配することです。</p><h4>対象になる財産（共有財産の例）</h4><ul><li>婚姻中に形成した預貯金・有価証券</li><li>婚姻中に購入した不動産・車両</li><li>婚姻中に取得した退職金（婚姻期間対応分）</li></ul><h4>対象にならない財産（特有財産）</h4><ul><li>婚姻前から所有していた財産</li><li>婚姻中に相続または贈与を受けた財産</li></ul><h4>分与の割合</h4><p>原則として2分の1ずつとされていますが、個別の事情により異なる場合があります。</p><h4>請求期限</h4><p>離婚成立後2年以内に請求する必要があります。</p>`},
-  obligor:{title:'義務者・権利者とは',body:`<h4>義務者</h4><p>婚姻費用または養育費を「支払う義務を負う側」のことです。一般的に収入の多い方が義務者となります。</p><h4>権利者</h4><p>婚姻費用または養育費を「受け取る権利を持つ側」のことです。一般的に収入の少ない方・子どもと暮らす方が権利者となります。</p><div class="help-note">義務者・権利者はどちらが夫・妻でも構いません。収入状況や子どもの居住状況によって決まります。</div>`},
-  child_index:{title:'子の生活費指数とは',body:`<p>大人の生活費を<strong>100</strong>とした場合に、子どもの生活費がどの程度の割合になるかを示す数値です。標準算定方式で使用されます。</p><table><tr><th>年齢</th><th>生活費指数</th></tr><tr><td>0〜14歳</td><td>62</td></tr><tr><td>15〜19歳</td><td>85</td></tr></table><p style="margin-top:8px">この指数を用いて、各当事者がどの程度の生活費を負担すべきかを算出します。</p>`},
+  obligor:{title:'義務者・権利者とは',body:`<h4>義務者</h4><p>婚姻費用または養育費を「支払う義務を負う側」のことです。一般的に収入の多い方が義務者となります。</p><h4>権利者</h4><p>婚姻費用または養育費を「受け取る権利を持つ側」のことです。一般的に収入の少ない方・子と暮らす方が権利者となります。</p><div class="help-note">義務者・権利者はどちらが夫・妻でも構いません。収入状況や子の居住状況によって決まります。</div>`},
+  child_index:{title:'子の生活費指数とは',body:`<p>大人の生活費を<strong>100</strong>とした場合に、子の生活費がどの程度の割合になるかを示す数値です。標準算定方式で使用されます。</p><table><tr><th>年齢</th><th>生活費指数</th></tr><tr><td>0〜14歳</td><td>62</td></tr><tr><td>15〜19歳</td><td>85</td></tr></table><p style="margin-top:8px">この指数を用いて、各当事者がどの程度の生活費を負担すべきかを算出します。</p>`},
   fudosan:{title:'不動産の計算について',body:`<p>不動産の財産分与における価値は、<strong>査定額（時価）からローン残高を差し引いた純資産</strong>が基本となります。</p><h4>計算方法</h4><p>純資産 ＝ 査定額 − ローン残高</p><ul><li>純資産がプラスの場合：共有財産に加算されます</li><li>純資産がマイナス（オーバーローン）の場合：負債として扱われます</li></ul><div class="help-note">査定額は不動産会社への査定や路線価等で確認してください。ローン残高は金融機関に確認してください。</div>`},
   nenkin:{title:'年金分割とは',body:`<p><strong>年金分割</strong>とは、婚姻期間中に厚生年金に加入していた場合、その期間の標準報酬記録を離婚時に分割する制度です。</p><h4>合意分割</h4><p>当事者間の合意（または裁判所の決定）により、婚姻期間中の標準報酬記録を按分します。按分割合は最大50%です。</p><h4>3号分割</h4><p>2008年4月以降の期間について、第3号被保険者（主に専業主婦・主夫）であった方は、その期間分の標準報酬の2分の1を自動的に受け取ることができます。</p><div class="help-note">この計算は概算です。実際の分割請求は、離婚後2年以内に年金事務所へ行う必要があります。</div>`},
   separate_property:{title:'特有財産とは',body:`<p><strong>特有財産</strong>とは、財産分与の対象とならない、各自の固有の財産のことです。</p><h4>特有財産の例</h4><ul><li>婚姻前から所有していた預貯金・不動産</li><li>婚姻中に相続によって取得した財産</li><li>婚姻中に贈与を受けた財産</li></ul><div class="help-note">特有財産であることの立証は、主張する側が行う必要があります。</div>`},
-  base_income:{title:'基礎収入とは',body:`<p><strong>基礎収入</strong>とは、総収入から税金・社会保険料・職業費等を控除した後の、実際に生活費として使用できる収入の目安となる金額です。</p><h4>算定方法</h4><ul><li><strong>給与所得者</strong>：年収 × 38〜54%（収入が高いほど割合が低下）</li><li><strong>事業所得者</strong>：課税所得 × 48〜61%</li><li><strong>給与＋事業所得</strong>：多い方の所得に換算した上で合計</li></ul>`}
+  base_income:{title:'基礎収入とは',body:`<p><strong>基礎収入</strong>とは、総収入から税金・社会保険料・職業費等を控除した後の、実際に生活費として使用できる収入の目安となる金額です。</p><h4>算定方法</h4><ul><li><strong>給与所得者</strong>：年収 × 38〜54%（収入が高いほど割合が低下）</li><li><strong>事業所得者</strong>：課税所得 × 48〜61%</li><li><strong>給与＋事業所得</strong>：多い方の所得に換算した上で合計</li></ul>`},
+  ob_child:{title:'義務者と同居する子について',body:`<p>夫婦間の子のうち、義務者（支払う側）と同居している子がいる場合、その子の生活費指数を義務者側の指数に加算します。</p><p>これにより、義務者が養育する子のコストが考慮され、婚姻費用・養育費の金額が調整されます。</p>`}
 };
 
 function getRate(income,table){for(const[max,rate]of table){if(income<=max)return rate;}return table[table.length-1][1];}
@@ -379,6 +422,7 @@ function calcOtherCS(a,otherParentIncome,otherAges){
 
 function D(text){return `<div class="bk-desc">${text}</div>`;}
 
+// ⑧ Updated calcKonin with ob-child and res-other support
 function calcKonin(){
   const obSal=nv('k-ob-salary'),eeSal=nv('k-ee-salary');
   if(obSal===null)return showErr('k-result','義務者の収入を入力してください。');
@@ -386,31 +430,189 @@ function calcKonin(){
   const ob=calcBaseIncome(v('k-ob-type'),obSal,nv('k-ob-business'),nv('k-ob-insurance'));
   const ee=calcBaseIncome(v('k-ee-type'),eeSal,nv('k-ee-business'),nv('k-ee-insurance'));
   const a=ob.baseIncome,b=ee.baseIncome;
+
+  // 非同居・養育費支払いの他の子
   const otherCS=calcOtherCS(a,nv('k-other-parent-income'),getOtherAges('k'));
   const ap=a-otherCS.amount;
-  const ages=getChildAges('k');const cs=ages.reduce((t,ag)=>t+childIndex(ag),0);
-  const ei=100+cs,oi=100;const ann=(ap+b)*ei/(ei+oi)-b;const mon=ann/12;
+
+  // 権利者と同居する子（夫婦間）
+  const ages=getChildAges('k');
+  const cs=ages.reduce((t,ag)=>t+childIndex(ag),0);
+
+  // 義務者と同居する子（夫婦間）→ 義務者側指数に加算
+  const obChildAges=getObChildAges('k');
+  const obCs=obChildAges.reduce((t,ag)=>t+childIndex(ag),0);
+
+  // 義務者と同居する婚外子 → β計算
+  const resOtherAges=getResOtherAges('k');
+  const resOtherIncome=nv('k-res-other-income')||0;
+  const resOtherBase=calcBaseIncome('employee',resOtherIncome,0,0).baseIncome;
+  let beta=0;
+  const betaSteps=[];
+  resOtherAges.forEach((ag,i)=>{
+    const idx=childIndex(ag);
+    const denom=ap+resOtherBase;
+    const b_i=denom>0?idx*ap/denom:idx;
+    beta+=b_i;
+    betaSteps.push(`婚外子第${i+1}子(${ag}歳): β=${idx}×${ap.toFixed(1)}÷(${ap.toFixed(1)}+${resOtherBase.toFixed(1)})=${b_i.toFixed(3)}`);
+  });
+
+  const hasResOther=resOtherAges.length>0;
+  const ei=100+cs;
+  const oi=100+obCs;
+
+  let ann;
+  if(hasResOther){
+    ann=ap*(100+cs)/(200+cs+beta)+b*(100+cs)/(200+cs)-b;
+  }else{
+    ann=(ap+b)*ei/(ei+oi)-b;
+  }
+  const mon=ann/12;
+
+  // ② Conditional a label
+  const aLabel=otherCS.amount>0?'（他の子への養育費控除後）':'';
+
+  // ① Formula with a (not a')
+  let fmlEq,fmlVars;
+  if(hasResOther){
+    fmlEq=`婚姻費用（年額）＝ a × (100+α) ÷ (200+α+β) + b × (100+α) ÷ (200+α) − b`;
+    fmlVars=`a ＝ 義務者の基礎収入${aLabel} ／ b ＝ 権利者の基礎収入<br>α ＝ 権利者と同居する子の生活費指数合計 ／ β ＝ 義務者が養育する婚外子の修正生活費指数合計`;
+  }else{
+    fmlEq=`婚姻費用（年額）＝ (a + b) × 権利者側指数 ÷ (権利者側指数 + 義務者側指数) − b`;
+    fmlVars=`a ＝ 義務者の基礎収入${aLabel} ／ b ＝ 権利者の基礎収入<br>権利者側指数 ＝ 100（権利者） ＋ 子の指数合計 ／ 義務者側指数 ＝ 100（義務者）`+(obCs>0?` ＋ ${obCs}（義務者と同居する子）`:'');
+  }
+  const fml=`<div class="formula-header"><div class="fh-title">婚姻費用の計算式（標準算定方式）</div><div class="fh-eq">${fmlEq}</div><div class="fh-vars">${fmlVars}</div></div>`;
+
+  // Build otherHtml
   let otherHtml='';
-  if(otherCS.amount>0){otherHtml=`<div class="bk-row" style="margin-top:6px;background:#f5f0ff;padding:5px 8px;border-radius:5px"><span class="bk-key">他の子への養育費（控除額）</span><span class="bk-val" style="color:#7c3aed">−${fmtMan(otherCS.amount)}</span></div>${D('この金額を義務者の基礎収入から差し引いてから計算します。')}<div class="bk-formula">${otherCS.steps.join('<br>')}</div><div class="bk-row" style="margin-top:4px"><span class="bk-key">調整後の義務者基礎収入（a'）</span><span class="bk-val">${fmtMan(ap)}</span></div>${D('他の子への養育費を差し引いた後の、実際の計算に使う義務者の基礎収入です。')}`;}
-  const fml=`<div class="formula-header"><div class="fh-title">婚姻費用の計算式（標準算定方式）</div><div class="fh-eq">婚姻費用（年額）＝ (a' + b) × 権利者側指数 ÷ (権利者側指数 + 義務者側指数) − b</div><div class="fh-vars">a' ＝ 義務者の基礎収入（他の子の養育費控除後）／ b ＝ 権利者の基礎収入<br>権利者側指数 ＝ 100（権利者本人） ＋ 子の指数合計 ／ 義務者側指数 ＝ 100（義務者のみ）</div></div>`;
-  const html=`<div class="result-box ${mon<0?'warning':''}"><div class="result-label">月額婚姻費用（目安）</div><div class="result-amount">${mon<0?'0円':fmtEn(mon)}</div><div class="result-sub">年額：${mon<0?'0円':fmtEn(ann)}${mon<0?'<br>※権利者の収入が高いため婚姻費用は発生しません':''}</div></div>${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。収入が高いほど控除率が上がります。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}</div>${otherHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div>${D('各子どもの生活費を数値化したものです。大人を100として、0〜14歳は62、15〜19歳は85として計算します。複数の子がいる場合は合計します。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}<div class="bk-row" style="margin-top:4px"><span class="bk-key">権利者側の指数合計</span><span class="bk-val">100（権利者）＋${cs}（子）＝${ei}</span></div>${D('権利者自身（大人=100）と子どもたちの指数を合算した数値です。権利者と子どもが生活するために必要な費用の規模を表しています。')}<div class="bk-row"><span class="bk-key">義務者側の指数</span><span class="bk-val">${oi}（義務者本人のみ）</span></div>${D('義務者は子どもと別居しているため、本人分（大人=100）のみです。')}<div class="bk-row" style="margin-top:6px"><span class="bk-key">婚姻費用（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D('義務者と権利者の基礎収入を合わせた生活費総額を、それぞれの指数に応じて按分します。権利者側（子ども含む）に割り当てられた分から、権利者自身の基礎収入を差し引いた差額が、義務者が支払うべき婚姻費用です。')}<div class="bk-formula">(a'+b)×権利者側指数÷(権利者側指数+義務者側指数)−b<br>(${fmtMan(ap)}+${fmtMan(b)})×${ei}÷(${ei}+${oi})−${fmtMan(b)}<br>=${fmtMan((ap+b)*ei/(ei+oi))}−${fmtMan(b)}=${fmtMan(ann)}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
+  if(otherCS.amount>0){
+    otherHtml=`<div class="bk-row" style="margin-top:6px;background:#f5f0ff;padding:5px 8px;border-radius:5px"><span class="bk-key">他の子への養育費（控除額）</span><span class="bk-val" style="color:#7c3aed">−${fmtMan(otherCS.amount)}</span></div>${D('この金額を義務者の基礎収入から差し引いてから計算します。')}<div class="bk-formula">${otherCS.steps.join('<br>')}</div><div class="bk-row" style="margin-top:4px"><span class="bk-key">調整後の義務者基礎収入（a）</span><span class="bk-val">${fmtMan(ap)}</span></div>${D('他の子への養育費を差し引いた後の、実際の計算に使う義務者の基礎収入です。')}`;
+  }
+
+  // Build obChildHtml
+  let obChildHtml='';
+  if(obCs>0){
+    obChildHtml=`<div class="bk-row" style="margin-top:6px"><span class="bk-key">義務者と同居する子の指数合計</span><span class="bk-val">${obCs}</span></div>${D('義務者と同居している夫婦間の子の生活費指数の合計です。義務者側の指数に加算します。')}<div class="bk-formula">${obChildAges.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')}</div>`;
+  }
+
+  // Build betaHtml
+  let betaHtml='';
+  if(hasResOther){
+    betaHtml=`<div class="bk-row" style="margin-top:6px;background:#f5f0ff;padding:5px 8px;border-radius:5px"><span class="bk-key">婚外子のβ（修正生活費指数）合計</span><span class="bk-val" style="color:#7c3aed">${beta.toFixed(3)}</span></div>${D('義務者が同居して養育する婚外子について、義務者・他方親の基礎収入比率で按分した修正指数の合計です。')}<div class="bk-formula">${betaSteps.join('<br>')}${resOtherBase>0?'<br>婚外子の他方の親の基礎収入: '+fmtMan(resOtherBase):''}</div>`;
+  }
+
+  // Build result formula lines
+  let resultFormula='';
+  if(hasResOther){
+    resultFormula=`a×(100+α)÷(200+α+β) + b×(100+α)÷(200+α) − b<br>${fmtMan(ap)}×(100+${cs})÷(200+${cs}+${beta.toFixed(3)}) + ${fmtMan(b)}×(100+${cs})÷(200+${cs}) − ${fmtMan(b)}<br>=${fmtMan(ann)}`;
+  }else{
+    resultFormula=`(a+b)×権利者側指数÷(権利者側指数+義務者側指数)−b<br>(${fmtMan(ap)}+${fmtMan(b)})×${ei}÷(${ei}+${oi})−${fmtMan(b)}<br>=${fmtMan((ap+b)*ei/(ei+oi))}−${fmtMan(b)}=${fmtMan(ann)}`;
+  }
+
+  let obSideDesc='';
+  if(hasResOther){
+    obSideDesc=`<div class="bk-row"><span class="bk-key">義務者側の指数</span><span class="bk-val">100（義務者本人）${obCs>0?'＋'+obCs+'（同居の子）':''}＋β（婚外子）</span></div>${D('義務者は本人分（大人=100）に加え、同居する子の指数とβ（婚外子の修正指数）が適用されます。')}`;
+  }else{
+    obSideDesc=`<div class="bk-row"><span class="bk-key">義務者側の指数</span><span class="bk-val">${oi}${obCs>0?'（義務者本人100＋同居の子'+obCs+'）':'（義務者本人のみ）'}</span></div>${D(obCs>0?'義務者本人（大人=100）と義務者と同居する子の指数の合計です。':'義務者は子と別居しているため、本人分（大人=100）のみです。')}`;
+  }
+
+  const html=`<div class="result-box ${mon<0?'warning':''}"><div class="result-label">月額婚姻費用（目安）</div><div class="result-amount">${mon<0?'0円':fmtEn(mon)}</div><div class="result-sub">年額：${mon<0?'0円':fmtEn(ann)}${mon<0?'<br>※権利者の収入が高いため婚姻費用は発生しません':''}</div></div>${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。収入が高いほど控除率が上がります。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}</div>${otherHtml}${betaHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計（権利者と同居）</span><span class="bk-val">${cs}</span></div>${D('各子の生活費を数値化したものです。大人を100として、0〜14歳は62、15〜19歳は85として計算します。複数の子がいる場合は合計します。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}<div class="bk-row" style="margin-top:4px"><span class="bk-key">権利者側の指数合計</span><span class="bk-val">100（権利者）＋${cs}（子）＝${ei}</span></div>${D('権利者自身（大人=100）と子たちの指数を合算した数値です。権利者と子が生活するために必要な費用の規模を表しています。')}${obChildHtml}${obSideDesc}<div class="bk-row" style="margin-top:6px"><span class="bk-key">婚姻費用（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D('義務者と権利者の基礎収入を合わせた生活費総額を、それぞれの指数に応じて按分します。権利者側（子含む）に割り当てられた分から、権利者自身の基礎収入を差し引いた差額が、義務者が支払うべき婚姻費用です。')}<div class="bk-formula">${resultFormula}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
   const el=document.getElementById('k-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
+// ⑧ Updated calcYouiku with ob-child and res-other support
 function calcYouiku(){
-  const obSal=nv('y-ob-salary');if(obSal===null)return showErr('y-result','義務者の収入を入力してください。');
-  const ages=getChildAges('y');if(!ages.length)return showErr('y-result','子どもの年齢を1人以上入力してください。');
+  const obSal=nv('y-ob-salary');
+  if(obSal===null)return showErr('y-result','義務者の収入を入力してください。');
+  const ages=getChildAges('y');
+  if(!ages.length)return showErr('y-result','(元)夫婦間の子の年齢を1人以上入力してください。');
   const ob=calcBaseIncome(v('y-ob-type'),obSal,nv('y-ob-business'),nv('y-ob-insurance'));
   const ee=calcBaseIncome(v('y-ee-type'),nv('y-ee-salary')||0,nv('y-ee-business'),nv('y-ee-insurance'));
   const a=ob.baseIncome;let b=ee.baseIncome;const corr=b>a;const bOrig=b;if(corr)b=a;
+
+  // 非同居・養育費払いの他の子
   const otherCS=calcOtherCS(a,nv('y-other-parent-income'),getOtherAges('y'));
   const ap=a-otherCS.amount;
+
+  // 子の指数（権利者と同居）
   const cs=ages.reduce((t,ag)=>t+childIndex(ag),0);
-  const c=ap*cs/(100+cs);const ann=c*ap/(ap+b);const mon=ann/12;
+
+  // 義務者と同居する子（夫婦間）→ 義務者側指数に加算
+  const obChildAges=getObChildAges('y');
+  const obCs=obChildAges.reduce((t,ag)=>t+childIndex(ag),0);
+
+  // 義務者と同居する婚外子 → β計算
+  const resOtherAges=getResOtherAges('y');
+  const resOtherIncome=nv('y-res-other-income')||0;
+  const resOtherBase=calcBaseIncome('employee',resOtherIncome,0,0).baseIncome;
+  let beta=0;
+  const betaSteps=[];
+  resOtherAges.forEach((ag,i)=>{
+    const idx=childIndex(ag);
+    const denom=ap+resOtherBase;
+    const b_i=denom>0?idx*ap/denom:idx;
+    beta+=b_i;
+    betaSteps.push(`婚外子第${i+1}子(${ag}歳): β=${idx}×${ap.toFixed(1)}÷(${ap.toFixed(1)}+${resOtherBase.toFixed(1)})=${b_i.toFixed(3)}`);
+  });
+
+  const hasResOther=resOtherAges.length>0;
+
+  // ② Conditional a label
+  const aLabel=otherCS.amount>0?'（他の子への養育費控除後）':'';
+
+  let c,ann;
+  if(hasResOther){
+    // 同居婚外子あり: 養育費 = ap × α / (100 + α + β)
+    ann=ap*cs/(100+cs+beta);
+    c=null;
+  }else{
+    c=ap*cs/(100+cs);
+    ann=c*ap/(ap+b);
+  }
+  const mon=ann/12;
+
+  // ① Formula with a (not a')
+  let fmlEq1,fmlEq2,fmlVars;
+  if(hasResOther){
+    fmlEq1=`① β（婚外子の修正指数）＝ 子の指数 × a ÷ (a + Z)`;
+    fmlEq2=`② 養育費（年額）＝ a × α ÷ (100 + α + β)`;
+    fmlVars=`a ＝ 義務者の基礎収入${aLabel} ／ Z ＝ 婚外子の他方の親の基礎収入<br>α ＝ 子の生活費指数合計 ／ β ＝ 婚外子の修正生活費指数合計`;
+  }else{
+    fmlEq1=`① 子の生活費 c ＝ a × 子の指数合計 ÷ (100 + 子の指数合計)`;
+    fmlEq2=`② 養育費（年額）＝ c × a ÷ (a + b)`;
+    fmlVars=`a ＝ 義務者の基礎収入${aLabel} ／ b ＝ 権利者の基礎収入<br>子の指数合計 ＝ 各子の生活費指数の合計（0〜14歳=62、15〜19歳=85）`;
+  }
+  const fml=`<div class="formula-header"><div class="fh-title">養育費の計算式（標準算定方式）</div><div class="fh-eq">${fmlEq1}</div><div class="fh-eq">${fmlEq2}</div><div class="fh-vars">${fmlVars}</div></div>`;
+
+  // Build otherHtml
   let otherHtml='';
-  if(otherCS.amount>0){otherHtml=`<div class="bk-row" style="margin-top:6px;background:#f5f0ff;padding:5px 8px;border-radius:5px"><span class="bk-key">他の子への養育費（控除額）</span><span class="bk-val" style="color:#7c3aed">−${fmtMan(otherCS.amount)}</span></div>${D('この金額を義務者の基礎収入から差し引いてから計算します。')}<div class="bk-formula">${otherCS.steps.join('<br>')}</div><div class="bk-row" style="margin-top:4px"><span class="bk-key">調整後の義務者基礎収入（a'）</span><span class="bk-val">${fmtMan(ap)}</span></div>${D('他の子への養育費を差し引いた後の、実際の計算に使う義務者の基礎収入です。')}`;}
-  const fml=`<div class="formula-header"><div class="fh-title">養育費の計算式（標準算定方式）</div><div class="fh-eq">① 子の生活費 c ＝ a' × 子の指数合計 ÷ (100 + 子の指数合計)</div><div class="fh-eq">② 養育費（年額）＝ c × a' ÷ (a' + b)</div><div class="fh-vars">a' ＝ 義務者の基礎収入（他の子の養育費控除後）／ b ＝ 権利者の基礎収入<br>子の指数合計 ＝ 各子どもの生活費指数の合計（0〜14歳=62、15〜19歳=85）</div></div>`;
-  const html=`<div class="result-box"><div class="result-label">月額養育費（目安）</div><div class="result-amount">${fmtEn(mon)}</div><div class="result-sub">年額：${fmtEn(ann)}</div></div>${corr?`<div class="note"><span class="note-icon">⚠️</span>権利者の基礎収入(${fmtMan(bOrig)})が義務者を上回るため、b=${fmtMan(a)}として計算しています。</div>`:''} ${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}${corr?'<br>→補正後: '+fmtMan(b):''}</div>${otherHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div>${D('各子どもの年齢に応じた生活費の指数を合計します。0〜14歳は62、15〜19歳は85です。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の生活費（c）</span><span class="bk-val">${fmtMan(c)}</span></div>${D('義務者・権利者双方の生活費の中から、子どもに必要な生活費の総額を取り出した金額です。義務者の基礎収入に子の指数の比率を掛けて算出します。')}<div class="bk-formula">a'×子の指数÷(100+子の指数)<br>${fmtMan(ap)}×${cs}÷(100+${cs})=${fmtMan(c)}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">養育費（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D('子の生活費（c）を、義務者と権利者の基礎収入の比率で按分した結果が、義務者が支払うべき養育費です。収入の多い義務者がより多く負担する仕組みです。')}<div class="bk-formula">c×a'÷(a'+b)<br>${fmtMan(c)}×${fmtMan(ap)}÷(${fmtMan(ap)}+${fmtMan(b)})=${fmtMan(ann)}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
+  if(otherCS.amount>0){
+    otherHtml=`<div class="bk-row" style="margin-top:6px;background:#f5f0ff;padding:5px 8px;border-radius:5px"><span class="bk-key">他の子への養育費（控除額）</span><span class="bk-val" style="color:#7c3aed">−${fmtMan(otherCS.amount)}</span></div>${D('この金額を義務者の基礎収入から差し引いてから計算します。')}<div class="bk-formula">${otherCS.steps.join('<br>')}</div><div class="bk-row" style="margin-top:4px"><span class="bk-key">調整後の義務者基礎収入（a）</span><span class="bk-val">${fmtMan(ap)}</span></div>${D('他の子への養育費を差し引いた後の、実際の計算に使う義務者の基礎収入です。')}`;
+  }
+
+  // Build obChildHtml
+  let obChildHtml='';
+  if(obCs>0){
+    obChildHtml=`<div class="bk-row" style="margin-top:6px"><span class="bk-key">義務者と同居する子の指数合計</span><span class="bk-val">${obCs}</span></div>${D('義務者と同居している夫婦間の子の生活費指数の合計です。')}<div class="bk-formula">${obChildAges.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')}</div>`;
+  }
+
+  // Build betaHtml
+  let betaHtml='';
+  if(hasResOther){
+    betaHtml=`<div class="bk-row" style="margin-top:6px;background:#f5f0ff;padding:5px 8px;border-radius:5px"><span class="bk-key">婚外子のβ（修正生活費指数）合計</span><span class="bk-val" style="color:#7c3aed">${beta.toFixed(3)}</span></div>${D('義務者が同居して養育する婚外子について、義務者・他方親の基礎収入比率で按分した修正指数の合計です。')}<div class="bk-formula">${betaSteps.join('<br>')}${resOtherBase>0?'<br>婚外子の他方の親の基礎収入: '+fmtMan(resOtherBase):''}</div>`;
+  }
+
+  // Build result formula and c-section
+  let cSection='';
+  let resultFormula='';
+  if(hasResOther){
+    resultFormula=`a×α÷(100+α+β)<br>${fmtMan(ap)}×${cs}÷(100+${cs}+${beta.toFixed(3)})=${fmtMan(ann)}`;
+  }else{
+    cSection=`<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の生活費（c）</span><span class="bk-val">${fmtMan(c)}</span></div>${D('義務者・権利者双方の生活費の中から、子に必要な生活費の総額を取り出した金額です。義務者の基礎収入に子の指数の比率を掛けて算出します。')}<div class="bk-formula">a×子の指数÷(100+子の指数)<br>${fmtMan(ap)}×${cs}÷(100+${cs})=${fmtMan(c)}</div>`;
+    resultFormula=`c×a÷(a+b)<br>${fmtMan(c)}×${fmtMan(ap)}÷(${fmtMan(ap)}+${fmtMan(b)})=${fmtMan(ann)}`;
+  }
+
+  const html=`<div class="result-box"><div class="result-label">月額養育費（目安）</div><div class="result-amount">${fmtEn(mon)}</div><div class="result-sub">年額：${fmtEn(ann)}</div></div>${corr?`<div class="note"><span class="note-icon">⚠️</span>権利者の基礎収入(${fmtMan(bOrig)})が義務者を上回るため、b=${fmtMan(a)}として計算しています。</div>`:''} ${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}${corr?'<br>→補正後: '+fmtMan(b):''}</div>${otherHtml}${betaHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div>${D('各子の年齢に応じた生活費の指数を合計します。0〜14歳は62、15〜19歳は85です。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}${obChildHtml}${cSection}<div class="bk-row" style="margin-top:6px"><span class="bk-key">養育費（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D(hasResOther?'義務者の基礎収入（a）に子の指数（α）の比率を掛け、婚外子の修正指数（β）を考慮して按分した結果が義務者の支払うべき養育費です。':'子の生活費（c）を、義務者と権利者の基礎収入の比率で按分した結果が、義務者が支払うべき養育費です。収入の多い義務者がより多く負担する仕組みです。')}<div class="bk-formula">${resultFormula}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
   const el=document.getElementById('y-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
@@ -446,6 +648,8 @@ function calcZaisan(){
 
 // UI HELPERS
 let cc={k:0,y:0},oc={k:0,y:0},ac=0,dc=0,rc=0;
+// ⑧ New counters for ob-children and res-other children
+let obc={k:0,y:0},roc={k:0,y:0};
 
 function addChild(p){cc[p]++;const id=cc[p];const d=document.createElement('div');d.className='child-row';d.id=`${p}-child-${id}`;d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${p}-cage-${id}" oninput="updIdx(this,'${p}-cidx-${id}')"><span class="unit">歳</span><span class="age-index" id="${p}-cidx-${id}">─</span><button class="btn-remove" onclick="rmEl('${p}-child-${id}')">✕</button>`;document.getElementById(`${p}-children-list`).appendChild(d);}
 
@@ -453,10 +657,44 @@ function addOtherChild(p){oc[p]++;const id=oc[p];const d=document.createElement(
 
 function rmOther(id,p){rmEl(id);if(!document.querySelectorAll(`[id^="${p}-oage-"]`).length)document.getElementById(`${p}-other-parent-wrap`).style.display='none';}
 
+// ⑧ New function: addObChild
+function addObChild(p){
+  obc[p]++;
+  const id=obc[p];
+  const d=document.createElement('div');
+  d.className='child-row';
+  d.id=`${p}-obchild-${id}`;
+  d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${p}-obage-${id}" oninput="updIdx(this,'${p}-obidx-${id}')"><span class="unit">歳</span><span class="age-index" id="${p}-obidx-${id}">─</span><button class="btn-remove" onclick="rmEl('${p}-obchild-${id}')">✕</button>`;
+  document.getElementById(`${p}-ob-children-list`).appendChild(d);
+}
+
+// ⑧ New function: addResOtherChild
+function addResOtherChild(p){
+  roc[p]++;
+  const id=roc[p];
+  const d=document.createElement('div');
+  d.className='child-row';
+  d.id=`${p}-resother-${id}`;
+  d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${p}-rosage-${id}" oninput="updIdx(this,'${p}-rosidx-${id}')"><span class="unit">歳</span><span class="age-index" id="${p}-rosidx-${id}">─</span><button class="btn-remove" onclick="rmResOther('${p}-resother-${id}','${p}')">✕</button>`;
+  document.getElementById(`${p}-res-other-list`).appendChild(d);
+  document.getElementById(`${p}-res-other-parent-wrap`).style.display='block';
+}
+
+// ⑧ New function: rmResOther
+function rmResOther(id,p){
+  rmEl(id);
+  if(!document.querySelectorAll(`[id^="${p}-rosage-"]`).length)
+    document.getElementById(`${p}-res-other-parent-wrap`).style.display='none';
+}
+
 function updIdx(input,sid){const age=Number(input.value);const s=document.getElementById(sid);if(s)s.textContent=age>=0&&age<=19?`指数${childIndex(age)}`:'─';}
 
 function getChildAges(p){const a=[];document.querySelectorAll(`[id^="${p}-cage-"]`).forEach(el=>{if(el.value.trim()!=='')a.push(Number(el.value));});return a;}
 function getOtherAges(p){const a=[];document.querySelectorAll(`[id^="${p}-oage-"]`).forEach(el=>{if(el.value.trim()!=='')a.push(Number(el.value));});return a;}
+
+// ⑧ New helper functions
+function getObChildAges(p){const a=[];document.querySelectorAll(`[id^="${p}-obage-"]`).forEach(el=>{if(el.value.trim()!=='')a.push(Number(el.value));});return a;}
+function getResOtherAges(p){const a=[];document.querySelectorAll(`[id^="${p}-rosage-"]`).forEach(el=>{if(el.value.trim()!=='')a.push(Number(el.value));});return a;}
 
 function addProperty(){
   rc++;const id=rc;
@@ -470,7 +708,8 @@ function updReEquity(rowId){const row=document.getElementById(rowId);if(!row)ret
 
 function addAsset(){ac++;const id=ac;const d=document.createElement('div');d.className='asset-row';d.id=`z-asset-${id}`;d.innerHTML=`<input type="text" placeholder="財産名（例：銀行預金）"><div class="input-wrap"><input type="number" placeholder="金額" min="0" class="z-asset-val"><span class="unit">万</span></div><button class="btn-remove" onclick="rmEl('z-asset-${id}')">✕</button>`;document.getElementById('z-asset-list').appendChild(d);}
 
-function addDebt(){dc++;const id=dc;const d=document.createElement('div');d.className='asset-row';d.id=`z-debt-${id}`;d.innerHTML=`<input type="text" placeholder="負債名（例：カーローン）"><div class="input-wrap"><input type="number" placeholder="残高" min="0" class="z-debt-val"><span class="unit">万</span></div><button class="btn-remove" onclick="rmEl('z-debt-${id}')">✕</button>`;document.getElementById('z-debt-list').appendChild(d);}
+// ⑤ Changed 負債名 input to select dropdown
+function addDebt(){dc++;const id=dc;const d=document.createElement('div');d.className='asset-row';d.id=`z-debt-${id}`;d.innerHTML=`<select class="z-debt-name"><option>カーローン</option><option>教育ローン</option><option>奨学金ローン</option><option>消費者ローン</option><option>その他の借金</option></select><div class="input-wrap"><input type="number" placeholder="残高" min="0" class="z-debt-val"><span class="unit">万</span></div><button class="btn-remove" onclick="rmEl('z-debt-${id}')">✕</button>`;document.getElementById('z-debt-list').appendChild(d);}
 
 function rmEl(id){const el=document.getElementById(id);if(el)el.remove();}
 
