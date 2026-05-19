@@ -1,225 +1,530 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>相続計算ツール</title>
-  <style>
-    :root{--primary:#7C5C3E;--primary-hover:#5D4230;--primary-light:#FAF3EC;--success:#4D7C5A;--success-light:#EEF7F1;--success-border:#95C4A4;--warning:#B07A3C;--warning-light:#FBF5EC;--danger:#B84040;--danger-light:#FEF2F2;--border:#DDD5C8;--bg:#F2EDE4;--card:#FEFCF9;--text:#2C1F14;--text-muted:#7A6555;--radius:10px;--shadow:0 1px 4px rgba(100,60,20,.10)}
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
-    .header{background:linear-gradient(135deg,#3D2B1F,#7C5C3E);color:#fff;padding:18px 20px;text-align:center}
-    .header h1{font-size:20px;font-weight:700}.header p{font-size:12px;opacity:.8;margin-top:3px}
-    .tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:10}
-    .tab-btn{flex:1;min-width:100px;padding:13px 6px;border:none;background:none;cursor:pointer;font-size:14px;font-weight:600;color:var(--text-muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
-    .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-light)}
-    .container{max-width:720px;margin:0 auto;padding:16px 12px}
-    .panel{display:none}.panel.active{display:block}
-    .info-banner{background:var(--primary-light);border:1px solid #C8A882;border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
-    .info-banner p{font-size:13px;color:#5D3A1A;flex:1}
-    .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
-    .card-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--text)}
-    .icon{width:26px;height:26px;border-radius:6px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
-    .help-btn{border:1px solid #C8A882;border-radius:20px;background:#FAF3EC;color:var(--text-muted);cursor:pointer;font-size:11px;font-weight:600;flex-shrink:0;margin-left:auto;padding:3px 9px;white-space:nowrap;transition:all .2s}
-    .help-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-    @media(max-width:480px){.form-row{grid-template-columns:1fr}}
-    .form-group{display:flex;flex-direction:column;gap:4px}
-    label{font-size:12px;font-weight:600;color:var(--text-muted)}
-    .input-wrap{display:flex;align-items:center;gap:6px}.input-wrap input,.input-wrap select{flex:1}
-    .unit{font-size:13px;color:var(--text-muted);white-space:nowrap}
-    input[type=number],input[type=text],select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:14px;color:var(--text);background:#fff;transition:border-color .2s;-webkit-appearance:none}
-    input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(124,92,62,.12)}
-    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237A6555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:30px}
-    .toggle-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-    .toggle-row input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--primary)}
-    .toggle-row label{font-size:13px;font-weight:600;color:var(--text);cursor:pointer}
-    .extra-fields{background:#F7F0E8;border-radius:8px;padding:12px;margin-top:8px;border:1px dashed var(--border)}
-    .btn-calc{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:4px}
-    .btn-calc:hover{background:var(--primary-hover)}
-    .result-box{background:var(--success-light);border:1.5px solid var(--success-border);border-radius:var(--radius);padding:20px;margin-bottom:14px}
-    .result-box.notax{background:#EEF7F1;border-color:#95C4A4}
-    .result-label{font-size:13px;font-weight:600;color:var(--success);margin-bottom:2px}
-    .result-amount{font-size:32px;font-weight:800;color:var(--success);line-height:1.1}
-    .result-sub{font-size:13px;color:#2D5E3A;margin-top:6px}
-    .result-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
-    .result-table th{background:#EDE5D8;color:var(--primary);padding:7px 10px;text-align:left;font-weight:700;border-bottom:2px solid #C8A882}
-    .result-table td{padding:7px 10px;border-bottom:1px dashed var(--border);vertical-align:top}
-    .result-table tr:last-child td{border-bottom:none}
-    .result-table .hl{font-weight:700;color:var(--primary)}
-    .result-table .formula{font-family:'Courier New',monospace;font-size:11.5px;color:var(--text-muted)}
-    .result-table .no-right{color:var(--text-muted);font-style:italic}
-    .breakdown{background:#F7F0E8;border-radius:8px;border:1px solid var(--border);padding:14px;margin-bottom:14px}
-    .breakdown-title{font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
-    .bk-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px dashed #DDD5C8;gap:8px;font-size:13px}
-    .bk-row:last-child{border-bottom:none}
-    .bk-key{color:var(--text-muted);flex:1}.bk-val{font-weight:700;white-space:nowrap;color:var(--text)}
-    .bk-desc{font-size:12px;color:var(--text);background:#fff;border-radius:5px;padding:6px 8px;margin:4px 0 6px;border-left:3px solid #C8A882;line-height:1.65}
-    .bk-total{background:#EDE5D8;border-radius:6px;padding:10px 12px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;font-weight:700}
-    .bk-total .key{color:var(--primary)}.bk-total .val{color:var(--primary);font-size:16px}
-    .sec-title{font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
-    .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
-    .note{font-size:12px;color:#7A4A1E;background:#FBF5EC;border:1px solid #F0C070;border-radius:7px;padding:8px 12px;margin-top:8px;display:flex;gap:6px}
-    .note-icon{flex-shrink:0}
-    .err-msg{background:var(--danger-light);border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;color:var(--danger);font-size:13px;margin-bottom:12px}
-    .tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:600;margin-left:6px}
-    .tag-red{background:#fef2f2;color:#B84040;border:1px solid #fca5a5}
-    .tag-green{background:var(--success-light);color:var(--success);border:1px solid var(--success-border)}
-    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
-    .modal-overlay.open{display:flex}
-    .modal-box{background:var(--card);border-radius:14px;padding:22px;max-width:500px;width:100%;margin:auto;position:relative;border:1px solid var(--border)}
-    .modal-close{position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:20px;color:var(--text-muted);padding:4px}
-    .modal-title{font-size:16px;font-weight:700;margin-bottom:14px;padding-right:30px;color:var(--primary)}
-    .modal-body{font-size:13px;line-height:1.75}
-    .modal-body h4{font-size:13px;font-weight:700;margin:12px 0 5px;color:var(--text)}
-    .modal-body p{margin-bottom:8px}
-    .modal-body ol,.modal-body ul{padding-left:16px;margin-bottom:8px}
-    .modal-body li{margin-bottom:5px}
-    .help-note{background:#FBF5EC;border-left:3px solid #C8A882;padding:8px 12px;border-radius:0 6px 6px 0;margin:10px 0;font-size:12px}
-    .modal-body table{width:100%;border-collapse:collapse;margin:8px 0}
-    .modal-body th,.modal-body td{padding:6px 8px;border:1px solid var(--border);font-size:12px}
-    .modal-body th{background:var(--primary-light);color:var(--primary)}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>相続計算ツール</title>
+<style>
+:root{--primary:#7C5C3E;--primary-hover:#5D4230;--primary-light:#FAF3EC;--success:#4D7C5A;--success-light:#EEF7F1;--success-border:#95C4A4;--warning:#B07A3C;--warning-light:#FBF5EC;--danger:#B84040;--danger-light:#FEF2F2;--border:#DDD5C8;--bg:#F2EDE4;--card:#FEFCF9;--text:#2C1F14;--text-muted:#7A6555;--radius:10px;--shadow:0 1px 4px rgba(100,60,20,.10)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.header{background:linear-gradient(135deg,#3D2B1F,#7C5C3E);color:#fff;padding:18px 20px;text-align:center}
+.header h1{font-size:20px;font-weight:700}.header p{font-size:12px;opacity:.8;margin-top:3px}
+.tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:10}
+.tab-btn{flex:1;min-width:70px;padding:11px 4px;border:none;background:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-light)}
+.container{max-width:720px;margin:0 auto;padding:16px 12px}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card-title{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.icon{width:26px;height:26px;border-radius:6px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.help-btn{border:1px solid #C8A882;border-radius:20px;background:#FAF3EC;color:var(--text-muted);cursor:pointer;font-size:11px;font-weight:600;flex-shrink:0;margin-left:auto;padding:3px 9px;white-space:nowrap;transition:all .2s}
+.help-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+.info-banner{background:var(--primary-light);border:1px solid #C8A882;border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.info-banner p{font-size:13px;color:#5D3A1A;flex:1}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:480px){.form-row{grid-template-columns:1fr}}
+.form-group{display:flex;flex-direction:column;gap:4px}
+label{font-size:12px;font-weight:600;color:var(--text-muted)}
+.input-wrap{display:flex;align-items:center;gap:6px}.input-wrap input,.input-wrap select{flex:1}
+.unit{font-size:13px;color:var(--text-muted);white-space:nowrap}
+input[type=number],input[type=text],select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:14px;color:var(--text);background:#fff;transition:border-color .2s;-webkit-appearance:none}
+input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(124,92,62,.12)}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237A6555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:30px}
+.toggle-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.toggle-row input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--primary)}
+.toggle-row label{font-size:13px;font-weight:600;color:var(--text);cursor:pointer;margin:0}
+.extra-fields{background:#F7F0E8;border-radius:8px;padding:12px;margin-top:8px;border:1px dashed var(--border)}
+.btn-calc{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:4px}
+.btn-calc:hover{background:var(--primary-hover)}
+.btn-link{background:none;border:none;color:var(--primary);font-size:13px;font-weight:700;cursor:pointer;text-decoration:underline;padding:4px 0}
+.note{font-size:12px;color:#7A4A1E;background:#FBF5EC;border:1px solid #F0C070;border-radius:7px;padding:8px 12px;margin-top:8px;display:flex;gap:6px;line-height:1.6}
+.note-icon{flex-shrink:0}
+.err-msg{background:var(--danger-light);border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;color:var(--danger);font-size:13px;margin-bottom:12px}
+/* Questionnaire */
+.q-label{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.5}
+.q-why{font-size:12px;color:var(--text-muted);background:#F7F0E8;border-left:3px solid #C8A882;padding:7px 10px;border-radius:0 6px 6px 0;margin-bottom:10px;line-height:1.7}
+.q-choices{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.q-choice{flex:1;min-width:130px;padding:10px 14px;border:2px solid var(--border);border-radius:9px;background:#fff;cursor:pointer;font-size:13px;font-weight:600;color:var(--text);transition:all .2s;text-align:center}
+.q-choice:hover{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}
+.q-choice.selected{border-color:var(--primary);background:var(--primary);color:#fff}
+.q-sub{background:#F7F0E8;border-radius:8px;padding:12px 14px;margin-top:8px;border:1px dashed var(--border);display:none}
+.q-sub.visible{display:block}
+.q-input-row{display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap}
+.q-input-row label{font-size:13px;font-weight:600;color:var(--text);margin:0;white-space:nowrap}
+.q-input-row input{width:70px;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:14px;text-align:center;background:#fff}
+.q-divider{height:1px;background:var(--border);margin:12px 0}
+/* Result */
+.result-hero{background:linear-gradient(135deg,#3D2B1F,#7C5C3E);color:#fff;border-radius:var(--radius);padding:22px 20px;margin-bottom:14px;text-align:center}
+.result-hero .rh-sub{font-size:13px;opacity:.8;margin-bottom:4px}
+.result-hero .rh-amount{font-size:38px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.result-hero .rh-label{font-size:13px;opacity:.75;margin-top:6px}
+.result-hero .rh-iryubun{font-size:13px;margin-top:10px;background:rgba(255,255,255,.15);border-radius:7px;padding:8px 14px}
+.result-box{background:var(--success-light);border:1.5px solid var(--success-border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+.result-box.warn{background:var(--warning-light);border-color:#C8A882}
+.result-label{font-size:13px;font-weight:600;color:var(--success);margin-bottom:2px}
+.result-amount{font-size:28px;font-weight:800;color:var(--success);line-height:1.1}
+.result-sub{font-size:12px;color:#2D5E3A;margin-top:5px}
+.result-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+.result-table th{background:#EDE5D8;color:var(--primary);padding:7px 10px;text-align:left;font-weight:700;border-bottom:2px solid #C8A882}
+.result-table td{padding:7px 10px;border-bottom:1px dashed var(--border);vertical-align:top}
+.result-table tr:last-child td{border-bottom:none}
+.result-table .hl{font-weight:700;color:var(--primary)}
+.result-table .no-right{color:var(--text-muted);font-style:italic;font-size:12px}
+.result-table tr.self-row{background:#FFF8EC}
+.result-table tr.self-row td{border-left:3px solid var(--primary)}
+.breakdown{background:#F7F0E8;border-radius:8px;border:1px solid var(--border);padding:14px;margin-bottom:14px}
+.breakdown-title{font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:10px;letter-spacing:.05em}
+.bk-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px dashed #DDD5C8;gap:8px;font-size:13px}
+.bk-row:last-child{border-bottom:none}
+.bk-key{color:var(--text-muted);flex:1}.bk-val{font-weight:700;white-space:nowrap;color:var(--text)}
+.bk-desc{font-size:12px;color:var(--text);background:#fff;border-radius:5px;padding:6px 8px;margin:4px 0 6px;border-left:3px solid #C8A882;line-height:1.7}
+.bk-total{background:#EDE5D8;border-radius:6px;padding:10px 12px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.bk-total .key{color:var(--primary)}.bk-total .val{color:var(--primary);font-size:16px}
+/* Heir badges */
+.heir-badges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.heir-badge{display:inline-flex;align-items:center;background:#EDE5D8;border:1px solid #C8A882;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;color:var(--primary)}
+.heir-badge.self{background:var(--primary);color:#fff;border-color:var(--primary)}
+.heir-reason-box{background:#F7F0E8;border-radius:8px;padding:12px 14px;margin-top:8px}
+.heir-reason-item{display:flex;gap:8px;font-size:12px;line-height:1.65;margin-bottom:6px}
+.heir-reason-item:last-child{margin-bottom:0}
+.hr-mark{flex-shrink:0;font-weight:700}
+.hr-mark.ok{color:var(--success)}.hr-mark.ng{color:var(--text-muted)}
+/* Position selector */
+.pos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:10px}
+.pos-card{padding:10px 8px;border:2px solid var(--border);border-radius:9px;background:#fff;cursor:pointer;font-size:13px;font-weight:600;text-align:center;transition:all .2s}
+.pos-card:hover{border-color:var(--primary);background:var(--primary-light)}
+.pos-card.selected{border-color:var(--primary);background:var(--primary);color:#fff}
+.pos-icon{font-size:18px;margin-bottom:3px}
+/* Distribution bar */
+.dist-bar-wrap{margin:14px 0}
+.dist-bar{display:flex;border-radius:8px;overflow:hidden;height:40px}
+.dist-seg{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;min-width:0;overflow:hidden;white-space:nowrap;padding:0 4px;transition:flex .4s}
+.dist-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.dist-legend-item{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600}
+.dist-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+/* Timeline */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:14px;padding-bottom:22px;position:relative}
+.tl-item:last-child{padding-bottom:0}
+.tl-item:not(:last-child)::before{content:'';position:absolute;left:15px;top:34px;bottom:0;width:2px;background:var(--border)}
+.tl-dot{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;border:2px solid var(--border);background:#fff;z-index:1}
+.tl-dot.urgent{border-color:#B84040;background:#FEF2F2}
+.tl-dot.warn{border-color:#B07A3C;background:#FBF5EC}
+.tl-dot.ok{border-color:#4D7C5A;background:#EEF7F1}
+.tl-content{flex:1;padding-top:4px}
+.tl-title{font-size:14px;font-weight:700}
+.tl-deadline{font-size:13px;font-weight:700;color:var(--danger);margin:2px 0}
+.tl-deadline.warn{color:var(--warning)}
+.tl-deadline.ok{color:var(--success)}
+.tl-desc{font-size:12px;color:var(--text-muted);line-height:1.7;margin-top:3px}
+/* Modal */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--card);border-radius:14px;padding:22px;max-width:500px;width:100%;margin:auto;position:relative;border:1px solid var(--border)}
+.modal-close{position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:20px;color:var(--text-muted);padding:4px}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:14px;padding-right:30px;color:var(--primary)}
+.modal-body{font-size:13px;line-height:1.75}
+.modal-body h4{font-size:13px;font-weight:700;margin:12px 0 5px;color:var(--text)}
+.modal-body p{margin-bottom:8px}
+.modal-body ol,.modal-body ul{padding-left:16px;margin-bottom:8px}
+.modal-body li{margin-bottom:5px}
+.help-note{background:#FBF5EC;border-left:3px solid #C8A882;padding:8px 12px;border-radius:0 6px 6px 0;margin:10px 0;font-size:12px;line-height:1.7}
+.modal-body table{width:100%;border-collapse:collapse;margin:8px 0}
+.modal-body th,.modal-body td{padding:6px 8px;border:1px solid var(--border);font-size:12px}
+.modal-body th{background:var(--primary-light);color:var(--primary)}
+.sec-title{font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+</style>
 </head>
 <body>
 <header class="header">
   <h1>相続計算ツール</h1>
-  <p>法定相続分・遺留分 / 相続税の概算計算</p>
+  <p>誰が相続人か・いくら受け取れるか・相続税の概算</p>
 </header>
 <nav class="tabs">
-  <button class="tab-btn active" onclick="switchTab('souzoku',this)">⚖️ 法定相続分・遺留分</button>
-  <button class="tab-btn" onclick="switchTab('zei',this)">💴 相続税の概算</button>
+  <button class="tab-btn active" onclick="switchTab('heir',this)">① 相続人を確認</button>
+  <button class="tab-btn" onclick="switchTab('bunkatsu',this)">② 遺産の分け方</button>
+  <button class="tab-btn" onclick="switchTab('zei',this)">③ 相続税の概算</button>
+  <button class="tab-btn" onclick="switchTab('jiko',this)">④ 期限・時効</button>
 </nav>
 <div class="container">
 
-  <!-- ===== 法定相続分・遺留分 ===== -->
-  <div id="panel-souzoku" class="panel active">
-    <div class="info-banner">
-      <p>法定相続分とは、民法で定められた各相続人の相続割合です。遺言がない場合はこの割合で遺産を分けます。</p>
-      <button class="help-btn" onclick="showHelp('souzoku')">詳しく</button>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#dbeafe;color:#1d4ed8">遺</span>遺産・相続人の入力</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>遺産総額（万円）</label>
-          <div class="input-wrap"><input type="number" id="s-estate" placeholder="例：5000" min="0"><span class="unit">万</span></div>
-        </div>
-        <div class="form-group">
-          <label>相続人の構成</label>
-          <select id="s-heir-type" onchange="updateHeirCount('s')">
-            <option value="1">配偶者のみ</option>
-            <option value="2" selected>配偶者＋子</option>
-            <option value="3">配偶者＋親（父母）</option>
-            <option value="4">配偶者＋兄弟姉妹</option>
-            <option value="5">子のみ</option>
-            <option value="6">親（父母）のみ</option>
-            <option value="7">兄弟姉妹のみ</option>
-          </select>
-        </div>
-      </div>
-      <div id="s-count-wrap" class="form-row" style="margin-bottom:0">
-        <div class="form-group">
-          <label id="s-count-label">子の人数</label>
-          <div class="input-wrap"><input type="number" id="s-heir-count" value="2" min="1" max="5"><span class="unit">人</span></div>
-        </div>
-      </div>
-    </div>
-    <button class="btn-calc" onclick="calcSouzoku()">計算する</button>
-    <div id="s-result" style="display:none;margin-top:14px"></div>
+<!-- ① 相続人を確認 -->
+<div id="panel-heir" class="panel active">
+  <div class="info-banner">
+    <p>まず、<strong>誰が相続人になるか</strong>を確認しましょう。亡くなった方の状況をステップごとに入力してください。</p>
+    <button class="help-btn" onclick="showHelp('heir-system')">詳しく</button>
   </div>
 
-  <!-- ===== 相続税 ===== -->
-  <div id="panel-zei" class="panel">
-    <div class="info-banner">
-      <p>相続税の基礎控除は「3,000万円＋600万円×法定相続人の数」です。これを超えた部分に相続税がかかります。</p>
-      <button class="help-btn" onclick="showHelp('zei')">詳しく</button>
+  <!-- Q1: 配偶者 -->
+  <div class="card">
+    <div class="card-title"><span class="icon" style="background:#dbeafe;color:#1d4ed8">❶</span>配偶者について<button class="help-btn" onclick="showHelp('spouse')">詳しく</button></div>
+    <div class="q-label">亡くなった方に<strong>配偶者（夫または妻）</strong>はいますか？</div>
+    <div class="q-why">配偶者（法律上の婚姻関係にある方）は、他に誰がいても<strong>必ず相続人</strong>になります。ただし、離婚した元配偶者や、入籍していない事実婚のパートナーは相続人になりません。</div>
+    <div class="q-choices">
+      <button class="q-choice" id="spouse-yes" onclick="setQ('spouse',true)">いる（存命）</button>
+      <button class="q-choice" id="spouse-no" onclick="setQ('spouse',false)">いない（離婚・死別・未婚）</button>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#dbeafe;color:#1d4ed8">財</span>財産・債務の入力</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>遺産総額（万円）<button class="help-btn" style="margin-left:6px;margin-top:0" onclick="showHelp('estate')">詳しく</button></label>
-          <div class="input-wrap"><input type="number" id="z-estate" placeholder="例：10000" min="0"><span class="unit">万</span></div>
+  </div>
+
+  <!-- Q2: 子 -->
+  <div class="card">
+    <div class="card-title"><span class="icon" style="background:#d1fae5;color:#059669">❷</span>子どもについて<button class="help-btn" onclick="showHelp('children')">詳しく</button></div>
+    <div class="q-label">亡くなった方に<strong>子ども</strong>はいましたか？（養子・認知した子も含みます）</div>
+    <div class="q-why">子どもは<strong>第1順位</strong>の相続人です。子がいる場合、親（父母）や兄弟姉妹は相続人になりません。子どもが亡くなっていても、その子（孫）が代わりに相続できる場合があります（代襲相続）。</div>
+    <div class="q-choices">
+      <button class="q-choice" id="child-yes" onclick="setQ('child',true)">いる（または孫が代わりに相続）</button>
+      <button class="q-choice" id="child-no" onclick="setQ('child',false)">いない</button>
+    </div>
+    <div id="child-sub" class="q-sub">
+      <div class="q-input-row">
+        <label>存命の子どもの人数：</label>
+        <input type="number" id="q-child-alive" value="1" min="0" max="10" onchange="syncQ()">
+        <span class="unit">人</span>
+      </div>
+      <div class="q-divider"></div>
+      <div class="q-label" style="font-size:13px;margin-bottom:6px">子どものうち、<strong>亡くなっている方</strong>はいますか？（代襲相続の確認）</div>
+      <div class="q-why" style="font-size:11px">亡くなった子に子ども（孫）がいる場合、その孫が「代わりに」相続します。これを「代襲相続」といいます。亡くなった子に子どもがいなければ、その枠はなかったものになります。</div>
+      <div class="q-choices">
+        <button class="q-choice" id="gc-yes" onclick="setQ('gc',true)">亡くなっている子がいて、孫が代わりに相続する</button>
+        <button class="q-choice" id="gc-no" onclick="setQ('gc',false)">全員存命（または孫は相続しない）</button>
+      </div>
+      <div id="gc-sub" style="display:none;margin-top:8px">
+        <div class="q-input-row">
+          <label>亡くなっている子の数：</label>
+          <input type="number" id="q-child-dead" value="1" min="1" max="10" onchange="syncQ()">
+          <span class="unit">人</span>
         </div>
-        <div class="form-group">
-          <label>債務・葬式費用（万円）</label>
-          <div class="input-wrap"><input type="number" id="z-debt" placeholder="例：500" min="0"><span class="unit">万</span></div>
+        <div class="q-input-row">
+          <label>代わりに相続する孫の合計：</label>
+          <input type="number" id="q-grandchildren" value="1" min="1" max="10" onchange="syncQ()">
+          <span class="unit">人</span>
+        </div>
+        <div class="note" style="margin-top:6px"><span class="note-icon">ℹ️</span>孫が複数の亡くなった子に分かれる場合、割合が少し異なります。具体的なケースは弁護士にご相談ください。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q3: 親（子なし時のみ表示） -->
+  <div id="parent-section" class="card" style="display:none">
+    <div class="card-title"><span class="icon" style="background:#fce7f3;color:#be185d">❸</span>親（父母）について<button class="help-btn" onclick="showHelp('parents')">詳しく</button></div>
+    <div class="q-label">亡くなった方の<strong>親（父母・祖父母）</strong>で存命の方はいますか？</div>
+    <div class="q-why">子がいない場合、親（父母）が<strong>第2順位</strong>の相続人になります。両親がともに亡くなっている場合は祖父母が相続人になります。親がいる場合、兄弟姉妹は相続人になりません。</div>
+    <div class="q-choices">
+      <button class="q-choice" id="parent-yes" onclick="setQ('parent',true)">いる</button>
+      <button class="q-choice" id="parent-no" onclick="setQ('parent',false)">いない（全員亡くなっている）</button>
+    </div>
+    <div id="parent-sub" class="q-sub">
+      <div class="q-input-row">
+        <label>存命の親（または祖父母）の人数：</label>
+        <input type="number" id="q-parents" value="1" min="1" max="4" onchange="syncQ()">
+        <span class="unit">人</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q4: 兄弟姉妹（子も親もなし時のみ） -->
+  <div id="sibling-section" class="card" style="display:none">
+    <div class="card-title"><span class="icon" style="background:#fef3c7;color:#d97706">❹</span>兄弟姉妹について<button class="help-btn" onclick="showHelp('siblings')">詳しく</button></div>
+    <div class="q-label">亡くなった方に<strong>兄弟姉妹</strong>はいましたか？</div>
+    <div class="q-why">子も親もいない場合、兄弟姉妹が<strong>第3順位</strong>の相続人になります。亡くなった兄弟姉妹がいる場合、その子ども（甥・姪）が代わりに相続できます（代襲相続）。ただし、甥・姪の子どもは代襲できません。また、兄弟姉妹には遺留分（最低保障の相続権）がありません。</div>
+    <div class="q-choices">
+      <button class="q-choice" id="sib-yes" onclick="setQ('sib',true)">いる（または甥・姪が代わりに相続）</button>
+      <button class="q-choice" id="sib-no" onclick="setQ('sib',false)">いない</button>
+    </div>
+    <div id="sibling-sub" class="q-sub">
+      <div class="q-input-row">
+        <label>存命の兄弟姉妹の数：</label>
+        <input type="number" id="q-sib-alive" value="1" min="0" max="10" onchange="syncQ()">
+        <span class="unit">人</span>
+      </div>
+      <div class="q-divider"></div>
+      <div class="q-label" style="font-size:13px;margin-bottom:6px">亡くなっている兄弟姉妹がいて、その子（甥・姪）が代わりに相続しますか？</div>
+      <div class="q-choices">
+        <button class="q-choice" id="neph-yes" onclick="setQ('neph',true)">いる（甥・姪が代わりに相続）</button>
+        <button class="q-choice" id="neph-no" onclick="setQ('neph',false)">いない</button>
+      </div>
+      <div id="neph-sub" style="display:none;margin-top:8px">
+        <div class="q-input-row">
+          <label>亡くなっている兄弟姉妹の数：</label>
+          <input type="number" id="q-sib-dead" value="1" min="1" max="10" onchange="syncQ()">
+          <span class="unit">人</span>
+        </div>
+        <div class="q-input-row">
+          <label>代わりに相続する甥・姪の合計：</label>
+          <input type="number" id="q-nephews" value="1" min="1" max="10" onchange="syncQ()">
+          <span class="unit">人</span>
         </div>
       </div>
+    </div>
+  </div>
+
+  <button class="btn-calc" onclick="calcHeir()">相続人を確認する →</button>
+  <div id="heir-result" style="display:none;margin-top:14px"></div>
+</div>
+
+<!-- ② 遺産の分け方 -->
+<div id="panel-bunkatsu" class="panel">
+  <div class="info-banner">
+    <p>遺産の内容を入力すると、<strong>各相続人の取得額</strong>と、あなたが受け取れる金額の目安がわかります。</p>
+    <button class="help-btn" onclick="showHelp('bunkatsu')">詳しく</button>
+  </div>
+
+  <div id="b-heir-summary" class="card" style="display:none">
+    <div class="card-title"><span class="icon" style="background:#dbeafe;color:#1d4ed8">人</span>相続人の構成（① タブで確認済み）</div>
+    <div id="b-heir-badges" class="heir-badges"></div>
+    <button class="btn-link" onclick="switchTab('heir', document.querySelectorAll('.tab-btn')[0])">① に戻って変更する</button>
+  </div>
+
+  <div id="b-heir-manual" class="card">
+    <div class="card-title"><span class="icon" style="background:#fce7f3;color:#be185d">人</span>相続人の構成<button class="help-btn" onclick="showHelp('heir-system')">詳しく</button></div>
+    <div class="form-row" style="margin-bottom:8px">
+      <div class="form-group">
+        <label>相続人の構成</label>
+        <select id="b-heir-type" onchange="updateBHeirCount()">
+          <option value="1">配偶者のみ</option>
+          <option value="2" selected>配偶者＋子</option>
+          <option value="3">配偶者＋親（父母）</option>
+          <option value="4">配偶者＋兄弟姉妹</option>
+          <option value="5">子のみ</option>
+          <option value="6">親（父母）のみ</option>
+          <option value="7">兄弟姉妹のみ</option>
+        </select>
+      </div>
+      <div id="b-count-wrap" class="form-group">
+        <label id="b-count-label">子の人数</label>
+        <div class="input-wrap"><input type="number" id="b-heir-count" value="2" min="1" max="10"><span class="unit">人</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon" style="background:#d1fae5;color:#059669">財</span>遺産の内訳<button class="help-btn" onclick="showHelp('estate-detail')">詳しく</button></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>不動産（土地・建物・マンション等）</label>
+        <div class="input-wrap"><input type="number" id="b-realestate" placeholder="0" min="0"><span class="unit">万円</span></div>
+      </div>
+      <div class="form-group">
+        <label>預貯金（現金・銀行口座）</label>
+        <div class="input-wrap"><input type="number" id="b-deposit" placeholder="0" min="0"><span class="unit">万円</span></div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>有価証券（株式・投資信託等）</label>
+        <div class="input-wrap"><input type="number" id="b-stocks" placeholder="0" min="0"><span class="unit">万円</span></div>
+      </div>
+      <div class="form-group">
+        <label>生命保険金（受取合計額）</label>
+        <div class="input-wrap"><input type="number" id="b-insurance" placeholder="0" min="0"><span class="unit">万円</span></div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>死亡退職金</label>
+        <div class="input-wrap"><input type="number" id="b-retirement" placeholder="0" min="0"><span class="unit">万円</span></div>
+      </div>
+      <div class="form-group">
+        <label>その他の財産</label>
+        <div class="input-wrap"><input type="number" id="b-other" placeholder="0" min="0"><span class="unit">万円</span></div>
+      </div>
+    </div>
+    <div class="form-row" style="margin-bottom:0">
+      <div class="form-group">
+        <label>負債・借金（マイナス）</label>
+        <div class="input-wrap"><input type="number" id="b-debt" placeholder="0" min="0"><span class="unit">万円</span></div>
+      </div>
+      <div class="form-group">
+        <label>葬式費用（マイナス）</label>
+        <div class="input-wrap"><input type="number" id="b-funeral" placeholder="0" min="0"><span class="unit">万円</span></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>生命保険金・死亡退職金は「みなし相続財産」として相続税の計算に含まれますが、遺産分割の対象にはなりません。受取人が指定されている場合はその方が受け取ります。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon" style="background:#fef3c7;color:#d97706">自</span>あなたのポジション</div>
+    <div class="q-label" style="font-size:13px;margin-bottom:4px">あなたは亡くなった方とどのような関係ですか？</div>
+    <div id="b-pos-grid" class="pos-grid"></div>
+  </div>
+
+  <button class="btn-calc" onclick="calcBunkatsu()">法定相続分を計算する →</button>
+  <div id="b-result" style="display:none;margin-top:14px"></div>
+</div>
+
+<!-- ③ 相続税の概算 -->
+<div id="panel-zei" class="panel">
+  <div class="info-banner">
+    <p>相続税の基礎控除は「3,000万円 ＋ 600万円 × 法定相続人の数」です。これを超えた分に税金がかかります。</p>
+    <button class="help-btn" onclick="showHelp('zei')">詳しく</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon" style="background:#dbeafe;color:#1d4ed8">財</span>財産・債務の入力</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>遺産総額（万円）<button class="help-btn" style="margin-left:4px" onclick="showHelp('estate-detail')">詳しく</button></label>
+        <div class="input-wrap"><input type="number" id="z-estate" placeholder="例：8000" min="0"><span class="unit">万</span></div>
+      </div>
+      <div class="form-group">
+        <label>債務・葬式費用（万円）</label>
+        <div class="input-wrap"><input type="number" id="z-debt" placeholder="例：500" min="0"><span class="unit">万</span></div>
+      </div>
+    </div>
+    <div class="form-row" style="margin-bottom:0">
+      <div class="form-group">
+        <label>生命保険金（万円）<button class="help-btn" style="margin-left:4px" onclick="showHelp('insurance')">詳しく</button></label>
+        <div class="input-wrap"><input type="number" id="z-insurance" placeholder="例：1000" min="0"><span class="unit">万</span></div>
+      </div>
+      <div class="form-group">
+        <label>死亡退職金（万円）<button class="help-btn" style="margin-left:4px" onclick="showHelp('retirement')">詳しく</button></label>
+        <div class="input-wrap"><input type="number" id="z-retirement" placeholder="例：500" min="0"><span class="unit">万</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon" style="background:#fce7f3;color:#be185d">人</span>相続人の構成</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>相続人の構成</label>
+        <select id="z-heir-type" onchange="updateZHeirCount()">
+          <option value="1">配偶者のみ</option>
+          <option value="2" selected>配偶者＋子</option>
+          <option value="3">配偶者＋親（父母）</option>
+          <option value="4">配偶者＋兄弟姉妹</option>
+          <option value="5">子のみ</option>
+          <option value="6">親（父母）のみ</option>
+          <option value="7">兄弟姉妹のみ</option>
+        </select>
+      </div>
+      <div id="z-count-wrap" class="form-group">
+        <label id="z-count-label">子の人数</label>
+        <div class="input-wrap"><input type="number" id="z-heir-count" value="2" min="1" max="10"><span class="unit">人</span></div>
+      </div>
+    </div>
+    <div id="z-spouse-wrap">
+      <label style="font-size:12px;font-weight:600;color:var(--text-muted)">配偶者の実際の取得割合（%）</label>
+      <div class="input-wrap" style="margin-top:4px"><input type="number" id="z-spouse-pct" value="50" min="0" max="100"><span class="unit">%</span></div>
+      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>配偶者は法定相続分か1億6千万円のいずれか多い方まで非課税になります（配偶者の税額軽減）。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon" style="background:#d1fae5;color:#059669">控</span>各種控除（該当する場合）</div>
+    <div class="toggle-row">
+      <input type="checkbox" id="z-minor-chk" onchange="toggleExtra('z-minor-extra')">
+      <label for="z-minor-chk">未成年者控除（18歳未満の相続人がいる）</label>
+      <button class="help-btn" onclick="showHelp('minor')">詳しく</button>
+    </div>
+    <div id="z-minor-extra" class="extra-fields" style="display:none">
       <div class="form-row" style="margin-bottom:0">
-        <div class="form-group">
-          <label>生命保険金（万円）<button class="help-btn" style="margin-left:6px;margin-top:0" onclick="showHelp('insurance')">詳しく</button></label>
-          <div class="input-wrap"><input type="number" id="z-insurance" placeholder="例：1000" min="0"><span class="unit">万</span></div>
-        </div>
-        <div class="form-group">
-          <label>退職金（死亡退職金・万円）<button class="help-btn" style="margin-left:6px;margin-top:0" onclick="showHelp('retirement')">詳しく</button></label>
-          <div class="input-wrap"><input type="number" id="z-retirement" placeholder="例：500" min="0"><span class="unit">万</span></div>
-        </div>
+        <div class="form-group"><label>未成年者の年齢</label><div class="input-wrap"><input type="number" id="z-minor-age" placeholder="例：10" min="0" max="17"><span class="unit">歳</span></div></div>
+        <div class="form-group"><label>未成年の相続人の人数</label><div class="input-wrap"><input type="number" id="z-minor-count" value="1" min="1" max="5"><span class="unit">人</span></div></div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fce7f3;color:#be185d">人</span>相続人の構成</div>
+    <div class="toggle-row" style="margin-top:12px">
+      <input type="checkbox" id="z-dis-chk" onchange="toggleExtra('z-dis-extra')">
+      <label for="z-dis-chk">障害者控除（障害者の相続人がいる）</label>
+      <button class="help-btn" onclick="showHelp('disability')">詳しく</button>
+    </div>
+    <div id="z-dis-extra" class="extra-fields" style="display:none">
       <div class="form-row">
-        <div class="form-group">
-          <label>相続人の構成</label>
-          <select id="z-heir-type" onchange="updateHeirCount('z')">
-            <option value="1">配偶者のみ</option>
-            <option value="2" selected>配偶者＋子</option>
-            <option value="3">配偶者＋親（父母）</option>
-            <option value="4">配偶者＋兄弟姉妹</option>
-            <option value="5">子のみ</option>
-            <option value="6">親（父母）のみ</option>
-            <option value="7">兄弟姉妹のみ</option>
-          </select>
-        </div>
-        <div id="z-count-wrap" class="form-group">
-          <label id="z-count-label">子の人数</label>
-          <div class="input-wrap"><input type="number" id="z-heir-count" value="2" min="1" max="5"><span class="unit">人</span></div>
-        </div>
+        <div class="form-group"><label>障害の種別</label><select id="z-dis-type"><option value="general">一般障害者</option><option value="special">特別障害者</option></select></div>
+        <div class="form-group"><label>障害者の年齢</label><div class="input-wrap"><input type="number" id="z-dis-age" placeholder="例：40" min="0" max="84"><span class="unit">歳</span></div></div>
       </div>
-      <div id="z-spouse-wrap" class="form-group" style="margin-top:4px">
-        <label>配偶者の実際の相続割合（%）</label>
-        <div class="input-wrap"><input type="number" id="z-spouse-pct" value="50" min="0" max="100"><span class="unit">%</span></div>
-      </div>
-      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>配偶者の税額軽減は、法定相続分または1億6千万円のうち多い方まで非課税です。</div>
+      <div class="form-group"><label>障害者の相続人の人数</label><div class="input-wrap"><input type="number" id="z-dis-count" value="1" min="1" max="5"><span class="unit">人</span></div></div>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#d1fae5;color:#059669">控</span>各種控除（任意）</div>
-      <div class="toggle-row">
-        <input type="checkbox" id="z-minor-chk" onchange="toggleExtra('z-minor-extra')">
-        <label for="z-minor-chk">未成年者控除（18歳未満の相続人がいる場合）</label>
-      </div>
-      <div id="z-minor-extra" class="extra-fields" style="display:none">
-        <div class="form-row" style="margin-bottom:0">
-          <div class="form-group"><label>未成年者の年齢</label><div class="input-wrap"><input type="number" id="z-minor-age" placeholder="例：10" min="0" max="17"><span class="unit">歳</span></div></div>
-          <div class="form-group"><label>未成年の相続人の人数</label><div class="input-wrap"><input type="number" id="z-minor-count" value="1" min="1" max="5"><span class="unit">人</span></div></div>
+  </div>
+
+  <button class="btn-calc" onclick="calcZei()">相続税を計算する →</button>
+  <div id="z-result" style="display:none;margin-top:14px"></div>
+</div>
+
+<!-- ④ 期限・時効 -->
+<div id="panel-jiko" class="panel">
+  <div class="info-banner">
+    <p>相続には<strong>期限が定められた手続き</strong>がいくつかあります。特に相続放棄は3ヶ月と短いため注意が必要です。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon" style="background:#fef2f2;color:#B84040">⏰</span>重要な期限一覧</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot urgent">⚡</div>
+        <div class="tl-content">
+          <div class="tl-title">相続放棄・限定承認</div>
+          <div class="tl-deadline">相続を知った日から 3ヶ月以内</div>
+          <div class="tl-desc">相続放棄とは「一切の遺産も借金も引き継がない」という意思表示です。被相続人（亡くなった方）に借金が多い場合に有効です。家庭裁判所に申し立てます。限定承認は「遺産の範囲内でのみ借金を引き継ぐ」制度で、相続人全員で申し立てる必要があります。<strong>この期限を過ぎると自動的に「単純承認」（全部引き継ぐ）とみなされます。</strong></div>
         </div>
-        <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>（18歳 − 年齢）× 10万円 × 人数 が税額から控除されます。</div>
       </div>
-      <div class="toggle-row" style="margin-top:12px">
-        <input type="checkbox" id="z-dis-chk" onchange="toggleExtra('z-dis-extra')">
-        <label for="z-dis-chk">障害者控除（障害者の相続人がいる場合）</label>
-      </div>
-      <div id="z-dis-extra" class="extra-fields" style="display:none">
-        <div class="form-row">
-          <div class="form-group">
-            <label>障害の種別</label>
-            <select id="z-dis-type">
-              <option value="general">一般障害者</option>
-              <option value="special">特別障害者</option>
-            </select>
-          </div>
-          <div class="form-group"><label>障害者の年齢</label><div class="input-wrap"><input type="number" id="z-dis-age" placeholder="例：40" min="0" max="84"><span class="unit">歳</span></div></div>
+      <div class="tl-item">
+        <div class="tl-dot urgent">税</div>
+        <div class="tl-content">
+          <div class="tl-title">相続税の申告・納付</div>
+          <div class="tl-deadline">相続を知った日の翌日から 10ヶ月以内</div>
+          <div class="tl-desc">相続税がかかる場合（基礎控除を超える場合）は、この期限内に税務署への申告と納税が必要です。期限を過ぎると延滞税・加算税が課されます。遺産分割が決まっていなくても、法定相続分で仮申告し、後で修正申告することができます。<strong>配偶者の税額軽減や小規模宅地等の特例を使う場合も、申告が必要です。</strong></div>
         </div>
-        <div class="form-group" style="margin-bottom:0"><label>障害者の相続人の人数</label><div class="input-wrap"><input type="number" id="z-dis-count" value="1" min="1" max="5"><span class="unit">人</span></div></div>
-        <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>（85歳 − 年齢）× 10万円（一般）または20万円（特別）× 人数 が税額から控除されます。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot warn">📝</div>
+        <div class="tl-content">
+          <div class="tl-title">準確定申告（故人の確定申告）</div>
+          <div class="tl-deadline">相続を知った日から 4ヶ月以内</div>
+          <div class="tl-desc">亡くなった方が自営業・不動産収入・給与以外の収入があった場合、相続人が代わりに確定申告をする必要があります（準確定申告）。給与所得のみの会社員だった場合は原則不要です。</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot warn">🏠</div>
+        <div class="tl-content">
+          <div class="tl-title">不動産の相続登記</div>
+          <div class="tl-deadline">相続を知った日から 3年以内（2024年4月より義務化）</div>
+          <div class="tl-desc">2024年4月1日から、相続による不動産の名義変更（相続登記）が義務化されました。正当な理由なく期限内に登記しない場合、10万円以下の過料（罰金）が科される可能性があります。2024年4月以前に発生した相続も対象で、2027年3月31日までに手続きが必要です。</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot warn">⚖️</div>
+        <div class="tl-content">
+          <div class="tl-title">遺留分侵害額請求</div>
+          <div class="tl-deadline">侵害を知った日から 1年以内　／　相続開始から 10年以内</div>
+          <div class="tl-desc">遺言によって自分の遺留分（最低限の相続分）が侵害された場合、侵害した相手に金銭で請求できます（遺留分侵害額請求権）。「自分の遺留分が侵害されたと知った日」から1年以内に請求しないと時効により消滅します。知らなくても相続開始から10年で消滅します。</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot ok">💬</div>
+        <div class="tl-content">
+          <div class="tl-title">遺産分割協議</div>
+          <div class="tl-deadline">法律上の期限なし（ただし早期解決を推奨）</div>
+          <div class="tl-desc">相続人全員で「誰が何を受け取るか」を話し合うことを遺産分割協議といいます。法律上の期限はありませんが、相続税の申告・納付（10ヶ月）までに決めるのが理想的です。まとまらない場合は、家庭裁判所に遺産分割調停を申し立てることができます。</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot ok">🏦</div>
+        <div class="tl-content">
+          <div class="tl-title">預貯金・株式等の名義変更</div>
+          <div class="tl-deadline">法律上の期限なし（早めの手続きを推奨）</div>
+          <div class="tl-desc">銀行口座・証券口座等の名義変更や解約には、戸籍謄本や遺産分割協議書など多くの書類が必要です。金融機関によって手続きが異なります。遺産分割が決まり次第、速やかに手続きすることを推奨します。</div>
+        </div>
       </div>
     </div>
-    <button class="btn-calc" onclick="calcZei()">計算する</button>
-    <div id="z-result" style="display:none;margin-top:14px"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon" style="background:#d1fae5;color:#059669">📋</span>遺産分割の方法</div>
+    <div class="bk-desc" style="margin-bottom:10px">遺産をどう分けるかは、相続人全員の合意が必要です。合意できない場合は、以下の順に解決方法があります。</div>
+    <div class="breakdown-title" style="margin-bottom:8px">STEP 1 → 2 → 3 の順で解決を図ります</div>
+    <div class="bk-row"><span class="bk-key" style="font-weight:700;color:var(--text)">① 遺産分割協議</span><span class="bk-val" style="color:var(--success)">話し合い</span></div>
+    <div class="bk-desc">相続人全員が集まり（または書面で）、誰が何を受け取るかを決めます。全員が合意すれば法定相続分と異なる分け方も可能です。合意内容は「遺産分割協議書」として書面にまとめ、全員が署名・実印で押印します。</div>
+    <div class="bk-row"><span class="bk-key" style="font-weight:700;color:var(--text)">② 遺産分割調停</span><span class="bk-val" style="color:var(--warning)">家庭裁判所</span></div>
+    <div class="bk-desc">協議がまとまらない場合、家庭裁判所に調停を申し立てます。調停委員が間に入り、話し合いを促します。あくまで話し合いなので、全員が合意しなければ成立しません。申立費用は数千円程度です。</div>
+    <div class="bk-row"><span class="bk-key" style="font-weight:700;color:var(--text)">③ 遺産分割審判</span><span class="bk-val" style="color:var(--danger)">裁判所の決定</span></div>
+    <div class="bk-desc">調停でも合意できない場合、審判手続きに移行します。裁判官が法律に基づいて分割方法を決定します。原則として法定相続分に従った分割となります。決定に不服がある場合は即時抗告（不服申立て）ができます。</div>
   </div>
 </div>
+
+</div><!-- /container -->
 
 <!-- モーダル -->
 <div id="help-modal" class="modal-overlay" onclick="closeModal()">
@@ -231,109 +536,413 @@
 </div>
 
 <script>
-const HELP = {
-  souzoku: {title:'法定相続分・遺留分とは',body:`
-    <p><strong>法定相続分</strong>とは、民法で定められた各相続人の相続割合です。遺言がない場合はこの割合が適用されます。</p>
-    <h4>相続人の優先順位</h4>
-    <ul>
-      <li>配偶者は常に相続人となります</li>
-      <li>第1順位：子（子が亡くなっている場合は孫）</li>
-      <li>第2順位：親（両親が亡くなっている場合は祖父母）</li>
-      <li>第3順位：兄弟姉妹</li>
-    </ul>
-    <h4>遺留分とは</h4>
-    <p>遺留分とは、一定の相続人に保障された最低限の相続分です。遺言でこれを下回る場合、相続人は遺留分侵害額請求ができます。兄弟姉妹には遺留分はありません。</p>
-    <div class="help-note">計算結果はあくまで目安です。実際の相続では、相続財産の評価・特別受益・寄与分なども考慮する必要があります。</div>
-  `},
-  zei: {title:'相続税について',body:`
-    <p><strong>相続税</strong>は、亡くなった方から財産を取得した場合に課される税金です。</p>
-    <h4>基礎控除（非課税枠）</h4>
-    <p>3,000万円 ＋ 600万円 × 法定相続人の数</p>
-    <p>この金額以下であれば相続税はかかりません。</p>
-    <h4>税率（速算表）</h4>
-    <table>
-      <tr><th>課税される金額</th><th>税率</th><th>控除額</th></tr>
-      <tr><td>1,000万円以下</td><td>10%</td><td>—</td></tr>
-      <tr><td>3,000万円以下</td><td>15%</td><td>50万円</td></tr>
-      <tr><td>5,000万円以下</td><td>20%</td><td>200万円</td></tr>
-      <tr><td>1億円以下</td><td>30%</td><td>700万円</td></tr>
-      <tr><td>2億円以下</td><td>40%</td><td>1,700万円</td></tr>
-      <tr><td>3億円以下</td><td>45%</td><td>2,700万円</td></tr>
-      <tr><td>6億円以下</td><td>50%</td><td>4,200万円</td></tr>
-      <tr><td>6億円超</td><td>55%</td><td>7,200万円</td></tr>
-    </table>
-    <div class="help-note">この計算は概算です。実際の相続税申告には税理士にご相談ください。申告・納付の期限は相続開始を知った日の翌日から10ヶ月以内です。</div>
-  `},
-  estate: {title:'遺産総額の計算方法',body:`
-    <p>相続税の計算に使う遺産総額（課税価格）は次のように計算します：</p>
-    <p><strong>課税価格 ＝ 相続財産 − 債務・葬式費用 ＋ 非課税枠超過の生命保険金 ＋ 非課税枠超過の退職金</strong></p>
-    <h4>主な相続財産</h4>
-    <ul>
-      <li>現金・預貯金</li>
-      <li>不動産（土地・建物）</li>
-      <li>有価証券（株式・投資信託など）</li>
-      <li>相続開始前3年以内の贈与財産</li>
-    </ul>
-  `},
-  insurance: {title:'生命保険金の非課税枠',body:`
-    <p>相続人が受け取る生命保険金のうち、次の金額までは非課税です。</p>
-    <p><strong>非課税限度額 ＝ 500万円 × 法定相続人の数</strong></p>
-    <p>この金額を超えた部分が課税対象になります。</p>
-    <div class="help-note">受取人が相続人でない場合（例：内縁の配偶者など）は非課税枠が使えません。</div>
-  `},
-  retirement: {title:'死亡退職金の非課税枠',body:`
-    <p>相続人が受け取る死亡退職金のうち、次の金額までは非課税です。</p>
-    <p><strong>非課税限度額 ＝ 500万円 × 法定相続人の数</strong></p>
-    <p>この金額を超えた部分が課税対象になります。</p>
-  `}
+// ── State ──────────────────────────────────────────────────────
+const S = {
+  spouse: null,
+  child: null, childAlive: 1, gc: null, childDead: 1, grandchildren: 1,
+  parent: null, parentsAlive: 1,
+  sib: null, sibAlive: 1, neph: null, sibDead: 1, nephews: 1,
+  selfRole: null,
+  heirs: [],
+  estateTotal: 0,
 };
 
-// ─── 法定相続分の計算 ─────────────────────────────
-function calcLegalShares(count, type) {
-  const n = Math.max(1, count);
-  switch(Number(type)) {
-    case 1: return [{name:'配偶者',role:'spouse',share:[1,1]}];
-    case 2: {
-      const arr = [{name:'配偶者',role:'spouse',share:[1,2]}];
-      for(let i=1;i<=n;i++) arr.push({name:`子${n>1?i+'人目':''}`,role:'child',share:[1,2*n]});
-      return arr;
-    }
-    case 3: {
-      const arr = [{name:'配偶者',role:'spouse',share:[2,3]}];
-      for(let i=1;i<=n;i++) arr.push({name:`親${n>1?i+'人目':''}`,role:'parent',share:[1,3*n]});
-      return arr;
-    }
-    case 4: {
-      const arr = [{name:'配偶者',role:'spouse',share:[3,4]}];
-      for(let i=1;i<=n;i++) arr.push({name:`兄弟姉妹${n>1?i+'人目':''}`,role:'sibling',share:[1,4*n]});
-      return arr;
-    }
-    case 5: {
-      const arr = [];
-      for(let i=1;i<=n;i++) arr.push({name:`子${n>1?i+'人目':''}`,role:'child',share:[1,n]});
-      return arr;
-    }
-    case 6: {
-      const arr = [];
-      for(let i=1;i<=n;i++) arr.push({name:`親${n>1?i+'人目':''}`,role:'parent',share:[1,n]});
-      return arr;
-    }
-    case 7: {
-      const arr = [];
-      for(let i=1;i<=n;i++) arr.push({name:`兄弟姉妹${n>1?i+'人目':''}`,role:'sibling',share:[1,n]});
-      return arr;
-    }
-    default: return [];
+const ROLE_COLORS = ['#7C5C3E','#4D7C5A','#3A6B7C','#7C4D3A','#5A4D7C','#7C7A3A','#3A7C6B','#7C3A5A'];
+const ROLE_NAMES = {spouse:'配偶者',child:'子',grandchild:'孫（代襲）',parent:'親',sibling:'兄弟姉妹',nephew:'甥・姪（代襲）'};
+
+// ── Questionnaire UI ───────────────────────────────────────────
+function setQ(key, val) {
+  S[key] = val;
+  const yes = document.getElementById(key + '-yes');
+  const no  = document.getElementById(key + '-no');
+  if (yes) yes.classList.toggle('selected', val === true);
+  if (no)  no.classList.toggle('selected', val === false);
+
+  if (key === 'spouse') { /* no sub */ }
+  if (key === 'child') {
+    const sub = document.getElementById('child-sub');
+    if (sub) { sub.style.display = val ? 'block' : 'none'; sub.classList.toggle('visible', val); }
+    document.getElementById('parent-section').style.display  = val ? 'none' : '';
+    document.getElementById('sibling-section').style.display = 'none';
+    if (!val) { S.parent = null; S.sib = null; resetQ('parent'); resetQ('sib'); }
+  }
+  if (key === 'gc') {
+    document.getElementById('gc-sub').style.display = val ? 'block' : 'none';
+  }
+  if (key === 'parent') {
+    const sub = document.getElementById('parent-sub');
+    if (sub) { sub.style.display = val ? 'block' : 'none'; sub.classList.toggle('visible', val); }
+    document.getElementById('sibling-section').style.display = val ? 'none' : '';
+    if (!val) { S.sib = null; resetQ('sib'); }
+  }
+  if (key === 'sib') {
+    const sub = document.getElementById('sibling-sub');
+    if (sub) { sub.style.display = val ? 'block' : 'none'; sub.classList.toggle('visible', val); }
+  }
+  if (key === 'neph') {
+    document.getElementById('neph-sub').style.display = val ? 'block' : 'none';
   }
 }
 
-function iryubunRate(type) {
-  return Number(type) === 6 ? [1,3] : [1,2];
+function resetQ(key) {
+  const yes = document.getElementById(key + '-yes');
+  const no  = document.getElementById(key + '-no');
+  if (yes) yes.classList.remove('selected');
+  if (no)  no.classList.remove('selected');
 }
 
-const iryubunRoles = new Set(['spouse','child','parent']);
+function syncQ() {
+  S.childAlive    = Math.max(0, parseInt(document.getElementById('q-child-alive')?.value || 1));
+  S.childDead     = Math.max(1, parseInt(document.getElementById('q-child-dead')?.value || 1));
+  S.grandchildren = Math.max(1, parseInt(document.getElementById('q-grandchildren')?.value || 1));
+  S.parentsAlive  = Math.max(1, parseInt(document.getElementById('q-parents')?.value || 1));
+  S.sibAlive      = Math.max(0, parseInt(document.getElementById('q-sib-alive')?.value || 1));
+  S.sibDead       = Math.max(1, parseInt(document.getElementById('q-sib-dead')?.value || 1));
+  S.nephews       = Math.max(1, parseInt(document.getElementById('q-nephews')?.value || 1));
+}
 
-// ─── 相続税速算表 ─────────────────────────────────
+// ── Heir building ──────────────────────────────────────────────
+function buildHeirs() {
+  syncQ();
+  const heirs = [];
+  if (S.spouse) heirs.push({id:'spouse', name:'配偶者', role:'spouse'});
+
+  const gcCount = (S.gc && S.grandchildren > 0) ? S.grandchildren : 0;
+  const deadSlots = (S.gc && S.childDead > 0) ? S.childDead : 0;
+  const totalChildSlots = S.childAlive + deadSlots;
+  const hasChildren = S.child && totalChildSlots > 0;
+
+  if (hasChildren) {
+    for (let i = 0; i < S.childAlive; i++) {
+      const label = S.childAlive === 1 && gcCount === 0 ? '子' : `子（${i+1}人目）`;
+      heirs.push({id:`child${i+1}`, name: label, role:'child', totalChildSlots});
+    }
+    for (let i = 0; i < gcCount; i++) {
+      const label = gcCount === 1 ? '孫（代襲相続）' : `孫（代襲${i+1}人目）`;
+      heirs.push({id:`gc${i+1}`, name: label, role:'grandchild', totalChildSlots, deadSlots, totalGC: gcCount});
+    }
+  } else if (S.parent && S.parentsAlive > 0) {
+    for (let i = 0; i < S.parentsAlive; i++) {
+      const label = S.parentsAlive === 1 ? '親（父または母）' : (i === 0 ? '親（父）' : '親（母）');
+      heirs.push({id:`parent${i+1}`, name: label, role:'parent', parentCount: S.parentsAlive});
+    }
+  } else if (S.sib) {
+    const nephCount = (S.neph && S.nephews > 0) ? S.nephews : 0;
+    const deadSibSlots = (S.neph && S.sibDead > 0) ? S.sibDead : 0;
+    const totalSibSlots = S.sibAlive + deadSibSlots;
+    for (let i = 0; i < S.sibAlive; i++) {
+      const label = S.sibAlive === 1 && nephCount === 0 ? '兄弟姉妹' : `兄弟姉妹（${i+1}人目）`;
+      heirs.push({id:`sib${i+1}`, name: label, role:'sibling', totalSibSlots});
+    }
+    for (let i = 0; i < nephCount; i++) {
+      const label = nephCount === 1 ? '甥・姪（代襲相続）' : `甥・姪（代襲${i+1}人目）`;
+      heirs.push({id:`neph${i+1}`, name: label, role:'nephew', totalSibSlots, deadSibSlots, totalNephews: nephCount});
+    }
+  }
+  return heirs;
+}
+
+// ── Share calculation ──────────────────────────────────────────
+function calcShareRatio(heir, allHeirs) {
+  const hasSpouse   = allHeirs.some(h => h.role === 'spouse');
+  const hasChildren = allHeirs.some(h => h.role === 'child' || h.role === 'grandchild');
+  const hasParents  = allHeirs.some(h => h.role === 'parent');
+  const hasSiblings = allHeirs.some(h => h.role === 'sibling' || h.role === 'nephew');
+
+  let spouseBase = 0, othersBase = 0;
+  if (!hasSpouse) {
+    othersBase = 1;
+  } else if (hasChildren)  { spouseBase = 1/2; othersBase = 1/2; }
+  else if (hasParents)     { spouseBase = 2/3; othersBase = 1/3; }
+  else if (hasSiblings)    { spouseBase = 3/4; othersBase = 1/4; }
+  else                     { spouseBase = 1;   othersBase = 0;   }
+
+  switch (heir.role) {
+    case 'spouse': return spouseBase;
+    case 'child': {
+      const tcs = heir.totalChildSlots || 1;
+      return othersBase / tcs;
+    }
+    case 'grandchild': {
+      const tcs = heir.totalChildSlots || 1;
+      const ds  = heir.deadSlots || 1;
+      const tgc = heir.totalGC || 1;
+      return (othersBase * ds / tcs) / tgc;
+    }
+    case 'parent': {
+      const pc = heir.parentCount || allHeirs.filter(h=>h.role==='parent').length || 1;
+      return othersBase / pc;
+    }
+    case 'sibling': {
+      const tss = heir.totalSibSlots || 1;
+      return othersBase / tss;
+    }
+    case 'nephew': {
+      const tss = heir.totalSibSlots || 1;
+      const dss = heir.deadSibSlots || 1;
+      const tn  = heir.totalNephews || 1;
+      return (othersBase * dss / tss) / tn;
+    }
+    default: return 0;
+  }
+}
+
+function calcIryubunRatio(heir, allHeirs, shareRatio) {
+  if (!['spouse','child','grandchild','parent'].includes(heir.role)) return null;
+  const onlyParents = allHeirs.every(h => ['parent','spouse'].includes(h.role)) &&
+    !allHeirs.some(h => h.role === 'child' || h.role === 'grandchild');
+  const irTotal = onlyParents && !allHeirs.some(h=>h.role==='spouse') ? 1/3 : 1/2;
+  return shareRatio * irTotal;
+}
+
+// ── calcHeir ──────────────────────────────────────────────────
+function calcHeir() {
+  if (S.spouse === null) return showErr('heir-result', '配偶者の有無を選択してください。');
+  if (S.child === null)  return showErr('heir-result', '子どもの有無を選択してください。');
+
+  const heirs = buildHeirs();
+  S.heirs = heirs;
+
+  if (heirs.length === 0) {
+    const html = `<div class="err-msg">⚠ 相続人が見つかりません。配偶者も子も親も兄弟姉妹もいない場合、遺産は国庫に帰属します（特別縁故者への分与が認められる場合があります）。弁護士にご相談ください。</div>`;
+    const el = document.getElementById('heir-result');
+    el.innerHTML = html; el.style.display = 'block';
+    return;
+  }
+
+  // 理由の説明
+  const reasons = [];
+  if (S.spouse) reasons.push({ok:true, text:'配偶者は、他に誰がいても必ず相続人になります。'});
+  else reasons.push({ok:false, text:'配偶者はいないため、相続人ではありません。'});
+
+  const hasChildren = heirs.some(h=>h.role==='child'||h.role==='grandchild');
+  if (hasChildren) {
+    reasons.push({ok:true, text:'子は第1順位の相続人です。' + (S.gc ? '亡くなった子の代わりに孫が代襲相続します。' : '')});
+    if (S.child) reasons.push({ok:false, text:'子がいるため、親（父母）と兄弟姉妹は相続人になりません。'});
+  } else if (S.child === false || (S.child && S.childAlive === 0 && !S.gc)) {
+    reasons.push({ok:false, text:'子がいないため、第2順位の確認に進みます。'});
+    if (S.parent) {
+      reasons.push({ok:true, text:'親（父母・祖父母）は第2順位の相続人です。'});
+      reasons.push({ok:false, text:'親がいるため、兄弟姉妹は相続人になりません。'});
+    } else if (S.parent === false) {
+      reasons.push({ok:false, text:'親も全員亡くなっているため、第3順位の確認に進みます。'});
+      if (S.sib) reasons.push({ok:true, text:'兄弟姉妹は第3順位の相続人です。' + (S.neph ? '亡くなった兄弟姉妹の代わりに甥・姪が代襲相続します。' : '')});
+    }
+  }
+
+  const badges = heirs.map((h,i) => `<span class="heir-badge" style="background:${ROLE_COLORS[i%ROLE_COLORS.length]};color:#fff;border-color:transparent">${h.name}</span>`).join('');
+  const reasonsHtml = reasons.map(r => `<div class="heir-reason-item"><span class="hr-mark ${r.ok?'ok':'ng'}">${r.ok?'✓':'✗'}</span><span>${r.text}</span></div>`).join('');
+
+  // ポジション選択
+  const uniqueRoles = [...new Set(heirs.map(h=>h.role))];
+  const posOptions = uniqueRoles.map(role => {
+    const icons = {spouse:'💑',child:'👶',grandchild:'👧',parent:'👴',sibling:'👨‍👧',nephew:'🧑'};
+    return `<div class="pos-card" id="pos-${role}" onclick="setSelf('${role}')">${ROLE_NAMES[role]}</div>`;
+  }).join('');
+
+  const html = `
+    <div class="card" style="border:2px solid var(--primary)">
+      <div class="card-title" style="color:var(--primary)">✅ 相続人の確認結果</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px">この相続の相続人：</div>
+      <div class="heir-badges">${badges}</div>
+      <div class="heir-reason-box">${reasonsHtml}</div>
+    </div>
+    <div class="card">
+      <div class="card-title">あなたはどの相続人ですか？</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">自分の取得額を② タブで確認するために選択してください。</div>
+      <div class="pos-grid">${posOptions}<div class="pos-card" id="pos-observer" onclick="setSelf('observer')">関係者・参考として確認</div></div>
+    </div>
+    <div style="margin-top:4px">
+      <button class="btn-calc" onclick="goBunkatsu()">② 遺産の分け方へ進む →</button>
+    </div>`;
+
+  const el = document.getElementById('heir-result');
+  el.innerHTML = html; el.style.display = 'block';
+  el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function setSelf(role) {
+  S.selfRole = role;
+  document.querySelectorAll('.pos-card').forEach(c => c.classList.remove('selected'));
+  const el = document.getElementById('pos-' + role);
+  if (el) el.classList.add('selected');
+}
+
+function goBunkatsu() {
+  updateBHeirFromState();
+  switchTab('bunkatsu', document.querySelectorAll('.tab-btn')[1]);
+}
+
+function updateBHeirFromState() {
+  if (S.heirs.length === 0) return;
+
+  // Show/hide manual vs auto
+  document.getElementById('b-heir-summary').style.display = 'block';
+  document.getElementById('b-heir-manual').style.display = 'none';
+
+  const badges = S.heirs.map(h => `<span class="heir-badge">${h.name}</span>`).join('');
+  document.getElementById('b-heir-badges').innerHTML = badges;
+
+  // Position grid
+  buildPosGrid();
+}
+
+function buildPosGrid() {
+  const grid = document.getElementById('b-pos-grid');
+  if (!grid) return;
+  const heirs = S.heirs.length > 0 ? S.heirs : getManualHeirs();
+  const uniqueRoles = [...new Set(heirs.map(h=>h.role))];
+  grid.innerHTML = uniqueRoles.map(role =>
+    `<div class="pos-card ${S.selfRole===role?'selected':''}" id="bpos-${role}" onclick="setBSelf('${role}')">${ROLE_NAMES[role]}</div>`
+  ).join('') + `<div class="pos-card ${S.selfRole==='observer'?'selected':''}" id="bpos-observer" onclick="setBSelf('observer')">参考として確認</div>`;
+}
+
+function setBSelf(role) {
+  S.selfRole = role;
+  document.querySelectorAll('[id^="bpos-"]').forEach(c => c.classList.remove('selected'));
+  const el = document.getElementById('bpos-' + role);
+  if (el) el.classList.add('selected');
+}
+
+// ── 遺産計算 ──────────────────────────────────────────────────
+function getManualHeirs() {
+  const type  = parseInt(document.getElementById('b-heir-type')?.value || 2);
+  const count = Math.max(1, parseInt(document.getElementById('b-heir-count')?.value || 2));
+  return buildManualHeirs(type, count);
+}
+
+function buildManualHeirs(type, count) {
+  const n = Math.max(1, count);
+  const arr = [];
+  if ([1,2,3,4].includes(type)) arr.push({id:'spouse',name:'配偶者',role:'spouse'});
+  if (type===2) for(let i=1;i<=n;i++) arr.push({id:`child${i}`,name:n===1?'子':`子（${i}人目）`,role:'child',totalChildSlots:n});
+  if (type===3) for(let i=1;i<=n;i++) arr.push({id:`parent${i}`,name:n===1?'親':'親（'+i+'人目）',role:'parent',parentCount:n});
+  if (type===4) for(let i=1;i<=n;i++) arr.push({id:`sib${i}`,name:n===1?'兄弟姉妹':'兄弟姉妹（'+i+'人目）',role:'sibling',totalSibSlots:n});
+  if (type===5) for(let i=1;i<=n;i++) arr.push({id:`child${i}`,name:n===1?'子':`子（${i}人目）`,role:'child',totalChildSlots:n});
+  if (type===6) for(let i=1;i<=n;i++) arr.push({id:`parent${i}`,name:n===1?'親':'親（'+i+'人目）',role:'parent',parentCount:n});
+  if (type===7) for(let i=1;i<=n;i++) arr.push({id:`sib${i}`,name:n===1?'兄弟姉妹':'兄弟姉妹（'+i+'人目）',role:'sibling',totalSibSlots:n});
+  return arr;
+}
+
+function calcBunkatsu() {
+  const realestate = nv('b-realestate') || 0;
+  const deposit    = nv('b-deposit')    || 0;
+  const stocks     = nv('b-stocks')     || 0;
+  const insurance  = nv('b-insurance')  || 0;
+  const retirement = nv('b-retirement') || 0;
+  const other      = nv('b-other')      || 0;
+  const debt       = nv('b-debt')       || 0;
+  const funeral    = nv('b-funeral')    || 0;
+
+  const grossAssets = realestate + deposit + stocks + insurance + retirement + other;
+  const netEstate   = grossAssets - debt - funeral;
+
+  if (netEstate <= 0 && grossAssets <= 0) return showErr('b-result', '遺産額を入力してください。');
+
+  const heirs = S.heirs.length > 0 ? S.heirs : getManualHeirs();
+  if (heirs.length === 0) return showErr('b-result', '相続人の構成を確認してください。');
+
+  S.estateTotal = netEstate;
+
+  // Compute shares
+  const heirData = heirs.map((h, i) => {
+    const ratio   = calcShareRatio(h, heirs);
+    const amount  = netEstate * ratio;
+    const irRatio = calcIryubunRatio(h, heirs, ratio);
+    const irAmt   = irRatio !== null ? netEstate * irRatio : null;
+    const isSelf  = S.selfRole && S.selfRole !== 'observer' && h.role === S.selfRole;
+    return {...h, ratio, amount, irRatio, irAmt, isSelf, color: ROLE_COLORS[i % ROLE_COLORS.length]};
+  });
+
+  const selfHeir = heirData.find(h => h.isSelf);
+
+  // Hero box
+  let heroHtml = '';
+  if (selfHeir && S.selfRole !== 'observer') {
+    const irLine = selfHeir.irAmt !== null
+      ? `<div class="rh-iryubun">遺留分（遺言があっても最低保障される額）：<strong>${fmtM(selfHeir.irAmt)}</strong></div>` : '';
+    heroHtml = `
+      <div class="result-hero">
+        <div class="rh-sub">あなた（${selfHeir.name}）の法定相続分</div>
+        <div class="rh-amount">${fmtM(Math.max(0, selfHeir.amount))}</div>
+        <div class="rh-label">遺産 ${fmtM(netEstate)} の ${fracStr(selfHeir.ratio)}</div>
+        ${irLine}
+      </div>`;
+  }
+
+  // Asset breakdown
+  let assetRows = '';
+  if (realestate > 0) assetRows += `<div class="bk-row"><span class="bk-key">不動産</span><span class="bk-val">${fmtM(realestate)}</span></div>`;
+  if (deposit > 0)    assetRows += `<div class="bk-row"><span class="bk-key">預貯金</span><span class="bk-val">${fmtM(deposit)}</span></div>`;
+  if (stocks > 0)     assetRows += `<div class="bk-row"><span class="bk-key">有価証券</span><span class="bk-val">${fmtM(stocks)}</span></div>`;
+  if (insurance > 0)  assetRows += `<div class="bk-row"><span class="bk-key">生命保険金</span><span class="bk-val">${fmtM(insurance)}</span></div>`;
+  if (retirement > 0) assetRows += `<div class="bk-row"><span class="bk-key">死亡退職金</span><span class="bk-val">${fmtM(retirement)}</span></div>`;
+  if (other > 0)      assetRows += `<div class="bk-row"><span class="bk-key">その他の財産</span><span class="bk-val">${fmtM(other)}</span></div>`;
+  if (debt > 0)       assetRows += `<div class="bk-row"><span class="bk-key">負債（マイナス）</span><span class="bk-val" style="color:var(--danger)">−${fmtM(debt)}</span></div>`;
+  if (funeral > 0)    assetRows += `<div class="bk-row"><span class="bk-key">葬式費用（マイナス）</span><span class="bk-val" style="color:var(--danger)">−${fmtM(funeral)}</span></div>`;
+
+  // Distribution bar
+  const barSegs = heirData.map(h => {
+    const pct = netEstate > 0 ? (h.amount / netEstate) * 100 : 0;
+    return `<div class="dist-seg" style="flex:${Math.max(pct,2)};background:${h.color}">${pct>=8 ? Math.round(pct)+'%' : ''}</div>`;
+  }).join('');
+  const legend = heirData.map(h => {
+    const pct = netEstate > 0 ? ((h.amount/netEstate)*100).toFixed(1) : '0';
+    return `<div class="dist-legend-item"><div class="dist-dot" style="background:${h.color}"></div>${h.name}：${pct}%</div>`;
+  }).join('');
+
+  // Heir table
+  let rows = heirData.map(h => {
+    const irCell = h.irAmt !== null
+      ? `${fracStr(h.irRatio)}<br><span style="font-size:11px;color:var(--text-muted)">${fmtM(h.irAmt)}</span>`
+      : `<span class="no-right">なし</span>`;
+    const selfMark = h.isSelf ? '👤 ' : '';
+    return `<tr ${h.isSelf?'class="self-row"':''}>
+      <td>${selfMark}${h.name}</td>
+      <td class="hl">${fracStr(h.ratio)}（${(h.ratio*100).toFixed(1)}%）</td>
+      <td class="hl">${fmtM(Math.max(0,h.amount))}</td>
+      <td>${irCell}</td>
+    </tr>`;
+  }).join('');
+
+  const html = `
+    ${heroHtml}
+    <div class="breakdown">
+      <div class="breakdown-title">遺産の内訳</div>
+      ${assetRows}
+      <div class="bk-total"><span class="key">遺産（正味）の合計</span><span class="val">${fmtM(netEstate)}</span></div>
+      <div class="bk-desc">プラスの財産（不動産・預貯金・保険金等）からマイナスの財産（借金・葬式費用）を引いた金額が、分割の対象となる遺産の総額です。</div>
+    </div>
+    <div class="breakdown">
+      <div class="breakdown-title">遺産の配分（法定相続分）</div>
+      <div class="bk-desc">法定相続分とは、民法で定められた各相続人の取り分の割合です。遺言がない場合や、遺産分割協議が成立しない場合はこの割合が原則となります。</div>
+      <div class="dist-bar-wrap">
+        <div class="dist-bar">${barSegs}</div>
+        <div class="dist-legend">${legend}</div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="result-table">
+          <thead><tr><th>相続人</th><th>法定相続分（割合）</th><th>受取額（目安）</th><th>遺留分</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>遺留分は、遺言があっても侵害できない最低限の相続分です。兄弟姉妹・甥・姪には遺留分はありません。</div>
+    </div>
+    <div class="breakdown">
+      <div class="breakdown-title">分割方法について</div>
+      <div class="bk-desc">法定相続分はあくまで「原則の割合」です。相続人全員が合意すれば、自由に割合を決めることができます（遺産分割協議）。合意できない場合は家庭裁判所の調停・審判へ進みます。詳しくは「④ 期限・時効」タブをご覧ください。</div>
+      <div class="bk-row"><span class="bk-key">遺産分割協議</span><span class="bk-val" style="color:var(--success)">全員合意</span></div>
+      <div class="bk-desc">相続人全員が話し合い、署名・実印で合意すれば法定相続分と異なる分け方も可能です。</div>
+      <div class="bk-row"><span class="bk-key">遺産分割調停・審判</span><span class="bk-val" style="color:var(--warning)">家庭裁判所</span></div>
+      <div class="bk-desc">合意できない場合は家庭裁判所に申立てができます。最終的に裁判所が決定した場合は原則として法定相続分に従います。</div>
+    </div>`;
+
+  const el = document.getElementById('b-result');
+  el.innerHTML = html; el.style.display = 'block';
+  el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ── 相続税速算表 ──────────────────────────────────────────────
 const TAX_TABLE = [
   {limit:1000,  rate:0.10, deduct:0},
   {limit:3000,  rate:0.15, deduct:50},
@@ -344,165 +953,51 @@ const TAX_TABLE = [
   {limit:60000, rate:0.50, deduct:4200},
   {limit:Infinity, rate:0.55, deduct:7200},
 ];
-
-function calcTax(amountMan) {
-  const t = TAX_TABLE.find(t => amountMan <= t.limit);
-  return t ? Math.max(0, amountMan * t.rate - t.deduct) : 0;
+function calcTax(man) {
+  const t = TAX_TABLE.find(t => man <= t.limit);
+  return t ? Math.max(0, man * t.rate - t.deduct) : 0;
 }
 
-// ─── フォーマット ─────────────────────────────────
-function fmt(n) { return Math.round(n).toLocaleString('ja-JP'); }
-function fmtM(n) { return fmt(n) + '万円'; }
-function frac(n, d) {
-  const g = gcd(n, d);
-  return (n/g) + '/' + (d/g);
-}
-function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
-
-// ─── UI ───────────────────────────────────────────
-function switchTab(name, btn) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('panel-' + name).classList.add('active');
-  btn.classList.add('active');
-}
-
-function updateHeirCount(prefix) {
-  const type = Number(document.getElementById(prefix + '-heir-type').value);
-  const wrap = document.getElementById(prefix + '-count-wrap');
-  const label = document.getElementById(prefix + '-count-label');
-  const labels = {2:'子の人数',3:'親の人数',4:'兄弟姉妹の人数',5:'子の人数',6:'親の人数',7:'兄弟姉妹の人数'};
-  if (type === 1) {
-    wrap.style.display = 'none';
-  } else {
-    wrap.style.display = '';
-    if (label) label.textContent = labels[type] || '人数';
-    const maxMap = {3:2, 6:2};
-    const inp = document.getElementById(prefix + '-heir-count');
-    if (inp) { inp.max = maxMap[type] || 5; if (Number(inp.value) > (maxMap[type]||5)) inp.value = maxMap[type]||5; }
-  }
-  if (prefix === 'z') {
-    const spouseWrap = document.getElementById('z-spouse-wrap');
-    if (spouseWrap) spouseWrap.style.display = [1,2,3,4].includes(type) ? '' : 'none';
-  }
-}
-
-function toggleExtra(id) {
-  const el = document.getElementById(id);
-  const chkId = id.replace('-extra', '-chk');
-  const chk = document.getElementById(chkId);
-  if (el && chk) el.style.display = chk.checked ? 'block' : 'none';
-}
-
-function showHelp(key) {
-  const h = HELP[key]; if (!h) return;
-  document.getElementById('modal-title').textContent = h.title;
-  document.getElementById('modal-body').innerHTML = h.body;
-  document.getElementById('help-modal').classList.add('open');
-}
-function closeModal() { document.getElementById('help-modal').classList.remove('open'); }
-
-function nv(id) { const el = document.getElementById(id); return el && el.value !== '' ? Number(el.value) : null; }
-function v(id)  { const el = document.getElementById(id); return el ? el.value : ''; }
-function D(text){ return `<div class="bk-desc">${text}</div>`; }
-function showErr(id, msg) { const el = document.getElementById(id); el.innerHTML = `<div class="err-msg">⚠ ${msg}</div>`; el.style.display = 'block'; }
-
-// ─── 法定相続分・遺留分 計算 ───────────────────────
-function calcSouzoku() {
-  const estate = nv('s-estate');
-  if (!estate || estate <= 0) return showErr('s-result', '遺産総額を入力してください。');
-  const type = v('s-heir-type');
-  const count = nv('s-heir-count') || 1;
-  const heirs = calcLegalShares(count, type);
-  const [irNum, irDen] = iryubunRate(type);
-  const estateMan = estate;
-
-  const heirTypeName = {1:'配偶者のみ',2:'配偶者＋子',3:'配偶者＋親',4:'配偶者＋兄弟姉妹',5:'子のみ',6:'親のみ',7:'兄弟姉妹のみ'}[Number(type)];
-
-  let rows = '';
-  heirs.forEach(h => {
-    const [sn, sd] = h.share;
-    const amount = estateMan * sn / sd;
-    const hasIr = iryubunRoles.has(h.role);
-    const irAmount = hasIr ? estateMan * irNum / irDen * sn / sd : null;
-    rows += `<tr>
-      <td>${h.name}</td>
-      <td class="hl">${frac(sn,sd)}</td>
-      <td>${fmtM(amount)}</td>
-      <td class="formula">${fmtM(estateMan)} × ${sn}/${sd} = ${fmtM(amount)}</td>
-      <td>${hasIr ? `<span class="hl">${frac(sn*irNum, sd*irDen)}</span><br><span class="formula">${fmtM(irAmount)}</span>` : '<span class="no-right">なし（兄弟姉妹は遺留分なし）</span>'}</td>
-    </tr>`;
-  });
-
-  const html = `
-    <div class="result-box">
-      <div class="result-label">相続人の構成：${heirTypeName}</div>
-      <div class="result-amount">${fmtM(estateMan)}</div>
-      <div class="result-sub">遺産総額（各相続人への配分は下表をご確認ください）</div>
-    </div>
-    <div class="breakdown">
-      <div class="breakdown-title">法定相続分・遺留分の一覧</div>
-      ${D('法定相続分は民法に定められた相続の割合です。遺言がない場合はこの割合で遺産を分けます。遺留分は遺言があった場合でも保障される最低限の相続分です。')}
-      <div style="overflow-x:auto">
-        <table class="result-table">
-          <thead><tr><th>相続人</th><th>法定相続分（割合）</th><th>相続額</th><th>計算式</th><th>遺留分</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-      <div class="note" style="margin-top:10px">
-        <span class="note-icon">⚠️</span>
-        遺留分の総額は遺産の${irNum}/${irDen}です。各自の遺留分は、その総額に自己の法定相続分割合を掛けた額です。
-      </div>
-    </div>`;
-
-  const el = document.getElementById('s-result');
-  el.innerHTML = html; el.style.display = 'block';
-  el.scrollIntoView({behavior:'smooth', block:'nearest'});
-}
-
-// ─── 相続税 計算 ───────────────────────────────────
+// ── calcZei ───────────────────────────────────────────────────
 function calcZei() {
-  const estate = nv('z-estate');
+  const estate   = nv('z-estate');
   if (!estate || estate <= 0) return showErr('z-result', '遺産総額を入力してください。');
+  const debt       = nv('z-debt')       || 0;
+  const insurance  = nv('z-insurance')  || 0;
+  const retirement = nv('z-retirement') || 0;
+  const type  = parseInt(v('z-heir-type') || 2);
+  const count = Math.max(1, nv('z-heir-count') || 2);
+  const heirs = buildManualHeirs(type, count);
+  const n     = heirs.length;
 
-  const debt      = nv('z-debt')       || 0;
-  const insurance = nv('z-insurance')  || 0;
-  const retirement= nv('z-retirement') || 0;
-  const type      = v('z-heir-type');
-  const count     = nv('z-heir-count') || 1;
-  const heirs     = calcLegalShares(count, type);
-  const n         = heirs.length;
+  // 非課税枠
+  const insExempt = 500 * n, retExempt = 500 * n;
+  const insTaxable = Math.max(0, insurance - insExempt);
+  const retTaxable = Math.max(0, retirement - retExempt);
+  const taxableBase = estate - debt + insTaxable + retTaxable;
 
-  // ① 課税価格の計算
-  const insuranceExempt    = 500 * n;
-  const retirementExempt   = 500 * n;
-  const insuranceTaxable   = Math.max(0, insurance - insuranceExempt);
-  const retirementTaxable  = Math.max(0, retirement - retirementExempt);
-  const taxableBase        = estate - debt + insuranceTaxable + retirementTaxable;
-
-  // ② 基礎控除
-  const basicDeduction = 3000 + 600 * n;
-  const taxableEstate  = taxableBase - basicDeduction;
+  // 基礎控除
+  const basicDeduct = 3000 + 600 * n;
+  const taxableEstate = taxableBase - basicDeduct;
 
   if (taxableEstate <= 0) {
     const html = `
-      <div class="result-box notax">
+      <div class="result-box">
         <div class="result-label">相続税の計算結果</div>
-        <div class="result-amount" style="color:var(--success)">相続税はかかりません</div>
+        <div class="result-amount" style="color:var(--success)">相続税はかかりません ✓</div>
         <div class="result-sub">課税遺産総額がゼロ以下のため、相続税は発生しません。</div>
       </div>
       <div class="breakdown">
         <div class="breakdown-title">計算内訳</div>
         <div class="bk-row"><span class="bk-key">遺産総額</span><span class="bk-val">${fmtM(estate)}</span></div>
-        <div class="bk-row"><span class="bk-key">債務・葬式費用（控除）</span><span class="bk-val">−${fmtM(debt)}</span></div>
-        ${insuranceTaxable>0 ? `<div class="bk-row"><span class="bk-key">生命保険金（非課税超過分）</span><span class="bk-val">+${fmtM(insuranceTaxable)}</span></div>` : ''}
-        ${retirementTaxable>0 ? `<div class="bk-row"><span class="bk-key">退職金（非課税超過分）</span><span class="bk-val">+${fmtM(retirementTaxable)}</span></div>` : ''}
-        <div class="bk-row"><span class="bk-key">課税価格</span><span class="bk-val">${fmtM(taxableBase)}</span></div>
-        ${D('遺産総額から債務・葬式費用を引き、非課税枠を超えた生命保険金・退職金を加えた金額です。これが税計算の基礎となります。')}
-        <div class="bk-row"><span class="bk-key">基礎控除額（3,000万＋600万×${n}人）</span><span class="bk-val">−${fmtM(basicDeduction)}</span></div>
-        ${D(`基礎控除は「3,000万円＋600万円×法定相続人の数（${n}人）」です。この金額以下であれば相続税はかかりません。`)}
-        <div class="bk-total"><span class="key">課税遺産総額</span><span class="val">${fmtM(taxableEstate)} ≦ 0</span></div>
-        ${D('課税遺産総額がゼロ以下のため、相続税はかかりません。')}
+        <div class="bk-row"><span class="bk-key">債務・葬式費用（控除）</span><span class="bk-val" style="color:var(--danger)">−${fmtM(debt)}</span></div>
+        ${insTaxable>0 ? `<div class="bk-row"><span class="bk-key">生命保険金 非課税超過分</span><span class="bk-val">+${fmtM(insTaxable)}</span></div>` : ''}
+        ${retTaxable>0 ? `<div class="bk-row"><span class="bk-key">退職金 非課税超過分</span><span class="bk-val">+${fmtM(retTaxable)}</span></div>` : ''}
+        <div class="bk-row"><span class="bk-key">課税価格の合計額</span><span class="bk-val">${fmtM(taxableBase)}</span></div>
+        <div class="bk-desc">遺産総額から債務・葬式費用を差し引き、生命保険・退職金の非課税枠を超えた分を加えた金額です。これが税額計算の出発点になります。</div>
+        <div class="bk-row"><span class="bk-key">基礎控除（3,000万＋600万×${n}人）</span><span class="bk-val" style="color:var(--danger)">−${fmtM(basicDeduct)}</span></div>
+        <div class="bk-desc">相続税には「基礎控除」という非課税枠があります。法定相続人が${n}人のため、${fmtM(basicDeduct)}が控除されます。この金額以下であれば相続税は一切かかりません。</div>
+        <div class="bk-total"><span class="key">課税遺産総額</span><span class="val" style="color:var(--success)">${fmtM(taxableEstate)} → 0以下のため非課税</span></div>
       </div>`;
     const el = document.getElementById('z-result');
     el.innerHTML = html; el.style.display = 'block';
@@ -510,88 +1005,72 @@ function calcZei() {
     return;
   }
 
-  // ③ 法定相続分で按分して税額合計を計算
-  let totalTaxMan = 0;
-  const legalCalc = heirs.map(h => {
-    const [sn, sd] = h.share;
-    const amtMan = taxableEstate * sn / sd;
-    const taxMan = calcTax(amtMan);
-    totalTaxMan += taxMan;
-    return {...h, amtMan, taxMan};
+  // 法定相続分で按分 → 税額合計
+  let totalTax = 0;
+  heirs.forEach(h => {
+    const ratio = calcShareRatio(h, heirs);
+    totalTax += calcTax(taxableEstate * ratio);
   });
 
-  // ④ 実際の相続割合で按分
-  const hasSpouse = [1,2,3,4].includes(Number(type));
+  // 実際の割合で按分
+  const hasSpouse = [1,2,3,4].includes(type);
   const spousePct = hasSpouse ? (nv('z-spouse-pct') ?? 50) : 0;
-  const nonSpouseCount = heirs.filter(h => h.role !== 'spouse').length;
-  const nonSpousePctEach = nonSpouseCount > 0 ? (100 - spousePct) / nonSpouseCount : 0;
+  const nonSpouseCount = heirs.filter(h=>h.role!=='spouse').length;
+  const nonSpousePctEach = nonSpouseCount > 0 ? (100-spousePct)/nonSpouseCount : 0;
 
-  const actualShares = heirs.map(h => ({
-    ...h,
-    actualPct: h.role === 'spouse' ? spousePct : nonSpousePctEach
-  }));
+  // 配偶者の法定相続分
+  const spouseHeir = heirs.find(h=>h.role==='spouse');
+  const spouseLegalRatio = spouseHeir ? calcShareRatio(spouseHeir, heirs) : 0;
+  const spouseExemptLimit = Math.max(16000, taxableBase * spouseLegalRatio);
 
-  // ⑤ 各種控除
+  // 未成年者控除
   const minorEnabled = document.getElementById('z-minor-chk').checked;
-  const minorAge     = nv('z-minor-age')   || 0;
-  const minorCount   = nv('z-minor-count') || 1;
+  const minorAge   = nv('z-minor-age')   || 0;
+  const minorCount = nv('z-minor-count') || 1;
   const minorDeductTotal = minorEnabled && minorAge >= 0 && minorAge < 18
-    ? Math.max(0, 18 - minorAge) * 10 * minorCount : 0;
+    ? Math.max(0, 18-minorAge)*10*minorCount : 0;
 
-  const disEnabled  = document.getElementById('z-dis-chk').checked;
-  const disType     = v('z-dis-type');
-  const disAge      = nv('z-dis-age')   || 0;
-  const disCount    = nv('z-dis-count') || 1;
+  // 障害者控除
+  const disEnabled = document.getElementById('z-dis-chk').checked;
+  const disType    = v('z-dis-type');
+  const disAge     = nv('z-dis-age')   || 0;
+  const disCount   = nv('z-dis-count') || 1;
   const disDeductTotal = disEnabled && disAge >= 0 && disAge < 85
-    ? Math.max(0, 85 - disAge) * (disType === 'special' ? 20 : 10) * disCount : 0;
-
-  // 配偶者の法定相続分相当額
-  const spouseHeir = heirs.find(h => h.role === 'spouse');
-  const spouseLegalPct = spouseHeir ? spouseHeir.share[0] / spouseHeir.share[1] : 0;
-  const spouseExemptLimit = Math.max(16000, taxableBase * spouseLegalPct); // 1.6億万 = 16000万
+    ? Math.max(0, 85-disAge)*(disType==='special'?20:10)*disCount : 0;
 
   let heirRows = '';
   let totalFinal = 0;
-  actualShares.forEach(h => {
-    const rawTax = totalTaxMan * (h.actualPct / 100);
+  const childCount = heirs.filter(h=>h.role==='child'||h.role==='grandchild').length;
+
+  heirs.forEach(h => {
+    const actualPct = h.role === 'spouse' ? spousePct : nonSpousePctEach;
+    const rawTax = totalTax * (actualPct/100);
     let finalTax = rawTax;
     const notes = [];
 
-    // 2割加算
-    if (h.role === 'sibling') { finalTax *= 1.2; notes.push('2割加算'); }
-
-    // 配偶者の税額軽減
-    if (h.role === 'spouse') {
-      const spouseActualAmt = taxableBase * (h.actualPct / 100);
-      const reliefRatio = spouseActualAmt > 0 ? Math.min(1, spouseExemptLimit / spouseActualAmt) : 0;
-      const relief = finalTax * reliefRatio;
-      finalTax = Math.max(0, finalTax - relief);
-      if (relief > 0) notes.push(`配偶者控除 −${fmtM(relief)}`);
+    if (h.role==='sibling' || h.role==='nephew') {
+      finalTax *= 1.2;
+      notes.push('2割加算（兄弟姉妹・甥姪）');
     }
-
-    // 未成年者控除（子の場合に按分）
-    const childCount = heirs.filter(x => x.role === 'child').length;
-    if (minorDeductTotal > 0 && h.role === 'child' && childCount > 0) {
-      const relief = minorDeductTotal / childCount;
-      finalTax = Math.max(0, finalTax - relief);
-      notes.push(`未成年者控除 −${fmtM(relief)}`);
+    if (h.role==='spouse') {
+      const spouseActualAmt = taxableBase*(actualPct/100);
+      const relief = spouseActualAmt>0 ? finalTax*Math.min(1, spouseExemptLimit/spouseActualAmt) : 0;
+      finalTax = Math.max(0, finalTax-relief);
+      if (relief>0) notes.push(`配偶者控除 −${fmtM(relief)}`);
     }
-
-    // 障害者控除（相続人全員で按分）
-    if (disDeductTotal > 0) {
-      const relief = disDeductTotal / heirs.length;
-      finalTax = Math.max(0, finalTax - relief);
-      notes.push(`障害者控除 −${fmtM(relief)}`);
+    if (minorDeductTotal>0 && (h.role==='child'||h.role==='grandchild') && childCount>0) {
+      const rel = minorDeductTotal/childCount;
+      finalTax = Math.max(0, finalTax-rel);
+      notes.push(`未成年者控除 −${fmtM(rel)}`);
     }
-
+    if (disDeductTotal>0) {
+      const rel = disDeductTotal/heirs.length;
+      finalTax = Math.max(0, finalTax-rel);
+      notes.push(`障害者控除 −${fmtM(rel)}`);
+    }
     totalFinal += finalTax;
     const noteHtml = notes.length ? `<br><span style="font-size:11px;color:var(--text-muted)">${notes.join(' / ')}</span>` : '';
-    heirRows += `<tr>
-      <td>${h.name}</td>
-      <td class="formula">${h.actualPct.toFixed(1)}%</td>
-      <td class="formula">${fmtM(rawTax)}</td>
-      <td class="hl">${fmtM(finalTax)}${noteHtml}</td>
-    </tr>`;
+    heirRows += `<tr><td>${h.name}</td><td>${actualPct.toFixed(1)}%</td><td>${fmtM(rawTax)}</td><td class="hl">${fmtM(finalTax)}${noteHtml}</td></tr>`;
   });
 
   const html = `
@@ -601,32 +1080,25 @@ function calcZei() {
       <div class="result-sub">各相続人の負担額は下表をご確認ください</div>
     </div>
     <div class="breakdown">
-      <div class="breakdown-title">相続税の計算ステップ</div>
-
+      <div class="breakdown-title">計算ステップ</div>
       <div class="bk-row"><span class="bk-key">① 遺産総額</span><span class="bk-val">${fmtM(estate)}</span></div>
-      ${D('相続・遺贈で取得した財産の合計です。不動産・預貯金・有価証券などすべてを含みます。')}
-
-      <div class="bk-row"><span class="bk-key">　債務・葬式費用（控除）</span><span class="bk-val" style="color:var(--danger)">−${fmtM(debt)}</span></div>
-      ${D('借金・未払い税金・葬式費用など、遺産から差し引ける費用です。')}
-
-      ${insuranceTaxable > 0 ? `<div class="bk-row"><span class="bk-key">　生命保険金 非課税超過分</span><span class="bk-val">+${fmtM(insuranceTaxable)}</span></div>${D(`生命保険金の非課税枠（500万円×${n}人＝${fmtM(insuranceExempt)}）を超えた部分が課税対象になります。`)}` : ''}
-      ${retirementTaxable > 0 ? `<div class="bk-row"><span class="bk-key">　退職金 非課税超過分</span><span class="bk-val">+${fmtM(retirementTaxable)}</span></div>${D(`死亡退職金の非課税枠（500万円×${n}人＝${fmtM(retirementExempt)}）を超えた部分が課税対象になります。`)}` : ''}
-
-      <div class="bk-row"><span class="bk-key">② 課税価格</span><span class="bk-val">${fmtM(taxableBase)}</span></div>
-      ${D('遺産総額から債務等を引き、生命保険・退職金の非課税超過分を加えた金額です。これが税額計算の基礎となります。')}
-
-      <div class="bk-row"><span class="bk-key">③ 基礎控除（3,000万＋600万×${n}人）</span><span class="bk-val" style="color:var(--danger)">−${fmtM(basicDeduction)}</span></div>
-      ${D(`すべての相続に適用される非課税枠です。法定相続人が${n}人のため、${fmtM(basicDeduction)}が控除されます。この金額以下なら相続税はかかりません。`)}
-
+      <div class="bk-desc">相続・遺贈によって取得した全財産の合計です。不動産・預貯金・有価証券・その他すべてを含みます。</div>
+      <div class="bk-row"><span class="bk-key">　− 債務・葬式費用</span><span class="bk-val" style="color:var(--danger)">−${fmtM(debt)}</span></div>
+      <div class="bk-desc">借金・未払い税金・葬式費用など、遺産から差し引くことができる費用です。</div>
+      ${insTaxable>0 ? `<div class="bk-row"><span class="bk-key">　＋ 生命保険金（非課税超過分）</span><span class="bk-val">+${fmtM(insTaxable)}</span></div><div class="bk-desc">生命保険金の非課税枠は「500万円×法定相続人の数（${n}人）＝${fmtM(insExempt)}」です。これを超えた${fmtM(insTaxable)}が課税対象に加算されます。</div>` : ''}
+      ${retTaxable>0 ? `<div class="bk-row"><span class="bk-key">　＋ 退職金（非課税超過分）</span><span class="bk-val">+${fmtM(retTaxable)}</span></div><div class="bk-desc">死亡退職金の非課税枠も「500万円×${n}人＝${fmtM(retExempt)}」です。この枠を超えた${fmtM(retTaxable)}が課税対象になります。</div>` : ''}
+      <div class="bk-row"><span class="bk-key">② 課税価格の合計額</span><span class="bk-val">${fmtM(taxableBase)}</span></div>
+      <div class="bk-desc">プラスの財産からマイナスの財産を差し引き、非課税枠を超えた保険・退職金を加えた金額です。ここから基礎控除を引いて「課税遺産総額」を計算します。</div>
+      <div class="bk-row"><span class="bk-key">③ − 基礎控除（3,000万＋600万×${n}人）</span><span class="bk-val" style="color:var(--danger)">−${fmtM(basicDeduct)}</span></div>
+      <div class="bk-desc">相続税には誰でも使える「基礎控除」という非課税枠があります。法定相続人が${n}人いるため、合計${fmtM(basicDeduct)}が控除されます。</div>
       <div class="bk-total"><span class="key">④ 課税遺産総額</span><span class="val">${fmtM(taxableEstate)}</span></div>
-      ${D('これが実際に相続税の計算対象となる金額です。ここから各相続人の法定相続分に応じて按分し、税率を掛けます。')}
-
-      <div class="bk-row" style="margin-top:10px"><span class="bk-key">⑤ 法定相続分で按分した仮想税額の合計</span><span class="bk-val">${fmtM(totalTaxMan)}</span></div>
-      ${D('一旦、課税遺産総額を法定相続分どおりに各相続人に分けたと仮定して税率を掛け、その合計額を求めます。これが「相続税の総額」で、この後各自の実際の取得割合で按分します。')}
+      <div class="bk-desc" style="margin-top:8px">これが実際に相続税の計算対象となる金額です。次に、この金額を一旦「法定相続分どおりに分けた」と仮定して各自の税額を計算し、その合計を「相続税の総額」とします。</div>
+      <div class="bk-row"><span class="bk-key">⑤ 相続税の総額（法定相続分で按分した仮算）</span><span class="bk-val">${fmtM(totalTax)}</span></div>
+      <div class="bk-desc">課税遺産総額を法定相続分で各人に割り当て、速算表で税率を掛けて合計した金額です。この後、実際の取得割合で按分して各人の税額を算出します。</div>
     </div>
     <div class="breakdown">
-      <div class="breakdown-title">各相続人の相続税額（概算）</div>
-      ${D('相続税の総額を、各相続人が実際に取得する割合で按分し、各種控除を適用した後の税額です。')}
+      <div class="breakdown-title">各相続人の相続税額</div>
+      <div class="bk-desc">相続税の総額を実際の取得割合で按分し、各種控除（配偶者控除・未成年者控除・障害者控除）を適用した最終的な税額です。</div>
       <div style="overflow-x:auto">
         <table class="result-table">
           <thead><tr><th>相続人</th><th>取得割合</th><th>按分後税額</th><th>最終税額（控除後）</th></tr></thead>
@@ -634,9 +1106,7 @@ function calcZei() {
           <tfoot><tr style="background:#EDE5D8;font-weight:700"><td colspan="3">合計</td><td class="hl">${fmtM(totalFinal)}</td></tr></tfoot>
         </table>
       </div>
-      ${minorDeductTotal > 0 ? `<div class="note" style="margin-top:8px"><span class="note-icon">✅</span>未成年者控除：合計 ${fmtM(minorDeductTotal)} を適用しました。</div>` : ''}
-      ${disDeductTotal > 0 ? `<div class="note" style="margin-top:8px"><span class="note-icon">✅</span>障害者控除：合計 ${fmtM(disDeductTotal)} を適用しました。</div>` : ''}
-      <div class="note" style="margin-top:10px"><span class="note-icon">⚠️</span>この計算は概算です。実際の申告には税理士へのご相談をお勧めします。申告・納付期限は相続開始を知った日の翌日から10ヶ月以内です。</div>
+      <div class="note" style="margin-top:8px"><span class="note-icon">⚠️</span>この計算はあくまで概算です。実際の相続税申告には税理士にご相談ください。申告・納付の期限は相続開始を知った日の翌日から10ヶ月以内です。</div>
     </div>`;
 
   const el = document.getElementById('z-result');
@@ -644,9 +1114,213 @@ function calcZei() {
   el.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
-// 初期化
-updateHeirCount('s');
-updateHeirCount('z');
+// ── Help modals ───────────────────────────────────────────────
+const HELP = {
+  'heir-system': {title:'相続の順位・仕組みとは',body:`
+    <p>誰が相続人になるかは民法で順位が定められています。配偶者は常に相続人になりますが、それ以外の方には「順位」があります。</p>
+    <h4>相続人の順位</h4>
+    <ol>
+      <li><strong>第1順位：子（養子・認知した子を含む）</strong><br>子がいれば、第2・第3順位の方は相続人になりません。子が先に亡くなっていれば孫（代襲相続）。</li>
+      <li><strong>第2順位：親（父母・祖父母）</strong><br>子がいない場合のみ相続人になります。</li>
+      <li><strong>第3順位：兄弟姉妹</strong><br>子も親もいない場合のみ。亡くなった兄弟姉妹の子（甥・姪）が代わりに相続できます。</li>
+    </ol>
+    <div class="help-note">配偶者は常に相続人になりますが、離婚した元配偶者や事実婚のパートナーは相続人になりません。</div>
+  `},
+  spouse: {title:'配偶者の相続権',body:`
+    <p>法律上の婚姻関係がある配偶者（夫または妻）は、<strong>どんな状況でも必ず相続人になります。</strong></p>
+    <h4>相続できない場合</h4>
+    <ul>
+      <li>離婚が成立している（元配偶者）</li>
+      <li>入籍していない事実婚・内縁関係</li>
+      <li>配偶者本人が先に亡くなっている</li>
+    </ul>
+    <h4>配偶者の法定相続分</h4>
+    <table>
+      <tr><th>他の相続人</th><th>配偶者の取り分</th></tr>
+      <tr><td>子がいる場合</td><td>1/2</td></tr>
+      <tr><td>親（子なし）</td><td>2/3</td></tr>
+      <tr><td>兄弟姉妹（子も親もなし）</td><td>3/4</td></tr>
+      <tr><td>配偶者のみ</td><td>全部（1/1）</td></tr>
+    </table>
+  `},
+  children: {title:'子どもの相続権と代襲相続',body:`
+    <p>子どもは<strong>第1順位の相続人</strong>です。養子や認知した子（婚外子）も同様です。</p>
+    <h4>代襲相続とは</h4>
+    <p>子どもが被相続人より先に亡くなっていた場合、その子ども（孫）が代わりに相続します。これを「代襲相続」といいます。孫も亡くなっていれば曾孫が相続します（再代襲）。</p>
+    <h4>子の法定相続分</h4>
+    <p>子どもが複数いる場合は、子どもの取り分を人数で均等に割ります。配偶者がいれば子ども全員で1/2を分けます。</p>
+    <div class="help-note">代襲相続した孫は、亡くなった親の相続分を引き継ぎます。孫が複数いれば親の分を均等に分けます。</div>
+  `},
+  parents: {title:'親・祖父母の相続権',body:`
+    <p>子どもがいない場合、親（父母）が<strong>第2順位の相続人</strong>になります。</p>
+    <p>父母がともに亡くなっている場合は祖父母が相続人になります（直系尊属といいます）。父方・母方の祖父母がいる場合はさらに均等に分けます。</p>
+    <h4>遺留分あり</h4>
+    <p>親・祖父母（直系尊属）のみが相続人の場合、遺留分の総体は遺産の1/3です（他の場合は1/2）。</p>
+  `},
+  siblings: {title:'兄弟姉妹・甥姪の相続権',body:`
+    <p>子も親もいない場合のみ、兄弟姉妹が<strong>第3順位の相続人</strong>になります。</p>
+    <h4>代襲相続（甥・姪）</h4>
+    <p>兄弟姉妹が先に亡くなっていた場合、その子ども（甥・姪）が代わりに相続します。ただし、甥・姪が亡くなっていても再代襲はできません（孫まで）。</p>
+    <h4>遺留分はありません</h4>
+    <p>兄弟姉妹・甥・姪には遺留分（最低保障の相続権）がありません。遺言で他の方に全財産を遺した場合、遺留分侵害額請求はできません。</p>
+    <div class="help-note">半血兄弟姉妹（父母の一方のみが同じ兄弟姉妹）の法定相続分は、全血兄弟姉妹の1/2になります。</div>
+  `},
+  bunkatsu: {title:'法定相続分・遺留分について',body:`
+    <h4>法定相続分</h4>
+    <p>民法で定められた、各相続人が受け取る割合です。遺言がない場合、または遺産分割協議が成立しない場合はこの割合が基準になります。</p>
+    <h4>遺留分</h4>
+    <p>遺言があっても保障される、最低限の相続分です。配偶者・子（孫）・親が持っています。兄弟姉妹・甥・姪にはありません。</p>
+    <p>遺留分の総体は通常、遺産の1/2（直系尊属のみの場合は1/3）です。各自の遺留分は、この総体に自分の法定相続分割合を掛けた額です。</p>
+    <div class="help-note">遺留分が侵害された場合、侵害した相手に金銭での補償を求める「遺留分侵害額請求」ができます。知った日から1年以内に行う必要があります。</div>
+  `},
+  'estate-detail': {title:'遺産総額の計算方法',body:`
+    <h4>相続税の計算に使う遺産の範囲</h4>
+    <ul>
+      <li>現金・預貯金</li>
+      <li>不動産（土地・建物）→ 路線価や固定資産税評価額をもとに評価</li>
+      <li>有価証券（株式・投資信託等）</li>
+      <li>生命保険金・死亡退職金（非課税枠超過分）</li>
+      <li>死亡前3年以内の贈与財産（2024年以降は段階的に7年に延長）</li>
+    </ul>
+    <h4>遺産から差し引けるもの</h4>
+    <ul>
+      <li>借金・未払い税金</li>
+      <li>葬式費用（香典返し・初七日以降の法要費用は除く）</li>
+    </ul>
+    <div class="help-note">不動産の評価は専門的な知識が必要です。正確な評価は税理士・不動産鑑定士にご相談ください。</div>
+  `},
+  insurance: {title:'生命保険金の非課税枠',body:`
+    <p>相続人が受け取る生命保険金には、非課税枠があります。</p>
+    <p><strong>非課税枠 ＝ 500万円 × 法定相続人の数</strong></p>
+    <p>この枠を超えた部分だけが相続税の計算に含まれます。</p>
+    <div class="help-note">受取人が相続人でない場合（例：内縁のパートナー）や、相続を放棄した方が受取人の場合は非課税枠が使えません。</div>
+  `},
+  retirement: {title:'死亡退職金の非課税枠',body:`
+    <p>相続人が受け取る死亡退職金にも、生命保険金と同じ非課税枠があります。</p>
+    <p><strong>非課税枠 ＝ 500万円 × 法定相続人の数</strong></p>
+    <p>この枠を超えた部分が相続税の計算に加算されます。</p>
+  `},
+  zei: {title:'相続税の計算の仕組み',body:`
+    <h4>相続税がかかる人</h4>
+    <p>遺産の合計が基礎控除額を超える場合のみ、相続税がかかります。</p>
+    <p><strong>基礎控除 ＝ 3,000万円 ＋ 600万円 × 法定相続人の数</strong></p>
+    <h4>計算の手順</h4>
+    <ol>
+      <li>遺産から債務・葬式費用を引き、保険・退職金の超過分を加える（課税価格）</li>
+      <li>課税価格から基礎控除を引く（課税遺産総額）</li>
+      <li>法定相続分で按分し、各人の仮想税額を速算表で計算、合計する（相続税の総額）</li>
+      <li>実際の取得割合で按分する</li>
+      <li>配偶者控除・未成年者控除・障害者控除を差し引く</li>
+    </ol>
+    <h4>税率（速算表）</h4>
+    <table>
+      <tr><th>課税金額</th><th>税率</th><th>控除額</th></tr>
+      <tr><td>1,000万円以下</td><td>10%</td><td>—</td></tr>
+      <tr><td>3,000万円以下</td><td>15%</td><td>50万円</td></tr>
+      <tr><td>5,000万円以下</td><td>20%</td><td>200万円</td></tr>
+      <tr><td>1億円以下</td><td>30%</td><td>700万円</td></tr>
+      <tr><td>2億円以下</td><td>40%</td><td>1,700万円</td></tr>
+      <tr><td>3億円以下</td><td>45%</td><td>2,700万円</td></tr>
+      <tr><td>6億円以下</td><td>50%</td><td>4,200万円</td></tr>
+      <tr><td>6億円超</td><td>55%</td><td>7,200万円</td></tr>
+    </table>
+  `},
+  minor: {title:'未成年者控除',body:`
+    <p>相続人に18歳未満の未成年者がいる場合、その方の相続税から一定額が控除されます。</p>
+    <p><strong>控除額 ＝ （18歳 − 年齢） × 10万円 × 人数</strong></p>
+    <p>例：10歳の相続人1人 → (18-10) × 10万円 = 80万円が控除されます。</p>
+    <div class="help-note">控除しきれない場合は、扶養義務者（親など）の税額から差し引くことができます。</div>
+  `},
+  disability: {title:'障害者控除',body:`
+    <p>相続人に障害者がいる場合、その方の相続税から一定額が控除されます。</p>
+    <p><strong>一般障害者：（85歳 − 年齢） × 10万円 × 人数</strong></p>
+    <p><strong>特別障害者：（85歳 − 年齢） × 20万円 × 人数</strong></p>
+    <div class="help-note">控除しきれない場合は、扶養義務者の税額から差し引くことができます。一般障害者・特別障害者の区別は、障害の程度によります。</div>
+  `}
+};
+
+function showHelp(key) {
+  const h = HELP[key]; if (!h) return;
+  document.getElementById('modal-title').textContent = h.title;
+  document.getElementById('modal-body').innerHTML = h.body;
+  document.getElementById('help-modal').classList.add('open');
+}
+function closeModal() { document.getElementById('help-modal').classList.remove('open'); }
+
+// ── Tab management ─────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (name === 'bunkatsu') {
+    if (S.heirs.length > 0) updateBHeirFromState();
+    buildPosGrid();
+  }
+}
+
+// ── 遺産分割タブの手動入力 ────────────────────────────────────
+function updateBHeirCount() {
+  const type = parseInt(document.getElementById('b-heir-type')?.value || 2);
+  const wrap  = document.getElementById('b-count-wrap');
+  const label = document.getElementById('b-count-label');
+  const labels = {2:'子の人数',3:'親の人数',4:'兄弟姉妹の人数',5:'子の人数',6:'親の人数',7:'兄弟姉妹の人数'};
+  if (type===1) { wrap.style.display='none'; }
+  else { wrap.style.display=''; if(label) label.textContent=labels[type]||'人数'; }
+  const spouseWrap = document.getElementById('z-spouse-wrap');
+  buildPosGrid();
+}
+
+// ── 相続税タブの手動入力 ──────────────────────────────────────
+function updateZHeirCount() {
+  const type = parseInt(document.getElementById('z-heir-type')?.value || 2);
+  const wrap  = document.getElementById('z-count-wrap');
+  const label = document.getElementById('z-count-label');
+  const labels = {2:'子の人数',3:'親の人数',4:'兄弟姉妹の人数',5:'子の人数',6:'親の人数',7:'兄弟姉妹の人数'};
+  if (type===1) { wrap.style.display='none'; }
+  else { wrap.style.display=''; if(label) label.textContent=labels[type]||'人数'; }
+  const spouseWrap = document.getElementById('z-spouse-wrap');
+  if (spouseWrap) spouseWrap.style.display=[1,2,3,4].includes(type)?'':'none';
+}
+
+function toggleExtra(id) {
+  const el = document.getElementById(id);
+  const chk = document.getElementById(id.replace('-extra','-chk'));
+  if (el&&chk) el.style.display=chk.checked?'block':'none';
+}
+
+// ── Utilities ─────────────────────────────────────────────────
+function nv(id) { const el=document.getElementById(id); return el&&el.value!==''?Number(el.value):null; }
+function v(id)  { const el=document.getElementById(id); return el?el.value:''; }
+function fmt(n) { return Math.round(n).toLocaleString('ja-JP'); }
+function fmtM(n){ return fmt(n)+'万円'; }
+function gcd(a,b){ return b===0?a:gcd(b,a%b); }
+function fracStr(r) {
+  if (r <= 0) return '0';
+  if (r >= 1) return '1/1';
+  const dMax = 120;
+  for (let d=1; d<=dMax; d++) {
+    const n = Math.round(r*d);
+    if (Math.abs(n/d - r) < 0.00001) {
+      const g = gcd(n,d); return (n/g)+'/'+(d/g);
+    }
+  }
+  return (r*100).toFixed(1)+'%';
+}
+function showErr(id, msg) {
+  const el=document.getElementById(id);
+  el.innerHTML=`<div class="err-msg">⚠ ${msg}</div>`;
+  el.style.display='block';
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ── 位置グリッド（pos-grid in bunkatsu） ─────────────────────
+const POS_LABELS = {spouse:'配偶者',child:'子',grandchild:'孫（代襲）',parent:'親',sibling:'兄弟姉妹',nephew:'甥・姪（代襲）',observer:'参考として確認'};
+
+// ── Init ──────────────────────────────────────────────────────
+updateBHeirCount();
+updateZHeirCount();
+buildPosGrid();
 </script>
 </body>
 </html>
