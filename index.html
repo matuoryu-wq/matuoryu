@@ -122,8 +122,8 @@
 <nav class="tabs">
   <button class="tab-btn active" onclick="switchTab('konin',this)">💰 婚姻費用</button>
   <button class="tab-btn" onclick="switchTab('youiku',this)">👶 養育費</button>
+  <button class="tab-btn" onclick="switchTab('break',this)">🏥 児童扶養手当</button>
   <button class="tab-btn" onclick="switchTab('zaisan',this)">🏠 財産分与</button>
-  <button class="tab-btn" onclick="switchTab('break',this)">⚖️ 損益分岐点</button>
 </nav>
 <div class="container">
 
@@ -329,7 +329,7 @@
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fee2e2;color:#dc2626">－</span>共同の負債（不動産ローン以外）</div>
+      <div class="card-title"><span class="icon" style="background:#fee2e2;color:#dc2626">－</span>共同の負債（不動産ローン以外）<button class="help-btn" onclick="showHelp('kyodo_saimu')">詳しく</button></div>
       <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">婚姻中に共同で負担した借金（カーローン・教育ローンなど）を入力してください。</p>
       <div id="z-debt-list" class="asset-list"></div>
       <button class="btn-add" onclick="addDebt()">＋ 負債を追加</button>
@@ -487,6 +487,7 @@ const HELP={
   separate_property:{title:'特有財産とは',body:`<p><strong>特有財産</strong>とは、財産分与の対象とならない、各自の固有の財産のことです。</p><h4>特有財産の例</h4><ul><li>婚姻前から所有していた預貯金・不動産</li><li>婚姻中に相続によって取得した財産</li><li>婚姻中に贈与を受けた財産</li></ul><div class="help-note">特有財産であることの立証は、主張する側が行う必要があります。</div>`},
   base_income:{title:'基礎収入とは',body:`<p><strong>基礎収入</strong>とは、総収入から税金・社会保険料・職業費等を控除した後の、実際に生活費として使用できる収入の目安となる金額です。</p><h4>算定方法</h4><ul><li><strong>給与所得者</strong>：年収 × 38〜54%（収入が高いほど割合が低下）</li><li><strong>事業所得者</strong>：課税所得 × 48〜61%</li><li><strong>給与＋事業所得</strong>：多い方の所得に換算した上で合計</li></ul>`},
   ob_child:{title:'義務者と同居する子について',body:`<p>夫婦間の子のうち、義務者（支払う側）と同居している子がいる場合、その子の生活費指数を義務者側の指数に加算します。</p><p>これにより、義務者が養育する子のコストが考慮され、婚姻費用・養育費の金額が調整されます。</p>`},
+  kyodo_saimu:{title:'共同の負債の分与方法について',body:`<p>婚姻中に共同で作った借金（カーローン・教育ローンなど）は、<strong>共有財産から差し引いた上で財産分与が行われます</strong>。</p><h4>計算の仕組み</h4><p>共有財産 − 共同の負債 ＝ 分与対象の純財産 として、この純財産を決めた割合で分け合います。</p><h4>計算例</h4><p>共有財産 2,000万円、共同の負債 400万円 の場合：<br>純財産 ＝ 1,600万円 → 各自 800万円ずつ（50%の場合）</p><h4>注意点</h4><ul><li>金融機関との関係では、<strong>名義人が返済義務を負い続けます</strong>。離婚後に相手が支払わなかった場合のリスクがあります。</li><li>純財産がマイナスになる場合（負債超過）は、双方が負担する形での協議が別途必要になります。</li><li>具体的な負債の引き受け方や金融機関との交渉については、弁護士にご相談ください。</li></ul><div class="help-note">不動産ローンは「不動産」欄で別途管理します（査定額からローン残高を引いた純資産として計上）。</div>`},
   break_overview:{title:'損益分岐点とは',body:`<p>離婚を検討する際、<strong>経済的な観点から「いつ離婚するのが得か」</strong>を判断するための計算です。</p><h4>比較の仕組み</h4><ul><li><strong>婚姻継続</strong>：毎月、婚姻費用を受け取る</li><li><strong>今すぐ離婚</strong>：毎月、養育費＋児童扶養手当を受け取る</li></ul><p>この差額を月ごとに累積し、累積差額が0を超えた時点が「損益分岐点」です。</p><h4>注意点</h4><ul><li>児童扶養手当は末子が18歳年度末（3月31日）を迎えると支給が終了します</li><li>養育費は合意した終期（18歳・20歳・22歳等）で終了します</li><li>経済的判断だけでなく、精神的・家庭的事情も重要です</li></ul><div class="help-note">この計算は概算です。具体的な判断は弁護士にご相談ください。</div>`},
   break_income:{title:'児童扶養手当と収入について',body:`<p>児童扶養手当は、<strong>受け取る側（権利者）の前年の所得</strong>に基づいて支給額が決まります。</p><h4>所得の計算方法</h4><ol><li>年収から給与所得控除を引いて「給与所得」を算出</li><li>給与所得に養育費年額×80%を加算し、10万円＋8万円（社会保険料相当）を控除して「所得額」を算出</li><li>所得額と限度額を比較して支給区分を判定</li></ol><h4>所得制限限度額（2026年度）</h4><table><tr><th>子の人数</th><th>全部支給限度額</th><th>一部支給限度額</th></tr><tr><td>1人</td><td>107万円</td><td>246万円</td></tr><tr><td>2人</td><td>145万円</td><td>284万円</td></tr><tr><td>3人</td><td>183万円</td><td>322万円</td></tr></table>`}
 };
@@ -612,7 +613,9 @@ function calcKonin(){
   }
 
   const html=`<div class="result-box ${mon<0?'warning':''}"><div class="result-label">月額婚姻費用（目安）</div><div class="result-amount">${mon<0?'0円':fmtEn(mon)}</div><div class="result-sub">年額：${mon<0?'0円':fmtEn(ann)}${mon<0?'<br>※権利者の収入が高いため婚姻費用は発生しません':''}</div></div>${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。収入が高いほど控除率が上がります。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}</div>${otherHtml}${betaHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計（権利者と同居）</span><span class="bk-val">${cs}</span></div>${D('各子の生活費を数値化したものです。大人を100として、0〜14歳は62、15〜19歳は85として計算します。複数の子がいる場合は合計します。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}<div class="bk-row" style="margin-top:4px"><span class="bk-key">権利者側の指数合計</span><span class="bk-val">100（権利者）＋${cs}（子）＝${ei}</span></div>${D('権利者自身（大人=100）と子たちの指数を合算した数値です。権利者と子が生活するために必要な費用の規模を表しています。')}${obChildHtml}${obSideDesc}<div class="bk-row" style="margin-top:6px"><span class="bk-key">婚姻費用（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D('義務者と権利者の基礎収入を合わせた生活費総額を、それぞれの指数に応じて按分します。権利者側（子含む）に割り当てられた分から、権利者自身の基礎収入を差し引いた差額が、義務者が支払うべき婚姻費用です。')}<div class="bk-formula">${resultFormula}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
-  const el=document.getElementById('k-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  const kNote=`<div class="note" style="margin-top:10px"><span class="note-icon">💡</span><span>通常は離婚前の<strong>婚姻費用</strong>の方が多くなりますが、離婚後の養育費に<strong>児童扶養手当</strong>を加えると実質的に多くなることもあります。<br><a onclick="switchTabByName('break')" style="color:var(--primary);cursor:pointer;font-weight:700;text-decoration:underline">→ 児童扶養手当タブで確認する</a></span></div>`;
+  const kBtn=mon>0?`<button onclick="setBrKonin(${Math.round(mon*10)/10})" style="margin-top:8px;width:100%;padding:11px;background:#5D7A3E;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:700;cursor:pointer">婚姻費用（${fmtEn(mon)}円/月）を児童扶養手当タブに反映する →</button>`:'';
+  const el=document.getElementById('k-result');el.innerHTML=html+kNote+kBtn;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 // ⑧ Updated calcYouiku with ob-child and res-other support
@@ -708,7 +711,9 @@ function calcYouiku(){
   }
 
   const html=`<div class="result-box"><div class="result-label">月額養育費（目安）</div><div class="result-amount">${fmtEn(mon)}</div><div class="result-sub">年額：${fmtEn(ann)}</div></div>${corr?`<div class="note"><span class="note-icon">⚠️</span>権利者の基礎収入(${fmtMan(bOrig)})が義務者を上回るため、b=${fmtMan(a)}として計算しています。</div>`:''} ${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}${corr?'<br>→補正後: '+fmtMan(b):''}</div>${otherHtml}${betaHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div>${D('各子の年齢に応じた生活費の指数を合計します。0〜14歳は62、15〜19歳は85です。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}${obChildHtml}${cSection}<div class="bk-row" style="margin-top:6px"><span class="bk-key">養育費（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D(hasResOther?'義務者の基礎収入（a）に子の指数（α）の比率を掛け、婚外子の修正指数（β）を考慮して按分した結果が義務者の支払うべき養育費です。':'子の生活費（c）を、義務者と権利者の基礎収入の比率で按分した結果が、義務者が支払うべき養育費です。収入の多い義務者がより多く負担する仕組みです。')}<div class="bk-formula">${resultFormula}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
-  const el=document.getElementById('y-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  const yNote=`<div class="note" style="margin-top:10px"><span class="note-icon">💡</span><span>通常は離婚前の<strong>婚姻費用</strong>の方が多くなりますが、離婚後の養育費に<strong>児童扶養手当</strong>を加えると実質的に多くなることもあります。<br><a onclick="switchTabByName('break')" style="color:var(--primary);cursor:pointer;font-weight:700;text-decoration:underline">→ 児童扶養手当タブで確認する</a></span></div>`;
+  const yBtn=`<button onclick="setBrYouiku(${Math.round(mon*10)/10})" style="margin-top:8px;width:100%;padding:11px;background:#5D7A3E;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:700;cursor:pointer">養育費（${fmtEn(mon)}円/月）を児童扶養手当タブに反映する →</button>`;
+  const el=document.getElementById('y-result');el.innerHTML=html+yNote+yBtn;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function calcZaisan(){
@@ -818,6 +823,10 @@ function closeModal(){document.getElementById('help-modal').classList.remove('op
 function v(id){const el=document.getElementById(id);return el?el.value:null;}
 function nv(id){const el=document.getElementById(id);return el&&el.value!==''?Number(el.value):null;}
 function showErr(id,msg){const el=document.getElementById(id);el.innerHTML=`<div class="err-msg">⚠ ${msg}</div>`;el.style.display='block';}
+
+function switchTabByName(name){document.querySelectorAll('.tab-btn').forEach(btn=>{if(btn.getAttribute('onclick').includes("'"+name+"'"))switchTab(name,btn);});}
+function setBrKonin(val){const el=document.getElementById('br-konin');if(el)el.value=val;switchTabByName('break');}
+function setBrYouiku(val){const el=document.getElementById('br-youiku');if(el)el.value=val;switchTabByName('break');}
 
 // ─── 損益分岐点 ──────────────────────────────────────────────
 
@@ -1055,7 +1064,36 @@ function calcBreakeven(){
   el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-addChild('k');addChild('y');addProperty();addAsset();addDebt();
+let _syncing=false;
+function setupSync(){
+  const pairs=[
+    ['k-ob-type','y-ob-type'],['k-ob-salary','y-ob-salary'],
+    ['k-ob-business','y-ob-business'],['k-ob-insurance','y-ob-insurance'],
+    ['k-ee-type','y-ee-type'],['k-ee-salary','y-ee-salary'],
+    ['k-ee-business','y-ee-business'],['k-ee-insurance','y-ee-insurance']
+  ];
+  function link(aId,bId){
+    const a=document.getElementById(aId),b=document.getElementById(bId);
+    if(!a||!b)return;
+    function doSync(from,toId){
+      const to=document.getElementById(toId);if(!to)return;
+      ['input','change'].forEach(evt=>from.addEventListener(evt,()=>{
+        if(_syncing)return;_syncing=true;
+        to.value=from.value;
+        if(toId.endsWith('-type'))toggleExtra(toId.replace('-type',''));
+        _syncing=false;
+      }));
+    }
+    doSync(a,bId);doSync(b,aId);
+  }
+  pairs.forEach(([a,b])=>link(a,b));
+  ['k-ee-salary','y-ee-salary'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.addEventListener('input',()=>{const br=document.getElementById('br-income');if(br)br.value=el.value;});
+  });
+}
+
+addChild('k');addChild('y');addProperty();addAsset();addDebt();setupSync();
 </script>
 </body>
 </html>
