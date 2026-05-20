@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>個人再生・自己破産 診断アプリ</title>
+  <style>
+    :root{
+      --primary:#5B8AF0;--primary-hover:#3a6ad4;--primary-light:#EEF3FE;
+      --success:#22c55e;--success-light:#f0fdf4;--success-border:#86efac;
+      --warning:#f59e0b;--warning-light:#fffbeb;--warning-border:#fcd34d;
+      --danger:#ef4444;--danger-light:#fef2f2;--danger-border:#fca5a5;
+      --border:#DDD5C8;--bg:#F2EDE4;--card:#FEFCF9;
+      --text:#2C1F14;--text-muted:#7A6555;
+      --radius:10px;--shadow:0 1px 4px rgba(100,60,20,.10)
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh;padding-bottom:80px}
+    .header{background:linear-gradient(135deg,#1a3a6e,#5B8AF0);color:#fff;padding:18px 20px;text-align:center}
+    .header h1{font-size:20px;font-weight:700}.header p{font-size:12px;opacity:.8;margin-top:3px}
+    .tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:10}
+    .tab-btn{flex:1;min-width:90px;padding:13px 6px;border:none;background:none;cursor:pointer;font-size:14px;font-weight:600;color:var(--text-muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+    .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-light)}
+    .container{max-width:720px;margin:0 auto;padding:16px 12px}
+    .panel{display:none}.panel.active{display:block}
+    .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+    .card-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--text)}
+    .step-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--primary);color:#fff;font-size:11px;font-weight:700;width:22px;height:22px;border-radius:50%;flex-shrink:0}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    @media(max-width:480px){.form-row{grid-template-columns:1fr}}
+    .form-group{display:flex;flex-direction:column;gap:4px}
+    label{font-size:12px;font-weight:600;color:var(--text-muted)}
+    .label-desc{font-size:11px;color:var(--text-muted);font-weight:400;margin-top:1px}
+    .input-wrap{display:flex;align-items:center;gap:6px}.input-wrap input,.input-wrap select{flex:1}
+    .unit{font-size:13px;color:var(--text-muted);white-space:nowrap}
+    input[type=number],input[type=text],select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:14px;color:var(--text);background:#fff;transition:border-color .2s;-webkit-appearance:none}
+    input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(91,138,240,.12)}
+    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237A6555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:30px}
+    .radio-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+    .radio-group label{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text);background:#fff;border:1.5px solid var(--border);border-radius:7px;padding:6px 12px;transition:all .2s}
+    .radio-group input[type=radio]{width:auto;padding:0;border:none}
+    .radio-group label:has(input:checked){background:var(--primary-light);border-color:var(--primary);color:var(--primary);font-weight:700}
+    .warning-inline{background:var(--danger-light);border:1px solid var(--danger-border);border-radius:7px;padding:6px 10px;font-size:12px;color:var(--danger);margin-top:4px;display:none}
+    .warning-inline.show{display:block}
+    .total-bar{background:var(--primary-light);border:1px solid #93b4f8;border-radius:8px;padding:10px 14px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;font-size:14px}
+    .total-bar .total-label{color:var(--primary);font-weight:600}
+    .total-bar .total-val{font-size:18px;font-weight:800;color:var(--primary)}
+    .btn-calc{width:100%;padding:14px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:4px}
+    .btn-calc:hover{background:var(--primary-hover)}
+    .result-box{background:var(--success-light);border:1.5px solid var(--success-border);border-radius:var(--radius);padding:20px;margin-bottom:14px}
+    .result-box.warning{background:var(--warning-light);border-color:var(--warning-border)}
+    .result-box.danger{background:var(--danger-light);border-color:var(--danger-border)}
+    .result-box.info{background:var(--primary-light);border-color:#93b4f8}
+    .result-label{font-size:13px;font-weight:600;color:var(--success);margin-bottom:2px}
+    .result-box.warning .result-label{color:var(--warning)}
+    .result-box.danger .result-label{color:var(--danger)}
+    .result-box.info .result-label{color:var(--primary)}
+    .result-amount{font-size:28px;font-weight:800;color:var(--success);line-height:1.2}
+    .result-box.warning .result-amount{color:var(--warning)}
+    .result-box.danger .result-amount{color:var(--danger)}
+    .result-box.info .result-amount{color:var(--primary)}
+    .result-sub{font-size:13px;color:#166534;margin-top:6px;line-height:1.6}
+    .result-box.warning .result-sub{color:#92400e}
+    .result-box.danger .result-sub{color:#991b1b}
+    .result-box.info .result-sub{color:#1e40af}
+    .breakdown{background:#F7F0E8;border-radius:8px;border:1px solid var(--border);padding:14px;margin-bottom:14px}
+    .breakdown-title{font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
+    .bk-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px dashed #DDD5C8;gap:8px;font-size:13px}
+    .bk-row:last-child{border-bottom:none}
+    .bk-key{color:var(--text-muted);flex:1}.bk-val{font-weight:700;white-space:nowrap;color:var(--text)}
+    .bk-val.ok{color:var(--success)}.bk-val.ng{color:var(--danger)}.bk-val.warn{color:var(--warning)}
+    .bk-desc{font-size:12px;color:var(--text);line-height:1.65;background:#fff;border-radius:5px;padding:6px 8px;margin:4px 0 6px;border-left:3px solid #C8A882}
+    .bk-formula{font-size:11.5px;color:var(--text-muted);background:#EDE5D8;padding:6px 10px;border-radius:5px;font-family:'Courier New',monospace;margin-top:2px;margin-bottom:6px;line-height:1.8;word-break:break-all}
+    .note{font-size:12px;color:#7A4A1E;background:#FBF5EC;border:1px solid #F0C070;border-radius:7px;padding:8px 12px;margin-top:8px;display:flex;gap:6px}
+    .note-icon{flex-shrink:0}
+    .phase-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:4px;vertical-align:middle}
+    .phase-badge.ok{background:#f0fdf4;color:var(--success);border:1px solid #86efac}
+    .phase-badge.ng{background:#fef2f2;color:var(--danger);border:1px solid #fca5a5}
+    .phase-badge.warn{background:#fffbeb;color:var(--warning);border:1px solid #fcd34d}
+    .section-divider{font-size:13px;font-weight:700;color:var(--primary);background:var(--primary-light);border-radius:8px;padding:8px 14px;margin-bottom:12px;border-left:4px solid var(--primary)}
+    .toggle-months{display:flex;gap:6px;margin-bottom:12px}
+    .toggle-months button{flex:1;padding:7px;border:1.5px solid var(--border);background:#fff;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted);transition:all .2s}
+    .toggle-months button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .checklist{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+    .checklist label{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:13px;color:var(--text);line-height:1.5}
+    .checklist input[type=checkbox]{width:16px;height:16px;margin-top:2px;flex-shrink:0;accent-color:var(--danger);cursor:pointer}
+    .extra-fields{background:#F7F0E8;border-radius:8px;padding:12px;margin-top:10px;border:1px dashed var(--border)}
+    /* Glossary */
+    .glossary{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
+    .glossary summary{cursor:pointer;padding:14px 18px;font-size:14px;font-weight:700;color:var(--primary);background:var(--primary-light);list-style:none;display:flex;align-items:center;gap:8px}
+    .glossary summary::-webkit-details-marker{display:none}
+    .glossary summary::after{content:'▼';font-size:11px;margin-left:auto;transition:transform .2s}
+    .glossary[open] summary::after{transform:rotate(180deg)}
+    .glossary-body{padding:14px 18px}
+    .glossary-item{margin-bottom:14px}
+    .glossary-item:last-child{margin-bottom:0}
+    .glossary-term{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+    .glossary-def{font-size:12px;color:var(--text-muted);line-height:1.7}
+    /* Practice tab */
+    .difficulty-group{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+    .difficulty-group label{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text);background:#fff;border:1.5px solid var(--border);border-radius:7px;padding:7px 16px;transition:all .2s}
+    .difficulty-group input[type=radio]{width:auto;padding:0;border:none}
+    .difficulty-group label:has(input:checked){background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+    .problem-table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+    .problem-table th{background:#EDE5D8;color:var(--primary);padding:7px 10px;text-align:left;font-weight:700;border-bottom:2px solid #C8A882}
+    .problem-table td{padding:7px 10px;border-bottom:1px dashed var(--border);vertical-align:middle}
+    .problem-table .num{text-align:right;font-weight:700}
+    .problem-text{font-size:13px;line-height:1.8;color:var(--text);background:#F7F0E8;border-radius:8px;padding:14px;margin-bottom:14px}
+    .q-block{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px}
+    .q-label{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px}
+    .q-input-row{display:flex;align-items:center;gap:8px}
+    .q-input-row input{max-width:150px;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:14px}
+    .q-unit{font-size:13px;color:var(--text-muted)}
+    .ans-row{background:#fff;border-radius:7px;padding:10px 12px;margin-bottom:8px;border-left:4px solid var(--border)}
+    .ans-row.correct{border-left-color:var(--success)}
+    .ans-row.wrong{border-left-color:var(--danger)}
+    .ans-label{font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:4px}
+    .ans-compare{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px;font-size:13px}
+    .ans-yours{color:var(--text)}
+    .ans-correct-val{color:var(--success);font-weight:700}
+    .ans-wrong-val{color:var(--danger);font-weight:700}
+    .footer-fixed{position:fixed;bottom:0;left:0;right:0;background:#1a1a2e;color:#cbd5e1;font-size:11.5px;padding:10px 16px;text-align:center;z-index:20;line-height:1.5}
+  </style>
+</head>
+<body>
+<header class="header">
+  <h1>個人再生・自己破産 診断アプリ</h1>
+  <p>借金の状況から適切な手続きを判定します</p>
+</header>
+<nav class="tabs">
+  <button class="tab-btn active" onclick="switchTab('shindan',this)">📋 診断</button>
+  <button class="tab-btn" onclick="switchTab('renshu',this)">📝 練習</button>
+</nav>
+<div class="container">
+
+  <!-- ===== 診断タブ ===== -->
+  <div id="panel-shindan" class="panel active">
+
+    <!-- STEP 1: 借金の入力 -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">1</span>借金の入力</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>消費者金融・カードローン</label>
+          <span class="label-desc">キャッシングやカードローンの残高</span>
+          <div class="input-wrap"><input type="number" id="debt-consumer" min="0" placeholder="例：150" oninput="updateDebtTotal()"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>クレジットカード（ショッピング）</label>
+          <span class="label-desc">クレカの使いすぎ残高</span>
+          <div class="input-wrap"><input type="number" id="debt-card" min="0" placeholder="例：50" oninput="updateDebtTotal()"><span class="unit">万円</span></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>住宅ローン残高</label>
+          <span class="label-desc">自宅を買うときに借りたお金の残額（個人再生では別扱い）</span>
+          <div class="input-wrap"><input type="number" id="debt-housing" min="0" placeholder="例：2000" oninput="updateDebtTotal()"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>その他ローン（車・教育等）</label>
+          <span class="label-desc">車のローン、教育ローンなど</span>
+          <div class="input-wrap"><input type="number" id="debt-other-loan" min="0" placeholder="例：80" oninput="updateDebtTotal()"><span class="unit">万円</span></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>税金・社会保険料の滞納 ⚠️</label>
+          <span class="label-desc">国民健康保険料、国民年金など</span>
+          <div class="input-wrap"><input type="number" id="debt-tax" min="0" placeholder="例：30" oninput="updateDebtTotal(); checkNonDischarge('tax')"><span class="unit">万円</span></div>
+          <div class="warning-inline" id="warn-tax">この借金は自己破産しても消えません（非免責債権）。手続き後も支払い義務が残ります。</div>
+        </div>
+        <div class="form-group">
+          <label>養育費・婚姻費用の滞納 ⚠️</label>
+          <span class="label-desc">離婚後に支払いが滞っている場合</span>
+          <div class="input-wrap"><input type="number" id="debt-support" min="0" placeholder="例：20" oninput="updateDebtTotal(); checkNonDischarge('support')"><span class="unit">万円</span></div>
+          <div class="warning-inline" id="warn-support">この借金は自己破産しても消えません（非免責債権）。手続き後も支払い義務が残ります。</div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:12px">
+        <label>その他の借金（個人間の借金など）</label>
+        <div class="input-wrap"><input type="number" id="debt-personal" min="0" placeholder="例：50" oninput="updateDebtTotal()"><span class="unit">万円</span></div>
+      </div>
+
+      <div class="total-bar">
+        <span class="total-label">住宅ローンを除く借金の合計</span>
+        <span class="total-val" id="debt-total-display">0 万円</span>
+      </div>
+    </div>
+
+    <!-- STEP 2: 資産の入力 -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">2</span>資産の入力</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>現金</label>
+          <span class="label-desc">財布の中や金庫の現金</span>
+          <div class="input-wrap"><input type="number" id="asset-cash" min="0" placeholder="例：10"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>預貯金合計</label>
+          <span class="label-desc">銀行・ゆうちょなど全口座の合計</span>
+          <div class="input-wrap"><input type="number" id="asset-savings" min="0" placeholder="例：30"><span class="unit">万円</span></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>自動車の査定額</label>
+          <span class="label-desc">中古車店などの査定価格</span>
+          <div class="input-wrap"><input type="number" id="asset-car" min="0" placeholder="例：50"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>生命保険の解約返戻金</label>
+          <span class="label-desc">保険を今すぐ解約した場合に戻るお金</span>
+          <div class="input-wrap"><input type="number" id="asset-insurance" min="0" placeholder="例：20"><span class="unit">万円</span></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>不動産（自宅）の査定額</label>
+          <span class="label-desc">不動産会社の査定価格</span>
+          <div class="input-wrap"><input type="number" id="asset-realestate" min="0" placeholder="例：2500"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>退職金見込額</label>
+          <span class="label-desc">今退職したとして受け取れる額の見込み</span>
+          <div class="input-wrap"><input type="number" id="asset-retirement" min="0" placeholder="例：200"><span class="unit">万円</span></div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:12px">
+        <label>その他財産（株式・貴金属等）</label>
+        <div class="input-wrap"><input type="number" id="asset-other" min="0" placeholder="例：30"><span class="unit">万円</span></div>
+      </div>
+
+      <div class="form-group">
+        <label>退職予定の有無</label>
+        <div class="radio-group">
+          <label><input type="radio" name="retire" value="soon"> 近く退職予定あり（退職金の1/4を算入）</label>
+          <label><input type="radio" name="retire" value="no" checked> 退職予定なし（退職金の1/8を算入）</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: 収入・家族構成 -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">3</span>収入・家族構成</div>
+
+      <div class="form-group" style="margin-bottom:12px">
+        <label>収入の種類</label>
+        <div class="radio-group" id="income-type-group">
+          <label><input type="radio" name="income-type" value="salary" checked onchange="toggleIncomeExtra()"> 給与（会社員・公務員）</label>
+          <label><input type="radio" name="income-type" value="business" onchange="toggleIncomeExtra()"> 事業収入（自営業）</label>
+          <label><input type="radio" name="income-type" value="pension" onchange="toggleIncomeExtra()"> 年金・その他</label>
+          <label><input type="radio" name="income-type" value="none" onchange="toggleIncomeExtra()"> 収入なし</label>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>月収（手取り）</label>
+          <div class="input-wrap"><input type="number" id="income-monthly" min="0" placeholder="例：25"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>現在の月々の返済額合計</label>
+          <div class="input-wrap"><input type="number" id="income-current-repay" min="0" placeholder="例：8"><span class="unit">万円</span></div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:12px">
+        <label>家族構成</label>
+        <select id="family-type">
+          <option value="solo">本人のみ</option>
+          <option value="spouse">配偶者あり</option>
+          <option value="child1">子1人</option>
+          <option value="child2">子2人以上</option>
+        </select>
+      </div>
+
+      <div class="extra-fields" id="salary-stable-box">
+        <div class="form-group">
+          <label>過去2年間の年収変動は20%以内ですか？（給与所得者等再生の要件）</label>
+          <div class="radio-group">
+            <label><input type="radio" name="income-stable" value="yes" checked> はい（安定している）</label>
+            <label><input type="radio" name="income-stable" value="no"> いいえ（変動が大きい）</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-calc" onclick="calcDiagnosis()">📋 診断する</button>
+    <div id="diag-result" style="display:none;margin-top:14px"></div>
+
+    <!-- 用語集 -->
+    <details class="glossary">
+      <summary>📖 用語集（タップして開く）</summary>
+      <div class="glossary-body">
+        <div class="glossary-item">
+          <div class="glossary-term">支払不能</div>
+          <div class="glossary-def">債務者が、支払能力がないために、その債務のうち弁済期にあるものについて一般的かつ継続的に弁済できない状態のこと（破産法第2条第11号）。月収から返済額を引いた残額が最低生活費を下回る場合などに認められる。</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">個人再生（民事再生法）</div>
+          <div class="glossary-def">借金を一定額まで圧縮（カット）し、残額を原則3〜5年で分割返済する手続き。自宅を手放さずに済む可能性がある。収入があることが前提。小規模個人再生と給与所得者等再生の2種類がある。</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">自己破産</div>
+          <div class="glossary-def">裁判所に申立てを行い、財産を換価して債権者に配当した後、残りの債務の支払義務を免除（免責）してもらう手続き。生活に必要な最低限の財産は手元に残せるが、20万円を超える財産は原則として処分される。</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">清算価値</div>
+          <div class="glossary-def">個人再生において、仮に自己破産した場合に各債権者が回収できると見込まれる金額の合計。個人再生での返済額はこの金額を上回らなければならない（清算価値保障原則）。</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">非免責債権</div>
+          <div class="glossary-def">自己破産で免責決定を受けても、支払義務が消えない借金。税金・社会保険料の滞納、養育費・婚姻費用の滞納、故意または重大な過失による損害賠償など（破産法第253条）。</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">免責不許可事由</div>
+          <div class="glossary-def">自己破産の申立てをしても、免責（借金のチャラ）が認められないことがある事由。ギャンブル・投機による浪費、財産の隠匿・損壊、詐術による信用取引、帳簿の隠滅、7年以内の前回免責などが該当する（破産法第252条）。ただし、裁量免責によって認められることもある。</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">可処分所得</div>
+          <div class="glossary-def">給与所得者等再生において使用する概念。年収から最低生活費（政令で定める額）を控除した額。この2年分が返済計画の下限の一つとなる。可処分所得基準は、債権者の決議が不要な給与所得者等再生にのみ適用される。</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">同時廃止</div>
+          <div class="glossary-def">自己破産の手続き形態の一つ。清算すべき財産が少なく、破産手続きの費用すら賄えないと判断された場合に、破産手続きの開始と同時に廃止（終了）となり、免責手続きへ移行する。管財手続きより費用・時間が少なくて済む。</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ===== 練習タブ ===== -->
+  <div id="panel-renshu" class="panel">
+    <div class="card">
+      <div class="card-title"><span class="step-badge" style="background:var(--warning)">問</span>個人再生 計算練習</div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px">清算価値・最低弁済額・月々返済額の計算をランダム問題で練習できます。</p>
+
+      <div class="form-group" style="margin-bottom:14px">
+        <label>難易度</label>
+        <div class="difficulty-group">
+          <label><input type="radio" name="difficulty" value="easy"> かんたん</label>
+          <label><input type="radio" name="difficulty" value="normal" checked> ふつう</label>
+          <label><input type="radio" name="difficulty" value="hard"> むずかしい</label>
+        </div>
+      </div>
+
+      <button class="btn-calc" onclick="generateProblem()">🎲 問題を生成</button>
+    </div>
+
+    <div id="practice-problem" style="display:none"></div>
+    <div id="practice-answers" style="display:none">
+      <button class="btn-calc" onclick="checkAnswers()" style="background:var(--warning);margin-bottom:14px">✅ 答え合わせ</button>
+    </div>
+    <div id="practice-solution" style="display:none"></div>
+  </div>
+
+</div>
+
+<div class="footer-fixed">⚠️ このアプリの計算はあくまで目安です。実際の裁判所の判断は個別事情によって異なります。必ず弁護士または司法書士にご相談ください。</div>
+
+<script>
+// ============================================================
+// UTILITY
+// ============================================================
+function v(id){ return parseFloat(document.getElementById(id).value)||0; }
+function fmt(n){ return Math.round(n).toLocaleString('ja-JP'); }
+function fmtMan(n){ return fmt(n)+'万円'; }
+
+// ============================================================
+// TAB
+// ============================================================
+function switchTab(id, btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ============================================================
+// STEP 1: debt total
+// ============================================================
+function updateDebtTotal(){
+  var total = (v('debt-consumer')+v('debt-card')+v('debt-other-loan')+v('debt-tax')+v('debt-support')+v('debt-personal'));
+  document.getElementById('debt-total-display').textContent = fmtMan(total);
+}
+
+function checkNonDischarge(type){
+  var id = type==='tax'?'debt-tax':'debt-support';
+  var warnId = type==='tax'?'warn-tax':'warn-support';
+  var val = v(id);
+  document.getElementById(warnId).classList.toggle('show', val>0);
+}
+
+// ============================================================
+// INCOME TYPE TOGGLE
+// ============================================================
+function toggleIncomeExtra(){
+  var type = document.querySelector('input[name="income-type"]:checked').value;
+  var box = document.getElementById('salary-stable-box');
+  box.style.display = type==='salary' ? 'block' : 'none';
+}
+
+// ============================================================
+// MIN LIVING EXPENSES
+// ============================================================
+function getMinLiving(familyType){
+  // returns yen per month
+  switch(familyType){
+    case 'solo':   return 130000;
+    case 'spouse': return 190000;
+    case 'child1': return 230000;
+    case 'child2': return 270000;
+    default: return 130000;
+  }
+}
+
+// ============================================================
+// LIQUIDATION VALUE (万円 input → 万円 output)
+// ============================================================
+function calcLiquidation(assets, housing_loan_man){
+  var cash = assets.cash;
+  var savings = assets.savings;
+  var car = assets.car;
+  var insurance = assets.insurance;
+  var realestate = assets.realestate;
+  var retirement = assets.retirement;
+  var other = assets.other;
+  var retireSoon = assets.retireSoon;
+
+  // cash excess above 99万円 (99万円 = 990,000円)
+  var cash_excess = Math.max(cash - 99, 0);
+  var savings_incl = savings > 20 ? savings : 0;
+  var car_incl = car > 20 ? car : 0;
+  var ins_incl = insurance > 20 ? insurance : 0;
+  var realestate_eq = Math.max(realestate - housing_loan_man, 0);
+  var retire_rate = retireSoon ? 1/4 : 1/8;
+  var retirement_incl = retirement * retire_rate;
+  var other_incl = other > 20 ? other : 0;
+
+  var total = cash_excess + savings_incl + car_incl + ins_incl + realestate_eq + retirement_incl + other_incl;
+
+  return {
+    cash_excess, savings_incl, car_incl, ins_incl,
+    realestate_eq, retirement_incl, other_incl,
+    retire_rate, realestate_eq,
+    total: total
+  };
+}
+
+// ============================================================
+// MIN REPAYMENT BASE (最低弁済基準額) 万円
+// ============================================================
+function calcMinBase(debt_man){
+  var base;
+  if(debt_man < 100){
+    base = debt_man;
+  } else if(debt_man <= 500){
+    base = 100;
+  } else if(debt_man <= 1500){
+    base = debt_man / 5;
+  } else if(debt_man <= 3000){
+    base = 300;
+  } else {
+    base = debt_man / 10;
+  }
+  return base;
+}
+
+// ============================================================
+// MAIN DIAGNOSIS
+// ============================================================
+function calcDiagnosis(){
+  var debt_consumer = v('debt-consumer');
+  var debt_card = v('debt-card');
+  var debt_housing = v('debt-housing');
+  var debt_other_loan = v('debt-other-loan');
+  var debt_tax = v('debt-tax');
+  var debt_support = v('debt-support');
+  var debt_personal = v('debt-personal');
+
+  var debt_non_discharge = debt_tax + debt_support;
+  var debt_total_excl_housing = debt_consumer + debt_card + debt_other_loan + debt_tax + debt_support + debt_personal;
+  var debt_total_all = debt_total_excl_housing + debt_housing;
+
+  var income_type = document.querySelector('input[name="income-type"]:checked').value;
+  var income_monthly = v('income-monthly');
+  var income_current_repay = v('income-current-repay');
+  var family_type = document.getElementById('family-type').value;
+  var income_stable = document.querySelector('input[name="income-stable"]:checked') ?
+    document.querySelector('input[name="income-stable"]:checked').value : 'no';
+  var retire_soon = document.querySelector('input[name="retire"]:checked').value === 'soon';
+
+  var assets = {
+    cash: v('asset-cash'),
+    savings: v('asset-savings'),
+    car: v('asset-car'),
+    insurance: v('asset-insurance'),
+    realestate: v('asset-realestate'),
+    retirement: v('asset-retirement'),
+    other: v('asset-other'),
+    retireSoon: retire_soon
+  };
+
+  var min_living_yen = getMinLiving(family_type);
+  var min_living_man = min_living_yen / 10000;
+
+  var remaining = income_monthly - income_current_repay;
+  var is_insolvent = remaining < min_living_man;
+
+  var html = '';
+
+  // --- STEP 4: 支払不能判定 ---
+  html += '<div class="section-divider">STEP 4｜支払不能の判定</div>';
+
+  if(!is_insolvent){
+    html += '<div class="result-box warning">';
+    html += '<div class="result-label">判定結果</div>';
+    html += '<div class="result-amount">支払不能ではない可能性があります</div>';
+    html += '<div class="result-sub">月収から返済額を引いた残額（'+fmtMan(remaining)+'）が最低生活費（'+fmtMan(min_living_man)+'）を上回っています。<br>現時点では債務整理の要件を満たさない可能性がありますが、借金が多く将来的に返済困難になる見込みがある場合は、早めに弁護士・司法書士にご相談ください。任意整理などの選択肢もあります。</div>';
+    html += '</div>';
+    html += buildInsolventBreakdown(income_monthly, income_current_repay, min_living_man, remaining, false);
+    document.getElementById('diag-result').innerHTML = html;
+    document.getElementById('diag-result').style.display = 'block';
+    document.getElementById('diag-result').scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
+
+  html += '<div class="result-box danger">';
+  html += '<div class="result-label">判定結果</div>';
+  html += '<div class="result-amount">支払不能と判断されます</div>';
+  html += '<div class="result-sub">月収から返済額を引いた残額（'+fmtMan(remaining)+'）が最低生活費（'+fmtMan(min_living_man)+'）を下回っています。債務整理手続きの対象となりえます。</div>';
+  html += '</div>';
+  html += buildInsolventBreakdown(income_monthly, income_current_repay, min_living_man, remaining, true);
+
+  // --- STEP 5: 手続き可否 ---
+  html += '<div class="section-divider">STEP 5｜利用できる手続きの判定</div>';
+
+  var can_kojin = debt_total_excl_housing <= 5000 && income_type !== 'none';
+  var can_kyuyo = can_kojin && income_type === 'salary' && income_stable === 'yes';
+  var can_hasan = true; // always available if insolvent
+
+  html += buildProcedureCheck(debt_total_excl_housing, income_type, income_stable, can_kojin, can_kyuyo);
+
+  // --- 免責不許可事由チェックリスト ---
+  html += '<div class="card" style="margin-bottom:14px">';
+  html += '<div class="card-title" style="font-size:14px">自己破産：免責不許可事由の確認</div>';
+  html += '<p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">以下に該当する項目があれば、免責が認められない場合があります（裁量免責となる場合もあります）。</p>';
+  html += '<div class="checklist">';
+  html += '<label><input type="checkbox" id="ck1"> 7年以内に免責を受けた</label>';
+  html += '<label><input type="checkbox" id="ck2"> ギャンブル・FX等の投機で借金が増えた</label>';
+  html += '<label><input type="checkbox" id="ck3"> 借金を隠して追加借入を行った（詐術による信用取引）</label>';
+  html += '<label><input type="checkbox" id="ck4"> 特定の人にだけ優先して返済した（偏頗弁済）</label>';
+  html += '<label><input type="checkbox" id="ck5"> 財産を隠したり、わざと価値を下げた</label>';
+  html += '</div>';
+  html += '<div class="note" style="margin-top:8px"><span class="note-icon">⚠️</span>免責不許可事由に該当する場合でも、裁判所の裁量によって免責が認められる「裁量免責」が認められることがあります。必ず弁護士にご相談ください。</div>';
+  html += '</div>';
+
+  // --- STEP 6: 個人再生 返済プラン ---
+  if(can_kojin){
+    html += '<div class="section-divider">STEP 6｜個人再生 返済プランの試算</div>';
+
+    var liq = calcLiquidation(assets, debt_housing);
+    var min_base = calcMinBase(debt_total_excl_housing);
+
+    // 小規模個人再生
+    var final_min_small = Math.max(min_base, liq.total);
+
+    // 給与所得者等再生
+    var annual_income = income_monthly * 12;
+    var min_living_annual = min_living_man * 12;
+    var disposable = Math.max(0, annual_income - min_living_annual);
+    var disposable_base = disposable * 2;
+    var final_min_kyuyo = Math.max(min_base, liq.total, disposable_base);
+
+    html += buildLiquidationBreakdown(assets, debt_housing, liq);
+    html += buildRestructurePlan(debt_total_excl_housing, min_base, liq.total, disposable_base, final_min_small, final_min_kyuyo, can_kyuyo, income_monthly, min_living_man);
+  }
+
+  // --- STEP 7: 自己破産 ---
+  html += '<div class="section-divider">STEP 7｜自己破産の場合</div>';
+  var liq2 = calcLiquidation(assets, debt_housing);
+  html += buildBankruptcySection(debt_total_excl_housing, debt_non_discharge, liq2.total);
+
+  document.getElementById('diag-result').innerHTML = html;
+  document.getElementById('diag-result').style.display = 'block';
+  document.getElementById('diag-result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function buildInsolventBreakdown(income, repay, min_living, remaining, insolvent){
+  var html = '<div class="breakdown">';
+  html += '<div class="breakdown-title">支払不能判定の計算内容</div>';
+  html += '<div class="bk-row"><span class="bk-key">月収（手取り）</span><span class="bk-val">'+fmtMan(income)+'</span></div>';
+  html += '<div class="bk-row"><span class="bk-key">月々の返済額合計</span><span class="bk-val">'+fmtMan(repay)+'</span></div>';
+  html += '<div class="bk-formula">残額 = '+fmtMan(income)+' − '+fmtMan(repay)+' = '+fmtMan(remaining)+'</div>';
+  html += '<div class="bk-row"><span class="bk-key">最低生活費（基準）</span><span class="bk-val">'+fmtMan(min_living)+'</span></div>';
+  html += '<div class="bk-desc">最低生活費は家族構成から算出しています。本人のみ：13万円、配偶者あり：19万円、子1人：23万円、子2人以上：27万円。</div>';
+  html += '<div class="bk-row"><span class="bk-key">判定</span><span class="bk-val '+(insolvent?'ng':'ok')+'">'+(insolvent?'支払不能（残額 < 最低生活費）':'支払不能でない（残額 ≥ 最低生活費）')+'</span></div>';
+  html += '</div>';
+  return html;
+}
+
+function buildProcedureCheck(debt, income_type, income_stable, can_kojin, can_kyuyo){
+  var html = '<div class="breakdown">';
+  html += '<div class="breakdown-title">利用可能な手続き</div>';
+
+  // 個人再生
+  var cond1 = debt <= 5000;
+  var cond2 = income_type !== 'none';
+  html += '<div class="bk-row"><span class="bk-key">【個人再生】住宅ローン除く借金 ≤ 5,000万円</span><span class="bk-val '+(cond1?'ok':'ng')+'">'+(cond1?'✓ 満たす（'+fmtMan(debt)+'）':'✗ 超過（'+fmtMan(debt)+'）')+'</span></div>';
+  html += '<div class="bk-row"><span class="bk-key">【個人再生】収入があること</span><span class="bk-val '+(cond2?'ok':'ng')+'">'+(cond2?'✓ 収入あり':'✗ 収入なし')+'</span></div>';
+  html += '<div class="bk-row"><span class="bk-key">小規模個人再生</span><span class="bk-val '+(can_kojin?'ok':'ng')+'">'+(can_kojin?'✓ 利用可能':'✗ 利用不可')+'<span class="phase-badge '+(can_kojin?'ok':'ng')+'">'+(can_kojin?'可':'不可')+'</span></span></div>';
+
+  if(can_kojin){
+    var cond3 = income_type === 'salary';
+    var cond4 = income_stable === 'yes';
+    html += '<div class="bk-row"><span class="bk-key">【給与所得者等再生追加要件】給与所得者</span><span class="bk-val '+(cond3?'ok':'ng')+'">'+(cond3?'✓ 給与所得者':'✗ 給与所得者以外')+'</span></div>';
+    html += '<div class="bk-row"><span class="bk-key">【給与所得者等再生追加要件】収入安定（2年間20%以内）</span><span class="bk-val '+(cond4?'ok':'ng')+'">'+(cond4?'✓ 安定':'✗ 不安定')+'</span></div>';
+    html += '<div class="bk-row"><span class="bk-key">給与所得者等再生</span><span class="bk-val '+(can_kyuyo?'ok':'ng')+'">'+(can_kyuyo?'✓ 利用可能':'✗ 利用不可（小規模個人再生のみ）')+'<span class="phase-badge '+(can_kyuyo?'ok':'ng')+'">'+(can_kyuyo?'可':'不可')+'</span></span></div>';
+    html += '<div class="bk-desc">小規模個人再生：債権者の過半数かつ総債権額の過半数の反対がなければ認可。給与所得者等再生：債権者の決議は不要だが、可処分所得基準が追加される。</div>';
+  }
+
+  html += '<div class="bk-row"><span class="bk-key">自己破産</span><span class="bk-val ok">✓ 利用可能（支払不能のため）<span class="phase-badge ok">可</span></span></div>';
+  html += '</div>';
+  return html;
+}
+
+function buildLiquidationBreakdown(assets, housing_loan, liq){
+  var html = '<div class="breakdown">';
+  html += '<div class="breakdown-title">清算価値の計算</div>';
+  html += '<div class="bk-desc">清算価値とは、自己破産した場合に各債権者が回収できる金額の合計です。個人再生での返済総額はこの金額以上でなければなりません（清算価値保障原則）。</div>';
+
+  html += '<div class="bk-row"><span class="bk-key">現金（99万円超の部分）</span><span class="bk-val">'+fmtMan(liq.cash_excess)+'</span></div>';
+  html += '<div class="bk-formula">max(現金'+fmtMan(assets.cash)+' − 99万円, 0) = '+fmtMan(liq.cash_excess)+'万円</div>';
+
+  html += '<div class="bk-row"><span class="bk-key">預貯金（20万円超の場合算入）</span><span class="bk-val">'+fmtMan(liq.savings_incl)+'</span></div>';
+  html += '<div class="bk-row"><span class="bk-key">自動車査定額（20万円超の場合算入）</span><span class="bk-val">'+fmtMan(liq.car_incl)+'</span></div>';
+  html += '<div class="bk-row"><span class="bk-key">保険解約返戻金（20万円超の場合算入）</span><span class="bk-val">'+fmtMan(liq.ins_incl)+'</span></div>';
+
+  var eq = liq.realestate_eq;
+  html += '<div class="bk-row"><span class="bk-key">不動産純資産（査定額−住宅ローン）</span><span class="bk-val">'+fmtMan(eq)+'</span></div>';
+  html += '<div class="bk-formula">max(不動産'+fmtMan(assets.realestate)+' − 住宅ローン'+fmtMan(housing_loan)+', 0) = '+fmtMan(eq)+'万円</div>';
+
+  var retire_label = liq.retire_rate===1/4 ? '1/4' : '1/8';
+  html += '<div class="bk-row"><span class="bk-key">退職金（退職見込額の'+retire_label+'）</span><span class="bk-val">'+fmtMan(liq.retirement_incl)+'</span></div>';
+  html += '<div class="bk-formula">'+fmtMan(assets.retirement)+' × '+retire_label+' = '+fmtMan(liq.retirement_incl)+'万円</div>';
+
+  html += '<div class="bk-row"><span class="bk-key">その他財産（20万円超の場合算入）</span><span class="bk-val">'+fmtMan(liq.other_incl)+'</span></div>';
+
+  html += '<div class="bk-row" style="font-size:14px;font-weight:700"><span class="bk-key">清算価値 合計</span><span class="bk-val" style="color:var(--primary);font-size:15px">'+fmtMan(liq.total)+'</span></div>';
+  html += '</div>';
+  return html;
+}
+
+function buildRestructurePlan(debt, min_base, liq_total, disposable_base, final_min_small, final_min_kyuyo, can_kyuyo, income_monthly, min_living_man){
+  var html = '';
+
+  // 最低弁済基準額
+  html += '<div class="breakdown">';
+  html += '<div class="breakdown-title">最低弁済基準額の計算</div>';
+  html += '<div class="bk-desc">住宅ローンを除く借金の額に応じて、法律で定められた最低弁済額です。</div>';
+  html += '<div class="bk-row"><span class="bk-key">住宅ローン除く借金合計</span><span class="bk-val">'+fmtMan(debt)+'</span></div>';
+
+  var rule = '';
+  if(debt < 100) rule = '借金 < 100万円 → 全額（'+fmtMan(debt)+'万円）';
+  else if(debt <= 500) rule = '100万円 ≤ 借金 ≤ 500万円 → 100万円';
+  else if(debt <= 1500) rule = '500万円 < 借金 ≤ 1,500万円 → 借金 × 1/5';
+  else if(debt <= 3000) rule = '1,500万円 < 借金 ≤ 3,000万円 → 300万円';
+  else rule = '3,000万円 < 借金 ≤ 5,000万円 → 借金 × 1/10';
+  html += '<div class="bk-formula">'+rule+' = '+fmtMan(min_base)+'万円</div>';
+  html += '<div class="bk-row"><span class="bk-key">最低弁済基準額</span><span class="bk-val">'+fmtMan(min_base)+'</span></div>';
+  html += '</div>';
+
+  // 可処分所得基準（給与所得者等再生）
+  if(can_kyuyo){
+    html += '<div class="breakdown">';
+    html += '<div class="breakdown-title">可処分所得基準の計算（給与所得者等再生）</div>';
+    var annual = income_monthly * 12;
+    var min_living_annual = min_living_man * 12;
+    var disp = Math.max(0, annual - min_living_annual);
+    html += '<div class="bk-row"><span class="bk-key">年収見込み（月収 × 12）</span><span class="bk-val">'+fmtMan(annual)+'</span></div>';
+    html += '<div class="bk-row"><span class="bk-key">最低生活費（年額）</span><span class="bk-val">'+fmtMan(min_living_annual)+'</span></div>';
+    html += '<div class="bk-formula">年収'+fmtMan(annual)+' − 最低生活費'+fmtMan(min_living_annual)+' = 可処分所得'+fmtMan(disp)+'万円</div>';
+    html += '<div class="bk-row"><span class="bk-key">可処分所得2年分（返済下限）</span><span class="bk-val">'+fmtMan(disposable_base)+'</span></div>';
+    html += '<div class="bk-formula">可処分所得'+fmtMan(disp)+' × 2 = '+fmtMan(disposable_base)+'万円</div>';
+    html += '</div>';
+  }
+
+  // 返済プラン
+  html += '<div class="card" style="margin-bottom:14px">';
+  html += '<div class="card-title" style="font-size:14px">返済期間を選んでください</div>';
+  html += '<div class="toggle-months" id="months-toggle">';
+  html += '<button class="active" onclick="selectMonths(36,this)">3年返済（36回）</button>';
+  html += '<button onclick="selectMonths(60,this)">5年返済（60回）</button>';
+  html += '</div>';
+
+  // 小規模個人再生
+  var pay36_small = Math.ceil(final_min_small / 36 * 10000); // yen
+  var pay60_small = Math.ceil(final_min_small / 60 * 10000);
+  html += '<div class="result-box info" id="plan-small">';
+  html += '<div class="result-label">小規模個人再生 — 最低弁済総額</div>';
+  html += '<div class="result-amount" id="plan-small-total">'+fmtMan(final_min_small)+'</div>';
+  html += '<div class="result-sub">月々の返済額（3年）：<strong id="plan-small-monthly">'+pay36_small.toLocaleString('ja-JP')+'円</strong></div>';
+  html += '<div class="result-sub" style="margin-top:4px">（元の借金 '+fmtMan(debt)+'万円 → '+fmtMan(final_min_small)+'万円に圧縮、残りの'+fmtMan(debt-final_min_small)+'万円がカットされる計算です）</div>';
+  html += '</div>';
+
+  // 給与所得者等再生
+  if(can_kyuyo){
+    var pay36_kyuyo = Math.ceil(final_min_kyuyo / 36 * 10000);
+    var pay60_kyuyo = Math.ceil(final_min_kyuyo / 60 * 10000);
+    html += '<div class="result-box info" id="plan-kyuyo">';
+    html += '<div class="result-label">給与所得者等再生 — 最低弁済総額</div>';
+    html += '<div class="result-amount" id="plan-kyuyo-total">'+fmtMan(final_min_kyuyo)+'</div>';
+    html += '<div class="result-sub">月々の返済額（3年）：<strong id="plan-kyuyo-monthly">'+pay36_kyuyo.toLocaleString('ja-JP')+'円</strong></div>';
+    html += '<div class="result-sub" style="margin-top:4px">給与所得者等再生は可処分所得基準が加わるため、小規模個人再生より返済額が増えることがあります。債権者の決議が不要という利点があります。</div>';
+    html += '</div>';
+    html += '<script>window._kyuyo_small='+final_min_small+';window._kyuyo_kyuyo='+final_min_kyuyo+';<\/script>';
+  } else {
+    html += '<script>window._kyuyo_small='+final_min_small+';window._kyuyo_kyuyo=null;<\/script>';
+  }
+
+  html += '<div class="breakdown" style="margin-top:8px">';
+  html += '<div class="breakdown-title">最終的な最低弁済額の決定ロジック</div>';
+  html += '<div class="bk-row"><span class="bk-key">最低弁済基準額</span><span class="bk-val">'+fmtMan(min_base)+'</span></div>';
+  html += '<div class="bk-row"><span class="bk-key">清算価値</span><span class="bk-val">'+fmtMan(liq_total)+'</span></div>';
+  if(can_kyuyo){
+    html += '<div class="bk-row"><span class="bk-key">可処分所得2年分</span><span class="bk-val">'+fmtMan(disposable_base)+'</span></div>';
+    html += '<div class="bk-formula">小規模：max('+fmtMan(min_base)+', '+fmtMan(liq_total)+') = '+fmtMan(final_min_small)+'万円</div>';
+    html += '<div class="bk-formula">給与等：max('+fmtMan(min_base)+', '+fmtMan(liq_total)+', '+fmtMan(disposable_base)+') = '+fmtMan(final_min_kyuyo)+'万円</div>';
+  } else {
+    html += '<div class="bk-formula">max('+fmtMan(min_base)+', '+fmtMan(liq_total)+') = '+fmtMan(final_min_small)+'万円</div>';
+  }
+  html += '</div>';
+  html += '</div>';
+
+  return html;
+}
+
+function selectMonths(months, btn){
+  document.querySelectorAll('#months-toggle button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  // update small plan
+  if(window._kyuyo_small != null){
+    var pay_small = Math.ceil(window._kyuyo_small / months * 10000);
+    var el_s = document.getElementById('plan-small-monthly');
+    if(el_s) el_s.textContent = pay_small.toLocaleString('ja-JP')+'円';
+  }
+  // update kyuyo plan
+  if(window._kyuyo_kyuyo != null){
+    var pay_kyuyo = Math.ceil(window._kyuyo_kyuyo / months * 10000);
+    var el_k = document.getElementById('plan-kyuyo-monthly');
+    if(el_k) el_k.textContent = pay_kyuyo.toLocaleString('ja-JP')+'円';
+  }
+}
+
+function buildBankruptcySection(debt_excl_housing, debt_non_discharge, liq_total){
+  var dischargeable = debt_excl_housing - debt_non_discharge;
+  var html = '<div class="breakdown">';
+  html += '<div class="breakdown-title">自己破産の場合の整理</div>';
+  html += '<div class="bk-desc">自己破産では、免責決定により原則として全ての借金の支払義務が消えますが、一部の「非免責債権」は残ります。</div>';
+  html += '<div class="bk-row"><span class="bk-key">借金総額（住宅ローン除く）</span><span class="bk-val">'+fmtMan(debt_excl_housing)+'</span></div>';
+  html += '<div class="bk-row"><span class="bk-key">免責される借金（消える借金）</span><span class="bk-val ok">'+fmtMan(dischargeable)+'</span></div>';
+  html += '<div class="bk-row"><span class="bk-key">免責されない借金（残る借金）</span><span class="bk-val ng">'+fmtMan(debt_non_discharge)+'</span></div>';
+  if(debt_non_discharge > 0){
+    html += '<div class="bk-desc" style="border-left-color:var(--danger)">税金・社会保険料の滞納（'+fmtMan(v('debt-tax'))+'万円）や養育費・婚姻費用の滞納（'+fmtMan(v('debt-support'))+'万円）は、自己破産後も支払い義務が残ります。</div>';
+  }
+  html += '<div class="bk-row"><span class="bk-key">財産の清算価値</span><span class="bk-val">'+fmtMan(liq_total)+'</span></div>';
+  if(liq_total > 0){
+    html += '<div class="bk-desc">清算価値が0より大きいため、<strong>管財手続き</strong>となる可能性があります。破産管財人が選任され、財産を換価・配当します。費用（予納金）として通常20〜50万円程度かかります。</div>';
+  } else {
+    html += '<div class="bk-desc">清算価値が0（または極めて少ない）ため、<strong>同時廃止</strong>となる可能性があります。破産手続きの開始と同時に廃止となり、比較的早く免責手続きへ進めます。</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+// ============================================================
+// PRACTICE TAB
+// ============================================================
+var _problem = null;
+
+function rndMultiple(min, max, step){
+  var count = Math.floor((max - min) / step) + 1;
+  return min + Math.floor(Math.random() * count) * step;
+}
+
+function generateProblem(){
+  var diff = document.querySelector('input[name="difficulty"]:checked').value;
+
+  var debt = rndMultiple(100, 4000, 50);
+  var cash = rndMultiple(0, 200, 10);
+  var savings = rndMultiple(0, 100, 5);
+  var car = rndMultiple(0, 200, 10);
+  var insurance = rndMultiple(0, 100, 5);
+  var retirement = rndMultiple(0, 500, 50);
+  var annual_income = (diff === 'hard') ? rndMultiple(200, 600, 10) : 0;
+  var monthly_income = (diff === 'hard') ? Math.round(annual_income / 12) : 0;
+
+  _problem = { diff, debt, cash, savings, car, insurance, retirement, annual_income, monthly_income };
+
+  var liq = calcLiquidation({cash,savings,car,insurance,realestate:0,retirement,other:0,retireSoon:false}, 0);
+  var min_base = calcMinBase(debt);
+  var final_min_small = Math.max(min_base, liq.total);
+  var pay36 = Math.ceil(final_min_small / 36 * 10000);
+
+  var disposable_base = 0;
+  var final_min_kyuyo = 0;
+  if(diff === 'hard'){
+    var min_living_annual = 130000 * 12; // 本人のみ
+    var disp_yen = Math.max(0, annual_income * 10000 - min_living_annual);
+    disposable_base = disp_yen / 10000 * 2;
+    final_min_kyuyo = Math.max(min_base, liq.total, disposable_base);
+  }
+
+  _problem.liq = liq;
+  _problem.min_base = min_base;
+  _problem.final_min_small = final_min_small;
+  _problem.pay36 = pay36;
+  _problem.disposable_base = disposable_base;
+  _problem.final_min_kyuyo = final_min_kyuyo;
+
+  var problemHtml = '<div class="card">';
+  problemHtml += '<div class="card-title"><span class="step-badge" style="background:var(--warning)">問</span>太郎さんの状況</div>';
+  problemHtml += '<div class="problem-text">';
+
+  if(diff === 'hard'){
+    problemHtml += '太郎さんは会社員（手取り月収 <strong>'+monthly_income+'万円</strong>、年収 <strong>'+annual_income+'万円</strong>）で、本人のみの世帯です。以下の通り借金と財産があります。個人再生（小規模・給与所得者等再生）の計算をしてください。';
+  } else {
+    problemHtml += '太郎さんは以下の通り借金と財産があります。個人再生の計算をしてください。';
+  }
+  problemHtml += '</div>';
+
+  problemHtml += '<table class="problem-table">';
+  problemHtml += '<tr><th>項目</th><th class="num">金額（万円）</th></tr>';
+  problemHtml += '<tr><td>住宅ローン除く借金合計</td><td class="num">'+debt+'</td></tr>';
+  problemHtml += '<tr><td>現金</td><td class="num">'+cash+'</td></tr>';
+  problemHtml += '<tr><td>預貯金</td><td class="num">'+savings+'</td></tr>';
+  problemHtml += '<tr><td>自動車査定額</td><td class="num">'+car+'</td></tr>';
+  problemHtml += '<tr><td>生命保険解約返戻金</td><td class="num">'+insurance+'</td></tr>';
+  problemHtml += '<tr><td>退職金見込額（退職予定なし → 1/8算入）</td><td class="num">'+retirement+'</td></tr>';
+  problemHtml += '<tr><td>不動産・その他財産</td><td class="num">0</td></tr>';
+  problemHtml += '</table>';
+
+  problemHtml += '</div>';
+
+  var answersHtml = '<div class="card">';
+  answersHtml += '<div class="card-title">回答欄</div>';
+
+  answersHtml += '<div class="q-block"><div class="q-label">Q1. 清算価値はいくらですか？</div>';
+  answersHtml += '<div class="q-input-row"><input type="number" id="q1-ans" placeholder="例：50" min="0"><span class="q-unit">万円</span></div></div>';
+
+  answersHtml += '<div class="q-block"><div class="q-label">Q2. 最低弁済基準額はいくらですか？</div>';
+  answersHtml += '<div class="q-input-row"><input type="number" id="q2-ans" placeholder="例：100" min="0"><span class="q-unit">万円</span></div></div>';
+
+  if(diff !== 'easy'){
+    answersHtml += '<div class="q-block"><div class="q-label">Q3. 小規模個人再生の最低弁済額はいくらですか？</div>';
+    answersHtml += '<div class="q-input-row"><input type="number" id="q3-ans" placeholder="例：100" min="0"><span class="q-unit">万円</span></div></div>';
+
+    answersHtml += '<div class="q-block"><div class="q-label">Q4. 3年返済の場合の月々の返済額はいくらですか？</div>';
+    answersHtml += '<div class="q-input-row"><input type="number" id="q4-ans" placeholder="例：30000" min="0"><span class="q-unit">円</span></div></div>';
+  }
+
+  if(diff === 'hard'){
+    answersHtml += '<div class="q-block"><div class="q-label">Q5. 可処分所得2年分はいくらですか？（本人のみ世帯、最低生活費年156万円として計算）</div>';
+    answersHtml += '<div class="q-input-row"><input type="number" id="q5-ans" placeholder="例：100" min="0"><span class="q-unit">万円</span></div></div>';
+
+    answersHtml += '<div class="q-block"><div class="q-label">Q6. 給与所得者等再生の最低弁済額はいくらですか？</div>';
+    answersHtml += '<div class="q-input-row"><input type="number" id="q6-ans" placeholder="例：150" min="0"><span class="q-unit">万円</span></div></div>';
+  }
+
+  answersHtml += '</div>';
+
+  document.getElementById('practice-problem').innerHTML = problemHtml;
+  document.getElementById('practice-problem').style.display = 'block';
+  document.getElementById('practice-answers').innerHTML = answersHtml + '<button class="btn-calc" onclick="checkAnswers()" style="background:var(--warning);margin-bottom:14px">✅ 答え合わせ</button>';
+  document.getElementById('practice-answers').style.display = 'block';
+  document.getElementById('practice-solution').style.display = 'none';
+  document.getElementById('practice-solution').innerHTML = '';
+}
+
+function checkAnswers(){
+  if(!_problem) return;
+  var p = _problem;
+  var diff = p.diff;
+
+  function getAns(id){
+    var el = document.getElementById(id);
+    return el ? (parseFloat(el.value)||0) : null;
+  }
+
+  function checkRow(label, user, correct, unit, breakdownHtml){
+    var isCorrect = (user !== null) && (Math.abs(user - correct) < 0.5);
+    var html = '<div class="ans-row '+(isCorrect?'correct':'wrong')+'">';
+    html += '<div class="ans-label">'+label+'</div>';
+    html += '<div class="ans-compare">';
+    html += '<span class="ans-yours">あなたの回答：<strong>'+(user!==null?user.toLocaleString('ja-JP'):'未回答')+' '+unit+'</strong></span>';
+    if(isCorrect){
+      html += '<span class="ans-correct-val">✓ 正解！ '+correct.toLocaleString('ja-JP')+' '+unit+'</span>';
+    } else {
+      html += '<span class="ans-wrong-val">✗ 正解：'+correct.toLocaleString('ja-JP')+' '+unit+'</span>';
+    }
+    html += '</div>';
+    html += breakdownHtml;
+    html += '</div>';
+    return html;
+  }
+
+  var solHtml = '<div class="card"><div class="card-title">解説</div>';
+
+  // Q1: 清算価値
+  var q1 = getAns('q1-ans');
+  var liq = p.liq;
+  var liq_bd = '<div class="bk-formula">';
+  liq_bd += '現金超過分：max('+p.cash+' − 99, 0) = '+fmtRound(liq.cash_excess)+'万円\n';
+  liq_bd += '預貯金：'+(p.savings > 20 ? p.savings : 0)+'万円（'+(p.savings > 20?'20万円超のため算入':'20万円以下のため0')+'）\n';
+  liq_bd += '自動車：'+(p.car > 20 ? p.car : 0)+'万円（'+(p.car > 20?'20万円超のため算入':'20万円以下のため0')+'）\n';
+  liq_bd += '保険：'+(p.insurance > 20 ? p.insurance : 0)+'万円（'+(p.insurance > 20?'20万円超のため算入':'20万円以下のため0')+'）\n';
+  liq_bd += '退職金：'+p.retirement+' × 1/8 = '+fmtRound(p.retirement/8)+'万円\n';
+  liq_bd += '合計 = '+fmtRound(liq.total)+'万円';
+  liq_bd += '</div>';
+  solHtml += checkRow('Q1. 清算価値', q1, Math.round(liq.total*10)/10, '万円', liq_bd);
+
+  // Q2: 最低弁済基準額
+  var q2 = getAns('q2-ans');
+  var min_bd = '<div class="bk-formula">';
+  min_bd += '借金 = '+p.debt+'万円\n';
+  if(p.debt < 100) min_bd += '100万円未満 → 全額 = '+p.debt+'万円';
+  else if(p.debt <= 500) min_bd += '100〜500万円 → 100万円';
+  else if(p.debt <= 1500) min_bd += '500〜1500万円 → '+p.debt+' × 1/5 = '+fmtRound(p.debt/5)+'万円';
+  else if(p.debt <= 3000) min_bd += '1500〜3000万円 → 300万円';
+  else min_bd += '3000〜5000万円 → '+p.debt+' × 1/10 = '+fmtRound(p.debt/10)+'万円';
+  min_bd += '</div>';
+  solHtml += checkRow('Q2. 最低弁済基準額', q2, Math.round(p.min_base*10)/10, '万円', min_bd);
+
+  if(diff !== 'easy'){
+    // Q3: 小規模個人再生の最低弁済額
+    var q3 = getAns('q3-ans');
+    var q3_bd = '<div class="bk-formula">max(最低弁済基準額'+fmtRound(p.min_base)+'万円, 清算価値'+fmtRound(liq.total)+'万円) = '+fmtRound(p.final_min_small)+'万円</div>';
+    solHtml += checkRow('Q3. 小規模個人再生の最低弁済額', q3, Math.round(p.final_min_small*10)/10, '万円', q3_bd);
+
+    // Q4: 月々の返済額（3年）
+    var q4 = getAns('q4-ans');
+    var q4_bd = '<div class="bk-formula">ceil('+fmtRound(p.final_min_small)+'万円 ÷ 36ヶ月) = ceil('+fmtRound(p.final_min_small*10000/36)+') = '+p.pay36.toLocaleString('ja-JP')+'円/月</div>';
+    solHtml += checkRow('Q4. 3年返済の月々返済額', q4, p.pay36, '円', q4_bd);
+  }
+
+  if(diff === 'hard'){
+    // Q5: 可処分所得2年分
+    var q5 = getAns('q5-ans');
+    var min_living_annual_man = 130000 * 12 / 10000; // 156万円
+    var disp_man = Math.max(0, p.annual_income - min_living_annual_man);
+    var disp2 = disp_man * 2;
+    var q5_bd = '<div class="bk-formula">年収'+p.annual_income+'万円 − 最低生活費'+min_living_annual_man+'万円 = 可処分所得'+fmtRound(disp_man)+'万円\n可処分所得'+fmtRound(disp_man)+'万円 × 2 = '+fmtRound(disp2)+'万円</div>';
+    solHtml += checkRow('Q5. 可処分所得2年分', q5, Math.round(disp2*10)/10, '万円', q5_bd);
+
+    // Q6: 給与所得者等再生の最低弁済額
+    var q6 = getAns('q6-ans');
+    var q6_bd = '<div class="bk-formula">max(最低弁済基準額'+fmtRound(p.min_base)+'万円, 清算価値'+fmtRound(liq.total)+'万円, 可処分所得2年分'+fmtRound(p.disposable_base)+'万円) = '+fmtRound(p.final_min_kyuyo)+'万円</div>';
+    solHtml += checkRow('Q6. 給与所得者等再生の最低弁済額', q6, Math.round(p.final_min_kyuyo*10)/10, '万円', q6_bd);
+  }
+
+  solHtml += '</div>';
+
+  document.getElementById('practice-solution').innerHTML = solHtml;
+  document.getElementById('practice-solution').style.display = 'block';
+  document.getElementById('practice-solution').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function fmtRound(n){
+  return Math.round(n * 10) / 10;
+}
+</script>
+</body>
+</html>
