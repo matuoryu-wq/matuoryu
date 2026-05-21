@@ -453,7 +453,7 @@
   <!-- ===== 計算問題 ===== -->
   <div id="panel-mondai" class="panel">
     <div class="info-banner">
-      <p>婚姻費用・養育費・財産分与の計算問題をランダムに出題します。標準算定方式の公式を使って解いてみましょう。</p>
+      <p>婚姻費用・養育費・財産分与・児童扶養手当・損益分岐点の計算問題をランダムに出題します（6種類）。<br>A=婚姻費用 / B=養育費（子2人） / C=財産分与 / D=児童扶養手当 / E=損益分岐点 / F=養育費（自営）</p>
     </div>
     <div id="mondai-start-area">
       <button class="quiz-btn-start" onclick="mondaiNext()">問題を出す</button>
@@ -1201,6 +1201,9 @@ function setupSync(){
 addChild('k');addProperty();addAsset();addDebt();setupSync();
 
 // ─── 計算問題タブ ────────────────────────────────────────────────
+// mondaiCurrent は module level で宣言。タブ切り替えでは絶対にリセットしない。
+let mondaiCurrent = null;
+
 function mondaiRand(min,max,step){
   const n=Math.floor((max-min)/step+1);
   return min+Math.floor(Math.random()*n)*step;
@@ -1208,39 +1211,55 @@ function mondaiRand(min,max,step){
 function mondaiAge(){
   return Math.random()<0.5?Math.floor(Math.random()*15):15+Math.floor(Math.random()*5);
 }
-function mondaiChildIdx(age){return childIndex(age);}
 
 function mondaiGenProblem(){
-  const type=Math.floor(Math.random()*4);
+  const type=Math.floor(Math.random()*6);
   if(type===0){
-    // Type A: 婚姻費用（給与所得者同士）
+    // Type A: 婚姻費用（子2人）
     const obSal=mondaiRand(300,800,50);
     const eeSal=mondaiRand(0,400,50);
-    const age=mondaiAge();
-    const n=Math.floor(Math.random()*3)+1;
-    const ages=[];for(let i=0;i<n;i++)ages.push(mondaiAge());
-    return{type:'A',obSal,eeSal,ages};
+    const age1=mondaiAge();
+    const age2=mondaiAge();
+    return{type:'A',obSal,eeSal,ages:[age1,age2]};
   }else if(type===1){
-    // Type B: 養育費（基本）
+    // Type B: 養育費（子2人・年齢混在）
     const obSal=mondaiRand(300,800,50);
     const eeSal=mondaiRand(0,400,50);
     const age1=mondaiAge();
     const age2=mondaiAge();
     return{type:'B',obSal,eeSal,age1,age2};
   }else if(type===2){
-    // Type C: 財産分与
+    // Type C: 財産分与（不動産+退職金+特有財産）
     const fudosan=mondaiRand(1000,5000,100);
-    const loanMax=Math.max(100,fudosan-100);
-    const loanMin=Math.min(500,loanMax);
-    const loan=mondaiRand(loanMin,loanMax,100);
-    const yokin=mondaiRand(100,2000,100);
-    return{type:'C',fudosan,loan,yokin};
+    const loanMax=Math.min(fudosan-100,3000);
+    const loan=mondaiRand(200,Math.max(200,loanMax),100);
+    const yokin=mondaiRand(100,1000,50);
+    const taisyoku=mondaiRand(100,500,50);
+    const sep=mondaiRand(0,200,50);
+    return{type:'C',fudosan,loan,yokin,taisyoku,sep};
+  }else if(type===3){
+    // Type D: 児童扶養手当
+    const income=mondaiRand(100,400,50);
+    const n=Math.floor(Math.random()*3)+1;
+    const youiku=mondaiRand(2,8,1);
+    const birthYear=mondaiRand(2015,2022,1);
+    const birthMonth=mondaiRand(1,12,1);
+    return{type:'D',income,n,youiku,birthYear,birthMonth};
+  }else if(type===4){
+    // Type E: 損益分岐点
+    const income=mondaiRand(150,350,50);
+    const konin=mondaiRand(5,15,1);
+    const youiku=mondaiRand(3,10,1);
+    const n=Math.floor(Math.random()*2)+1;
+    const birthYear=mondaiRand(2016,2022,1);
+    const birthMonth=mondaiRand(1,12,1);
+    return{type:'E',income,konin,youiku,n,birthYear,birthMonth};
   }else{
-    // Type D: 養育費（事業所得者）
+    // Type F: 養育費（自営業者）
     const jiSal=mondaiRand(200,600,50);
     const eeSal=mondaiRand(0,400,50);
     const age=mondaiAge();
-    return{type:'D',jiSal,eeSal,age};
+    return{type:'F',jiSal,eeSal,age};
   }
 }
 
@@ -1251,7 +1270,13 @@ function mondaiRenderQuestion(prob){
   }else if(prob.type==='B'){
     return `義務者（給与所得者）年収 <strong>${prob.obSal}万円</strong>、権利者（給与所得者）年収 <strong>${prob.eeSal}万円</strong>、子は ${prob.age1}歳と${prob.age2}歳の2人。<br><br>養育費の月額目安はいくらか。`;
   }else if(prob.type==='C'){
-    return `婚姻中の共有財産：預金 <strong>${prob.yokin}万円</strong>、不動産（査定額 <strong>${prob.fudosan}万円</strong>・ローン残高 <strong>${prob.loan}万円</strong>）。特有財産はなし。<br><br>通常の50%ずつ分与の場合、どちらがいくら支払うか（現在はそれぞれ保有財産が分与額通りと仮定）。`;
+    return `共有財産：預金 <strong>${prob.yokin}万円</strong>、自宅（査定額 <strong>${prob.fudosan}万円</strong>・ローン残高 <strong>${prob.loan}万円</strong>）、退職金（婚姻中相当分）<strong>${prob.taisyoku}万円</strong>。夫の特有財産（婚前預金）<strong>${prob.sep}万円</strong>。50:50分与。<br><br>① 自宅純資産はいくらか。② 分与対象純財産はいくらか。③ 各自の取得分はいくらか。`;
+  }else if(prob.type==='D'){
+    const childDesc=`子${prob.n}人（末子${prob.birthYear}年${prob.birthMonth}月生まれ）`;
+    return `権利者の年収 <strong>${prob.income}万円</strong>、${childDesc}。養育費 <strong>${prob.youiku}万円/月</strong>受領中。<br><br>本年の児童扶養手当の月額はいくらか。支給区分も答えよ。`;
+  }else if(prob.type==='E'){
+    const childDesc=`子${prob.n}人・末子${prob.birthYear}年${prob.birthMonth}月生まれ`;
+    return `権利者年収 <strong>${prob.income}万円</strong>（${childDesc}）。婚姻費用 <strong>${prob.konin}万円/月</strong>、今すぐ離婚した場合の養育費 <strong>${prob.youiku}万円/月</strong>。<br><br>① 児童扶養手当の月額はいくらか ② 今すぐ離婚した場合の月収受取総額は ③ 婚姻継続との月額差はいくらか`;
   }else{
     return `義務者（自営業者・課税所得 <strong>${prob.jiSal}万円</strong>）、権利者（給与所得者・年収 <strong>${prob.eeSal}万円</strong>）、子は ${prob.age}歳。<br><br>養育費の月額目安はいくらか。`;
   }
@@ -1279,10 +1304,11 @@ function mondaiRenderAnswer(prob){
 <div class="quiz-step"><strong>④ 月額 = 年額 ÷ 12</strong><br>
 <span class="quiz-formula">${ann.toFixed(2)} ÷ 12 = ${mon.toFixed(2)}万円</span></div>
 <div class="quiz-answer-final">月額婚姻費用の目安：約${fmtEn(mon)}</div>`;
+
   }else if(prob.type==='B'){
     const ob=calcBaseIncome('employee',prob.obSal,0,0);
-    const ee=calcBaseIncome('employee',prob.eeSal,0,0);
-    let a=ob.baseIncome;let b=ee.baseIncome;
+    const eeRaw=calcBaseIncome('employee',prob.eeSal,0,0);
+    let a=ob.baseIncome;let b=eeRaw.baseIncome;
     const corr=b>a;if(corr)b=a;
     const ages=[prob.age1,prob.age2];
     const cs=ages.reduce((t,ag)=>t+childIndex(ag),0);
@@ -1292,7 +1318,7 @@ function mondaiRenderAnswer(prob){
     const childRows=ages.map((ag,i)=>`第${i+1}子（${ag}歳）: 指数${childIndex(ag)}`).join('<br>');
     return `<div class="quiz-step"><strong>① 基礎収入を計算</strong><br>
 <span class="quiz-formula">義務者基礎収入 a = ${prob.obSal}万 × ${ob.rate}% = ${ob.baseIncome.toFixed(2)}万円</span>
-<span class="quiz-formula">権利者基礎収入 b = ${prob.eeSal}万 × ${calcBaseIncome('employee',prob.eeSal,0,0).rate}% = ${calcBaseIncome('employee',prob.eeSal,0,0).baseIncome.toFixed(2)}万円${corr?' → b > a のため b = a = '+a.toFixed(2)+'万円 に補正':''}</span></div>
+<span class="quiz-formula">権利者基礎収入 b = ${prob.eeSal}万 × ${eeRaw.rate}% = ${eeRaw.baseIncome.toFixed(2)}万円${corr?' → b > a のため b = a = '+a.toFixed(2)+'万円 に補正':''}</span></div>
 <div class="quiz-step"><strong>② 子の生活費指数</strong><br>
 <span class="quiz-formula">${childRows}<br>指数合計 α = ${cs}</span></div>
 <div class="quiz-step"><strong>③ 子の生活費 c の計算</strong><br>
@@ -1302,31 +1328,89 @@ function mondaiRenderAnswer(prob){
 <div class="quiz-step"><strong>⑤ 月額 = 年額 ÷ 12</strong><br>
 <span class="quiz-formula">${ann.toFixed(2)} ÷ 12 = ${mon.toFixed(2)}万円</span></div>
 <div class="quiz-answer-final">月額養育費の目安：約${fmtEn(mon)}</div>`;
+
   }else if(prob.type==='C'){
-    const net=prob.fudosan-prob.loan;
-    const total=prob.yokin+net;
-    const halfTotal=total/2;
-    return `<div class="quiz-step"><strong>① 不動産の純資産</strong><br>
-<span class="quiz-formula">純資産 = 査定額 − ローン残高 = ${prob.fudosan}万 − ${prob.loan}万 = ${net}万円${net<0?' （オーバーローン・負債）':''}</span></div>
-<div class="quiz-step"><strong>② 共有財産合計（特有財産なし）</strong><br>
-<span class="quiz-formula">合計 = 預金${prob.yokin}万 + 不動産純資産${net}万 = ${total}万円</span></div>
-<div class="quiz-step"><strong>③ 各自が受け取るべき金額（50%ずつ）</strong><br>
-<span class="quiz-formula">各自 = ${total}万 × 50% = ${halfTotal}万円</span></div>
-<div class="quiz-step"><strong>④ 精算額</strong><br>
-<span class="quiz-formula">現在保有財産が法定分与額に等しいと仮定すると、財産分与額は ${halfTotal}万円ずつ。<br>不動産や預金を一方が保有している場合、超過分を相手に支払う。</span></div>
-<div class="quiz-answer-final">分与対象の純財産：${total}万円 → 各自 ${halfTotal}万円</div>`;
+    const {fudosan,loan,yokin,taisyoku,sep}=prob;
+    const jidanSuisan=fudosan-loan;
+    const jidanForCalc=Math.max(0,jidanSuisan);
+    const kyodoFuSai=jidanSuisan<0?Math.abs(jidanSuisan):0;
+    const kyodoZaisan=yokin+jidanForCalc+taisyoku;
+    const junZaisan=kyodoZaisan-kyodoFuSai-sep;
+    const kakuJibun=junZaisan*0.5;
+    return `<div class="quiz-step"><strong>① 自宅純資産</strong><br>
+<span class="quiz-formula">自宅純資産 = 査定額 − ローン残高 = ${fudosan}万 − ${loan}万 = ${jidanSuisan}万円${jidanSuisan<0?' （オーバーローン）':''}</span></div>
+<div class="quiz-step"><strong>② 共有財産合計・共同負債</strong><br>
+<span class="quiz-formula">共有財産 = 預金${yokin}万 + 自宅純資産${jidanForCalc}万 + 退職金${taisyoku}万 = ${kyodoZaisan}万円</span>
+${kyodoFuSai>0?`<span class="quiz-formula">共同負債（オーバーローン分）= ${kyodoFuSai}万円</span>`:''}
+</div>
+<div class="quiz-step"><strong>③ 分与対象純財産 = 共有財産 − 共同負債 − 夫の特有財産</strong><br>
+<span class="quiz-formula">${kyodoZaisan}万 − ${kyodoFuSai}万 − ${sep}万 = ${junZaisan}万円</span></div>
+<div class="quiz-step"><strong>④ 各自の取得分（50%）</strong><br>
+<span class="quiz-formula">各自 = ${junZaisan}万 × 50% = ${kakuJibun}万円</span></div>
+<div class="quiz-answer-final">自宅純資産：${jidanSuisan}万円 / 分与対象純財産：${junZaisan}万円 / 各自：${kakuJibun}万円</div>`;
+
+  }else if(prob.type==='D'){
+    const {income,n,youiku,birthYear,birthMonth}=prob;
+    const kyuShotoku=brKyuyoShotoku(income);
+    const youikuNen=youiku*12;
+    const jidoShotokuVal=brJidoShotoku(kyuShotoku,youikuNen);
+    const jidoLims=brJidoLimits(n);
+    const jidoRes=brJidoAmount(jidoShotokuVal,n);
+    const kyuLabel={full:'全部支給',partial:'一部支給',none:'支給停止'};
+    const incomeDeduct=income-kyuShotoku;
+    const kyuyoTierStr=income<=162.5?`年収162.5万以下：控除55万`:
+      income<=180?`年収162.5〜180万：控除=年収×40%-10万`:
+      income<=360?`年収180〜360万：控除=年収×30%+8万`:
+      income<=660?`年収360〜660万：控除=年収×20%+44万`:
+      income<=850?`年収660〜850万：控除=年収×10%+110万`:
+      `年収850万超：控除195万`;
+    return `<div class="quiz-step"><strong>① 給与所得を計算（給与所得控除）</strong><br>
+<span class="quiz-formula">${kyuyoTierStr}<br>給与所得 = ${income}万 − ${incomeDeduct.toFixed(2)}万 = ${kyuShotoku.toFixed(2)}万円</span></div>
+<div class="quiz-step"><strong>② 児童扶養手当上の所得額</strong><br>
+<span class="quiz-formula">所得額 = 給与所得(${kyuShotoku.toFixed(2)}万) + 養育費年額×80%(${(youikuNen*0.8).toFixed(2)}万) − 18万（10万+8万控除）<br>= ${jidoShotokuVal.toFixed(2)}万円</span></div>
+<div class="quiz-step"><strong>③ 所得制限限度額との比較（子${n}人）</strong><br>
+<span class="quiz-formula">全部支給限度額：${jidoLims.full}万円 / 一部支給限度額：${jidoLims.partial}万円<br>所得額 ${jidoShotokuVal.toFixed(2)}万円 → ${jidoRes.kyu==='full'?'全部支給限度額未満':jidoRes.kyu==='partial'?'一部支給限度額未満':'一部支給限度額以上（支給停止）'}</span></div>
+<div class="quiz-step"><strong>④ 月額の計算</strong><br>
+<span class="quiz-formula">${jidoRes.kyu==='full'?`全部支給：48,050円 + ${n>1?`(${n}-1)人 × 11,350円 = ${((n-1)*11350).toLocaleString('ja-JP')}円`:'追加なし（子1人）'}`:jidoRes.kyu==='partial'?`一部支給（所得額と限度額の差に基づく逓減計算）`:`支給停止（所得額が限度額以上）`}</span></div>
+<div class="quiz-answer-final">月額：${jidoRes.amount.toLocaleString('ja-JP')}円（${kyuLabel[jidoRes.kyu]}）</div>`;
+
+  }else if(prob.type==='E'){
+    const {income,konin,youiku,n,birthYear,birthMonth}=prob;
+    const kyuShotoku=brKyuyoShotoku(income);
+    const youikuNen=youiku*12;
+    const jidoShotokuVal=brJidoShotoku(kyuShotoku,youikuNen);
+    const jidoRes=brJidoAmount(jidoShotokuVal,n);
+    const jidoAmt=jidoRes.amount;
+    const jidoLims=brJidoLimits(n);
+    const kyuLabel={full:'全部支給',partial:'一部支給',none:'支給停止'};
+    const divorceTotal=youiku*10000+jidoAmt;
+    const monthlyDiff=divorceTotal-konin*10000;
+    const diffSign=monthlyDiff>=0?'+':'';
+    const incomeDeduct=income-kyuShotoku;
+    return `<div class="quiz-step"><strong>① 児童扶養手当の計算</strong><br>
+<span class="quiz-formula">給与所得 = ${income}万 − ${incomeDeduct.toFixed(2)}万 = ${kyuShotoku.toFixed(2)}万円</span>
+<span class="quiz-formula">所得額 = ${kyuShotoku.toFixed(2)}万 + 養育費${youikuNen}万×80% − 18万 = ${jidoShotokuVal.toFixed(2)}万円</span>
+<span class="quiz-formula">限度額（子${n}人）: 全部支給${jidoLims.full}万 / 一部支給${jidoLims.partial}万 → ${kyuLabel[jidoRes.kyu]}</span>
+<span class="quiz-formula">手当月額 = ${jidoAmt.toLocaleString('ja-JP')}円</span></div>
+<div class="quiz-step"><strong>② 離婚した場合の月収受取総額</strong><br>
+<span class="quiz-formula">養育費 + 手当 = ${youiku}万円×10,000 + ${jidoAmt.toLocaleString('ja-JP')}円 = ${divorceTotal.toLocaleString('ja-JP')}円/月</span></div>
+<div class="quiz-step"><strong>③ 婚姻継続との月額差</strong><br>
+<span class="quiz-formula">離婚合計 − 婚姻費用 = ${divorceTotal.toLocaleString('ja-JP')}円 − ${(konin*10000).toLocaleString('ja-JP')}円 = ${diffSign}${monthlyDiff.toLocaleString('ja-JP')}円</span></div>
+<div class="quiz-answer-final">① 手当 ${jidoAmt.toLocaleString('ja-JP')}円（${kyuLabel[jidoRes.kyu]}） ② 離婚合計 ${divorceTotal.toLocaleString('ja-JP')}円/月 ③ 差額 ${diffSign}${monthlyDiff.toLocaleString('ja-JP')}円</div>`;
+
   }else{
+    // Type F: 養育費（自営業者）
     const ob=calcBaseIncome('self',prob.jiSal,0,0);
-    const ee=calcBaseIncome('employee',prob.eeSal,0,0);
-    let a=ob.baseIncome;let b=ee.baseIncome;
+    const eeRaw=calcBaseIncome('employee',prob.eeSal,0,0);
+    let a=ob.baseIncome;let b=eeRaw.baseIncome;
     const corr=b>a;if(corr)b=a;
     const idx=childIndex(prob.age);
     const c=a*idx/(100+idx);
     const ann=c*a/(a+b);
     const mon=ann/12;
-    return `<div class="quiz-step"><strong>① 基礎収入を計算</strong><br>
+    return `<div class="quiz-step"><strong>① 基礎収入を計算（事業所得者）</strong><br>
 <span class="quiz-formula">義務者基礎収入 a（自営）= ${prob.jiSal}万 × ${ob.rate}% = ${ob.baseIncome.toFixed(2)}万円</span>
-<span class="quiz-formula">権利者基礎収入 b（給与）= ${prob.eeSal}万 × ${calcBaseIncome('employee',prob.eeSal,0,0).rate}% = ${calcBaseIncome('employee',prob.eeSal,0,0).baseIncome.toFixed(2)}万円${corr?' → b > a のため b = a = '+a.toFixed(2)+'万円 に補正':''}</span></div>
+<span class="quiz-formula">権利者基礎収入 b（給与）= ${prob.eeSal}万 × ${eeRaw.rate}% = ${eeRaw.baseIncome.toFixed(2)}万円${corr?' → b > a のため b = a = '+a.toFixed(2)+'万円 に補正':''}</span></div>
 <div class="quiz-step"><strong>② 子の生活費指数</strong><br>
 <span class="quiz-formula">${prob.age}歳 → 指数 ${idx}</span></div>
 <div class="quiz-step"><strong>③ 子の生活費 c の計算</strong><br>
@@ -1339,10 +1423,9 @@ function mondaiRenderAnswer(prob){
   }
 }
 
-let mondaiCurrent=null;
 function mondaiNext(){
   mondaiCurrent=mondaiGenProblem();
-  const typeNames={A:'婚姻費用（給与所得者同士）',B:'養育費（基本）',C:'財産分与',D:'養育費（事業所得者）'};
+  const typeNames={A:'A=婚姻費用（子2人）',B:'B=養育費（子2人）',C:'C=財産分与',D:'D=児童扶養手当',E:'E=損益分岐点',F:'F=養育費（自営）'};
   const cardEl=document.getElementById('mondai-card');
   cardEl.style.display='block';
   cardEl.innerHTML=`<div class="quiz-card">

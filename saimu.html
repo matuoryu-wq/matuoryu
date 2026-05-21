@@ -159,6 +159,23 @@
     .judgment-box dl{font-size:12px;display:grid;grid-template-columns:auto 1fr;gap:3px 10px}
     .judgment-box dt{font-weight:700;color:var(--text-muted)}
     .judgment-box dd{color:var(--text)}
+    /* Quiz styles */
+    .quiz-card{background:var(--card);border-radius:var(--radius);border:2px solid var(--primary);padding:20px;margin-bottom:14px}
+    .quiz-question{font-size:15px;font-weight:700;color:var(--text);line-height:1.7;margin-bottom:14px}
+    .quiz-answer{display:none;background:#F7F0E8;border-radius:8px;padding:14px;margin-top:10px}
+    .quiz-answer.show{display:block}
+    .quiz-step{font-size:13px;line-height:1.9;margin-bottom:8px}
+    .quiz-formula{font-family:'Courier New',monospace;font-size:12px;background:#EDE5D8;padding:6px 10px;border-radius:5px;margin:4px 0;display:block}
+    .quiz-answer-final{font-size:18px;font-weight:800;color:var(--success);margin-top:10px}
+    .quiz-btn{padding:10px 20px;border:none;border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;margin-right:8px;margin-top:8px}
+    .quiz-btn-show{background:var(--success);color:#fff}
+    .quiz-btn-show:hover{background:#3A6B46}
+    .quiz-btn-next{background:var(--primary);color:#fff}
+    .quiz-btn-next:hover{background:var(--primary-hover)}
+    .quiz-choice-btn{padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;background:#fff;font-size:13px;font-weight:600;cursor:pointer;margin:4px 4px 4px 0;transition:all .2s}
+    .quiz-choice-btn:hover{border-color:var(--primary);background:var(--primary-light)}
+    .quiz-choice-btn.correct{background:var(--success-light);border-color:var(--success-border);color:var(--success)}
+    .quiz-choice-btn.wrong{background:var(--danger-light);border-color:#fca5a5;color:var(--danger)}
   </style>
 </head>
 <body>
@@ -171,6 +188,7 @@
   <button class="tab-btn" onclick="switchTab('kojin',this)">個人再生</button>
   <button class="tab-btn" onclick="switchTab('hasan',this)">自己破産</button>
   <button class="tab-btn" onclick="switchTab('hinin',this)">否認対象行為</button>
+  <button class="tab-btn" onclick="switchTab('smondai',this)">📝 計算問題</button>
 </nav>
 <div class="container">
 
@@ -358,6 +376,7 @@
     <!-- 個人再生 計算 -->
     <div class="card">
       <div class="card-title"><span class="icon icon-blue">計</span>個人再生の弁済額計算</div>
+      <button class="help-btn" style="margin-bottom:10px" onclick="applySharedDebt()">← 任意整理の負債合計を反映</button>
       <div class="form-row">
         <div class="form-group">
           <label>負債総額（万円）</label>
@@ -458,6 +477,7 @@
     <!-- 同時廃止 vs 管財事件 判定 -->
     <div class="card">
       <div class="card-title"><span class="icon icon-blue">判</span>同時廃止 vs. 管財事件の判定</div>
+      <button class="help-btn" style="margin-bottom:10px" onclick="applySharedDebt()">← 任意整理の負債合計を反映</button>
       <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">破産手続には「同時廃止」と「管財事件」の2種類があります。財産状況・免責不許可事由の有無によって決まります。</p>
       <div class="form-row">
         <div class="form-group">
@@ -563,6 +583,54 @@
         <p><strong>意味：</strong>破産法の否認権とは別に、民法上も債権者が詐害行為取消権を行使できる。</p>
         <p><strong>差異：</strong>破産法否認権は管財人が行使。詐害行為取消権は個別債権者が訴訟で行使。</p>
       </div>
+
+      <div class="denial-section">
+        <div class="denial-section-title">⑤ 代物弁済（支払不能後）</div>
+        <span class="tag">破産法162条</span>
+        <p>金銭債務に対して金銭以外（不動産・車・債権等）で弁済すること。支払不能後の代物弁済は偏頗行為として否認対象（破産法162条）。例：「借金の代わりに自動車を引き渡した」「不動産を譲渡して債務を消した」。否認期間：支払不能前6ヶ月以内。</p>
+      </div>
+
+      <div class="denial-section">
+        <div class="denial-section-title">⑥ 新規担保設定（危機時期）</div>
+        <span class="tag">破産法162条1項1号</span>
+        <p>既存の無担保債務に対して、支払不能後に新たに抵当権・質権等を設定すること（破産法162条1項1号）。例：「消費者金融に不動産を担保に入れた」。否認期間：支払不能前6ヶ月以内。</p>
+      </div>
+
+      <div class="denial-section">
+        <div class="denial-section-title">⑦ 過大担保の設定</div>
+        <span class="tag">破産法164条</span>
+        <p>債務額を著しく超える財産を担保に入れること（破産法164条）。例：「100万円の借金のために1,000万円の不動産に抵当権を設定した」。超過部分が否認対象となる。</p>
+      </div>
+
+      <div class="denial-section">
+        <div class="denial-section-title">⑧ 著しく不当な廉価売却</div>
+        <span class="tag">民法424条・破産法161条</span>
+        <p>市場価格より著しく低い価格で財産を売却すること（民法424条詐害行為・破産法161条）。例：「時価3,000万の不動産を1,000万で売却した」。買主が支払不能を知っていた場合は否認可能性が高まる。</p>
+      </div>
+
+      <div class="denial-section">
+        <div class="denial-section-title">⑨ 内部者（親族・関係者）への財産移転</div>
+        <span class="tag">破産法160条</span>
+        <p>役員・親族・関係会社等への財産移転は否認期間が延長される。例：妻・子・親への財産移転、役員への過大な退職金支払い。通常の否認期間より長く、悪意がある場合はさらに延長。</p>
+      </div>
+
+      <div class="denial-section" style="border-left-color:var(--danger)">
+        <div class="denial-section-title">⑩ 財産の隠匿・損壊（免責不許可事由）</div>
+        <span class="tag">破産法252条1項1号</span>
+        <p>財産を隠匿・損壊・損耗させること（破産法252条1項1号）。例：「現金を引き出して隠した」「財産を壊した」。破産否認権の対象かつ免責不許可事由。発覚すると免責を受けられなくなる。</p>
+      </div>
+
+      <div class="denial-section" style="border-left-color:var(--danger)">
+        <div class="denial-section-title">⑪ 帳簿・書類の隠滅・偽造（免責不許可事由）</div>
+        <span class="tag">破産法252条1項2号</span>
+        <p>帳簿・財産目録等の書類を廃棄・改ざん（破産法252条1項2号）。免責不許可事由であり、刑事責任を問われる可能性もある。</p>
+      </div>
+
+      <div class="denial-section" style="border-left-color:var(--success)">
+        <div class="denial-section-title" style="color:var(--success)">⑫ 否認権行使の効果</div>
+        <span class="tag" style="background:var(--success-light);color:var(--success);border-color:var(--success-border)">破産法168条</span>
+        <p>否認権が行使されると → ① 財産が破産財団に回復される（原状回復・破産法168条） ② 相手方は受領した財産を管財人に返還 ③ 相手方は元の債権を破産債権として届け出る権利を回復 ④ 悪意者は利息・損害金も返還義務。</p>
+      </div>
     </div>
 
     <!-- チェックリスト -->
@@ -572,11 +640,11 @@
       <div class="checklist" id="checklist-wrap">
         <div class="check-item" id="chk-item-0">
           <input type="checkbox" id="chk-0" onchange="updateChecklist()">
-          <label for="chk-0">申立前6ヶ月以内に特定の債権者に返済した</label>
+          <label for="chk-0">申立前6ヶ月以内に特定の債権者に返済した（偏頗弁済）</label>
         </div>
         <div class="check-item" id="chk-item-1">
           <input type="checkbox" id="chk-1" onchange="updateChecklist()">
-          <label for="chk-1">申立前2年以内に家族・親族に贈与・財産移転した</label>
+          <label for="chk-1">申立前2年以内に家族・親族に贈与した（無償行為）</label>
         </div>
         <div class="check-item" id="chk-item-2">
           <input type="checkbox" id="chk-2" onchange="updateChecklist()">
@@ -584,15 +652,23 @@
         </div>
         <div class="check-item" id="chk-item-3">
           <input type="checkbox" id="chk-3" onchange="updateChecklist()">
-          <label for="chk-3">申立前に保険を解約して解約返戻金を受領した</label>
+          <label for="chk-3">申立前に現金を引き出して手元に保有（隠匿の疑い）</label>
         </div>
         <div class="check-item" id="chk-item-4">
           <input type="checkbox" id="chk-4" onchange="updateChecklist()">
-          <label for="chk-4">申立前に株式・投資信託を換金した</label>
+          <label for="chk-4">申立前に保険を解約して返戻金を受領</label>
         </div>
         <div class="check-item" id="chk-item-5">
           <input type="checkbox" id="chk-5" onchange="updateChecklist()">
-          <label for="chk-5">申立前に高額な買い物をした</label>
+          <label for="chk-5">申立前に金銭以外の財産で債務を返済した（代物弁済）</label>
+        </div>
+        <div class="check-item" id="chk-item-6">
+          <input type="checkbox" id="chk-6" onchange="updateChecklist()">
+          <label for="chk-6">申立前に新たに担保を設定した</label>
+        </div>
+        <div class="check-item" id="chk-item-7">
+          <input type="checkbox" id="chk-7" onchange="updateChecklist()">
+          <label for="chk-7">申立前に著しく安く財産を売却した（廉価売却）</label>
         </div>
       </div>
       <div id="checklist-warning" class="danger-warn">
@@ -612,6 +688,17 @@
         <div>支払不能後に銀行が相殺を行った場合でも、銀行が支払不能を知らなかった（善意）場合は相殺が有効な場合があります（破産法71条各号の例外）。詳細は弁護士にご相談ください。</div>
       </div>
       <button class="help-btn" style="margin-top:10px;margin-left:0" onclick="showModal('sousai')">相殺権の詳細を見る</button>
+    </div>
+  </div>
+
+  <!-- ===== Tab5: 計算問題 ===== -->
+  <div id="panel-smondai" class="panel">
+    <div class="info-banner">
+      <p>債務整理の計算問題で実力をつけましょう。個人再生・任意整理・自己破産・否認対象行為・免責不許可事由・清算価値保証原則の6種類。</p>
+    </div>
+    <div class="card">
+      <button class="btn-calc" onclick="saimuQuizNext()">問題を出す</button>
+      <div id="smondai-card" style="margin-top:14px"></div>
     </div>
   </div>
 </div>
@@ -752,8 +839,20 @@ function updateCreditors(){
     const d=document.createElement('div');
     d.className='creditor-row';
     d.innerHTML=`<div class="creditor-row-title">債権者 ${i}</div>
-    <div class="form-row" style="margin-bottom:0">
+    <div class="form-row" style="margin-bottom:8px">
+      <div class="form-group"><label>種別</label><select class="creditor-type" onchange="toggleBankWarning(this)">
+        <option value="bank">銀行・信用金庫</option>
+        <option value="sarakin">消費者金融</option>
+        <option value="credit">クレジットカード会社</option>
+        <option value="shinpan">信販会社</option>
+        <option value="hosho">保証会社</option>
+        <option value="kojin">親族・知人</option>
+        <option value="other">その他</option>
+      </select></div>
       <div class="form-group"><label>名称</label><input type="text" id="cr-name-${i}" placeholder="例：アコム"></div>
+    </div>
+    <div class="bank-warning" style="display:none;margin-bottom:8px;background:var(--danger-light);border:1px solid #fca5a5;border-radius:7px;padding:8px 12px;color:var(--danger);font-size:12px">⚠️ 銀行は預金と相殺する可能性があります。この銀行の口座から預金を移動させることを弁護士に相談してください。</div>
+    <div class="form-row" style="margin-bottom:0">
       <div class="form-group"><label>残高（万円）</label><div class="input-wrap"><input type="number" id="cr-bal-${i}" placeholder="例：100" min="0"><span class="unit">万円</span></div></div>
       <div class="form-group"><label>利息率（%）</label><div class="input-wrap"><input type="number" id="cr-rate-${i}" placeholder="例：18" min="0" max="100" step="0.1"><span class="unit">%</span></div></div>
     </div>`;
@@ -990,6 +1089,239 @@ function updateChecklist(){
     const cb=item.querySelector('input[type=checkbox]');
     item.classList.toggle('checked',cb.checked);
   });
+}
+
+// ─── 計算問題タブ（債務整理） ────────────────────────────────────
+// saimuQuizCurrent は module level。タブ切り替えで絶対にリセットしない。
+let saimuQuizCurrent = null;
+
+function smRand(min,max,step){
+  const n=Math.floor((max-min)/step+1);
+  return min+Math.floor(Math.random()*n)*step;
+}
+
+function calcMinHensaiLocal(debt){
+  if(debt<100)return{amount:debt,label:`${debt}万円（全額）`};
+  if(debt<=500)return{amount:100,label:'100万円（100〜500万円の場合は固定100万）'};
+  if(debt<=1500)return{amount:debt/5,label:`${debt}万 × 1/5 = ${(debt/5).toFixed(1)}万円`};
+  if(debt<=3000)return{amount:300,label:'300万円（1500〜3000万円の場合は固定300万）'};
+  return{amount:debt/10,label:`${debt}万 × 1/10 = ${(debt/10).toFixed(1)}万円`};
+}
+
+function generateSaimuProblem(type){
+  if(type===0){
+    // Type 0: 個人再生弁済額
+    const debt=smRand(150,3000,50);
+    const assets=smRand(0,500,50);
+    return{type:0,debt,assets};
+  }else if(type===1){
+    // Type 1: 任意整理月額
+    const a=smRand(50,300,10);
+    const b=smRand(30,200,10);
+    const c=smRand(20,150,10);
+    return{type:1,a,b,c};
+  }else if(type===2){
+    // Type 2: 自己破産自由財産
+    const cash=smRand(10,200,10);
+    const deposit=smRand(0,150,10);
+    const ins=smRand(0,100,10);
+    const car=smRand(0,200,10);
+    return{type:2,cash,deposit,ins,car};
+  }else if(type===3){
+    // Type 3: 否認対象行為識別（3択）
+    const pattern=Math.floor(Math.random()*3);
+    return{type:3,pattern};
+  }else if(type===4){
+    // Type 4: 免責不許可事由識別（3択）
+    const pattern=Math.floor(Math.random()*2);
+    return{type:4,pattern};
+  }else{
+    // Type 5: 清算価値保証原則
+    const debt=smRand(500,2000,50);
+    const assets=smRand(50,400,50);
+    return{type:5,debt,assets};
+  }
+}
+
+function renderSaimuChoices(choices,correctIdx,explanation,containerId){
+  const labels=['A','B','C'];
+  return choices.map((ch,i)=>`<button class="quiz-choice-btn" id="${containerId}-btn-${i}" onclick="smAnswerChoice('${containerId}',${i},${correctIdx},'${explanation.replace(/'/g,"\\'")}',${choices.length})">${labels[i]}：${ch}</button>`).join('')+
+    `<div id="${containerId}-explain" style="display:none;margin-top:10px;font-size:13px;background:var(--success-light);border:1px solid var(--success-border);border-radius:8px;padding:10px 14px;color:#2D5E3A"></div>`;
+}
+
+function smAnswerChoice(cid,chosen,correct,explanation,n){
+  for(let i=0;i<n;i++){
+    const btn=document.getElementById(cid+'-btn-'+i);
+    if(!btn)continue;
+    btn.disabled=true;
+    if(i===correct)btn.classList.add('correct');
+    else if(i===chosen)btn.classList.add('wrong');
+  }
+  const exp=document.getElementById(cid+'-explain');
+  if(exp){exp.style.display='block';exp.innerHTML=(chosen===correct?'正解！ ':'不正解。正解は'+(chosen!==correct?['A','B','C'][correct]:'')+'。')+explanation;}
+}
+
+function renderSaimuQuiz(){
+  const prob=saimuQuizCurrent;
+  if(!prob)return;
+  const cardEl=document.getElementById('smondai-card');
+  if(!cardEl)return;
+  const typeNames={0:'Type 0：個人再生弁済額',1:'Type 1：任意整理月額',2:'Type 2：自己破産自由財産',3:'Type 3：否認対象行為識別（3択）',4:'Type 4：免責不許可事由識別（3択）',5:'Type 5：清算価値保証原則'};
+  let qHtml='',aHtml='';
+
+  if(prob.type===0){
+    const {debt,assets}=prob;
+    const min=calcMinHensaiLocal(debt);
+    const hensai=Math.max(min.amount,assets);
+    const monthly=hensai/36;
+    const isSeisan=assets>min.amount;
+    qHtml=`負債総額 <strong>${debt}万円</strong>、清算価値（資産）<strong>${assets}万円</strong>。小規模個人再生の場合の最低弁済額・実際の弁済額・月額返済（36ヶ月）を求めよ。`;
+    aHtml=`<div class="quiz-step"><strong>① 最低弁済額（段階表）</strong><br>
+<span class="quiz-formula">${min.label}</span></div>
+<div class="quiz-step"><strong>② 清算価値との比較</strong><br>
+<span class="quiz-formula">MAX（最低弁済額${min.amount}万, 清算価値${assets}万）= ${hensai}万円${isSeisan?' ← 清算価値が最低弁済額を超えるため清算価値が基準（清算価値保証原則）':' ← 最低弁済額が基準'}</span></div>
+<div class="quiz-step"><strong>③ 月額 = 弁済額 ÷ 36</strong><br>
+<span class="quiz-formula">${hensai}万 ÷ 36 = ${monthly.toFixed(2)}万円/月</span></div>
+<div class="quiz-answer-final">最低弁済額：${min.amount}万円 / 実際の弁済額：${hensai}万円 / 月額：${monthly.toFixed(2)}万円</div>`;
+
+  }else if(prob.type===1){
+    const {a,b,c}=prob;
+    const total=a+b+c;
+    const monthly=total/60;
+    qHtml=`消費者金融A：<strong>${a}万円</strong>、消費者金融B：<strong>${b}万円</strong>、クレジットC：<strong>${c}万円</strong>。任意整理で利息全カット・60ヶ月返済の月額返済額はいくらか。`;
+    aHtml=`<div class="quiz-step"><strong>① 元本合計</strong><br>
+<span class="quiz-formula">${a}万 + ${b}万 + ${c}万 = ${total}万円</span></div>
+<div class="quiz-step"><strong>② 月額 = 元本合計 ÷ 60</strong><br>
+<span class="quiz-formula">${total}万 ÷ 60 = ${monthly.toFixed(2)}万円/月</span></div>
+<div class="quiz-answer-final">月額返済：${monthly.toFixed(2)}万円（利息ゼロ・元本均等返済）</div>`;
+
+  }else if(prob.type===2){
+    const {cash,deposit,ins,car}=prob;
+    const total=cash+deposit+ins+car;
+    const keep=Math.min(total,99);
+    qHtml=`現金 <strong>${cash}万円</strong>、預金 <strong>${deposit}万円</strong>、保険解約返戻金 <strong>${ins}万円</strong>、自動車（評価額 <strong>${car}万円</strong>）。東京地裁基準で自由財産の拡張（99万円まで）を適用した場合、手元に残せる財産の最大額はいくらか。`;
+    aHtml=`<div class="quiz-step"><strong>① 財産合計</strong><br>
+<span class="quiz-formula">現金${cash}万 + 預金${deposit}万 + 保険${ins}万 + 自動車${car}万 = ${total}万円</span></div>
+<div class="quiz-step"><strong>② 自由財産の拡張（東京地裁：合計99万円まで）</strong><br>
+<span class="quiz-formula">MIN(${total}万, 99万) = ${keep}万円${total>99?' ← 合計が99万超のため99万が上限':' ← 合計が99万以下のため全額残せる'}</span></div>
+<div class="quiz-step"><em>注：99万円以下の現金は別途自由財産（民事執行法131条）</em></div>
+<div class="quiz-answer-final">手元に残せる最大額：${keep}万円</div>`;
+
+  }else if(prob.type===3){
+    const patterns=[
+      {
+        q:'支払不能から4ヶ月前に、消費者金融Aへの借金200万円を全額返済した。これは？',
+        choices:['偏頗弁済（破産法162条）','無償行為（破産法160条3項）','相当価格処分（破産法161条）'],
+        correct:0,
+        explanation:'特定の債権者だけを優先した返済。支払不能前6ヶ月以内の弁済は否認対象（偏頗弁済）。'
+      },
+      {
+        q:'申立前1年前に子供に150万円を贈与した。これは？',
+        choices:['偏頗弁済（破産法162条）','無償行為（内部者への贈与・破産法160条）','代物弁済'],
+        correct:1,
+        explanation:'贈与は無償行為。申立前2年以内。子（内部者）への贈与は否認期間延長の可能性あり。'
+      },
+      {
+        q:'消費者金融への借金300万円の担保として、支払不能前3ヶ月に自宅に抵当権を設定した。',
+        choices:['担保供与（否認対象・破産法162条1項1号）','適法な担保設定','代物弁済'],
+        correct:0,
+        explanation:'既存債務への新規担保設定は偏頗行為の一種（破産法162条1項1号）。支払不能前6ヶ月以内は否認対象。'
+      }
+    ];
+    const p=patterns[prob.pattern];
+    const cid='smq3p'+prob.pattern;
+    qHtml=p.q;
+    aHtml=`<div class="quiz-step"><strong>選択肢を選んでください：</strong><br>
+${renderSaimuChoices(p.choices,p.correct,p.explanation,cid)}</div>`;
+
+  }else if(prob.type===4){
+    const patterns=[
+      {
+        q:'次のうち免責不許可事由に当たるものはどれか？',
+        choices:['ギャンブルや投機による多額の負債','医療費のための借金','生活費のための借金'],
+        correct:0,
+        explanation:'破産法252条1項4号：射幸行為・浪費・投機による過大な債務負担は免責不許可事由。医療費・生活費は不許可事由ではない。'
+      },
+      {
+        q:'次のうち免責不許可事由でないものはどれか？',
+        choices:['財産目録の虚偽記載（破産法252条1項6号）','病気治療のための借金','管財人への非協力（同7号）'],
+        correct:1,
+        explanation:'病気治療のための借金は免責不許可事由に該当しない。虚偽の財産目録・管財人への非協力は不許可事由（破産法252条1項6・7号）。'
+      }
+    ];
+    const p=patterns[prob.pattern];
+    const cid='smq4p'+prob.pattern;
+    qHtml=p.q;
+    aHtml=`<div class="quiz-step"><strong>選択肢を選んでください：</strong><br>
+${renderSaimuChoices(p.choices,p.correct,p.explanation,cid)}</div>`;
+
+  }else{
+    // Type 5: 清算価値保証原則
+    const {debt,assets}=prob;
+    const min=calcMinHensaiLocal(debt);
+    const hensai=Math.max(min.amount,assets);
+    const monthly=hensai/36;
+    const isSeisan=assets>min.amount;
+    qHtml=`個人再生申立人：負債 <strong>${debt}万円</strong>、資産（清算価値）<strong>${assets}万円</strong>。小規模個人再生の最低弁済額と清算価値を比較し、実際の弁済額・月額（36ヶ月）を求めよ。清算価値保証原則は適用されるか？`;
+    aHtml=`<div class="quiz-step"><strong>① 最低弁済額の計算</strong><br>
+<span class="quiz-formula">${min.label}</span></div>
+<div class="quiz-step"><strong>② 清算価値</strong><br>
+<span class="quiz-formula">清算価値 = ${assets}万円</span></div>
+<div class="quiz-step"><strong>③ 弁済額 = MAX（最低弁済額, 清算価値）</strong><br>
+<span class="quiz-formula">MAX(${min.amount}万, ${assets}万) = ${hensai}万円</span></div>
+<div class="quiz-step"><strong>④ 月額 = ${hensai}万 ÷ 36 = ${monthly.toFixed(2)}万円/月</strong></div>
+<div class="quiz-step"><strong>⑤ 清算価値保証原則${isSeisan?'適用':'不適用'}</strong><br>
+<span class="quiz-formula">清算価値(${assets}万)が最低弁済額(${min.amount}万)より${isSeisan?'大きい→清算価値が弁済基準':'小さい→最低弁済額が弁済基準'}。弁済額は${hensai}万円。</span></div>
+<div class="quiz-answer-final">弁済額：${hensai}万円 / 月額：${monthly.toFixed(2)}万円 / 清算価値保証原則：${isSeisan?'適用':'不適用'}</div>`;
+  }
+
+  cardEl.innerHTML=`<div class="quiz-card">
+  <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;margin-bottom:8px">${typeNames[prob.type]}</div>
+  <div class="quiz-question">${qHtml}</div>
+  ${prob.type===3||prob.type===4?'':
+    `<div>
+      <button class="quiz-btn quiz-btn-show" onclick="saimuShowAnswer()">解答を見る</button>
+      <button class="quiz-btn quiz-btn-next" onclick="saimuQuizNext()">次の問題</button>
+    </div>`}
+  <div class="quiz-answer${prob.type===3||prob.type===4?' show':''}" id="smondai-answer">${aHtml}</div>
+  ${prob.type===3||prob.type===4?
+    `<div style="margin-top:10px"><button class="quiz-btn quiz-btn-next" onclick="saimuQuizNext()">次の問題</button></div>`:''}
+</div>`;
+}
+
+function saimuQuizNext(){
+  const type=Math.floor(Math.random()*6);
+  saimuQuizCurrent=generateSaimuProblem(type);
+  renderSaimuQuiz();
+}
+
+function saimuShowAnswer(){
+  const ansEl=document.getElementById('smondai-answer');
+  if(ansEl)ansEl.classList.add('show');
+}
+
+// ─── 銀行警告トグル ──────────────────────────────────────────────
+function toggleBankWarning(sel){
+  const row=sel.closest('.creditor-row');
+  if(!row)return;
+  const warn=row.querySelector('.bank-warning');
+  if(warn)warn.style.display=sel.value==='bank'?'block':'none';
+}
+
+// ─── 共有状態（任意整理 → 個人再生・自己破産への負債反映） ─────────
+const sharedState={totalDebt:0};
+
+function applySharedDebt(){
+  let total=0;
+  const n=parseInt(v('nini-creditor-count'))||0;
+  for(let i=1;i<=n;i++){
+    const bal=nv('cr-bal-'+i)||0;
+    total+=bal;
+  }
+  sharedState.totalDebt=total;
+  // 個人再生の負債フィールドを埋める
+  const kojinEl=document.getElementById('kojin-debt');
+  if(kojinEl)kojinEl.value=total;
 }
 
 // ─── Init ────────────────────────────────────────────────────────
