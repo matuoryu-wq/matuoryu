@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>交通事故損害計算ツール</title>
+  <style>
+    :root{--primary:#7C5C3E;--primary-hover:#5D4230;--primary-light:#FAF3EC;--success:#4D7C5A;--success-light:#EEF7F1;--success-border:#95C4A4;--warning:#B07A3C;--warning-light:#FBF5EC;--danger:#B84040;--danger-light:#FEF2F2;--border:#DDD5C8;--bg:#F2EDE4;--card:#FEFCF9;--text:#2C1F14;--text-muted:#7A6555;--radius:10px;--shadow:0 1px 4px rgba(100,60,20,.10)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+    .header{background:linear-gradient(135deg,#3D2B1F,#7C5C3E);color:#fff;padding:18px 20px;text-align:center}
+    .header h1{font-size:20px;font-weight:700}.header p{font-size:12px;opacity:.8;margin-top:3px}
+    .tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:10}
+    .tab-btn{flex:1;min-width:80px;padding:13px 6px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+    .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-light)}
+    .container{max-width:720px;margin:0 auto;padding:16px 12px}
+    .panel{display:none}.panel.active{display:block}
+    .info-banner{background:var(--primary-light);border:1px solid #C8A882;border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .info-banner p{font-size:13px;color:#5D3A1A;flex:1}
+    .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+    .card-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--text)}
+    .help-btn{border:1px solid #C8A882;border-radius:20px;background:#FAF3EC;color:var(--text-muted);cursor:pointer;font-size:11px;font-weight:600;flex-shrink:0;margin-left:auto;padding:3px 9px;white-space:nowrap;transition:all .2s}
+    .help-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    @media(max-width:480px){.form-row{grid-template-columns:1fr}}
+    .form-group{display:flex;flex-direction:column;gap:4px}
+    label{font-size:12px;font-weight:600;color:var(--text-muted)}
+    .input-wrap{display:flex;align-items:center;gap:6px}.input-wrap input,.input-wrap select{flex:1}
+    .unit{font-size:13px;color:var(--text-muted);white-space:nowrap}
+    input[type=number],input[type=text],select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:14px;color:var(--text);background:#fff;transition:border-color .2s;-webkit-appearance:none}
+    input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(124,92,62,.12)}
+    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237A6555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:30px}
+    .extra-fields{background:#F7F0E8;border-radius:8px;padding:12px;margin-top:8px;border:1px dashed var(--border)}
+    .btn-calc{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:4px}
+    .btn-calc:hover{background:var(--primary-hover)}
+    .btn-secondary{padding:9px 16px;background:#fff;color:var(--primary);border:1.5px solid var(--primary);border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+    .btn-secondary:hover{background:var(--primary-light)}
+    .result-box{background:var(--success-light);border:1.5px solid var(--success-border);border-radius:var(--radius);padding:20px;margin-bottom:14px}
+    .result-box.warning{background:var(--warning-light);border-color:#F0C070}
+    .result-label{font-size:13px;font-weight:600;color:var(--success);margin-bottom:2px}
+    .result-box.warning .result-label{color:var(--warning)}
+    .result-amount{font-size:32px;font-weight:800;color:var(--success);line-height:1.1}
+    .result-box.warning .result-amount{color:var(--warning)}
+    .result-sub{font-size:13px;color:#2D5E3A;margin-top:6px}
+    .result-box.warning .result-sub{color:#7A4A1E}
+    .formula-header{background:#EDE5D8;border:1px solid #C8A882;border-radius:8px;padding:12px 14px;margin-bottom:14px}
+    .formula-header .fh-title{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+    .formula-header .fh-eq{font-family:'Courier New',monospace;font-size:12px;color:var(--primary);font-weight:700;margin-bottom:4px;word-break:break-all;line-height:1.8}
+    .formula-header .fh-vars{font-size:11.5px;color:var(--text-muted);line-height:2;margin-top:8px;border-top:1px dashed #C8A882;padding-top:8px}
+    .breakdown{background:#F7F0E8;border-radius:8px;border:1px solid var(--border);padding:14px;margin-bottom:14px}
+    .breakdown-title{font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
+    .bk-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px dashed #DDD5C8;gap:8px;font-size:13px}
+    .bk-row:last-child{border-bottom:none}
+    .bk-key{color:var(--text-muted);flex:1}.bk-val{font-weight:700;white-space:nowrap;color:var(--text)}
+    .bk-total{display:flex;justify-content:space-between;align-items:center;padding:8px 0 4px;gap:8px;font-size:14px;font-weight:700;border-top:2px solid var(--primary);margin-top:6px}
+    .bk-total .bk-key{color:var(--primary)}.bk-total .bk-val{color:var(--primary);font-size:16px}
+    .bk-formula{font-size:11.5px;color:var(--text-muted);background:#EDE5D8;padding:6px 10px;border-radius:5px;font-family:'Courier New',monospace;margin-top:2px;margin-bottom:6px;line-height:1.8;word-break:break-all}
+    .bk-desc{font-size:12px;color:var(--text);padding:6px 8px;margin:4px 0 6px;background:#fff;border-radius:5px;border-left:3px solid #C8A882;line-height:1.65}
+    .note{font-size:12px;color:#7A4A1E;background:#FBF5EC;border:1px solid #F0C070;border-radius:7px;padding:8px 12px;margin-top:8px;display:flex;gap:6px}
+    .note-icon{flex-shrink:0}
+    .err-msg{background:var(--danger-light);border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;color:var(--danger);font-size:13px;margin-bottom:12px}
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:var(--card);border-radius:14px;padding:22px;max-width:500px;width:100%;margin:auto;position:relative;border:1px solid var(--border)}
+    .modal-close{position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:20px;color:var(--text-muted);padding:4px}
+    .modal-title{font-size:16px;font-weight:700;margin-bottom:14px;padding-right:30px;color:var(--primary)}
+    .modal-body{font-size:13px;line-height:1.75}
+    .modal-body h4{font-size:13px;font-weight:700;margin:12px 0 5px;color:var(--text)}
+    .modal-body p{margin-bottom:8px}
+    .modal-body ol,.modal-body ul{padding-left:16px;margin-bottom:8px}
+    .modal-body li{margin-bottom:5px}
+    .help-note{background:#FBF5EC;border-left:3px solid #C8A882;padding:8px 12px;border-radius:0 6px 6px 0;margin:10px 0;font-size:12px}
+    .modal-body table{width:100%;border-collapse:collapse;margin:8px 0}
+    .modal-body th,.modal-body td{padding:6px 8px;border:1px solid var(--border);font-size:12px}
+    .modal-body th{background:var(--primary-light);color:var(--primary)}
+    .section-toggle{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+    .toggle-btn{padding:9px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+    .toggle-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .case-section{display:none}.case-section.active{display:block}
+    .sec-title{font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
+    .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    /* Reference tables */
+    .ref-table-wrap{overflow-x:auto;margin-bottom:14px}
+    .ref-table{border-collapse:collapse;font-size:12px;min-width:500px}
+    .ref-table th{background:#EDE5D8;color:var(--primary);padding:7px 10px;border:1px solid #C8A882;font-weight:700;text-align:center}
+    .ref-table td{padding:7px 10px;border:1px solid var(--border);text-align:center;vertical-align:middle}
+    .ref-table tr:nth-child(even) td{background:#F7F0E8}
+    .ref-table td.highlight{background:#FEF3C7;font-weight:700;color:#92400E;border:2px solid #F59E0B}
+    .ref-table td.row-header{font-weight:600;color:var(--text-muted);text-align:left;background:#F7F0E8}
+    /* Glossary */
+    .gloss-item{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+    .gloss-header{padding:12px 16px;background:var(--card);font-weight:700;font-size:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+    .gloss-header:hover{background:var(--primary-light)}
+    .gloss-body{display:none;padding:12px 16px;background:#FEFCF9;font-size:13px;line-height:1.75;border-top:1px solid var(--border)}
+    .gloss-body.open{display:block}
+    /* Quiz */
+    .quiz-question{background:#EDE5D8;border-radius:var(--radius);padding:16px;margin-bottom:14px;font-size:14px;line-height:1.75}
+    .quiz-answer{display:none;background:var(--success-light);border:1.5px solid var(--success-border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+    .quiz-answer.open{display:block}
+    .quiz-step{font-size:13px;line-height:1.85;margin-bottom:8px}
+    .quiz-formula{font-family:'Courier New',monospace;font-size:12px;background:#EDE5D8;padding:8px 12px;border-radius:6px;margin:6px 0;line-height:1.8;word-break:break-all}
+    .chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+    .chip-light{background:#DBEAFE;color:#1D4ED8}
+    .chip-heavy{background:#FEE2E2;color:#991B1B}
+    .chip-grade{background:#EDE5D8;color:var(--primary)}
+    .leibniz-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+    .lz-row{display:flex;justify-content:space-between;padding:5px 10px;border:1px solid var(--border);font-size:13px}
+    .lz-row:nth-child(even){background:#F7F0E8}
+    .lz-yr{font-weight:600;color:var(--text-muted)}
+    .lz-val{font-weight:700}
+  </style>
+</head>
+<body>
+<header class="header">
+  <h1>交通事故 損害計算ツール</h1>
+  <p>弁護士基準（裁判基準）による損害賠償額算定 — 新人弁護士・一般の方向け教育ツール</p>
+</header>
+<nav class="tabs">
+  <button class="tab-btn active" onclick="switchTab('keisan',this)">損害計算</button>
+  <button class="tab-btn" onclick="switchTab('isharyo',this)">慰謝料表</button>
+  <button class="tab-btn" onclick="switchTab('leibniz',this)">ライプニッツ係数表</button>
+  <button class="tab-btn" onclick="switchTab('quiz',this)">計算問題</button>
+  <button class="tab-btn" onclick="switchTab('glossary',this)">用語解説</button>
+</nav>
+<div class="container">
+
+<!-- ===== Tab 1: 損害計算 ===== -->
+<div id="panel-keisan" class="panel active">
+  <div class="info-banner">
+    <p>事故の種別を選んで各項目を入力してください。弁護士基準（裁判基準）で損害額を計算します。</p>
+    <button class="help-btn" onclick="showHelp('overview')">詳しく</button>
+  </div>
+
+  <!-- 共通入力 -->
+  <div class="card">
+    <div class="card-title">事故種別・共通情報</div>
+    <div class="section-toggle">
+      <button class="toggle-btn active" onclick="setCaseType('injury',this)">傷害のみ（後遺障害なし）</button>
+      <button class="toggle-btn" onclick="setCaseType('sequela',this)">後遺障害あり</button>
+      <button class="toggle-btn" onclick="setCaseType('death',this)">死亡事故</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>被害者の過失割合 <button class="help-btn" onclick="showHelp('kashitsu')">詳しく</button></label>
+        <div class="input-wrap"><input type="number" id="c-fault" value="0" min="0" max="100"><span class="unit">%</span></div>
+      </div>
+      <div class="form-group">
+        <label>既払保険金（自賠責・任意保険）<button class="help-btn" onclick="showHelp('kiharai')">詳しく</button></label>
+        <div class="input-wrap"><input type="number" id="c-paid" placeholder="0" min="0"><span class="unit">万円</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 傷害損害 (shown for all case types) -->
+  <div id="section-injury" class="case-section active">
+    <div class="card">
+      <div class="card-title">治療費 <button class="help-btn" onclick="showHelp('chiryohi')">詳しく</button></div>
+      <div class="form-group">
+        <label>実費（万円）</label>
+        <div class="input-wrap"><input type="number" id="i-chiryohi" placeholder="例：50" min="0"><span class="unit">万円</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">入院雑費 <button class="help-btn" onclick="showHelp('nyuinzappi')">詳しく</button></div>
+      <div class="form-group">
+        <label>入院日数</label>
+        <div class="input-wrap"><input type="number" id="i-nyuindays" placeholder="例：30" min="0"><span class="unit">日</span></div>
+      </div>
+      <div class="bk-formula" style="margin-top:8px">入院雑費 ＝ 入院日数 × 1,500円（弁護士基準）</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">通院交通費 <button class="help-btn" onclick="showHelp('kotsuhi')">詳しく</button></div>
+      <div class="form-group">
+        <label>実費（万円）— 公共交通機関の場合: 往復×通院日数。自家用車: 距離×2×15円×通院日数</label>
+        <div class="input-wrap"><input type="number" id="i-kotsuhi" placeholder="例：2" min="0"><span class="unit">万円</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">休業損害 <button class="help-btn" onclick="showHelp('kyugyо')">詳しく</button></div>
+      <div class="form-group" style="margin-bottom:10px">
+        <label>職業区分</label>
+        <select id="i-job" onchange="updateJobFields()">
+          <option value="employee">給与所得者</option>
+          <option value="self">自営業者</option>
+          <option value="housewife">家事従事者（専業主婦・主夫）</option>
+          <option value="other">その他・なし</option>
+        </select>
+      </div>
+      <div id="i-job-employee" class="extra-fields">
+        <div class="bk-desc">日額 ＝ 事故前3ヶ月の収入合計 ÷ 稼働日数（または ÷ 90）</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>事故前3ヶ月の収入合計（万円）</label>
+            <div class="input-wrap"><input type="number" id="i-emp-income" placeholder="例：90" min="0"><span class="unit">万円</span></div>
+          </div>
+          <div class="form-group">
+            <label>稼働日数（空欄の場合90日）</label>
+            <div class="input-wrap"><input type="number" id="i-emp-workdays" placeholder="90" min="1" max="90"><span class="unit">日</span></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>休業日数</label>
+          <div class="input-wrap"><input type="number" id="i-emp-offdays" placeholder="例：30" min="0"><span class="unit">日</span></div>
+        </div>
+      </div>
+      <div id="i-job-self" class="extra-fields" style="display:none">
+        <div class="bk-desc">日額 ＝（確定申告所得金額 ＋ 青色申告特別控除額）÷ 365</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>年間所得（万円）</label>
+            <div class="input-wrap"><input type="number" id="i-self-income" placeholder="例：400" min="0"><span class="unit">万円</span></div>
+          </div>
+          <div class="form-group">
+            <label>休業日数</label>
+            <div class="input-wrap"><input type="number" id="i-self-offdays" placeholder="例：30" min="0"><span class="unit">日</span></div>
+          </div>
+        </div>
+      </div>
+      <div id="i-job-housewife" class="extra-fields" style="display:none">
+        <div class="bk-desc">賃金センサス女性全年齢平均賃金を基礎とします（目安：約410万円 ÷ 365 ≒ 11,233円/日）</div>
+        <div class="form-group">
+          <label>休業日数</label>
+          <div class="input-wrap"><input type="number" id="i-hw-offdays" placeholder="例：30" min="0"><span class="unit">日</span></div>
+        </div>
+      </div>
+      <div id="i-job-other" class="extra-fields" style="display:none">
+        <div class="form-group">
+          <label>休業損害（直接入力・万円）</label>
+          <div class="input-wrap"><input type="number" id="i-other-kyugyo" placeholder="0" min="0"><span class="unit">万円</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">入通院慰謝料 <button class="help-btn" onclick="showHelp('nyutsuin_isharyo')">詳しく</button></div>
+      <div class="form-group" style="margin-bottom:10px">
+        <label>傷病区分</label>
+        <select id="i-injury-type">
+          <option value="light">軽傷（むち打ち・打撲・擦過傷等）</option>
+          <option value="heavy">重傷（骨折・脱臼・手術・内臓損傷等）</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>入院期間（ヶ月）— 日数の場合: 日数÷30</label>
+          <div class="input-wrap"><input type="number" id="i-nyuin-months" placeholder="0" min="0" step="0.1"><span class="unit">ヶ月</span></div>
+        </div>
+        <div class="form-group">
+          <label>通院期間（ヶ月）— 日数の場合: 日数÷30</label>
+          <div class="input-wrap"><input type="number" id="i-tsuin-months" placeholder="0" min="0" step="0.1"><span class="unit">ヶ月</span></div>
+        </div>
+      </div>
+      <div class="formula-header">
+        <div class="fh-title">入通院慰謝料の計算式</div>
+        <div class="fh-eq">慰謝料 ＝ 慰謝料表[通院月数][入院月数]（万円）</div>
+        <div class="fh-vars">端数がある場合: 整数月の値＋（次の月との差額×端数）で日割り計算<br>例: 通院2.4ヶ月（軽傷・入院なし）→ 36 + (53−36)×0.4 = 42.8万円</div>
+      </div>
+    </div>
+
+    <div class="card" id="card-弁護士費用">
+      <div class="card-title">弁護士費用 <button class="help-btn" onclick="showHelp('bengoshi')">詳しく</button></div>
+      <div class="form-group">
+        <label>弁護士費用を損害として請求する</label>
+        <select id="i-bengoshi">
+          <option value="yes">はい（訴訟の場合：認容額の約10%）</option>
+          <option value="no">いいえ（示談段階・計上しない）</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">遅延損害金 <button class="help-btn" onclick="showHelp('chien')">詳しく</button></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>事故日</label>
+          <input type="date" id="i-accident-date">
+        </div>
+        <div class="form-group">
+          <label>計算基準日（支払日・現在等）</label>
+          <input type="date" id="i-calc-date">
+        </div>
+      </div>
+      <div class="bk-formula">遅延損害金 ＝ 損害額 × 3% × 事故日からの年数（令和2年4月1日以降の事故）</div>
+    </div>
+  </div><!-- end #section-injury -->
+
+  <!-- 後遺障害 section -->
+  <div id="section-sequela" class="case-section" style="display:none">
+    <div class="card">
+      <div class="card-title">後遺障害慰謝料 <button class="help-btn" onclick="showHelp('koi_isharyo')">詳しく</button></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>後遺障害等級</label>
+          <select id="s-grade" onchange="updateGradeFields()">
+            <option value="kaigo1">要介護1級</option>
+            <option value="kaigo2">要介護2級</option>
+            <option value="1">第1級</option>
+            <option value="2">第2級</option>
+            <option value="3">第3級</option>
+            <option value="4">第4級</option>
+            <option value="5">第5級</option>
+            <option value="6">第6級</option>
+            <option value="7">第7級</option>
+            <option value="8">第8級</option>
+            <option value="9">第9級</option>
+            <option value="10">第10級</option>
+            <option value="11">第11級</option>
+            <option value="12">第12級</option>
+            <option value="13">第13級</option>
+            <option value="14">第14級</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>算定基準</label>
+          <select id="s-standard">
+            <option value="bengoshi">弁護士基準（裁判基準）</option>
+            <option value="jibaiseki">自賠責基準</option>
+          </select>
+        </div>
+      </div>
+      <div id="s-grade-display" class="bk-formula"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">後遺障害逸失利益 <button class="help-btn" onclick="showHelp('koi_isshitsu')">詳しく</button></div>
+      <div class="formula-header">
+        <div class="fh-title">後遺障害逸失利益の計算式</div>
+        <div class="fh-eq">逸失利益 ＝ 基礎収入 × 労働能力喪失率 × ライプニッツ係数</div>
+        <div class="fh-vars">就労可能年数 ＝ 67歳 − 症状固定時年齢（上限49年）<br>ライプニッツ係数: 年利3%複利で将来の収入を現在価値に割り引く係数</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>基礎収入（万円/年）<button class="help-btn" onclick="showHelp('kisoshunyuu')">詳しく</button></label>
+          <div class="input-wrap"><input type="number" id="s-income" placeholder="例：500" min="0"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>症状固定時年齢（歳）</label>
+          <div class="input-wrap"><input type="number" id="s-age" placeholder="例：40" min="18" max="66"><span class="unit">歳</span></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>労働能力喪失率（等級から自動設定）</label>
+          <div class="input-wrap"><input type="number" id="s-loss-rate" placeholder="14" min="0" max="100" step="0.1"><span class="unit">%</span></div>
+        </div>
+        <div class="form-group">
+          <label>喪失期間（年）※ 自動計算</label>
+          <div class="input-wrap"><input type="number" id="s-years" placeholder="27" min="0" max="49" readonly style="background:#F7F0E8"><span class="unit">年</span></div>
+        </div>
+      </div>
+      <div id="s-leibniz-display" class="bk-formula">ライプニッツ係数: — （年齢を入力すると自動表示）</div>
+    </div>
+
+    <div id="kaigo-section" style="display:none">
+      <div class="card">
+        <div class="card-title">将来介護費 <button class="help-btn" onclick="showHelp('kaigo')">詳しく</button></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>日額介護費（円/日）</label>
+            <div class="input-wrap"><input type="number" id="s-kaigo-daily" placeholder="例：8000" min="0"><span class="unit">円</span></div>
+          </div>
+          <div class="form-group">
+            <label>平均余命年数（歳）</label>
+            <div class="input-wrap"><input type="number" id="s-kaigo-years" placeholder="例：40" min="0" max="49"><span class="unit">年</span></div>
+          </div>
+        </div>
+        <div class="bk-formula">将来介護費 ＝ 日額 × 365日 × ライプニッツ係数（平均余命年数）</div>
+      </div>
+    </div>
+  </div><!-- end #section-sequela -->
+
+  <!-- 死亡事故 section -->
+  <div id="section-death" class="case-section" style="display:none">
+    <div class="card">
+      <div class="card-title">死亡逸失利益 <button class="help-btn" onclick="showHelp('death_isshitsu')">詳しく</button></div>
+      <div class="formula-header">
+        <div class="fh-title">死亡逸失利益の計算式</div>
+        <div class="fh-eq">死亡逸失利益 ＝ 基礎収入 × (1 − 生活費控除率) × ライプニッツ係数</div>
+        <div class="fh-vars">就労可能年数 ＝ 67歳 − 被害者年齢（上限49年）<br>生活費控除率: 男性独身50%・女性/主婦30%・一家の支柱40%（被扶養者1人）/ 30%（2人以上）</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>被害者年齢（歳）</label>
+          <div class="input-wrap"><input type="number" id="d-age" placeholder="例：40" min="0" max="80" oninput="updateDeathFields()"><span class="unit">歳</span></div>
+        </div>
+        <div class="form-group">
+          <label>基礎収入（万円/年）</label>
+          <div class="input-wrap"><input type="number" id="d-income" placeholder="例：500" min="0"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>家族構成・属性</label>
+          <select id="d-family" onchange="updateDeathFields()">
+            <option value="male_single">独身男性</option>
+            <option value="female_single">独身女性</option>
+            <option value="pillar1">一家の支柱（被扶養者1人）</option>
+            <option value="pillar2">一家の支柱（被扶養者2人以上）</option>
+            <option value="spouse">専業主婦（夫）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>生活費控除率（自動設定）</label>
+          <div class="input-wrap"><input type="number" id="d-lossrate" readonly style="background:#F7F0E8"><span class="unit">%</span></div>
+        </div>
+      </div>
+      <div id="d-leibniz-display" class="bk-formula">就労可能年数・ライプニッツ係数: 年齢を入力すると自動表示</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">死亡慰謝料 <button class="help-btn" onclick="showHelp('death_isharyo')">詳しく</button></div>
+      <div class="form-group">
+        <label>被害者の立場</label>
+        <select id="d-position">
+          <option value="pillar">一家の支柱（2,800万円）</option>
+          <option value="spouse">母親・配偶者（2,500万円）</option>
+          <option value="other">独身・子供・幼児等（2,000万円）</option>
+        </select>
+      </div>
+      <div class="bk-desc" style="margin-top:8px">弁護士基準の死亡慰謝料（本人分＋遺族固有分を含む合計）を自動表示します。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">葬祭費 <button class="help-btn" onclick="showHelp('sosai')">詳しく</button></div>
+      <div class="form-group">
+        <label>実費（万円）— 弁護士基準の目安: 150万円。実費が150万未満の場合は実費を計上。</label>
+        <div class="input-wrap"><input type="number" id="d-sosai" placeholder="150" min="0"><span class="unit">万円</span></div>
+      </div>
+    </div>
+  </div><!-- end #section-death -->
+
+  <button class="btn-calc" onclick="calcAll()">計算する</button>
+  <div id="keisan-result" style="display:none;margin-top:14px"></div>
+</div>
+
+<!-- ===== Tab 2: 慰謝料表 ===== -->
+<div id="panel-isharyo" class="panel">
+  <div class="info-banner">
+    <p>弁護士基準（赤い本）の入通院慰謝料表です。縦が通院期間、横が入院期間（単位：万円）。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">軽傷用（むち打ち・打撲・接触等） <span class="chip chip-light">軽傷</span></div>
+    <div class="ref-table-wrap" id="light-table-wrap"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">重傷用（骨折・脱臼・手術・内臓損傷等） <span class="chip chip-heavy">重傷</span></div>
+    <div class="ref-table-wrap" id="heavy-table-wrap"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">端数処理の方法（日割り計算）</div>
+    <div class="formula-header">
+      <div class="fh-title">実務標準の端数処理</div>
+      <div class="fh-eq">慰謝料 ＝ 整数月の値 ＋ (次月の値 − 整数月の値) × 端数</div>
+      <div class="fh-vars">
+        手順: ①日数÷30で月数を算出　②整数部分の月の金額と次の月の金額の差を求める　③差額×端数を加算<br>
+        例: 通院72日 ＝ 2.4ヶ月 → 軽傷（入院なし）: 36 + (53−36) × 0.4 ＝ 36 + 6.8 ＝ <strong>42.8万円</strong><br>
+        12ヶ月超の場合: 12ヶ月の値を上限としてそれ以上は1ヶ月あたり軽傷約2万円・重傷約3万円を加算（目安）
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">後遺障害慰謝料（弁護士基準）</div>
+    <div class="ref-table-wrap">
+      <table class="ref-table" style="min-width:300px">
+        <thead><tr><th>等級</th><th>自賠責基準（万円）</th><th>弁護士基準（万円）</th></tr></thead>
+        <tbody id="koishogai-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Tab 3: ライプニッツ係数表 ===== -->
+<div id="panel-leibniz" class="panel">
+  <div class="info-banner">
+    <p>年利3%の中間利息控除係数です。逸失利益の現在価値換算に使います。</p>
+  </div>
+  <div class="card">
+    <div class="card-title">ライプニッツ係数とは <button class="help-btn" onclick="showHelp('leibniz_what')">詳しく</button></div>
+    <div class="formula-header">
+      <div class="fh-title">逸失利益への適用</div>
+      <div class="fh-eq">逸失利益 ＝ 基礎収入 × 労働能力喪失率 × ライプニッツ係数（就労可能年数）</div>
+      <div class="fh-vars">
+        就労可能年数 ＝ 67歳 − 症状固定時年齢（上限49年）<br>
+        例: 就労可能25年・基礎収入500万・喪失率14% → 500 × 0.14 × 17.413 ＝ 1,218.9万円
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">係数表（年利3%・年金現価係数）</div>
+    <div id="leibniz-table-wrap"></div>
+  </div>
+</div>
+
+<!-- ===== Tab 4: 計算問題 ===== -->
+<div id="panel-quiz" class="panel">
+  <div class="info-banner">
+    <p>ランダムな計算問題で実力を試しましょう。解答を見る前に自分で計算してみてください。</p>
+  </div>
+  <div id="quiz-container">
+    <div class="card">
+      <div class="quiz-question" id="quiz-q"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+        <button class="btn-secondary" onclick="toggleAnswer()">解答を見る / 隠す</button>
+        <button class="btn-calc" style="flex:1" onclick="generateQuiz()">次の問題</button>
+      </div>
+      <div class="quiz-answer" id="quiz-a" style="margin-top:14px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Tab 5: 用語解説 ===== -->
+<div id="panel-glossary" class="panel">
+  <div class="info-banner">
+    <p>交通事故損害計算でよく使われる法律用語を解説します。各項目をクリックして展開してください。</p>
+  </div>
+  <div id="glossary-list"></div>
+</div>
+
+</div><!-- .container -->
+
+<!-- モーダル -->
+<div id="help-modal" class="modal-overlay" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA TABLES
+// ============================================================
+const LEIBNIZ = {
+  1:0.971,2:1.913,3:2.829,4:3.717,5:4.580,
+  6:5.417,7:6.230,8:7.020,9:7.786,10:8.530,
+  11:9.253,12:9.954,13:10.635,14:11.296,15:11.938,
+  16:12.561,17:13.166,18:13.754,19:14.324,20:14.877,
+  21:15.415,22:15.937,23:16.444,24:16.936,25:17.413,
+  26:17.877,27:18.327,28:18.764,29:19.188,30:19.600,
+  31:20.000,32:20.389,33:20.766,34:21.132,35:21.487,
+  36:21.832,37:22.167,38:22.492,39:22.808,40:23.115,
+  41:23.412,42:23.701,43:23.982,44:24.254,45:24.519,
+  46:24.775,47:25.025,48:25.267,49:25.502
+};
+
+function getLeibniz(years){
+  if(years<=0)return 0;
+  const y=Math.min(49,Math.round(years));
+  return LEIBNIZ[y]||0;
+}
+
+// 慰謝料表 [通院index 0-12][入院index 0-6]
+// 通院index 0=なし, 1=1ヶ月, ... 12=12ヶ月
+// 入院index 0=なし, 1=1ヶ月, ... 6=6ヶ月
+const ISHARYO_LIGHT = [
+  [0,35,66,92,116,135,152],   // 通院なし
+  [19,52,83,106,128,145,160], // 1ヶ月
+  [36,69,97,118,138,153,166], // 2ヶ月
+  [53,83,109,128,146,159,172],// 3ヶ月
+  [67,95,119,136,152,165,176],// 4ヶ月
+  [79,105,127,142,158,169,180],// 5ヶ月
+  [89,113,133,148,162,173,182],// 6ヶ月
+  [97,119,139,152,166,175,183],// 7ヶ月
+  [103,125,143,156,168,176,184],// 8ヶ月
+  [109,129,147,158,169,177,185],// 9ヶ月
+  [113,133,149,159,170,178,186],// 10ヶ月
+  [117,135,150,160,171,179,187],// 11ヶ月
+  [119,136,151,161,172,180,188] // 12ヶ月
+];
+
+const ISHARYO_HEAVY = [
+  [0,53,101,145,184,217,244],
+  [28,77,122,162,199,228,252],
+  [52,98,139,177,210,236,260],
+  [73,115,154,188,218,244,267],
+  [90,130,165,196,226,251,273],
+  [105,141,173,204,233,257,278],
+  [116,149,181,211,239,262,282],
+  [124,157,188,217,244,266,286],
+  [132,164,194,222,248,270,290],
+  [139,170,199,226,252,274,292],
+  [145,175,203,230,256,276,294],
+  [150,179,207,234,258,278,296],
+  [154,183,211,236,260,280,298]
+];
+
+// 後遺障害慰謝料
+const KOI_ISHARYO = {
+  'kaigo1':{jibaiseki:1650,bengoshi:2800,label:'要介護1級'},
+  'kaigo2':{jibaiseki:1203,bengoshi:2370,label:'要介護2級'},
+  '1':{jibaiseki:1150,bengoshi:2800,label:'第1級'},
+  '2':{jibaiseki:998,bengoshi:2370,label:'第2級'},
+  '3':{jibaiseki:861,bengoshi:1990,label:'第3級'},
+  '4':{jibaiseki:737,bengoshi:1670,label:'第4級'},
+  '5':{jibaiseki:618,bengoshi:1400,label:'第5級'},
+  '6':{jibaiseki:512,bengoshi:1180,label:'第6級'},
+  '7':{jibaiseki:419,bengoshi:1000,label:'第7級'},
+  '8':{jibaiseki:331,bengoshi:830,label:'第8級'},
+  '9':{jibaiseki:249,bengoshi:690,label:'第9級'},
+  '10':{jibaiseki:190,bengoshi:550,label:'第10級'},
+  '11':{jibaiseki:136,bengoshi:420,label:'第11級'},
+  '12':{jibaiseki:94,bengoshi:290,label:'第12級'},
+  '13':{jibaiseki:57,bengoshi:180,label:'第13級'},
+  '14':{jibaiseki:32,bengoshi:110,label:'第14級'}
+};
+
+// 労働能力喪失率
+const LOSS_RATE = {
+  'kaigo1':100,'kaigo2':100,'1':100,'2':100,'3':100,
+  '4':92,'5':79,'6':67,'7':56,'8':45,'9':35,
+  '10':27,'11':20,'12':14,'13':9,'14':5
+};
+
+// 死亡慰謝料
+const DEATH_ISHARYO = {
+  'pillar':2800,'spouse':2500,'other':2000
+};
+
+// 生活費控除率
+const SEIKATSU_KOJO = {
+  'male_single':50,'female_single':30,'pillar1':40,'pillar2':30,'spouse':30
+};
+
+// 自賠責限度額
+const JIBAISEKI_LIMIT = {injury:120,death:3000};
+
+// ============================================================
+// HELPERS
+// ============================================================
+function v(id){const e=document.getElementById(id);return e?e.value:'';}
+function nv(id){const val=parseFloat(v(id));return isNaN(val)?0:val;}
+function fmtMan(val){return val.toLocaleString('ja-JP',{maximumFractionDigits:2,minimumFractionDigits:0})+'万円';}
+function fmtEn(val){return '約'+Math.round(val*10000).toLocaleString('ja-JP')+'円';}
+function fmt2(val){return val.toLocaleString('ja-JP',{maximumFractionDigits:2,minimumFractionDigits:0});}
+
+// 慰謝料テーブル参照（月数は小数OK）
+function lookupIsharyo(tsuinMonths, nyuinMonths, isLight){
+  const tbl = isLight ? ISHARYO_LIGHT : ISHARYO_HEAVY;
+  // clamp
+  const tMax=12, nMax=6;
+  const extraNyuin = Math.max(0, nyuinMonths - nMax);
+  const extraTsuin = Math.max(0, tsuinMonths - tMax);
+  const nClamped = Math.min(nyuinMonths, nMax);
+  const tClamped = Math.min(tsuinMonths, tMax);
+
+  // bilinear interpolation
+  function interp(t, n){
+    const ti = Math.floor(t), tf = t - ti;
+    const ni = Math.floor(n), nf = n - ni;
+    const ti2 = Math.min(ti+1, tMax), ni2 = Math.min(ni+1, nMax);
+    const v00 = tbl[ti][ni];
+    const v10 = tbl[Math.min(ti+1,tMax)][ni];
+    const v01 = tbl[ti][Math.min(ni+1,nMax)];
+    const v11 = tbl[Math.min(ti+1,tMax)][Math.min(ni+1,nMax)];
+    return v00*(1-tf)*(1-nf) + v10*tf*(1-nf) + v01*(1-tf)*nf + v11*tf*nf;
+  }
+
+  let base = interp(tClamped, nClamped);
+  // Add for extra months
+  if(extraNyuin>0) base += extraNyuin * (isLight ? 4 : 6);
+  if(extraTsuin>0) base += extraTsuin * (isLight ? 2 : 3);
+  return base;
+}
+
+// ============================================================
+// UI STATE
+// ============================================================
+let currentCase = 'injury';
+
+function switchTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='quiz') generateQuiz();
+}
+
+function setCaseType(type, btn){
+  currentCase = type;
+  document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const injurySection = document.getElementById('section-injury');
+  const sequelaSection = document.getElementById('section-sequela');
+  const deathSection = document.getElementById('section-death');
+
+  // injury section shows for all types
+  injurySection.classList.add('active');
+  injurySection.style.display='block';
+
+  if(type==='injury'){
+    sequelaSection.style.display='none';
+    deathSection.style.display='none';
+  } else if(type==='sequela'){
+    sequelaSection.style.display='block';
+    deathSection.style.display='none';
+    updateGradeFields();
+  } else {
+    sequelaSection.style.display='none';
+    deathSection.style.display='block';
+    updateDeathFields();
+    // Hide injury cards that don't apply well to death
+  }
+  document.getElementById('keisan-result').style.display='none';
+}
+
+function updateJobFields(){
+  const job = v('i-job');
+  ['employee','self','housewife','other'].forEach(t=>{
+    const el=document.getElementById('i-job-'+t);
+    if(el) el.style.display = (job===t)?'block':'none';
+  });
+}
+
+function updateGradeFields(){
+  const grade = v('s-grade');
+  const std = v('s-standard');
+  const data = KOI_ISHARYO[grade];
+  if(!data) return;
+  const amt = std==='bengoshi' ? data.bengoshi : data.jibaiseki;
+  document.getElementById('s-grade-display').textContent =
+    data.label + '　' + (std==='bengoshi'?'弁護士基準':'自賠責基準') + ': ' + amt + '万円';
+
+  // Auto-fill loss rate
+  const lr = document.getElementById('s-loss-rate');
+  if(lr) lr.value = LOSS_RATE[grade]||'';
+
+  // Update years if age is set
+  const age = nv('s-age');
+  if(age>0) updateSequelaYears();
+
+  // show kaigo section
+  const kaigoSec = document.getElementById('kaigo-section');
+  if(kaigoSec) kaigoSec.style.display = (grade==='kaigo1'||grade==='kaigo2')?'block':'none';
+}
+
+function updateSequelaYears(){
+  const age = nv('s-age');
+  if(!age || age<=0) return;
+  const years = Math.min(49, Math.max(0, 67-age));
+  const el = document.getElementById('s-years');
+  if(el) el.value = years;
+  const lz = getLeibniz(years);
+  const disp = document.getElementById('s-leibniz-display');
+  if(disp) disp.textContent = `就労可能年数: ${years}年　ライプニッツ係数: ${lz}（67 − ${age} = ${years}年）`;
+}
+
+document.addEventListener('change', function(e){
+  if(e.target.id==='s-age'||e.target.id==='s-grade'||e.target.id==='s-standard') updateGradeFields();
+});
+document.addEventListener('input', function(e){
+  if(e.target.id==='s-age') updateSequelaYears();
+  if(e.target.id==='d-age'||e.target.id==='d-family') updateDeathFields();
+});
+
+function updateDeathFields(){
+  const age = nv('d-age');
+  const family = v('d-family');
+  const kr = SEIKATSU_KOJO[family]||50;
+  const el = document.getElementById('d-lossrate');
+  if(el) el.value = kr;
+  if(age>0){
+    const years = Math.min(49, Math.max(0, 67-age));
+    const lz = getLeibniz(years);
+    const disp = document.getElementById('d-leibniz-display');
+    if(disp) disp.textContent = `就労可能年数: ${years}年　ライプニッツ係数: ${lz}（67 − ${age} = ${years}年）`;
+  }
+}
+
+// ============================================================
+// CALCULATION
+// ============================================================
+function calcAll(){
+  const fault = nv('c-fault');
+  const paid = nv('c-paid');
+  let items = [];
+  let totalMan = 0;
+  let html = '';
+  let errors = [];
+
+  // --- 治療費 ---
+  const chiryohi = nv('i-chiryohi');
+  items.push({label:'治療費', val:chiryohi, formula:`実費 ${fmtMan(chiryohi)}`});
+
+  // --- 入院雑費 ---
+  const nyuindays = nv('i-nyuindays');
+  const zappi = nyuindays * 1500 / 10000;
+  items.push({label:'入院雑費', val:zappi, formula:`${nyuindays}日 × 1,500円 ÷ 10,000 = ${fmtMan(zappi)}`});
+
+  // --- 通院交通費 ---
+  const kotsuhi = nv('i-kotsuhi');
+  items.push({label:'通院交通費', val:kotsuhi, formula:`実費 ${fmtMan(kotsuhi)}`});
+
+  // --- 休業損害 ---
+  let kyugyo = 0;
+  let kyugyoFormula = '';
+  const job = v('i-job');
+  if(job==='employee'){
+    const inc3 = nv('i-emp-income');
+    const workdays = nv('i-emp-workdays')||90;
+    const offdays = nv('i-emp-offdays');
+    const nichi = inc3 / workdays;
+    kyugyo = nichi * offdays;
+    kyugyoFormula = `(${fmtMan(inc3)} ÷ ${workdays}日) × ${offdays}日 = ${fmtMan(kyugyo)}`;
+  } else if(job==='self'){
+    const inc = nv('i-self-income');
+    const offdays = nv('i-self-offdays');
+    const nichi = inc / 365;
+    kyugyo = nichi * offdays;
+    kyugyoFormula = `(${fmtMan(inc)} ÷ 365日) × ${offdays}日 = ${fmtMan(kyugyo)}`;
+  } else if(job==='housewife'){
+    const BASE_HW = 410;
+    const offdays = nv('i-hw-offdays');
+    const nichi = BASE_HW / 365;
+    kyugyo = nichi * offdays;
+    kyugyoFormula = `賃金センサス(${fmtMan(BASE_HW)}) ÷ 365日 × ${offdays}日 = ${fmtMan(kyugyo)}`;
+  } else {
+    kyugyo = nv('i-other-kyugyo');
+    kyugyoFormula = `直接入力 ${fmtMan(kyugyo)}`;
+  }
+  items.push({label:'休業損害', val:kyugyo, formula:kyugyoFormula});
+
+  // --- 入通院慰謝料 ---
+  const injType = v('i-injury-type');
+  const nyuinM = nv('i-nyuin-months');
+  const tsuinM = nv('i-tsuin-months');
+  const isLight = injType==='light';
+  const isharyo = lookupIsharyo(tsuinM, nyuinM, isLight);
+  const typeName = isLight?'軽傷':'重傷';
+  items.push({label:'入通院慰謝料', val:isharyo,
+    formula:`${typeName}・通院${tsuinM}ヶ月・入院${nyuinM}ヶ月 → 慰謝料表より ${fmtMan(isharyo)}`});
+
+  // 後遺障害あり
+  let koiIsh = 0, koiIsshitsu = 0, kaigoHi = 0;
+  if(currentCase==='sequela'){
+    const grade = v('s-grade');
+    const std = v('s-standard');
+    const gradeData = KOI_ISHARYO[grade];
+    koiIsh = std==='bengoshi' ? gradeData.bengoshi : gradeData.jibaiseki;
+    items.push({label:`後遺障害慰謝料（${gradeData.label}・${std==='bengoshi'?'弁護士':'自賠責'}基準）`, val:koiIsh,
+      formula:`${gradeData.label} ${std==='bengoshi'?'弁護士':'自賠責'}基準 = ${fmtMan(koiIsh)}`});
+
+    const sIncome = nv('s-income');
+    const sAge = nv('s-age');
+    const lossRate = nv('s-loss-rate');
+    const years = Math.min(49, Math.max(0, 67-sAge));
+    const lz = getLeibniz(years);
+    koiIsshitsu = sIncome * (lossRate/100) * lz;
+    items.push({label:'後遺障害逸失利益', val:koiIsshitsu,
+      formula:`${fmtMan(sIncome)} × ${lossRate}% × ${lz}（${years}年分） = ${fmtMan(koiIsshitsu)}`});
+
+    if(grade==='kaigo1'||grade==='kaigo2'){
+      const daily = nv('s-kaigo-daily');
+      const kaigoYears = nv('s-kaigo-years');
+      const kaigoLz = getLeibniz(kaigoYears);
+      kaigoHi = (daily * 365 / 10000) * kaigoLz;
+      items.push({label:'将来介護費', val:kaigoHi,
+        formula:`${daily.toLocaleString()}円/日 × 365日 × ${kaigoLz}（${kaigoYears}年分） = ${fmtMan(kaigoHi)}`});
+    }
+  }
+
+  // 死亡事故
+  let deathIsshitsu = 0, deathIsh = 0, sosai = 0;
+  if(currentCase==='death'){
+    const dAge = nv('d-age');
+    const dIncome = nv('d-income');
+    const dFamily = v('d-family');
+    const dLossRate = SEIKATSU_KOJO[dFamily]||50;
+    const dYears = Math.min(49,Math.max(0,67-dAge));
+    const dLz = getLeibniz(dYears);
+    deathIsshitsu = dIncome * (1-dLossRate/100) * dLz;
+    items.push({label:'死亡逸失利益', val:deathIsshitsu,
+      formula:`${fmtMan(dIncome)} × (1−${dLossRate}%) × ${dLz}（${dYears}年分） = ${fmtMan(deathIsshitsu)}`});
+
+    const dPos = v('d-position');
+    deathIsh = DEATH_ISHARYO[dPos]||2000;
+    const dPosName = dPos==='pillar'?'一家の支柱':dPos==='spouse'?'母親・配偶者':'独身・子供・幼児等';
+    items.push({label:`死亡慰謝料（${dPosName}）`, val:deathIsh,
+      formula:`弁護士基準 ${dPosName} = ${fmtMan(deathIsh)}`});
+
+    sosai = Math.min(nv('d-sosai')||150, 150);
+    const actualSosai = nv('d-sosai')||150;
+    items.push({label:'葬祭費', val:Math.min(actualSosai,150),
+      formula:`実費${fmtMan(actualSosai)}（上限150万円） = ${fmtMan(Math.min(actualSosai,150))}`});
+  }
+
+  // 合計
+  const subtotal = items.reduce((s,i)=>s+i.val, 0);
+
+  // 弁護士費用
+  let bengoshiFee = 0;
+  if(v('i-bengoshi')==='yes' && currentCase!=='death'){
+    bengoshiFee = subtotal * 0.10;
+    items.push({label:'弁護士費用（認容額の10%）', val:bengoshiFee,
+      formula:`${fmtMan(subtotal)} × 10% = ${fmtMan(bengoshiFee)}`});
+  } else if(currentCase==='death'){
+    bengoshiFee = (subtotal) * 0.10;
+    items.push({label:'弁護士費用（認容額の10%）', val:bengoshiFee,
+      formula:`${fmtMan(subtotal)} × 10% = ${fmtMan(bengoshiFee)}`});
+  }
+
+  const total = items.reduce((s,i)=>s+i.val, 0);
+
+  // 遅延損害金
+  let chien = 0, chienFormula = '';
+  const accDate = v('i-accident-date');
+  const calcDate = v('i-calc-date');
+  if(accDate && calcDate){
+    const d1 = new Date(accDate), d2 = new Date(calcDate);
+    const years = (d2-d1)/(1000*60*60*24*365.25);
+    if(years>0){
+      chien = total * 0.03 * years;
+      chienFormula = `${fmtMan(total)} × 3% × ${years.toFixed(2)}年 = ${fmtMan(chien)}`;
+    }
+  }
+
+  // 過失相殺後
+  const afterFault = total * (1 - fault/100);
+  const afterFaultChien = (total + chien) * (1 - fault/100);
+
+  // 最終請求額
+  const finalAmt = Math.max(0, afterFaultChien - paid);
+
+  // Build HTML
+  let rowsHtml = items.map(i=>`
+    <div class="bk-row">
+      <span class="bk-key">${i.label}</span>
+      <span class="bk-val">${fmtMan(i.val)}</span>
+    </div>
+    <div class="bk-formula">${i.formula}</div>
+  `).join('');
+
+  let chienRow = '';
+  if(chien>0){
+    chienRow = `<div class="bk-row">
+      <span class="bk-key">遅延損害金</span>
+      <span class="bk-val">${fmtMan(chien)}</span>
+    </div><div class="bk-formula">${chienFormula}</div>`;
+  }
+
+  const limit = currentCase==='death' ? JIBAISEKI_LIMIT.death : JIBAISEKI_LIMIT.injury;
+  const limitNote = currentCase==='death'
+    ? `自賠責保険限度額（死亡）: ${limit}万円`
+    : `自賠責保険限度額（傷害）: ${limit}万円`;
+
+  html = `
+    <div class="result-box">
+      <div class="result-label">最終請求額（過失相殺・既払控除後）</div>
+      <div class="result-amount">${fmtMan(finalAmt)}</div>
+      <div class="result-sub">${fmtEn(finalAmt)}</div>
+    </div>
+    <div class="breakdown">
+      <div class="breakdown-title">損害内訳</div>
+      ${rowsHtml}
+      ${chienRow}
+      <div class="bk-total">
+        <span class="bk-key">損害合計（遅延損害金含む）</span>
+        <span class="bk-val">${fmtMan(total + chien)}</span>
+      </div>
+      <div class="bk-row" style="margin-top:8px">
+        <span class="bk-key">過失相殺（被害者過失${fault}%）</span>
+        <span class="bk-val" style="color:var(--danger)">−${fmtMan((total+chien)*fault/100)}</span>
+      </div>
+      <div class="bk-formula">過失相殺後 = ${fmtMan(total+chien)} × (1 − ${fault}%) = ${fmtMan(afterFaultChien)}</div>
+      <div class="bk-row">
+        <span class="bk-key">既払保険金控除</span>
+        <span class="bk-val" style="color:var(--danger)">−${fmtMan(paid)}</span>
+      </div>
+      <div class="bk-total">
+        <span class="bk-key">最終請求額</span>
+        <span class="bk-val">${fmtMan(finalAmt)}</span>
+      </div>
+    </div>
+    <div class="note"><span class="note-icon">i</span>${limitNote}。超過分は任意保険または加害者本人への請求となります。${finalAmt < limit ? '（今回の計算では自賠責限度額の範囲内です）' : '<strong>今回の計算額は自賠責限度額を超えています。任意保険への請求が必要です。</strong>'}</div>
+  `;
+
+  const el = document.getElementById('keisan-result');
+  el.innerHTML = html;
+  el.style.display = 'block';
+  el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ============================================================
+// TABLE RENDERING
+// ============================================================
+function renderIsharyoTable(tableData, wrapperId){
+  const cols = ['なし','1ヶ月','2ヶ月','3ヶ月','4ヶ月','5ヶ月','6ヶ月'];
+  const rows = ['通院なし','1ヶ月','2ヶ月','3ヶ月','4ヶ月','5ヶ月','6ヶ月','7ヶ月','8ヶ月','9ヶ月','10ヶ月','11ヶ月','12ヶ月'];
+  let th = '<tr><th>通院＼入院</th>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr>';
+  let body = rows.map((r,ri)=>{
+    let tds = tableData[ri].map(v=>`<td>${v}</td>`).join('');
+    return `<tr><td class="row-header">${r}</td>${tds}</tr>`;
+  }).join('');
+  document.getElementById(wrapperId).innerHTML =
+    `<table class="ref-table"><thead>${th}</thead><tbody>${body}</tbody></table>`;
+}
+
+function renderKoishogaiTable(){
+  const order=['kaigo1','kaigo2','1','2','3','4','5','6','7','8','9','10','11','12','13','14'];
+  const body = order.map(k=>{
+    const d=KOI_ISHARYO[k];
+    return `<tr><td class="row-header">${d.label}</td><td>${d.jibaiseki.toLocaleString()}</td><td><strong>${d.bengoshi.toLocaleString()}</strong></td></tr>`;
+  }).join('');
+  document.getElementById('koishogai-table-body').innerHTML = body;
+}
+
+function renderLeibnizTable(){
+  const years = Object.keys(LEIBNIZ).map(Number).sort((a,b)=>a-b);
+  const rows = [];
+  for(let i=0;i<years.length;i+=3){
+    let cells = '';
+    for(let j=0;j<3;j++){
+      const y = years[i+j];
+      if(y){
+        cells += `<div class="lz-row"><span class="lz-yr">${y}年</span><span class="lz-val">${LEIBNIZ[y]}</span></div>`;
+      }
+    }
+    rows.push(cells);
+  }
+  // Build 3-col layout
+  const col1=[], col2=[], col3=[];
+  years.forEach(y=>{
+    const row = `<div class="lz-row"><span class="lz-yr">${y}年</span><span class="lz-val">${LEIBNIZ[y]}</span></div>`;
+    if(y<=17) col1.push(row);
+    else if(y<=34) col2.push(row);
+    else col3.push(row);
+  });
+  document.getElementById('leibniz-table-wrap').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+      <div>${col1.join('')}</div>
+      <div>${col2.join('')}</div>
+      <div>${col3.join('')}</div>
+    </div>`;
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+let currentQuiz = null;
+
+function generateQuiz(){
+  document.getElementById('quiz-a').classList.remove('open');
+  const types = ['A','B','C','D'];
+  const type = types[Math.floor(Math.random()*types.length)];
+  currentQuiz = buildQuiz(type);
+  document.getElementById('quiz-q').innerHTML = currentQuiz.question;
+  document.getElementById('quiz-a').innerHTML = currentQuiz.answer;
+}
+
+function toggleAnswer(){
+  document.getElementById('quiz-a').classList.toggle('open');
+}
+
+function rnd(min, max){return Math.floor(Math.random()*(max-min+1))+min;}
+
+function buildQuiz(type){
+  if(type==='A'){
+    const nyuin = rnd(0,3);
+    const tsuin = rnd(1,6);
+    const isLight = Math.random()<0.5;
+    const typeName = isLight?'軽傷（むち打ち）':'重傷（骨折）';
+    const ans = lookupIsharyo(tsuin, nyuin, isLight);
+    const tbl = isLight ? ISHARYO_LIGHT : ISHARYO_HEAVY;
+    return {
+      question: `<strong>【問題A: 入通院慰謝料】</strong><br>被害者（40歳）は追突事故で<span class="chip ${isLight?'chip-light':'chip-heavy'}">${typeName}</span>を負い、<strong>入院${nyuin}ヶ月・通院${tsuin}ヶ月</strong>した。<br>弁護士基準の入通院慰謝料はいくらか。`,
+      answer: `<div class="quiz-step"><strong>解答ステップ:</strong></div>
+        <div class="quiz-step">① 傷病区分: ${typeName} → ${isLight?'軽傷用':'重傷用'}テーブルを使用</div>
+        <div class="quiz-step">② テーブル参照: 通院${tsuin}ヶ月行 × 入院${nyuin}ヶ月列</div>
+        <div class="quiz-formula">テーブル値 = ${tbl[tsuin][nyuin]}万円</div>
+        <div class="quiz-step">③ 端数なし（整数ヶ月のため日割り不要）</div>
+        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fmtMan(ans)}</strong></div>`
+    };
+  } else if(type==='B'){
+    const age = rnd(30,55);
+    const income = rnd(3,8)*100;
+    const gradeNum = rnd(7,12);
+    const grade = String(gradeNum);
+    const lossRate = LOSS_RATE[grade];
+    const years = Math.min(49,67-age);
+    const lz = getLeibniz(years);
+    const result = income * (lossRate/100) * lz;
+    return {
+      question: `<strong>【問題B: 後遺障害逸失利益】</strong><br>被害者（${age}歳・給与所得者・年収${income}万円）が<span class="chip chip-grade">第${gradeNum}級</span>の後遺障害を負った。<br>後遺障害逸失利益を計算せよ。（ライプニッツ係数${years}年分: ${lz}）`,
+      answer: `<div class="quiz-step"><strong>解答ステップ:</strong></div>
+        <div class="quiz-step">① 就労可能年数 = 67 − ${age} = ${years}年</div>
+        <div class="quiz-step">② ライプニッツ係数（${years}年）= ${lz}</div>
+        <div class="quiz-step">③ 労働能力喪失率（第${gradeNum}級）= ${lossRate}%</div>
+        <div class="quiz-formula">逸失利益 = 基礎収入 × 喪失率 × ライプニッツ係数
+= ${income}万円 × ${lossRate}% × ${lz}
+= ${income}万円 × ${lossRate/100} × ${lz}
+= ${fmtMan(result)}</div>
+        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fmtMan(result)}</strong>（${fmtEn(result)}）</div>`
+    };
+  } else if(type==='C'){
+    const age = rnd(35,55);
+    const income = rnd(3,8)*100;
+    const families = [
+      {key:'male_single',name:'独身男性',rate:50},
+      {key:'pillar1',name:'一家の支柱（被扶養者1人）',rate:40},
+      {key:'pillar2',name:'一家の支柱（被扶養者2人以上）',rate:30},
+      {key:'spouse',name:'専業主婦',rate:30}
+    ];
+    const fam = families[Math.floor(Math.random()*families.length)];
+    const years = Math.min(49,67-age);
+    const lz = getLeibniz(years);
+    const result = income * (1-fam.rate/100) * lz;
+    return {
+      question: `<strong>【問題C: 死亡逸失利益】</strong><br>被害者（${age}歳・年収${income}万円・${fam.name}）が死亡した。<br>死亡逸失利益を計算せよ。（ライプニッツ係数${years}年分: ${lz}）`,
+      answer: `<div class="quiz-step"><strong>解答ステップ:</strong></div>
+        <div class="quiz-step">① 就労可能年数 = 67 − ${age} = ${years}年</div>
+        <div class="quiz-step">② ライプニッツ係数（${years}年）= ${lz}</div>
+        <div class="quiz-step">③ 生活費控除率（${fam.name}）= ${fam.rate}%</div>
+        <div class="quiz-formula">死亡逸失利益 = 基礎収入 × (1 − 生活費控除率) × ライプニッツ係数
+= ${income}万円 × (1 − ${fam.rate}%) × ${lz}
+= ${income}万円 × ${(1-fam.rate/100).toFixed(2)} × ${lz}
+= ${fmtMan(result)}</div>
+        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fmtMan(result)}</strong>（${fmtEn(result)}）</div>`
+    };
+  } else {
+    const total = rnd(100,500);
+    const chiry = rnd(20,80);
+    const isharyo = total - chiry;
+    const fault = rnd(1,3)*10;
+    const afterFault = total * (1-fault/100);
+    return {
+      question: `<strong>【問題D: 過失相殺】</strong><br>損害合計<strong>${total}万円</strong>（治療費${chiry}万円、慰謝料${isharyo}万円）に被害者の過失<strong>${fault}%</strong>が認められた場合、過失相殺後の請求額はいくらか。`,
+      answer: `<div class="quiz-step"><strong>解答ステップ:</strong></div>
+        <div class="quiz-step">① 損害合計 = ${chiry}万円（治療費） + ${isharyo}万円（慰謝料） = ${total}万円</div>
+        <div class="quiz-step">② 過失相殺: 被害者過失${fault}% → 損害額に(1−過失割合)を掛ける</div>
+        <div class="quiz-formula">過失相殺後 = ${total}万円 × (1 − ${fault}%)
+= ${total}万円 × ${(1-fault/100).toFixed(2)}
+= ${fmtMan(afterFault)}</div>
+        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fmtMan(afterFault)}</strong>（${fmtEn(afterFault)}）</div>`
+    };
+  }
+}
+
+// ============================================================
+// GLOSSARY
+// ============================================================
+const GLOSSARY = [
+  {term:'症状固定',body:`<p><strong>症状固定</strong>とは、これ以上治療を続けても回復が見込めない状態と医師が判断した時点のことです。</p>
+  <p>この日を基準として:</p><ul>
+  <li>後遺障害等級の申請（自賠責保険への申請）が始まります</li>
+  <li>後遺障害逸失利益の計算の起点となります</li>
+  <li>入通院慰謝料の計算もこの時点で終了します</li>
+  </ul>
+  <div class="help-note">医師が症状固定と判断するまでの治療費・慰謝料は「入通院損害」として計上し、固定後は「後遺障害損害」として計上します。</div>`},
+  {term:'後遺障害等級',body:`<p><strong>後遺障害等級</strong>とは、労働省令（自動車損害賠償保障法施行令）で定める1〜14級（＋要介護1・2級）の障害認定です。</p>
+  <p>等級によって慰謝料・逸失利益が大きく変わります。</p>
+  <table><tr><th>等級</th><th>弁護士基準慰謝料</th><th>労働能力喪失率</th></tr>
+  <tr><td>第1〜3級</td><td>1,990〜2,800万円</td><td>100%</td></tr>
+  <tr><td>第7級</td><td>1,000万円</td><td>56%</td></tr>
+  <tr><td>第12級</td><td>290万円</td><td>14%</td></tr>
+  <tr><td>第14級</td><td>110万円</td><td>5%</td></tr>
+  </table>
+  <h4>申請方法</h4><ul>
+  <li><strong>事前認定</strong>: 加害者側の自賠責保険会社に申請を任せる方法（書類準備が楽だが、被害者が内容を確認しにくい）</li>
+  <li><strong>被害者請求</strong>: 被害者自身が資料を揃えて申請する方法（証拠を自分でコントロールできる）</li>
+  </ul>`},
+  {term:'基礎収入',body:`<p><strong>基礎収入</strong>とは、逸失利益計算の基礎となる年収のことです。</p>
+  <h4>職業別の基礎収入の算定方法</h4>
+  <table><tr><th>職業</th><th>算定方法</th></tr>
+  <tr><td>給与所得者</td><td>源泉徴収票の「支払金額」欄（額面年収）</td></tr>
+  <tr><td>自営業者</td><td>確定申告書の「所得金額」＋「青色申告特別控除額」</td></tr>
+  <tr><td>専業主婦・主夫</td><td>賃金センサス（賃金構造基本統計調査）の女性全年齢平均賃金（約410万円）</td></tr>
+  <tr><td>若年者・学生</td><td>賃金センサスの平均賃金を使う場合がある</td></tr>
+  </table>
+  <div class="help-note">実際の年収が賃金センサスを下回る場合でも、若年者や回復見込みがある場合はセンサスを使う裁判例があります。弁護士に相談してください。</div>`},
+  {term:'ライプニッツ係数',body:`<p><strong>ライプニッツ係数</strong>とは、将来の収入の損失を現在価値に換算するための係数です。</p>
+  <p>考え方: 今すぐもらえる100万円と10年後にもらえる100万円は、利息がつく分、今の100万円の方が価値が高い。<br>そこで「将来受け取るべきだった収入」を現在の金額に割り引く（中間利息を控除する）必要があります。</p>
+  <div class="help-note">計算式: 年利3%の複利現価係数<br>n年後の1円の現在価値 = 1 ÷ (1.03)^n<br>n年分の合計 = Σ 1÷(1.03)^k （k=1〜n）</div>
+  <h4>具体例</h4><p>25年間・年100万円の損失の現在価値:</p>
+  <p>100万円 × 17.413（25年のライプニッツ係数）= 1,741万円</p>
+  <p>（単純合計25年×100万=2,500万円より約758万円少なくなります）</p>`},
+  {term:'過失相殺',body:`<p><strong>過失相殺</strong>とは、交通事故において被害者にも過失（不注意）があった場合、その割合に応じて損害賠償額を減額する制度です（民法722条2項）。</p>
+  <h4>計算方法</h4>
+  <div class="help-note">過失相殺後の金額 = 損害合計 × (1 − 被害者過失割合)</div>
+  <p>例: 損害500万円・被害者過失30% → 500万 × 70% = 350万円</p>
+  <h4>過失割合の例（目安）</h4>
+  <table><tr><th>事故態様</th><th>被害者過失（目安）</th></tr>
+  <tr><td>信号無視の加害者に追突された</td><td>0〜10%</td></tr>
+  <tr><td>青信号で横断中に轢かれた</td><td>0〜20%</td></tr>
+  <tr><td>飛び出し（歩行者）</td><td>30〜50%</td></tr>
+  </table>
+  <div class="help-note">過失割合は事故の状況・道路状況・信号の有無などによって決まります。「別冊判例タイムズ」が標準的な基準として使われます。</div>`},
+  {term:'自賠責保険',body:`<p><strong>自賠責保険</strong>（自動車損害賠償責任保険）とは、全ての自動車・バイクに加入が義務付けられた強制保険です。</p>
+  <h4>支払限度額</h4>
+  <table><tr><th>損害の種類</th><th>限度額</th></tr>
+  <tr><td>傷害による損害</td><td>120万円</td></tr>
+  <tr><td>後遺障害（14級）</td><td>75万円</td></tr>
+  <tr><td>後遺障害（12級）</td><td>224万円</td></tr>
+  <tr><td>後遺障害（9級）</td><td>616万円</td></tr>
+  <tr><td>後遺障害（7級）</td><td>1,051万円</td></tr>
+  <tr><td>後遺障害（1級・要介護）</td><td>4,000万円</td></tr>
+  <tr><td>死亡による損害</td><td>3,000万円</td></tr>
+  </table>
+  <div class="help-note">自賠責の限度額を超える損害は、加害者側の任意保険または加害者本人に請求します。自賠責は最低限の補償であり、重大な事故では大幅に不足することがあります。</div>`},
+  {term:'弁護士基準（裁判基準）',body:`<p><strong>弁護士基準（裁判基準）</strong>とは、裁判所が過去の判例を集積して定めた損害算定の基準です。</p>
+  <h4>3つの基準の比較</h4>
+  <table><tr><th>基準</th><th>慰謝料水準</th><th>特徴</th></tr>
+  <tr><td>自賠責基準</td><td>最低</td><td>法律で定められた最低限の基準</td></tr>
+  <tr><td>任意保険基準</td><td>中程度</td><td>各保険会社が独自に設定</td></tr>
+  <tr><td>弁護士基準（裁判基準）</td><td>最高</td><td>判例に基づく。訴訟・弁護士介入で実現しやすい</td></tr>
+  </table>
+  <div class="help-note">「赤い本」（民事交通事故訴訟損害賠償額算定基準・東京地裁）や「青い本」（交通損害関係訴訟・大阪地裁）が実務の基準書として使われています。</div>
+  <p>弁護士に依頼すると、自賠責・任意保険基準より高額の賠償が認められることが多く、弁護士費用を差し引いても手取りが増えるケースが少なくありません。</p>`},
+  {term:'遅延損害金',body:`<p><strong>遅延損害金</strong>とは、交通事故日（不法行為日）から損害賠償金の支払いが完了するまでの間に発生する法定利息（利息相当）のことです。</p>
+  <h4>法定利率</h4>
+  <table><tr><th>事故日</th><th>法定利率</th></tr>
+  <tr><td>令和2年（2020年）4月1日以降</td><td>年3%</td></tr>
+  <tr><td>平成29年（2017年）4月1日〜令和2年3月31日</td><td>年5%（改正前）</td></tr>
+  </table>
+  <div class="help-note">計算式: 損害額 × 3% × 事故日から支払日までの年数<br>例: 損害1,000万円・事故から2年後に解決 → 1,000万 × 3% × 2 = 60万円</div>
+  <p>訴訟になった場合、判決で認容された損害額だけでなく、遅延損害金も一緒に認められます。解決が長引くほど遅延損害金が積み上がるため、加害者側に早期解決のインセンティブがあります。</p>`},
+  {term:'死亡慰謝料と遺族固有慰謝料',body:`<p>死亡事故の慰謝料は、<strong>本人分の慰謝料</strong>と<strong>遺族固有の慰謝料</strong>に分かれます。</p>
+  <h4>本人分（弁護士基準）</h4>
+  <table><tr><th>被害者の立場</th><th>目安金額</th></tr>
+  <tr><td>一家の支柱</td><td>2,800万円</td></tr>
+  <tr><td>母親・配偶者</td><td>2,500万円</td></tr>
+  <tr><td>独身・子供・幼児等</td><td>2,000〜2,500万円</td></tr>
+  </table>
+  <h4>遺族固有分（参考）</h4>
+  <p>父母・配偶者・子は固有の慰謝料請求権を持ちます（民法711条）。実務では本人分の金額に遺族分を含めて計上することが多いです。</p>
+  <ul>
+  <li>配偶者: 200万円程度</li>
+  <li>父母（各）: 100万円程度</li>
+  <li>子（各）: 100万円程度</li>
+  </ul>
+  <div class="help-note">上記の「弁護士基準」の金額は、実務上、遺族固有分を含んだ合計として請求されることが多いです。</div>`},
+  {term:'労働能力喪失率',body:`<p><strong>労働能力喪失率</strong>とは、後遺障害により失われた労働能力の割合を示す数値です。</p>
+  <p>逸失利益の計算に用います: 基礎収入 × <strong>喪失率</strong> × ライプニッツ係数</p>
+  <table><tr><th>等級</th><th>喪失率</th></tr>
+  <tr><td>第1〜3級・要介護1〜2級</td><td>100%（全部喪失）</td></tr>
+  <tr><td>第4級</td><td>92%</td></tr>
+  <tr><td>第7級</td><td>56%</td></tr>
+  <tr><td>第9級</td><td>35%</td></tr>
+  <tr><td>第12級</td><td>14%</td></tr>
+  <tr><td>第14級</td><td>5%</td></tr>
+  </table>
+  <div class="help-note">この割合はあくまで目安であり、具体的な職業・業務内容によって異なる判断がされることがあります。例えば、ピアニストが指の障害（第12級）を負った場合、14%を超える喪失率が認められることもあります。</div>`}
+];
+
+function renderGlossary(){
+  const container = document.getElementById('glossary-list');
+  container.innerHTML = GLOSSARY.map((item,i)=>`
+    <div class="gloss-item">
+      <div class="gloss-header" onclick="toggleGloss(${i})">
+        <span>${item.term}</span>
+        <span id="gloss-arrow-${i}" style="font-size:18px;color:var(--text-muted)">+</span>
+      </div>
+      <div class="gloss-body" id="gloss-body-${i}">
+        ${item.body}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleGloss(i){
+  const body = document.getElementById('gloss-body-'+i);
+  const arrow = document.getElementById('gloss-arrow-'+i);
+  const open = body.classList.toggle('open');
+  arrow.textContent = open ? '−' : '+';
+}
+
+// ============================================================
+// MODALS
+// ============================================================
+const HELP = {
+  overview:{title:'交通事故損害計算について',body:`<p>交通事故の損害賠償額は、<strong>弁護士基準（裁判基準）</strong>で計算するのが最も高額になります。</p>
+  <h4>3つの算定基準</h4>
+  <ol><li>自賠責基準（最低）: 法律で定められた最低限</li><li>任意保険基準（中程度）: 保険会社の独自基準</li><li>弁護士基準（最高）: 判例に基づく裁判所の基準</li></ol>
+  <p>このツールは弁護士基準で計算します。実際の事件では個別の事情によって金額が変わります。</p>`},
+  kashitsu:{title:'過失相殺とは',body:`<p>被害者にも過失がある場合、その割合分だけ損害賠償額が減額されます（民法722条2項）。</p>
+  <p>例: 損害500万円・被害者過失30% → 500万 × (1−30%) = 350万円</p>
+  <div class="help-note">過失割合が0%でも、自分の損害を軽減する努力義務（安全帯・ヘルメット等）を怠った場合に減額されることがあります。</div>`},
+  kiharai:{title:'既払保険金とは',body:`<p>事故後に自賠責保険や任意保険からすでに受け取った金額です。</p>
+  <p>最終請求額 = 過失相殺後の損害額 − 既払保険金</p>
+  <div class="help-note">仮払いを受けた場合や自賠責から直接支払いを受けた場合は、ここに入力してください。</div>`},
+  chiryohi:{title:'治療費について',body:`<p>病院・整骨院・薬局などでかかった費用の実費です。</p>
+  <h4>証拠書類</h4><ul><li>診療費（診療報酬明細書・領収書）</li><li>薬代の領収書</li><li>整骨院の通院証明書・領収書</li></ul>
+  <div class="help-note">健康保険を使って治療した場合、健保が立て替えた3割分（実際に支払った自己負担額ではなく全額）が損害として認められる場合があります。弁護士に相談してください。</div>`},
+  nyuinzappi:{title:'入院雑費について',body:`<p>入院中に必要となる雑費（タオル・日用品・通信費等）です。</p>
+  <table><tr><th>基準</th><th>金額</th></tr>
+  <tr><td>弁護士基準</td><td>1,500円/日</td></tr>
+  <tr><td>自賠責基準</td><td>1,100円/日</td></tr>
+  </table>
+  <div class="help-note">領収書がなくても認められます（定額）。実費が日額を超える場合は実費を主張することもあります。</div>`},
+  kotsuhi:{title:'通院交通費について',body:`<p>通院にかかった交通費の実費です。</p>
+  <h4>交通手段別の計算</h4>
+  <ul>
+  <li>公共交通機関: 往復の実費 × 通院日数</li>
+  <li>自家用車: 片道距離(km) × 2 × 15円 × 通院日数（ガソリン代目安）</li>
+  <li>タクシー: 原則として認められない（やむを得ない事情がある場合を除く）</li>
+  </ul>
+  <div class="help-note">交通費の領収書・IC乗車履歴・走行距離の記録を保存しておきましょう。</div>`},
+  kyugyо:{title:'休業損害について',body:`<p>交通事故の怪我のために働けなかった期間の収入損害です。</p>
+  <h4>給与所得者の計算</h4>
+  <p>日額 = 事故前3ヶ月の収入 ÷ 稼働日数（または ÷ 90）<br>休業損害 = 日額 × 休業日数</p>
+  <h4>自営業者の計算</h4>
+  <p>日額 = （所得金額 + 青色申告特別控除額）÷ 365<br>休業損害 = 日額 × 休業日数</p>
+  <h4>家事従事者（専業主婦・主夫）の計算</h4>
+  <p>賃金センサス（女性全年齢平均賃金）を基礎に認められます。実際の収入がなくても請求できます。</p>
+  <div class="help-note">証拠: 給与所得者は給与明細・源泉徴収票。自営業は確定申告書・帳簿。主婦は医師の診断書・家事不能期間の証明。</div>`},
+  nyutsuin_isharyo:{title:'入通院慰謝料について',body:`<p>入院・通院したことによる精神的苦痛に対する慰謝料です。</p>
+  <h4>傷病区分</h4>
+  <ul>
+  <li>軽傷: むち打ち（頸椎捻挫）・打撲・擦過傷など</li>
+  <li>重傷: 骨折・脱臼・手術・内臓損傷・頭部外傷など</li>
+  </ul>
+  <h4>端数処理</h4>
+  <p>通院72日（2.4ヶ月）の場合（軽傷・入院なし）:</p>
+  <p>36万 + (53−36)万 × 0.4 = 36 + 6.8 = 42.8万円</p>
+  <div class="help-note">通院実日数と通院期間（開始〜終了の月数）は別物です。月2〜3回しか通院していない場合、実通院日数で按分される場合があります。</div>`},
+  koi_isharyo:{title:'後遺障害慰謝料について',body:`<p>症状固定後に残った後遺症の精神的苦痛に対する慰謝料です。</p>
+  <p>後遺障害等級（1〜14級・要介護1〜2級）によって金額が決まります。</p>
+  <div class="help-note">弁護士基準は自賠責基準の2〜3倍になることが多く、弁護士に依頼することで大幅に増額できる場合があります。</div>`},
+  koi_isshitsu:{title:'後遺障害逸失利益について',body:`<p>後遺障害により将来の労働能力が低下した分の損害です。</p>
+  <div class="help-note">計算式: 基礎収入 × 労働能力喪失率 × ライプニッツ係数（就労可能年数）</div>
+  <p>就労可能年数 = 67歳（定年）− 症状固定時年齢（上限49年）</p>
+  <p>67歳を超えて就労していた場合や平均余命まで就労実績がある場合は、例外的に長い期間が認められることもあります。</p>`},
+  kisoshunyuu:{title:'基礎収入の確認方法',body:`<h4>給与所得者</h4><p>源泉徴収票の「支払金額」欄（額面年収）を使います。税引き前の総支給額です。</p>
+  <h4>自営業者</h4><p>確定申告書の「所得金額」①欄 ＋「青色申告特別控除額」④欄を合計します。</p>
+  <h4>主婦・若年者</h4><p>賃金センサス（国が毎年公表する統計）の平均賃金を使います。実際の収入が平均を下回る場合でも認められることがあります。</p>`},
+  kaigo:{title:'将来介護費について',body:`<p>要介護状態（後遺障害1・2級相当）の場合、将来にわたって必要な介護費用を損害として請求できます。</p>
+  <h4>計算式</h4>
+  <p>将来介護費 = 日額介護費 × 365日 × ライプニッツ係数（平均余命年数）</p>
+  <h4>日額の目安</h4>
+  <ul>
+  <li>職業的介護人（施設・ヘルパー等）: 実費相当</li>
+  <li>近親者による介護: 日額8,000円程度（裁判例の目安）</li>
+  </ul>`},
+  death_isshitsu:{title:'死亡逸失利益について',body:`<p>被害者が生存していれば将来稼いだはずの収入から、生活費を差し引いた損害です。</p>
+  <div class="help-note">死亡逸失利益 = 基礎収入 × (1 − 生活費控除率) × ライプニッツ係数</div>
+  <h4>生活費控除率</h4>
+  <table><tr><th>属性</th><th>控除率</th></tr>
+  <tr><td>一家の支柱（被扶養者2人以上）</td><td>30%</td></tr>
+  <tr><td>一家の支柱（被扶養者1人）</td><td>40%</td></tr>
+  <tr><td>専業主婦・女性</td><td>30%</td></tr>
+  <tr><td>独身男性</td><td>50%</td></tr>
+  </table>
+  <p>被扶養者が多いほど控除率が低く（逸失利益が高く）なります。</p>`},
+  death_isharyo:{title:'死亡慰謝料について',body:`<p>被害者が死亡したことによる精神的苦痛（本人分＋遺族固有分）に対する慰謝料です。</p>
+  <table><tr><th>被害者の立場</th><th>弁護士基準</th></tr>
+  <tr><td>一家の支柱</td><td>2,800万円</td></tr>
+  <tr><td>母親・配偶者</td><td>2,500万円</td></tr>
+  <tr><td>独身・子供・幼児等</td><td>2,000〜2,500万円</td></tr>
+  </table>
+  <div class="help-note">実務上は本人分の慰謝料に遺族固有の慰謝料（配偶者200万・父母各100万・子各100万）を含めて計上することが多いです。上記の弁護士基準額はその合計額を含みます。</div>`},
+  sosai:{title:'葬祭費について',body:`<p>葬儀・告別式・納骨などにかかった費用です。</p>
+  <p>弁護士基準の目安: <strong>150万円</strong></p>
+  <p>実費が150万円を超える場合は、実費相当額が認められることもありますが、通常150万円が上限の目安とされます。</p>
+  <div class="help-note">領収書・見積書を証拠として保存してください。</div>`},
+  bengoshi:{title:'弁護士費用（損害として請求）について',body:`<p>訴訟となった場合、認容された損害額（認容額）の約10%を弁護士費用として損害に計上することができます（最高裁判例）。</p>
+  <div class="help-note">示談段階では認められないことがほとんどです。訴訟（裁判）になった場合のみ請求できます。</div>
+  <h4>注意点</h4><ul>
+  <li>10%はあくまで目安。裁判所が事案に応じて決定します</li>
+  <li>実際の弁護士費用とは別（弁護士との契約で定める報酬は別途発生します）</li>
+  <li>弁護士費用特約（任意保険）がある場合は保険から支払われます</li>
+  </ul>`},
+  chien:{title:'遅延損害金について',body:`<p>不法行為（事故日）から支払完了まで、損害額に対して年率3%の法定利率で計算される利息相当額です。</p>
+  <div class="help-note">令和2年（2020年）4月1日以降の事故: 年3%<br>改正前（令和2年3月31日以前）: 年5%</div>
+  <h4>計算式</h4>
+  <p>遅延損害金 = 損害額 × 3% × 事故日からの年数</p>
+  <p>例: 損害1,000万円・3年かかった場合 → 1,000万 × 3% × 3 = 90万円</p>
+  <p>交渉が長引けば長引くほど遅延損害金が増えるため、加害者側には早期解決のインセンティブが生まれます。</p>`},
+  leibniz_what:{title:'ライプニッツ係数とは',body:`<p>将来受け取るべきだった収入を、「現在価値」に割り引くための係数です。</p>
+  <p>例: 今すぐもらえる100万円と1年後にもらえる100万円は価値が違います（銀行に預ければ利息がつく）。</p>
+  <p>裁判所は年利3%複利で割り引くことを採用しています。</p>
+  <div class="help-note">n年分のライプニッツ係数 = Σ 1/(1.03)^k （k=1〜n）<br>例: 25年 → 17.413</div>
+  <h4>具体例</h4>
+  <p>年収500万円の人が25年間働けなくなった場合:</p>
+  <ul>
+  <li>単純合計: 500万 × 25年 = 12,500万円</li>
+  <li>ライプニッツ係数適用: 500万 × 17.413 = 8,706.5万円（差額3,793.5万円が中間利息）</li>
+  </ul>`}
+};
+
+function showHelp(key){
+  const data = HELP[key];
+  if(!data) return;
+  document.getElementById('modal-title').textContent = data.title;
+  document.getElementById('modal-body').innerHTML = data.body;
+  document.getElementById('help-modal').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('help-modal').classList.remove('open');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', function(){
+  renderIsharyoTable(ISHARYO_LIGHT, 'light-table-wrap');
+  renderIsharyoTable(ISHARYO_HEAVY, 'heavy-table-wrap');
+  renderKoishogaiTable();
+  renderLeibnizTable();
+  renderGlossary();
+  generateQuiz();
+  updateJobFields();
+  updateDeathFields();
+  // Set today as default calc date
+  const today = new Date().toISOString().slice(0,10);
+  const calcDateEl = document.getElementById('i-calc-date');
+  if(calcDateEl) calcDateEl.value = today;
+});
+</script>
+</body>
+</html>
