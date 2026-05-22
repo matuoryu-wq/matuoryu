@@ -98,6 +98,12 @@
     .quiz-answer{display:none;background:var(--success-light);border:1.5px solid var(--success-border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
     .quiz-answer.open{display:block}
     .quiz-step{font-size:13px;line-height:1.85;margin-bottom:8px}
+    .mode-btn{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--text-muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+    .mode-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .doc-box{background:#EEF7F1;border:1px solid var(--success-border);border-radius:7px;padding:8px 12px;margin-top:10px;font-size:12px;color:#2D5E3A;line-height:1.65}
+    .ins-box{background:#FBF5EC;border:1px solid #F0C070;border-radius:7px;padding:8px 12px;margin-top:8px;font-size:12px;color:#7A4A1E;line-height:1.65}
+    .btn-add{padding:7px 14px;background:#fff;color:var(--primary);border:1.5px dashed var(--primary);border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+    .btn-add:hover{background:var(--primary-light)}
     .quiz-formula{font-family:'Courier New',monospace;font-size:12px;background:#EDE5D8;padding:8px 12px;border-radius:6px;margin:6px 0;line-height:1.8;word-break:break-all}
     .chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
     .chip-light{background:#DBEAFE;color:#1D4ED8}
@@ -117,10 +123,8 @@
 </header>
 <nav class="tabs">
   <button class="tab-btn active" onclick="switchTab('keisan',this)">損害計算</button>
-  <button class="tab-btn" onclick="switchTab('isharyo',this)">慰謝料表</button>
-  <button class="tab-btn" onclick="switchTab('leibniz',this)">ライプニッツ係数表</button>
+  <button class="tab-btn" onclick="switchTab('shiryo',this)">資料</button>
   <button class="tab-btn" onclick="switchTab('quiz',this)">計算問題</button>
-  <button class="tab-btn" onclick="switchTab('glossary',this)">用語解説</button>
 </nav>
 <div class="container">
 
@@ -133,12 +137,23 @@
 
   <!-- 共通入力 -->
   <div class="card">
-    <div class="card-title">事故種別・共通情報</div>
+    <div class="card-title">事故種別・基本情報</div>
     <div class="section-toggle">
       <button class="toggle-btn active" onclick="setCaseType('injury',this)">傷害のみ（後遺障害なし）</button>
       <button class="toggle-btn" onclick="setCaseType('sequela',this)">後遺障害あり</button>
       <button class="toggle-btn" onclick="setCaseType('death',this)">死亡事故</button>
     </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>事故発生日</label>
+        <input type="date" id="c-jiko-date" onchange="calcTreatPeriod()">
+      </div>
+      <div class="form-group">
+        <label>症状固定日 <button class="help-btn" onclick="showHelp('shojoKotei')">詳しく</button></label>
+        <input type="date" id="c-kotei-date" onchange="calcTreatPeriod()">
+      </div>
+    </div>
+    <div id="c-period-display" style="font-size:13px;color:var(--text-muted);margin-bottom:10px;min-height:16px"></div>
     <div class="form-row">
       <div class="form-group">
         <label>被害者の過失割合 <button class="help-btn" onclick="showHelp('kashitsu')">詳しく</button></label>
@@ -155,10 +170,26 @@
   <div id="section-injury" class="case-section active">
     <div class="card">
       <div class="card-title">治療費 <button class="help-btn" onclick="showHelp('chiryohi')">詳しく</button></div>
-      <div class="form-group">
-        <label>実費（万円）</label>
-        <div class="input-wrap"><input type="number" id="i-chiryohi" placeholder="例：50" min="0"><span class="unit">万円</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="mode-btn active" id="t-mode-total" onclick="setTreatMode('total')">合計入力</button>
+        <button class="mode-btn" id="t-mode-monthly" onclick="setTreatMode('monthly')">月別入力（病院名別）</button>
       </div>
+      <div id="treat-total-mode">
+        <div class="form-group">
+          <label>治療費合計（万円）</label>
+          <div class="input-wrap"><input type="number" id="i-chiryohi" placeholder="例：50" min="0" oninput="syncTreatTotal()"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <div id="treat-monthly-mode" style="display:none">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px">
+          <thead><tr><th style="text-align:left;padding:4px 6px;background:#EDE5D8;border-bottom:2px solid #C8A882">月</th><th style="text-align:left;padding:4px 6px;background:#EDE5D8;border-bottom:2px solid #C8A882">病院・医療機関名</th><th style="text-align:right;padding:4px 6px;background:#EDE5D8;border-bottom:2px solid #C8A882">金額（万円）</th><th style="padding:4px;background:#EDE5D8;border-bottom:2px solid #C8A882"></th></tr></thead>
+          <tbody id="treat-rows"></tbody>
+        </table>
+        <button class="btn-add" onclick="addTreatRow()">＋ 月・病院を追加</button>
+        <div style="margin-top:10px;font-weight:700;font-size:14px">合計: <span id="treat-monthly-total" style="color:var(--primary)">0万円</span></div>
+      </div>
+      <div class="doc-box">📄 必要書類: 診療報酬明細書（各医療機関の右下「上記金額」欄）、領収書 ／ ⚠️ 整骨院通院は医師の指示・同意書が必要</div>
+      <div class="ins-box">🏥 保険: 自賠責傷害限度120万円（治療費・休業損害・慰謝料等の合計上限）。健康保険での受診も可能。整骨院等への任意保険一括払いには注意が必要。</div>
     </div>
 
     <div class="card">
@@ -172,10 +203,44 @@
 
     <div class="card">
       <div class="card-title">通院交通費 <button class="help-btn" onclick="showHelp('kotsuhi')">詳しく</button></div>
-      <div class="form-group">
-        <label>実費（万円）— 公共交通機関の場合: 往復×通院日数。自家用車: 距離×2×15円×通院日数</label>
-        <div class="input-wrap"><input type="number" id="i-kotsuhi" placeholder="例：2" min="0"><span class="unit">万円</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="mode-btn active" id="kt-mode-total" onclick="setKotsuMode('total')">総額入力</button>
+        <button class="mode-btn" id="kt-mode-calc" onclick="setKotsuMode('calc')">計算入力</button>
       </div>
+      <div id="kotsu-total-mode">
+        <div class="form-group">
+          <label>通院交通費合計（万円）</label>
+          <div class="input-wrap"><input type="number" id="i-kotsuhi" placeholder="例：2" min="0"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <div id="kotsu-calc-mode" style="display:none">
+        <div class="form-group" style="margin-bottom:10px">
+          <label>交通手段</label>
+          <select id="kt-type" onchange="updateKotsuCalc()">
+            <option value="public">公共交通機関（電車・バス）</option>
+            <option value="car">自家用車</option>
+            <option value="taxi">タクシー</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group" id="kt-fare-group">
+            <label id="kt-fare-label">往復運賃（円）</label>
+            <div class="input-wrap"><input type="number" id="kt-fare" placeholder="例：820" min="0" oninput="calcKotsuAuto()"><span class="unit">円</span></div>
+          </div>
+          <div class="form-group" id="kt-dist-group" style="display:none">
+            <label>片道距離（km）</label>
+            <div class="input-wrap"><input type="number" id="kt-dist" placeholder="例：5" min="0" step="0.1" oninput="calcKotsuAuto()"><span class="unit">km</span></div>
+          </div>
+          <div class="form-group">
+            <label>通院日数（実日数）</label>
+            <div class="input-wrap"><input type="number" id="kt-days" placeholder="例：60" min="0" oninput="calcKotsuAuto()"><span class="unit">日</span></div>
+          </div>
+        </div>
+        <div id="kt-result" style="font-size:13px;color:var(--primary);font-weight:700;margin-top:6px"></div>
+        <input type="hidden" id="kt-calc-val" value="0">
+      </div>
+      <div class="doc-box">📄 必要書類: 交通費領収書（公共交通）、通院記録（通院日の確認） ／ 自家用車は距離計算のため領収書不要</div>
+      <div class="ins-box">🏥 タクシーは原則実費だが、身体障害・公共交通不便地域等、必要性が認められる場合に限る。</div>
     </div>
 
     <div class="card">
@@ -232,6 +297,8 @@
           <div class="input-wrap"><input type="number" id="i-other-kyugyo" placeholder="0" min="0"><span class="unit">万円</span></div>
         </div>
       </div>
+      <div class="doc-box">📄 必要書類: 【給与所得者】休業損害証明書（勤務先作成）・給与明細書3ヶ月分・源泉徴収票 ／ 【自営業者】確定申告書（所得金額①欄＋青色申告特別控除④）・通帳コピー ／ 【主婦・主夫】戸籍謄本・住民票</div>
+      <div class="ins-box">🏥 保険: 自賠責傷害限度120万円内（治療費等と合算）。会社の傷害保険との損益相殺は原則なし（受け取っても請求額から引かれない）。</div>
     </div>
 
     <div class="card">
@@ -258,6 +325,8 @@
         <div class="fh-eq">慰謝料 ＝ 慰謝料表[通院月数][入院月数]（万円）</div>
         <div class="fh-vars">端数がある場合: 整数月の値＋（次の月との差額×端数）で日割り計算<br>例: 通院2.4ヶ月（軽傷・入院なし）→ 36 + (53−36)×0.4 = 42.8万円</div>
       </div>
+      <div class="doc-box">📄 必要書類: 自賠責診断書（入院日数・通院期間・症状固定日）、診療報酬明細書（通院日○印で実日数確認）</div>
+      <div class="ins-box">🏥 保険: 自賠責傷害限度120万円（治療費・休業損害・慰謝料の合計上限）。超過分は任意保険へ請求。入院給付金（生命保険）は損益相殺の対象外。</div>
     </div>
 
     <div class="card" id="card-弁護士費用">
@@ -436,8 +505,10 @@
   <div id="keisan-result" style="display:none;margin-top:14px"></div>
 </div>
 
-<!-- ===== Tab 2: 慰謝料表 ===== -->
-<div id="panel-isharyo" class="panel">
+<!-- ===== Tab 2: 資料 ===== -->
+<div id="panel-shiryo" class="panel">
+<!-- 慰謝料表 -->
+<div id="panel-isharyo-inner">
   <div class="info-banner">
     <p>弁護士基準（赤い本）の入通院慰謝料表です。縦が通院期間、横が入院期間（単位：万円）。</p>
   </div>
@@ -476,8 +547,8 @@
   </div>
 </div>
 
-<!-- ===== Tab 3: ライプニッツ係数表 ===== -->
-<div id="panel-leibniz" class="panel">
+<!-- ライプニッツ係数表 -->
+<div id="panel-leibniz-inner">
   <div class="info-banner">
     <p>年利3%の中間利息控除係数です。逸失利益の現在価値換算に使います。</p>
   </div>
@@ -497,30 +568,25 @@
     <div id="leibniz-table-wrap"></div>
   </div>
 </div>
+</div><!-- end panel-shiryo -->
 
-<!-- ===== Tab 4: 計算問題 ===== -->
+<!-- ===== Tab 3: 計算問題 ===== -->
 <div id="panel-quiz" class="panel">
   <div class="info-banner">
     <p>ランダムな計算問題で実力を試しましょう。解答を見る前に自分で計算してみてください。</p>
   </div>
-  <div id="quiz-container">
-    <div class="card">
-      <div class="quiz-question" id="quiz-q"></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
-        <button class="btn-secondary" onclick="toggleAnswer()">解答を見る / 隠す</button>
-        <button class="btn-calc" style="flex:1" onclick="generateQuiz()">次の問題</button>
+  <div class="card">
+    <button class="btn-calc" onclick="jqNext()" style="margin-bottom:14px">問題を出す / 次の問題</button>
+    <div id="jq-card" style="display:none">
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;margin-bottom:8px" id="jq-type-label"></div>
+      <div class="quiz-question" id="jq-question"></div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn-secondary" onclick="jqShowAnswer()">解答を見る</button>
+        <button class="btn-calc" style="flex:1" onclick="jqNext()">次の問題</button>
       </div>
-      <div class="quiz-answer" id="quiz-a" style="margin-top:14px"></div>
+      <div class="quiz-answer" id="jq-answer"></div>
     </div>
   </div>
-</div>
-
-<!-- ===== Tab 5: 用語解説 ===== -->
-<div id="panel-glossary" class="panel">
-  <div class="info-banner">
-    <p>交通事故損害計算でよく使われる法律用語を解説します。各項目をクリックして展開してください。</p>
-  </div>
-  <div id="glossary-list"></div>
 </div>
 
 </div><!-- .container -->
@@ -671,6 +737,89 @@ function lookupIsharyo(tsuinMonths, nyuinMonths, isLight){
 }
 
 // ============================================================
+// DUAL-MODE INPUT FUNCTIONS
+// ============================================================
+function calcTreatPeriod(){
+  const jiko=document.getElementById('c-jiko-date').value;
+  const kotei=document.getElementById('c-kotei-date').value;
+  const disp=document.getElementById('c-period-display');
+  if(!jiko||!kotei){disp.textContent='';return;}
+  const d1=new Date(jiko),d2=new Date(kotei);
+  const days=Math.round((d2-d1)/(1000*60*60*24));
+  if(days<0){disp.textContent='⚠️ 症状固定日が事故日より前になっています';return;}
+  const months=(days/30).toFixed(1);
+  disp.textContent=`治療期間: ${days}日（約${months}ヶ月）— 通院期間入力の参考にしてください`;
+}
+
+function setTreatMode(mode){
+  document.getElementById('treat-total-mode').style.display=mode==='total'?'block':'none';
+  document.getElementById('treat-monthly-mode').style.display=mode==='monthly'?'block':'none';
+  document.getElementById('t-mode-total').classList.toggle('active',mode==='total');
+  document.getElementById('t-mode-monthly').classList.toggle('active',mode==='monthly');
+}
+
+function addTreatRow(){
+  const tbody=document.getElementById('treat-rows');
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td style="padding:4px 6px"><input type="month" style="width:100%;padding:4px 6px;border:1px solid var(--border);border-radius:5px;font-size:13px" oninput="syncTreatTotal()"></td>
+    <td style="padding:4px 6px"><input type="text" placeholder="病院・医院名" style="width:100%;padding:4px 6px;border:1px solid var(--border);border-radius:5px;font-size:13px"></td>
+    <td style="padding:4px 6px"><input type="number" min="0" step="0.01" placeholder="0" style="width:100%;padding:4px 6px;border:1px solid var(--border);border-radius:5px;font-size:13px;text-align:right" oninput="syncTreatTotal()"></td>
+    <td style="padding:4px"><button onclick="this.closest('tr').remove();syncTreatTotal()" style="background:var(--danger-light);border:1px solid #fca5a5;border-radius:5px;color:var(--danger);cursor:pointer;padding:3px 8px;font-size:12px">削除</button></td>`;
+  tbody.appendChild(tr);
+}
+
+function syncTreatTotal(){
+  let total=0;
+  document.querySelectorAll('#treat-rows tr').forEach(tr=>{
+    const inp=tr.querySelectorAll('input[type=number]')[0];
+    if(inp) total+=parseFloat(inp.value)||0;
+  });
+  document.getElementById('treat-monthly-total').textContent=
+    total.toLocaleString('ja-JP',{maximumFractionDigits:2,minimumFractionDigits:0})+'万円';
+}
+
+function setKotsuMode(mode){
+  document.getElementById('kotsu-total-mode').style.display=mode==='total'?'block':'none';
+  document.getElementById('kotsu-calc-mode').style.display=mode==='calc'?'block':'none';
+  document.getElementById('kt-mode-total').classList.toggle('active',mode==='total');
+  document.getElementById('kt-mode-calc').classList.toggle('active',mode==='calc');
+}
+
+function updateKotsuCalc(){
+  const type=document.getElementById('kt-type').value;
+  const fareGroup=document.getElementById('kt-fare-group');
+  const distGroup=document.getElementById('kt-dist-group');
+  if(type==='car'){
+    fareGroup.style.display='none';
+    distGroup.style.display='block';
+  } else {
+    fareGroup.style.display='block';
+    distGroup.style.display='none';
+  }
+  document.getElementById('kt-fare-label').textContent=
+    type==='taxi'?'タクシー往復料金（円）':'往復運賃（円）';
+  calcKotsuAuto();
+}
+
+function calcKotsuAuto(){
+  const type=document.getElementById('kt-type').value;
+  const days=parseFloat(document.getElementById('kt-days').value)||0;
+  let total=0,formula='';
+  if(type==='car'){
+    const dist=parseFloat(document.getElementById('kt-dist').value)||0;
+    total=(dist*2*15*days)/10000;
+    formula=`片道${dist}km × 2 × 15円/km × ${days}日 = ${Math.round(total*10000).toLocaleString()}円 → ${total.toLocaleString('ja-JP',{maximumFractionDigits:4})}万円`;
+  } else {
+    const fare=parseFloat(document.getElementById('kt-fare').value)||0;
+    total=(fare*days)/10000;
+    const label=type==='taxi'?'タクシー往復':'往復運賃';
+    formula=`${label}${fare.toLocaleString()}円 × ${days}日 = ${Math.round(total*10000).toLocaleString()}円 → ${total.toLocaleString('ja-JP',{maximumFractionDigits:4})}万円`;
+  }
+  document.getElementById('kt-result').textContent=formula;
+  document.getElementById('kt-calc-val').value=total;
+}
+
+// ============================================================
 // UI STATE
 // ============================================================
 let currentCase = 'injury';
@@ -680,7 +829,6 @@ function switchTab(id,btn){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
   btn.classList.add('active');
-  if(id==='quiz') generateQuiz();
 }
 
 function setCaseType(type, btn){
@@ -787,7 +935,16 @@ function calcAll(){
   let errors = [];
 
   // --- 治療費 ---
-  const chiryohi = nv('i-chiryohi');
+  const treatMonthlyMode = document.getElementById('treat-monthly-mode').style.display!=='none';
+  let chiryohi = 0;
+  if(treatMonthlyMode){
+    document.querySelectorAll('#treat-rows tr').forEach(tr=>{
+      const inp=tr.querySelectorAll('input[type=number]')[0];
+      if(inp) chiryohi+=parseFloat(inp.value)||0;
+    });
+  } else {
+    chiryohi = nv('i-chiryohi');
+  }
   items.push({label:'治療費', val:chiryohi, formula:`実費 ${fmtMan(chiryohi)}`});
 
   // --- 入院雑費 ---
@@ -796,8 +953,17 @@ function calcAll(){
   items.push({label:'入院雑費', val:zappi, formula:`${nyuindays}日 × 1,500円 ÷ 10,000 = ${fmtMan(zappi)}`});
 
   // --- 通院交通費 ---
-  const kotsuhi = nv('i-kotsuhi');
-  items.push({label:'通院交通費', val:kotsuhi, formula:`実費 ${fmtMan(kotsuhi)}`});
+  const kotsuCalcMode = document.getElementById('kotsu-calc-mode').style.display!=='none';
+  let kotsuhi = 0, kotsuFormula = '';
+  if(kotsuCalcMode){
+    kotsuhi = parseFloat(document.getElementById('kt-calc-val').value)||0;
+    const ktResult = document.getElementById('kt-result').textContent;
+    kotsuFormula = ktResult || `計算値 ${fmtMan(kotsuhi)}`;
+  } else {
+    kotsuhi = nv('i-kotsuhi');
+    kotsuFormula = `実費 ${fmtMan(kotsuhi)}`;
+  }
+  items.push({label:'通院交通費', val:kotsuhi, formula:kotsuFormula});
 
   // --- 休業損害 ---
   let kyugyo = 0;
@@ -1044,19 +1210,22 @@ function renderLeibnizTable(){
 // ============================================================
 // QUIZ
 // ============================================================
-let currentQuiz = null;
+let jqCurrent = null;
 
-function generateQuiz(){
-  document.getElementById('quiz-a').classList.remove('open');
-  const types = ['A','B','C','D'];
+function jqNext(){
+  const types = ['A','B','C','D','E'];
   const type = types[Math.floor(Math.random()*types.length)];
-  currentQuiz = buildQuiz(type);
-  document.getElementById('quiz-q').innerHTML = currentQuiz.question;
-  document.getElementById('quiz-a').innerHTML = currentQuiz.answer;
+  jqCurrent = buildQuiz(type);
+  const labels = {A:'入通院慰謝料',B:'後遺障害逸失利益',C:'死亡逸失利益',D:'過失相殺',E:'端数処理（日割り計算）'};
+  document.getElementById('jq-type-label').textContent = labels[type]||'計算問題';
+  document.getElementById('jq-question').innerHTML = jqCurrent.question;
+  document.getElementById('jq-answer').innerHTML = jqCurrent.answer;
+  document.getElementById('jq-answer').classList.remove('open');
+  document.getElementById('jq-card').style.display='block';
 }
 
-function toggleAnswer(){
-  document.getElementById('quiz-a').classList.toggle('open');
+function jqShowAnswer(){
+  document.getElementById('jq-answer').classList.add('open');
 }
 
 function rnd(min, max){return Math.floor(Math.random()*(max-min+1))+min;}
@@ -1124,7 +1293,7 @@ function buildQuiz(type){
 = ${fmtMan(result)}</div>
         <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fmtMan(result)}</strong>（${fmtEn(result)}）</div>`
     };
-  } else {
+  } else if(type==='D'){
     const total = rnd(100,500);
     const chiry = rnd(20,80);
     const isharyo = total - chiry;
@@ -1139,6 +1308,30 @@ function buildQuiz(type){
 = ${total}万円 × ${(1-fault/100).toFixed(2)}
 = ${fmtMan(afterFault)}</div>
         <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fmtMan(afterFault)}</strong>（${fmtEn(afterFault)}）</div>`
+    };
+  } else {
+    // Type E: 端数処理（日割り計算）
+    const nyuin = rnd(0,2);
+    const tsuinInt = rnd(1,10);
+    const tsuinFracDays = rnd(1,28);
+    const tsuin = tsuinInt + tsuinFracDays/30;
+    const isLight = Math.random()<0.5;
+    const typeName = isLight?'軽傷（むち打ち・頸椎捻挫）':'重傷（骨折）';
+    const ans = lookupIsharyo(tsuin, nyuin, isLight);
+    const tbl = isLight ? ISHARYO_LIGHT : ISHARYO_HEAVY;
+    const tsuinFloor = Math.floor(tsuin);
+    const tsuinFrac = tsuinFracDays/30;
+    const v1 = tbl[Math.min(tsuinFloor,12)][Math.min(nyuin,6)];
+    const v2 = tbl[Math.min(tsuinFloor+1,12)][Math.min(nyuin,6)];
+    return {
+      question: `<strong>【問題E: 端数処理・日割り計算】</strong><br>被害者（${rnd(25,55)}歳）は<span class="chip ${isLight?'chip-light':'chip-heavy'}">${typeName}</span>で入院${nyuin}ヶ月・通院${tsuinInt}ヶ月${tsuinFracDays}日（通院期間計${fmt2(tsuin)}ヶ月）した。<br>弁護士基準の入通院慰謝料をいくらか。`,
+      answer: `<div class="quiz-step"><strong>解答ステップ:</strong></div>
+        <div class="quiz-step">① 傷病区分: ${typeName} → ${isLight?'軽傷用':'重傷用'}テーブル</div>
+        <div class="quiz-step">② 通院期間 ${tsuinInt}ヶ月${tsuinFracDays}日 → ${fmt2(tsuin)}ヶ月（整数部分: ${tsuinFloor}ヶ月、端数: ${tsuinFracDays}日 ÷ 30 = ${fmt2(tsuinFrac)}）</div>
+        <div class="quiz-step">③ テーブル参照（入院${nyuin}ヶ月列）</div>
+        <div class="quiz-formula">${tsuinFloor}ヶ月: ${v1}万円　${tsuinFloor+1}ヶ月: ${v2}万円</div>
+        <div class="quiz-step">④ 日割り計算: ${v1} + (${v2} − ${v1}) × ${fmt2(tsuinFrac)} = ${v1} + ${fmt2((v2-v1)*tsuinFrac)} = <strong>${fmt2(ans)}万円</strong></div>
+        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fmtMan(ans)}</strong></div>`
     };
   }
 }
@@ -1275,6 +1468,16 @@ function toggleGloss(i){
 // MODALS
 // ============================================================
 const HELP = {
+  shojoKotei:{title:'症状固定日とは',body:`<p><strong>症状固定</strong>とは、これ以上治療を続けても回復が見込めない状態と医師が判断した時点です。</p>
+  <h4>症状固定の重要性</h4>
+  <ul>
+  <li>入通院慰謝料・治療費・休業損害の計算はこの日で終了します</li>
+  <li>症状固定後の残存症状が「後遺障害」として認定の対象になります</li>
+  <li>後遺障害逸失利益の就労可能年数の起点となります（67歳−症状固定時年齢）</li>
+  </ul>
+  <div class="help-note">医師の判断で決まるため、保険会社から一方的に「症状固定」を通告された場合は弁護士に相談してください。実際の症状固定日と異なる場合があります。</div>
+  <h4>事故発生日との関係</h4>
+  <p>事故発生日から症状固定日までの期間が「治療期間」となり、入通院慰謝料表に用いる通院ヶ月数の上限目安となります。</p>`},
   overview:{title:'交通事故損害計算について',body:`<p>交通事故の損害賠償額は、<strong>弁護士基準（裁判基準）</strong>で計算するのが最も高額になります。</p>
   <h4>3つの算定基準</h4>
   <ol><li>自賠責基準（最低）: 法律で定められた最低限</li><li>任意保険基準（中程度）: 保険会社の独自基準</li><li>弁護士基準（最高）: 判例に基づく裁判所の基準</li></ol>
@@ -1404,11 +1607,8 @@ document.addEventListener('DOMContentLoaded', function(){
   renderIsharyoTable(ISHARYO_HEAVY, 'heavy-table-wrap');
   renderKoishogaiTable();
   renderLeibnizTable();
-  renderGlossary();
-  generateQuiz();
   updateJobFields();
   updateDeathFields();
-  // Set today as default calc date
   const today = new Date().toISOString().slice(0,10);
   const calcDateEl = document.getElementById('i-calc-date');
   if(calcDateEl) calcDateEl.value = today;
