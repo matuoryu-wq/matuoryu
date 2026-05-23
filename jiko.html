@@ -302,6 +302,23 @@
     </div>
 
     <div class="card">
+      <div class="card-title">付添費 <button class="help-btn" onclick="showHelp('fusoihi')">詳しく</button></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>入院中の近親者付添日数</label>
+          <div class="input-wrap"><input type="number" id="i-fusoi-nyuin" placeholder="例：10" min="0"><span class="unit">日</span></div>
+        </div>
+        <div class="form-group">
+          <label>通院付添日数</label>
+          <div class="input-wrap"><input type="number" id="i-fusoi-tsuin" placeholder="例：5" min="0"><span class="unit">日</span></div>
+        </div>
+      </div>
+      <div class="bk-formula" style="margin-top:8px">付添費 ＝ 入院付添日数 × 6,500円 ＋ 通院付添日数 × 3,300円（近親者付添・弁護士基準）<br>職業的付添人（ヘルパー等）は実費相当</div>
+      <div class="doc-box" style="margin-top:10px">📄 必要書類: 医師の付添必要性証明書・診断書（入院）、付添の事実を示す記録（通院）</div>
+      <div class="ins-box">🏥 保険: 自賠責傷害120万円の範囲内。付添の必要性が医学的に認められることが条件。</div>
+    </div>
+
+    <div class="card">
       <div class="card-title">入通院慰謝料 <button class="help-btn" onclick="showHelp('nyutsuin_isharyo')">詳しく</button></div>
       <div class="form-group" style="margin-bottom:10px">
         <label>傷病区分</label>
@@ -327,6 +344,46 @@
       </div>
       <div class="doc-box">📄 必要書類: 自賠責診断書（入院日数・通院期間・症状固定日）、診療報酬明細書（通院日○印で実日数確認）</div>
       <div class="ins-box">🏥 保険: 自賠責傷害限度120万円（治療費・休業損害・慰謝料の合計上限）。超過分は任意保険へ請求。入院給付金（生命保険）は損益相殺の対象外。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">車両損害・代車費用</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>修理費（実費・万円）</label>
+          <div class="input-wrap"><input type="number" id="i-sharyo-repair" placeholder="例：30" min="0"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>評価損（修理後の市場価値下落分・万円）</label>
+          <div class="input-wrap"><input type="number" id="i-sharyo-eval" placeholder="例：5" min="0"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label>代車費用（修理期間中・万円）</label>
+        <div class="input-wrap"><input type="number" id="i-sharyo-dasha" placeholder="例：3" min="0"><span class="unit">万円</span></div>
+      </div>
+      <div class="bk-formula">車両損害合計 ＝ 修理費 ＋ 評価損 ＋ 代車費用</div>
+      <div class="doc-box" style="margin-top:10px">📄 必要書類: 修理明細書・見積書・車両価値の証明（中古車査定書等）</div>
+      <div class="ins-box">🏥 保険: 対物賠償（相手任意保険）または車両保険から補償。物的損害は自賠責の対象外。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">損害賠償関係費用</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>診断書取得費用（万円）</label>
+          <div class="input-wrap"><input type="number" id="i-cost-shindan" placeholder="例：0.5" min="0" step="0.1"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>交通事故証明書等（万円）</label>
+          <div class="input-wrap"><input type="number" id="i-cost-shomei" placeholder="例：0.1" min="0" step="0.1"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label>後遺障害診断書作成費用（万円）</label>
+        <div class="input-wrap"><input type="number" id="i-cost-koi-shindan" placeholder="例：0.5" min="0" step="0.1"><span class="unit">万円</span></div>
+      </div>
+      <div class="doc-box" style="margin-top:10px">📄 必要書類: 各証明書・診断書の領収書</div>
     </div>
 
     <div class="card" id="card-弁護士費用">
@@ -438,6 +495,45 @@
         </div>
         <div class="bk-formula">将来介護費 ＝ 日額 × 365日 × ライプニッツ係数（平均余命年数）</div>
       </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">将来治療費</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>年額（万円/年）</label>
+          <div class="input-wrap"><input type="number" id="s-future-treat-annual" placeholder="例：12" min="0"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>想定年数</label>
+          <div class="input-wrap"><input type="number" id="s-future-treat-years" placeholder="例：10" min="0" max="49"><span class="unit">年</span></div>
+        </div>
+      </div>
+      <div class="bk-formula" style="margin-top:4px">将来治療費 ＝ 年額 × ライプニッツ係数（想定年数）</div>
+      <div class="doc-box" style="margin-top:10px">📄 必要書類: 医師の意見書・診断書（将来治療の必要性・期間の見込み）</div>
+      <div class="ins-box">🏥 保険: 将来分は自賠責の対象外。任意保険への請求が必要。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">器具装具費</div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label>購入費用（実費・万円）— 義足・義手・車椅子・コルセット・補聴器等</label>
+        <div class="input-wrap"><input type="number" id="s-kigu" placeholder="例：30" min="0"><span class="unit">万円</span></div>
+      </div>
+      <div class="bk-formula">器具装具費 ＝ 実費（買い替えサイクルを考慮したライプニッツ係数は別途検討）</div>
+      <div class="doc-box" style="margin-top:10px">📄 必要書類: 医師の必要性証明書・領収書・見積書</div>
+      <div class="ins-box">🏥 保険: 自賠責後遺障害限度額の範囲で請求。任意保険への追加請求が必要な場合も。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">家屋・自動車改造費</div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label>改造費用（実費・万円）— バリアフリー改修・手すり・スロープ等</label>
+        <div class="input-wrap"><input type="number" id="s-kaoku" placeholder="例：50" min="0"><span class="unit">万円</span></div>
+      </div>
+      <div class="bk-formula">家屋・自動車改造費 ＝ 実費</div>
+      <div class="doc-box" style="margin-top:10px">📄 必要書類: 医師の意見書（必要性）・リフォーム業者の見積書・領収書</div>
+      <div class="ins-box">🏥 保険: 将来分は任意保険へ。住宅改修と自動車改造は別途計上。</div>
     </div>
   </div><!-- end #section-sequela -->
 
@@ -1004,6 +1100,35 @@ function calcAll(){
   items.push({label:'入通院慰謝料', val:isharyo,
     formula:`${typeName}・通院${tsuinM}ヶ月・入院${nyuinM}ヶ月 → 慰謝料表より ${fmtMan(isharyo)}`});
 
+  // --- 付添費 ---
+  const fusoiNyuin = nv('i-fusoi-nyuin');
+  const fusoiTsuin = nv('i-fusoi-tsuin');
+  const fusoiVal = fusoiNyuin * 6500 / 10000 + fusoiTsuin * 3300 / 10000;
+  if(fusoiVal > 0){
+    items.push({label:'付添費', val:fusoiVal,
+      formula:`入院付添${fusoiNyuin}日 × 6,500円 ＋ 通院付添${fusoiTsuin}日 × 3,300円 = ${fmtMan(fusoiVal)}`});
+  }
+
+  // --- 車両損害・代車費用 ---
+  const sharyoRepair = nv('i-sharyo-repair');
+  const sharyoEval = nv('i-sharyo-eval');
+  const sharyoDasha = nv('i-sharyo-dasha');
+  const sharyoTotal = sharyoRepair + sharyoEval + sharyoDasha;
+  if(sharyoTotal > 0){
+    items.push({label:'車両損害・代車費用', val:sharyoTotal,
+      formula:`修理費${fmtMan(sharyoRepair)} ＋ 評価損${fmtMan(sharyoEval)} ＋ 代車費用${fmtMan(sharyoDasha)} = ${fmtMan(sharyoTotal)}`});
+  }
+
+  // --- 損害賠償関係費用 ---
+  const costShindan = nv('i-cost-shindan');
+  const costShomei = nv('i-cost-shomei');
+  const costKoiShindan = nv('i-cost-koi-shindan');
+  const costTotal = costShindan + costShomei + costKoiShindan;
+  if(costTotal > 0){
+    items.push({label:'損害賠償関係費用', val:costTotal,
+      formula:`診断書${fmtMan(costShindan)} ＋ 証明書${fmtMan(costShomei)} ＋ 後遺障害診断書${fmtMan(costKoiShindan)} = ${fmtMan(costTotal)}`});
+  }
+
   // 後遺障害あり
   let koiIsh = 0, koiIsshitsu = 0, kaigoHi = 0;
   if(currentCase==='sequela'){
@@ -1030,6 +1155,30 @@ function calcAll(){
       kaigoHi = (daily * 365 / 10000) * kaigoLz;
       items.push({label:'将来介護費', val:kaigoHi,
         formula:`${daily.toLocaleString()}円/日 × 365日 × ${kaigoLz}（${kaigoYears}年分） = ${fmtMan(kaigoHi)}`});
+    }
+
+    // 将来治療費
+    const futureTreatAnnual = nv('s-future-treat-annual');
+    const futureTreatYears = nv('s-future-treat-years');
+    if(futureTreatAnnual > 0 && futureTreatYears > 0){
+      const ftLz = getLeibniz(futureTreatYears);
+      const futureTreat = futureTreatAnnual * ftLz;
+      items.push({label:'将来治療費', val:futureTreat,
+        formula:`${fmtMan(futureTreatAnnual)}/年 × ライプニッツ係数${ftLz}（${futureTreatYears}年分） = ${fmtMan(futureTreat)}`});
+    }
+
+    // 器具装具費
+    const kiguVal = nv('s-kigu');
+    if(kiguVal > 0){
+      items.push({label:'器具装具費', val:kiguVal,
+        formula:`実費 ${fmtMan(kiguVal)}`});
+    }
+
+    // 家屋・自動車改造費
+    const kaokuVal = nv('s-kaoku');
+    if(kaokuVal > 0){
+      items.push({label:'家屋・自動車改造費', val:kaokuVal,
+        formula:`実費 ${fmtMan(kaokuVal)}`});
     }
   }
 
@@ -1211,12 +1360,22 @@ function renderLeibnizTable(){
 // QUIZ
 // ============================================================
 let jqCurrent = null;
+let jqMondoMode = 'calc'; // 'calc' | 'qa'
+
+function setJqMode(mode){
+  jqMondoMode = mode;
+  document.getElementById('btn-mode-calc').classList.toggle('active', mode==='calc');
+  document.getElementById('btn-mode-qa').classList.toggle('active', mode==='qa');
+  document.getElementById('jq-calc-section').style.display = mode==='calc' ? 'block' : 'none';
+  document.getElementById('jq-qa-section').style.display = mode==='qa' ? 'block' : 'none';
+  if(mode==='qa') buildQA();
+}
 
 function jqNext(){
-  const types = ['A','B','C','D','E'];
+  const types = ['A','B','C','D','E','F'];
   const type = types[Math.floor(Math.random()*types.length)];
   jqCurrent = buildQuiz(type);
-  const labels = {A:'入通院慰謝料',B:'後遺障害逸失利益',C:'死亡逸失利益',D:'過失相殺',E:'端数処理（日割り計算）'};
+  const labels = {A:'入通院慰謝料',B:'後遺障害逸失利益',C:'死亡逸失利益',D:'付添費計算',E:'端数処理（日割り計算）',F:'自賠責限度額判定'};
   document.getElementById('jq-type-label').textContent = labels[type]||'計算問題';
   document.getElementById('jq-question').innerHTML = jqCurrent.question;
   document.getElementById('jq-answer').innerHTML = jqCurrent.answer;
@@ -1294,20 +1453,39 @@ function buildQuiz(type){
         <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fmtMan(result)}</strong>（${fmtEn(result)}）</div>`
     };
   } else if(type==='D'){
-    const total = rnd(100,500);
-    const chiry = rnd(20,80);
-    const isharyo = total - chiry;
-    const fault = rnd(1,3)*10;
-    const afterFault = total * (1-fault/100);
+    // 付添費計算
+    const nyuinFusoi = rnd(5,30);
+    const tsuinFusoi = rnd(3,20);
+    const fusoiNyuinAmt = nyuinFusoi * 6500;
+    const fusoiTsuinAmt = tsuinFusoi * 3300;
+    const fusoiTotal = fusoiNyuinAmt + fusoiTsuinAmt;
     return {
-      question: `<strong>【問題D: 過失相殺】</strong><br>損害合計<strong>${total}万円</strong>（治療費${chiry}万円、慰謝料${isharyo}万円）に被害者の過失<strong>${fault}%</strong>が認められた場合、過失相殺後の請求額はいくらか。`,
+      question: `<strong>【問題D: 付添費計算】</strong><br>被害者が入院中に近親者が<strong>${nyuinFusoi}日</strong>付き添い、通院時にも<strong>${tsuinFusoi}日</strong>付き添った。<br>弁護士基準（近親者付添費）の付添費合計はいくらか。<br><small>（入院中近親者付添: 1日6,500円、通院付添: 1日3,300円）</small>`,
       answer: `<div class="quiz-step"><strong>解答ステップ:</strong></div>
-        <div class="quiz-step">① 損害合計 = ${chiry}万円（治療費） + ${isharyo}万円（慰謝料） = ${total}万円</div>
-        <div class="quiz-step">② 過失相殺: 被害者過失${fault}% → 損害額に(1−過失割合)を掛ける</div>
-        <div class="quiz-formula">過失相殺後 = ${total}万円 × (1 − ${fault}%)
-= ${total}万円 × ${(1-fault/100).toFixed(2)}
-= ${fmtMan(afterFault)}</div>
-        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fmtMan(afterFault)}</strong>（${fmtEn(afterFault)}）</div>`
+        <div class="quiz-step">① 入院中近親者付添費 = ${nyuinFusoi}日 × 6,500円 = ${fusoiNyuinAmt.toLocaleString()}円</div>
+        <div class="quiz-step">② 通院付添費 = ${tsuinFusoi}日 × 3,300円 = ${fusoiTsuinAmt.toLocaleString()}円</div>
+        <div class="quiz-formula">付添費合計 = ${fusoiNyuinAmt.toLocaleString()}円 ＋ ${fusoiTsuinAmt.toLocaleString()}円
+= ${fusoiTotal.toLocaleString()}円
+= 約${(fusoiTotal/10000).toLocaleString('ja-JP',{maximumFractionDigits:2})}万円</div>
+        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fusoiTotal.toLocaleString()}円（${(fusoiTotal/10000).toLocaleString('ja-JP',{maximumFractionDigits:2})}万円）</strong></div>`
+    };
+  } else if(type==='F'){
+    // 自賠責限度額判定
+    const chiryohi2 = rnd(20,80);
+    const kyugyo2 = rnd(5,40);
+    const isharyo2 = rnd(10,60);
+    const sTotal = chiryohi2 + kyugyo2 + isharyo2;
+    const limit = 120;
+    const over = sTotal > limit;
+    const overAmt = Math.max(0, sTotal - limit);
+    return {
+      question: `<strong>【問題F: 自賠責限度額判定】</strong><br>傷害事故で以下の損害が算定された。<br>・治療費: <strong>${chiryohi2}万円</strong><br>・休業損害: <strong>${kyugyo2}万円</strong><br>・入通院慰謝料: <strong>${isharyo2}万円</strong><br><br>①傷害損害の合計はいくらか。②自賠責保険の傷害限度額（120万円）を超えるか。③超えた場合、超過分はどこに請求するか。`,
+      answer: `<div class="quiz-step"><strong>解答ステップ:</strong></div>
+        <div class="quiz-step">① 傷害損害合計 = ${chiryohi2}万円 ＋ ${kyugyo2}万円 ＋ ${isharyo2}万円 = <strong>${sTotal}万円</strong></div>
+        <div class="quiz-formula">合計 ${sTotal}万円 ${over ? '＞' : '≦'} 自賠責限度額 ${limit}万円</div>
+        <div class="quiz-step">② ${over ? `<strong style="color:var(--danger)">超えます</strong>（超過額: ${overAmt}万円）` : `<strong style="color:var(--success)">超えません</strong>（自賠責の範囲内）`}</div>
+        <div class="quiz-step">③ ${over ? `超過分 <strong>${overAmt}万円</strong>は、加害者側の<strong>任意保険</strong>または<strong>加害者本人</strong>に請求します。` : `全額を自賠責保険に請求できます。`}</div>
+        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: 合計${sTotal}万円・${over?`限度額超過（超過${overAmt}万円→任意保険へ）`:'限度額内（自賠責で全額対応）'}</div>`
     };
   } else {
     // Type E: 端数処理（日割り計算）

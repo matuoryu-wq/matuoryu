@@ -178,6 +178,28 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <button class="help-btn" onclick="showHelp('heir-system')">詳しく</button>
   </div>
 
+  <!-- 被相続人・相続人関係選択 -->
+  <div class="card">
+    <div class="card-title">被相続人と相続人の関係を確認</div>
+    <div class="form-group">
+      <label>被相続人（亡くなった方）</label>
+      <input type="text" id="hisozoku-name" placeholder="例：山田 太郎（父）">
+    </div>
+    <div class="form-group" style="margin-top:10px">
+      <label>あなたの立場</label>
+      <select id="souzoku-position" onchange="updateSozokuPosition()">
+        <option value="">選択してください</option>
+        <option value="haigusha">配偶者</option>
+        <option value="ko1">子（第1順位）</option>
+        <option value="oyako">直系尊属（父母・祖父母）（第2順位）</option>
+        <option value="kyodai">兄弟姉妹（第3順位）</option>
+        <option value="daishuu_mago">代襲相続人（孫）</option>
+        <option value="daishuu_oi">代襲相続人（甥・姪）</option>
+      </select>
+    </div>
+    <div id="sozoku-position-info" class="bk-desc" style="margin-top:8px;display:none"></div>
+  </div>
+
   <!-- Q1: 配偶者 -->
   <div class="card">
     <div class="card-title"><span class="icon" style="background:#dbeafe;color:#1d4ed8">❶</span>配偶者について<button class="help-btn" onclick="showHelp('spouse')">詳しく</button></div>
@@ -313,7 +335,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
     <div id="b-estate-simple-wrap" style="display:none;margin-bottom:12px">
       <label style="font-size:12px;font-weight:600;color:var(--text-muted)">遺産の合計額（プラスの財産）</label>
-      <div class="input-wrap" style="margin-top:4px"><input type="number" id="b-estate-total" placeholder="例：8000" min="0"><span class="unit">万円</span></div>
+      <div class="input-wrap" style="margin-top:4px"><input type="number" id="b-estate-total" placeholder="例：8000" min="0" oninput="syncSozokuToTax()"><span class="unit">万円</span></div>
     </div>
     <div id="b-estate-detail-wrap">
     <div class="form-row">
@@ -364,6 +386,28 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="card-title"><span class="icon" style="background:#fef3c7;color:#d97706">自</span>あなたのポジション</div>
     <div class="q-label" style="font-size:13px;margin-bottom:4px">あなたは亡くなった方とどのような関係ですか？</div>
     <div id="b-pos-grid" class="pos-grid"></div>
+  </div>
+
+  <!-- 特別受益カード -->
+  <div class="card">
+    <div class="card-title">特別受益（民法903条） <button class="help-btn" onclick="showHelp('tokubestu')">詳しく</button></div>
+    <div class="bk-desc">特別受益とは、相続人が被相続人から生前に受けた贈与（学費・住宅購入資金等）や遺贈のことです。みなし相続財産として遺産に持ち戻し、相続分を計算します。</div>
+    <div class="form-group" style="margin-top:10px">
+      <label>特別受益の総額（万円）</label>
+      <div class="input-wrap"><input type="number" id="tokubestu-total" placeholder="例：500" min="0"><span class="unit">万円</span></div>
+    </div>
+    <div class="bk-formula" style="margin-top:8px;font-size:12px;color:var(--text-muted);background:#F7F0E8;border-radius:6px;padding:8px 10px;line-height:1.8">みなし相続財産 = 遺産総額 + 特別受益額<br>特別受益を受けた相続人の取り分 = みなし相続財産 × 相続分 − 特別受益額</div>
+  </div>
+
+  <!-- 寄与分カード -->
+  <div class="card">
+    <div class="card-title">寄与分（民法904条の2） <button class="help-btn" onclick="showHelp('kiyo')">詳しく</button></div>
+    <div class="bk-desc">被相続人の事業を手伝ったり、療養看護をした相続人に認められる特別な取り分です。遺産からまず寄与分を取り出し、残りを法定相続分で分割します。</div>
+    <div class="form-group" style="margin-top:10px">
+      <label>寄与分（認められる金額・万円）</label>
+      <div class="input-wrap"><input type="number" id="kiyo-total" placeholder="例：300" min="0"><span class="unit">万円</span></div>
+    </div>
+    <div class="bk-formula" style="margin-top:8px;font-size:12px;color:var(--text-muted);background:#F7F0E8;border-radius:6px;padding:8px 10px;line-height:1.8">寄与分控除後の遺産 = 遺産総額 − 寄与分<br>寄与者の取り分 = (控除後遺産 × 相続分) + 寄与分</div>
   </div>
 
   <button class="btn-calc" onclick="calcBunkatsu()">法定相続分を計算する →</button>
@@ -1518,6 +1562,16 @@ function nv(id) { const el=document.getElementById(id); return el&&el.value!==''
 function v(id)  { const el=document.getElementById(id); return el?el.value:''; }
 function fmt(n) { return Math.round(n).toLocaleString('ja-JP'); }
 function fmtM(n){ return fmt(n)+'万円'; }
+function fmtOkuMan(val) {
+  // val は万円単位の数値
+  if (val >= 10000) {
+    const oku = Math.floor(val / 10000);
+    const man = Math.round(val % 10000);
+    if (man === 0) return oku + '億円';
+    return oku + '億' + man.toLocaleString('ja-JP') + '万円';
+  }
+  return val.toLocaleString('ja-JP', {maximumFractionDigits: 0}) + '万円';
+}
 function gcd(a,b){ return b===0?a:gcd(b,a%b); }
 function fracStr(r) {
   if (r <= 0) return '0';
@@ -1586,17 +1640,17 @@ function sozokuGenProblem(){
 
 function sozokuRenderQuestion(prob){
   if(prob.type==='A'){
-    return `被相続人Aが死亡。相続人は配偶者B、子C（<strong>${prob.n}人</strong>）。遺産総額 <strong>${prob.isan}万円</strong>。<br><br>各相続人の法定相続分の取得額はいくらか。`;
+    return `被相続人Aが死亡。相続人は配偶者B、子C（<strong>${prob.n}人</strong>）。遺産総額 <strong>${fmtOkuMan(prob.isan)}</strong>。<br><br>各相続人の法定相続分の取得額はいくらか。`;
   }else if(prob.type==='B'){
-    return `被相続人Aが死亡（子なし）。相続人は配偶者B、父C。遺産 <strong>${prob.isan}万円</strong>。<br><br>各相続人の取得額は？`;
+    return `被相続人Aが死亡（子なし）。相続人は配偶者B、父C。遺産 <strong>${fmtOkuMan(prob.isan)}</strong>。<br><br>各相続人の取得額は？`;
   }else if(prob.type==='C'){
-    return `被相続人Aが死亡（子なし・親なし）。相続人は配偶者B、兄弟CとDの2人。遺産 <strong>${prob.isan}万円</strong>。<br><br>各相続人の取得額は？`;
+    return `被相続人Aが死亡（子なし・親なし）。相続人は配偶者B、兄弟CとDの2人。遺産 <strong>${fmtOkuMan(prob.isan)}</strong>。<br><br>各相続人の取得額は？`;
   }else if(prob.type==='D'){
-    return `被相続人Aの遺産 <strong>${prob.isan}万円</strong>。法定相続人は子B・子C（計2人）。Aは全財産を友人Dに遺贈する遺言を残した。<br><br>子Bの遺留分侵害額はいくらか。`;
+    return `被相続人Aの遺産 <strong>${fmtOkuMan(prob.isan)}</strong>。法定相続人は子B・子C（計2人）。Aは全財産を友人Dに遺贈する遺言を残した。<br><br>子Bの遺留分侵害額はいくらか。`;
   }else if(prob.type==='E'){
-    return `相続人は配偶者と子 <strong>${prob.n}人</strong>（合計${prob.n+1}人）。遺産総額 <strong>${prob.isan}万円</strong>。<br><br>① 基礎控除額はいくらか。② 課税遺産総額はいくらか。`;
+    return `相続人は配偶者と子 <strong>${prob.n}人</strong>（合計${prob.n+1}人）。遺産総額 <strong>${fmtOkuMan(prob.isan)}</strong>。<br><br>① 基礎控除額はいくらか。② 課税遺産総額はいくらか。`;
   }else{
-    return `被相続人Aの法定相続人は子B（既死亡）と子C。Bには子D・Eがいる。遺産 <strong>${prob.isan}万円</strong>。<br><br>各人の取得額は？`;
+    return `被相続人Aの法定相続人は子B（既死亡）と子C。Bには子D・Eがいる。遺産 <strong>${fmtOkuMan(prob.isan)}</strong>。<br><br>各人の取得額は？`;
   }
 }
 

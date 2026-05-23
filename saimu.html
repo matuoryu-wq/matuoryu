@@ -184,44 +184,18 @@
   <p>任意整理・個人再生・自己破産の教育・計算ツール（弁護士・一般の方向け）</p>
 </header>
 <nav class="tabs">
-  <button class="tab-btn active" onclick="switchTab('nini',this)">任意整理</button>
+  <button class="tab-btn active" onclick="switchTab('hasan',this)">自己破産</button>
   <button class="tab-btn" onclick="switchTab('kojin',this)">個人再生</button>
-  <button class="tab-btn" onclick="switchTab('hasan',this)">自己破産</button>
+  <button class="tab-btn" onclick="switchTab('nini',this)">任意整理</button>
   <button class="tab-btn" onclick="switchTab('hinin',this)">否認対象行為</button>
-  <button class="tab-btn" onclick="switchTab('smondai',this)">📝 計算問題</button>
+  <button class="tab-btn" onclick="switchTab('smondai',this)">計算問題</button>
 </nav>
 <div class="container">
 
   <!-- ===== Tab1: 任意整理 ===== -->
-  <div id="panel-nini" class="panel active">
+  <div id="panel-nini" class="panel">
     <div class="info-banner">
       <p>任意整理とは、弁護士・司法書士が債権者と個別に交渉し、利息をカットして元本（または減額分）を分割払いにする手続きです。裁判所は関与しません。</p>
-    </div>
-
-    <!-- メリット・デメリット -->
-    <div class="card">
-      <div class="card-title"><span class="icon icon-primary">概</span>メリット・デメリット</div>
-      <div class="merit-demerit">
-        <div class="merit-col">
-          <h4>メリット</h4>
-          <ul>
-            <li>裁判所を使わないため費用・期間が少ない</li>
-            <li>対象債権者を自分で選べる（住宅ローンや保証人付きは外せる）</li>
-            <li>財産を失わない</li>
-            <li>官報に掲載されない</li>
-            <li>信用情報（ブラックリスト）の影響期間が短い（約5年）</li>
-          </ul>
-        </div>
-        <div class="demerit-col">
-          <h4>デメリット</h4>
-          <ul>
-            <li>元本は原則として減額されない</li>
-            <li>債権者の同意が必要（応じない場合は効果なし）</li>
-            <li>過払い金がない場合、返済能力がなければ利用できない</li>
-            <li>信用情報機関に事故情報が登録される（約5年）</li>
-          </ul>
-        </div>
-      </div>
     </div>
 
     <!-- 任意整理の計算 -->
@@ -273,6 +247,32 @@
         <div>
           <strong>銀行（金融機関）は、ローンの借主が任意整理・破産等の手続きに入った場合、その銀行に持つ預金口座の残高とローン残高を相殺（offset）することができます。</strong>
           <br>手続き開始前に、対象となる銀行の口座から預金を別の金融機関に移しておくことが重要です。
+        </div>
+      </div>
+    </div>
+
+    <!-- メリット・デメリット -->
+    <div class="card">
+      <div class="card-title"><span class="icon icon-primary">概</span>メリット・デメリット</div>
+      <div class="merit-demerit">
+        <div class="merit-col">
+          <h4>メリット</h4>
+          <ul>
+            <li>裁判所を使わないため費用・期間が少ない</li>
+            <li>対象債権者を自分で選べる（住宅ローンや保証人付きは外せる）</li>
+            <li>財産を失わない</li>
+            <li>官報に掲載されない</li>
+            <li>信用情報（ブラックリスト）の影響期間が短い（約5年）</li>
+          </ul>
+        </div>
+        <div class="demerit-col">
+          <h4>デメリット</h4>
+          <ul>
+            <li>元本は原則として減額されない</li>
+            <li>債権者の同意が必要（応じない場合は効果なし）</li>
+            <li>過払い金がない場合、返済能力がなければ利用できない</li>
+            <li>信用情報機関に事故情報が登録される（約5年）</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -429,7 +429,7 @@
   </div>
 
   <!-- ===== Tab3: 自己破産 ===== -->
-  <div id="panel-hasan" class="panel">
+  <div id="panel-hasan" class="panel active">
     <div class="info-banner">
       <p>自己破産とは、全財産（一定の自由財産を除く）を換価して債権者に分配し、裁判所から免責決定を受けることで、すべての借金の支払義務が免除される手続きです。</p>
     </div>
