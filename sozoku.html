@@ -1443,6 +1443,41 @@ const HELP = {
     <p><strong>一般障害者：（85歳 − 年齢） × 10万円 × 人数</strong></p>
     <p><strong>特別障害者：（85歳 − 年齢） × 20万円 × 人数</strong></p>
     <div class="help-note">控除しきれない場合は、扶養義務者の税額から差し引くことができます。一般障害者・特別障害者の区別は、障害の程度によります。</div>
+  `},
+  tokubestu: {title:'特別受益とは（民法903条）',body:`
+    <h4>特別受益の概要</h4>
+    <p>被相続人から生前に特別の利益（生前贈与や遺贈）を受けた相続人が持つ「特別受益」は、遺産に持ち戻して相続分を再計算します（持戻し）。これにより相続人間の公平を図ります。</p>
+    <h4>特別受益の対象となる贈与例</h4>
+    <ul>
+      <li>住宅購入資金・土地の贈与</li>
+      <li>開業・学費・留学費用（高額なもの）</li>
+      <li>結婚・養子縁組のための贈与</li>
+      <li>遺言による遺贈</li>
+    </ul>
+    <h4>計算方法</h4>
+    <ol>
+      <li>みなし相続財産 ＝ 遺産総額 ＋ 特別受益の総額</li>
+      <li>各相続人の取り分 ＝ みなし相続財産 × 法定相続分</li>
+      <li>特別受益を受けた人の最終取得額 ＝ ②の金額 − 特別受益額</li>
+    </ol>
+    <div class="help-note">被相続人が「持戻し免除」の意思表示をした場合は、持ち戻しが不要になります（民法903条3項）。また、婚姻期間20年以上の夫婦間の居住用不動産贈与は推定的に免除されます（同条4項）。</div>
+  `},
+  kiyo: {title:'寄与分とは（民法904条の2）',body:`
+    <h4>寄与分の概要</h4>
+    <p>相続人の中に、被相続人の財産の維持・増加に特別の貢献をした方がいる場合、その貢献分を「寄与分」として他の相続人より多く受け取ることができます。</p>
+    <h4>寄与分が認められる例</h4>
+    <ul>
+      <li>被相続人の事業に無償（または著しく低い報酬）で従事した</li>
+      <li>療養看護（特別の貢献があったと認められるもの）</li>
+      <li>被相続人の財産管理や財産の維持に貢献した</li>
+    </ul>
+    <h4>計算方法</h4>
+    <ol>
+      <li>寄与分控除後の遺産 ＝ 遺産総額 − 寄与分</li>
+      <li>各相続人の取り分 ＝ 控除後遺産 × 法定相続分</li>
+      <li>寄与者の最終取得額 ＝ ②の金額 ＋ 寄与分</li>
+    </ol>
+    <div class="help-note">寄与分は相続人全員の協議で決めます。協議が成立しない場合は家庭裁判所に申し立てることができます（民法904条の2第2項）。日常的な家事や看護では認められない場合も多く、「特別の貢献」が必要です。</div>
   `}
 };
 
@@ -1595,6 +1630,44 @@ function showErr(id, msg) {
 // ── 位置グリッド（pos-grid in bunkatsu） ─────────────────────
 const POS_LABELS = {spouse:'配偶者',child:'子',grandchild:'孫（代襲）',parent:'親',sibling:'兄弟姉妹',nephew:'甥・姪（代襲）',observer:'参考として確認'};
 
+// ── 被相続人・相続人ポジション選択 ───────────────────────────
+function updateSozokuPosition() {
+  const pos = document.getElementById('souzoku-position')?.value;
+  const info = document.getElementById('sozoku-position-info');
+  if (!info) return;
+  if (!pos) { info.style.display = 'none'; return; }
+
+  const msgs = {
+    haigusha: `<strong>配偶者</strong>は常に相続人です。<br>
+      法定相続分：子がいれば <strong>1/2</strong>、直系尊属がいれば <strong>2/3</strong>、兄弟姉妹がいれば <strong>3/4</strong>、配偶者のみなら <strong>全部</strong>。<br>
+      遺留分：<strong>あり</strong>（法定相続分 × 1/2）。配偶者の税額軽減により相続税が大幅に軽減される場合があります。`,
+    ko1: `<strong>子（第1順位）</strong>は最優先の相続人です。<br>
+      法定相続分：配偶者がいれば子全員で <strong>1/2</strong> を均等分割。配偶者がいなければ <strong>全額</strong> を均等分割。<br>
+      遺留分：<strong>あり</strong>（法定相続分 × 1/2）。`,
+    oyako: `<strong>直系尊属（父母・祖父母）（第2順位）</strong>は子がいない場合のみ相続人になります。<br>
+      法定相続分：配偶者がいれば <strong>1/3</strong>（複数なら均等分割）、いなければ <strong>全額</strong>。<br>
+      遺留分：<strong>あり</strong>（直系尊属のみの場合は遺留分総体が1/3と通常より少ない）。`,
+    kyodai: `<strong>兄弟姉妹（第3順位）</strong>は子も直系尊属もいない場合のみ相続人になります。<br>
+      法定相続分：配偶者がいれば兄弟姉妹全員で <strong>1/4</strong> を均等分割。いなければ <strong>全額</strong>。<br>
+      遺留分：<strong>なし</strong>。遺言で他の方に全財産が遺された場合、遺留分侵害額請求はできません。`,
+    daishuu_mago: `<strong>代襲相続人（孫）</strong>は、子が被相続人より先に亡くなっていた場合に、その子の代わりに相続します（民法887条2項）。<br>
+      法定相続分：亡くなった親（子）が受けるべき相続分をそのまま引き継ぎ、さらに兄弟がいれば均等分割。<br>
+      遺留分：<strong>あり</strong>（被代襲者と同様）。`,
+    daishuu_oi: `<strong>代襲相続人（甥・姪）</strong>は、兄弟姉妹が被相続人より先に亡くなっていた場合に代わりに相続します（民法889条2項）。<br>
+      法定相続分：亡くなった兄弟姉妹が受けるべき相続分を引き継ぎ、複数なら均等分割。<br>
+      遺留分：<strong>なし</strong>（兄弟姉妹と同様）。甥・姪のさらに子（再代襲）は認められません。`
+  };
+  info.innerHTML = msgs[pos] || '';
+  info.style.display = msgs[pos] ? 'block' : 'none';
+}
+
+// ── 遺産総額を相続税タブへ同期 ───────────────────────────────
+function syncSozokuToTax() {
+  const v = document.getElementById('b-estate-total')?.value;
+  const taxEl = document.getElementById('z-estate');
+  if (v && taxEl && !taxEl.value) taxEl.value = v;
+}
+
 // ── Init ──────────────────────────────────────────────────────
 updateBHeirCount();
 updateZHeirCount();
@@ -1655,57 +1728,68 @@ function sozokuRenderQuestion(prob){
 }
 
 function sozokuRenderAnswer(prob){
+  const kykuBox=(txt)=>`<div class="quiz-step" style="background:#FBF5EC;border-left:3px solid #C8A882;padding:6px 10px;margin-top:10px;font-size:12px">📌 根拠: ${txt}</div>`;
   if(prob.type==='A'){
     const spouse=prob.isan/2;
     const child=spouse/prob.n;
-    return `<div class="quiz-step"><strong>① 配偶者と子の法定相続分の割合</strong><br>
+    return `<div class="quiz-step">配偶者と子がいる場合、民法900条により配偶者が1/2、子全員で残り1/2を均等に分けます。<br><strong>① 配偶者と子の法定相続分の割合</strong><br>
 <span class="quiz-formula">配偶者：1/2（子がいる場合）　子：残り1/2を${prob.n}人で均分</span></div>
 <div class="quiz-step"><strong>② 各取得額</strong><br>
-<span class="quiz-formula">配偶者B = ${prob.isan}万 × 1/2 = ${spouse}万円</span>
-<span class="quiz-formula">子C（1人あたり）= ${prob.isan}万 × 1/2 ÷ ${prob.n} = ${child.toFixed(1)}万円${prob.n>1?' × '+prob.n+'人':''}</span></div>
-<div class="quiz-answer-final">配偶者B：${fmtM(spouse)}　子C各：${fmtM(child)}</div>`;
+<span class="quiz-formula">配偶者B = ${fmtOkuMan(prob.isan)} × 1/2 = ${fmtOkuMan(spouse)}</span>
+<span class="quiz-formula">子C（1人あたり）= ${fmtOkuMan(prob.isan)} × 1/2 ÷ ${prob.n} = ${fmtOkuMan(child)}${prob.n>1?' × '+prob.n+'人':''}</span></div>
+<div class="quiz-step" style="color:#B84040;font-size:12px">⚠ 子が複数いる場合は「子の取り分1/2」をさらに人数で割る点に注意。</div>
+<div class="quiz-answer-final">配偶者B：${fmtOkuMan(spouse)}　子C各：${fmtOkuMan(child)}</div>
+${kykuBox('民法900条（法定相続分）— 配偶者と子が相続人の場合、配偶者1/2・子1/2')}`;
   }else if(prob.type==='B'){
     const spouse=prob.isan*2/3;
     const parent=prob.isan/3;
-    return `<div class="quiz-step"><strong>① 配偶者と直系尊属の法定相続分の割合</strong><br>
+    return `<div class="quiz-step">子がいない場合は直系尊属（父母・祖父母）が第2順位相続人となります（民法900条2号）。配偶者は2/3、直系尊属は1/3です。<br><strong>① 配偶者と直系尊属の法定相続分の割合</strong><br>
 <span class="quiz-formula">配偶者：2/3　直系尊属（親）：1/3（子がいない場合）</span></div>
 <div class="quiz-step"><strong>② 各取得額</strong><br>
-<span class="quiz-formula">配偶者B = ${prob.isan}万 × 2/3 = ${spouse.toFixed(1)}万円</span>
-<span class="quiz-formula">父C = ${prob.isan}万 × 1/3 = ${parent.toFixed(1)}万円</span></div>
-<div class="quiz-answer-final">配偶者B：${fmtM(spouse)}　父C：${fmtM(parent)}</div>`;
+<span class="quiz-formula">配偶者B = ${fmtOkuMan(prob.isan)} × 2/3 = ${fmtOkuMan(spouse)}</span>
+<span class="quiz-formula">父C = ${fmtOkuMan(prob.isan)} × 1/3 = ${fmtOkuMan(parent)}</span></div>
+<div class="quiz-step" style="color:#B84040;font-size:12px">⚠ 子がいる場合と割合が変わる（配偶者1/2→2/3）点を混同しないよう注意。</div>
+<div class="quiz-answer-final">配偶者B：${fmtOkuMan(spouse)}　父C：${fmtOkuMan(parent)}</div>
+${kykuBox('民法900条2号（法定相続分）— 配偶者と直系尊属が相続人の場合、配偶者2/3・直系尊属1/3')}`;
   }else if(prob.type==='C'){
     const spouse=prob.isan*3/4;
     const sib=prob.isan/4/2;
-    return `<div class="quiz-step"><strong>① 配偶者と兄弟姉妹の法定相続分の割合</strong><br>
+    return `<div class="quiz-step">子も直系尊属もいない場合、兄弟姉妹が第3順位相続人となります（民法900条3号）。配偶者は3/4、兄弟姉妹全員で1/4です。<br><strong>① 配偶者と兄弟姉妹の法定相続分の割合</strong><br>
 <span class="quiz-formula">配偶者：3/4　兄弟姉妹：残り1/4を2人で均分（子も親もいない場合）</span></div>
 <div class="quiz-step"><strong>② 各取得額</strong><br>
-<span class="quiz-formula">配偶者B = ${prob.isan}万 × 3/4 = ${spouse}万円</span>
-<span class="quiz-formula">兄弟C・D 各 = ${prob.isan}万 × 1/4 ÷ 2 = ${sib}万円</span></div>
-<div class="quiz-answer-final">配偶者B：${fmtM(spouse)}　兄弟C・D 各：${fmtM(sib)}</div>`;
+<span class="quiz-formula">配偶者B = ${fmtOkuMan(prob.isan)} × 3/4 = ${fmtOkuMan(spouse)}</span>
+<span class="quiz-formula">兄弟C・D 各 = ${fmtOkuMan(prob.isan)} × 1/4 ÷ 2 = ${fmtOkuMan(sib)}</span></div>
+<div class="quiz-step" style="color:#B84040;font-size:12px">⚠ 兄弟姉妹には遺留分がない点も重要（民法1042条1項参照）。</div>
+<div class="quiz-answer-final">配偶者B：${fmtOkuMan(spouse)}　兄弟C・D 各：${fmtOkuMan(sib)}</div>
+${kykuBox('民法900条3号（法定相続分）— 配偶者と兄弟姉妹が相続人の場合、配偶者3/4・兄弟姉妹1/4')}`;
   }else if(prob.type==='D'){
     const iryu=prob.isan/4;
-    return `<div class="quiz-step"><strong>① 遺留分の総体</strong><br>
+    return `<div class="quiz-step">遺留分とは、遺言があっても侵害できない最低限の相続分です（民法1042条）。子が相続人の場合、遺留分の総体は遺産の1/2です。<br><strong>① 遺留分の総体</strong><br>
 <span class="quiz-formula">子が相続人の場合、遺留分の総体 = 遺産 × 1/2</span></div>
 <div class="quiz-step"><strong>② 子B一人の遺留分</strong><br>
 <span class="quiz-formula">子B の遺留分 = 遺産 × 1/2（遺留分総体） × 1/2（法定相続分）<br>
-= ${prob.isan}万 × 1/4 = ${iryu}万円</span></div>
+= ${fmtOkuMan(prob.isan)} × 1/4 = ${fmtOkuMan(iryu)}</span></div>
 <div class="quiz-step"><strong>③ 遺留分侵害額</strong><br>
-<span class="quiz-formula">遺留分 − 実際の取得額（0円）= ${iryu}万円</span></div>
-<div class="quiz-answer-final">子Bの遺留分侵害額：${fmtM(iryu)}</div>`;
+<span class="quiz-formula">遺留分 − 実際の取得額（0円）= ${fmtOkuMan(iryu)}</span></div>
+<div class="quiz-step" style="color:#B84040;font-size:12px">⚠ 遺留分侵害額請求は、侵害を知った日から1年以内に行う必要があります（民法1048条）。</div>
+<div class="quiz-answer-final">子Bの遺留分侵害額：${fmtOkuMan(iryu)}</div>
+${kykuBox('民法1042条（遺留分の帰属及びその割合）・民法1043条（遺留分を算定するための財産の価額）')}`;
   }else if(prob.type==='E'){
     const sNum=prob.n+1;
     const taxable=Math.max(0,prob.isan-prob.control);
-    return `<div class="quiz-step"><strong>① 基礎控除額の計算</strong><br>
+    return `<div class="quiz-step">相続税の基礎控除は「3,000万円 + 600万円 × 法定相続人の数」で計算します（相続税法15条）。これを超えた部分に相続税がかかります。<br><strong>① 基礎控除額の計算</strong><br>
 <span class="quiz-formula">基礎控除 = 3,000万円 + 600万円 × 法定相続人の数<br>
-= 3,000 + 600 × ${sNum}人 = ${prob.control}万円</span></div>
+= 3,000 + 600 × ${sNum}人 = ${fmtOkuMan(prob.control)}</span></div>
 <div class="quiz-step"><strong>② 課税遺産総額</strong><br>
 <span class="quiz-formula">課税遺産総額 = 遺産総額 − 基礎控除<br>
-= ${prob.isan}万 − ${prob.control}万 = ${taxable}万円</span></div>
-<div class="quiz-answer-final">基礎控除額：${fmtM(prob.control)}　課税遺産総額：${fmtM(taxable)}</div>`;
+= ${fmtOkuMan(prob.isan)} − ${fmtOkuMan(prob.control)} = ${fmtOkuMan(taxable)}</span></div>
+<div class="quiz-step" style="color:#B84040;font-size:12px">⚠ 法定相続人の数には相続放棄した人も含めてカウントします（養子は一定の制限あり）。</div>
+<div class="quiz-answer-final">基礎控除額：${fmtOkuMan(prob.control)}　課税遺産総額：${fmtOkuMan(taxable)}</div>
+${kykuBox('相続税法15条（遺産に係る基礎控除）— 3,000万円 + 600万円 × 法定相続人の数')}`;
   }else{
     const cAmt=prob.isan/2;
     const deAmt=prob.isan/4;
-    return `<div class="quiz-step"><strong>① 法定相続分の確認</strong><br>
+    return `<div class="quiz-step">先に死亡した子の代わりに、その直系卑属（子・孫）が相続することを代襲相続といいます（民法887条2項）。代襲者は被代襲者（亡くなった子）が受けるべきだった相続分を取得します。<br><strong>① 法定相続分の確認</strong><br>
 <span class="quiz-formula">子Bは死亡 → 代襲相続（Bの子D・Eがそれぞれ代わりに相続）<br>
 相続人：子C（1人）、孫D（Bの子）、孫E（Bの子）の計3者</span></div>
 <div class="quiz-step"><strong>② 子スロットの割り当て</strong><br>
@@ -1713,10 +1797,12 @@ function sozokuRenderAnswer(prob){
 子C = 1/2（遺産の1/2）<br>
 Bの枠1/2 → D・E 2人で均分 → 各1/4</span></div>
 <div class="quiz-step"><strong>③ 各取得額</strong><br>
-<span class="quiz-formula">子C = ${prob.isan}万 × 1/2 = ${cAmt}万円</span>
-<span class="quiz-formula">孫D = ${prob.isan}万 × 1/4 = ${deAmt}万円</span>
-<span class="quiz-formula">孫E = ${prob.isan}万 × 1/4 = ${deAmt}万円</span></div>
-<div class="quiz-answer-final">子C：${fmtM(cAmt)}　孫D：${fmtM(deAmt)}　孫E：${fmtM(deAmt)}</div>`;
+<span class="quiz-formula">子C = ${fmtOkuMan(prob.isan)} × 1/2 = ${fmtOkuMan(cAmt)}</span>
+<span class="quiz-formula">孫D = ${fmtOkuMan(prob.isan)} × 1/4 = ${fmtOkuMan(deAmt)}</span>
+<span class="quiz-formula">孫E = ${fmtOkuMan(prob.isan)} × 1/4 = ${fmtOkuMan(deAmt)}</span></div>
+<div class="quiz-step" style="color:#B84040;font-size:12px">⚠ 代襲相続の孫は被代襲者（亡B）の相続分を「引き継ぐ」だけ。孫が複数ならその分だけ均等に割る。</div>
+<div class="quiz-answer-final">子C：${fmtOkuMan(cAmt)}　孫D：${fmtOkuMan(deAmt)}　孫E：${fmtOkuMan(deAmt)}</div>
+${kykuBox('民法887条2項（子及びその代襲者等の相続権）— 代襲相続')}`;
   }
 }
 
