@@ -16,7 +16,7 @@
     .container{max-width:720px;margin:0 auto;padding:16px 12px}
     .panel{display:none}.panel.active{display:block}
     .info-banner{background:var(--primary-light);border:1px solid #C8A882;border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
-    .info-banner p{font-size:13px;color:#5D3A1A;flex:1}
+    .info-banner p{font-size:13px;color:#5D3A1A;flex:1;line-height:1.75}
     .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
     .card-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--text)}
     .help-btn{border:1px solid #C8A882;border-radius:20px;background:#FAF3EC;color:var(--text-muted);cursor:pointer;font-size:11px;font-weight:600;flex-shrink:0;margin-left:auto;padding:3px 9px;white-space:nowrap;transition:all .2s}
@@ -45,8 +45,8 @@
     .result-box.warning .result-sub{color:#7A4A1E}
     .formula-header{background:#EDE5D8;border:1px solid #C8A882;border-radius:8px;padding:12px 14px;margin-bottom:14px}
     .formula-header .fh-title{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
-    .formula-header .fh-eq{font-family:'Courier New',monospace;font-size:12px;color:var(--primary);font-weight:700;margin-bottom:4px;word-break:break-all;line-height:1.8}
-    .formula-header .fh-vars{font-size:11.5px;color:var(--text-muted);line-height:2;margin-top:8px;border-top:1px dashed #C8A882;padding-top:8px}
+    .formula-header .fh-eq{font-family:'Courier New',monospace;font-size:12px;color:var(--primary);font-weight:700;margin-bottom:4px;word-break:break-all;line-height:2}
+    .formula-header .fh-vars{font-size:11.5px;color:var(--text-muted);line-height:2.1;margin-top:8px;border-top:1px dashed #C8A882;padding-top:8px}
     .breakdown{background:#F7F0E8;border-radius:8px;border:1px solid var(--border);padding:14px;margin-bottom:14px}
     .breakdown-title{font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
     .bk-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px dashed #DDD5C8;gap:8px;font-size:13px}
@@ -55,7 +55,7 @@
     .bk-total{display:flex;justify-content:space-between;align-items:center;padding:8px 0 4px;gap:8px;font-size:14px;font-weight:700;border-top:2px solid var(--primary);margin-top:6px}
     .bk-total .bk-key{color:var(--primary)}.bk-total .bk-val{color:var(--primary);font-size:16px}
     .bk-formula{font-size:11.5px;color:var(--text-muted);background:#EDE5D8;padding:6px 10px;border-radius:5px;font-family:'Courier New',monospace;margin-top:2px;margin-bottom:6px;line-height:1.8;word-break:break-all}
-    .bk-desc{font-size:12px;color:var(--text);padding:6px 8px;margin:4px 0 6px;background:#fff;border-radius:5px;border-left:3px solid #C8A882;line-height:1.65}
+    .bk-desc{font-size:12px;color:var(--text);padding:6px 8px;margin:4px 0 10px;background:#fff;border-radius:5px;border-left:3px solid #C8A882;line-height:1.75}
     .note{font-size:12px;color:#7A4A1E;background:#FBF5EC;border:1px solid #F0C070;border-radius:7px;padding:8px 12px;margin-top:8px;display:flex;gap:6px}
     .note-icon{flex-shrink:0}
     .err-msg{background:var(--danger-light);border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;color:var(--danger);font-size:13px;margin-bottom:12px}
@@ -669,19 +669,31 @@
 <!-- ===== Tab 3: 計算問題 ===== -->
 <div id="panel-quiz" class="panel">
   <div class="info-banner">
-    <p>ランダムな計算問題で実力を試しましょう。解答を見る前に自分で計算してみてください。</p>
+    <p>ランダムな計算問題・一問一答で実力を試しましょう。<br>計算問題は解答を見る前に自分で計算してみてください。<br>一問一答は○×または3択で素早く知識を確認できます。</p>
   </div>
-  <div class="card">
-    <button class="btn-calc" onclick="jqNext()" style="margin-bottom:14px">問題を出す / 次の問題</button>
-    <div id="jq-card" style="display:none">
-      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;margin-bottom:8px" id="jq-type-label"></div>
-      <div class="quiz-question" id="jq-question"></div>
-      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-        <button class="btn-secondary" onclick="jqShowAnswer()">解答を見る</button>
-        <button class="btn-calc" style="flex:1" onclick="jqNext()">次の問題</button>
+  <div id="jq-mondai-mode-btns" style="display:flex;gap:8px;margin-bottom:14px">
+    <button class="mode-btn active" id="btn-mode-calc" onclick="setJqMode('calc')">計算問題</button>
+    <button class="mode-btn" id="btn-mode-qa" onclick="setJqMode('qa')">一問一答</button>
+  </div>
+
+  <!-- 計算問題セクション -->
+  <div id="jq-calc-section">
+    <div class="card">
+      <button class="btn-calc" onclick="jqNext()" style="margin-bottom:14px">問題を出す / 次の問題</button>
+      <div id="jq-card" style="display:none">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;margin-bottom:8px" id="jq-type-label"></div>
+        <div class="quiz-question" id="jq-question"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn-secondary" onclick="jqShowAnswer()">解答を見る</button>
+          <button class="btn-calc" style="flex:1" onclick="jqNext()">次の問題</button>
+        </div>
+        <div class="quiz-answer" id="jq-answer"></div>
       </div>
-      <div class="quiz-answer" id="jq-answer"></div>
     </div>
+  </div>
+
+  <!-- 一問一答セクション -->
+  <div id="jq-qa-section" class="card" style="display:none">
   </div>
 </div>
 
@@ -1515,6 +1527,76 @@ function buildQuiz(type){
 }
 
 // ============================================================
+// ONE-QUESTION-ONE-ANSWER (QA)
+// ============================================================
+const QA_BANK = [
+  // ○× 保険知識
+  {q:'自賠責保険は任意加入である。', type:'ox', ans:'×', exp:'自賠責保険（自動車損害賠償責任保険）はすべての自動車・バイクに加入が<strong>義務付けられた強制保険</strong>です。未加入での運転は法律違反（1年以下の懲役または50万円以下の罰金）となります。'},
+  {q:'自賠責保険の傷害による損害の限度額は120万円である。', type:'ox', ans:'○', exp:'傷害による損害（治療費・休業損害・慰謝料の合計）の自賠責保険限度額は<strong>120万円</strong>です。超過分は任意保険または加害者本人に請求します。'},
+  {q:'人身傷害補償保険は、被害者自身の過失部分も補償される。', type:'ox', ans:'○', exp:'人身傷害補償保険は、被害者の過失部分を含めた損害額を実損払いする保険です。過失相殺で減額された分も自分の保険から補償されます。'},
+  {q:'搭乗者傷害保険は、実際の損害額に応じた補償がされる。', type:'ox', ans:'×', exp:'搭乗者傷害保険は<strong>定額払い</strong>です。実際の損害額にかかわらず、契約で決められた金額が支払われます（人身傷害補償保険とは異なります）。'},
+  {q:'弁護士費用特約を使うと、保険の等級が下がる。', type:'ox', ans:'×', exp:'弁護士費用特約を使っても<strong>等級には影響しません</strong>。等級が下がるのは車両保険・対人・対物賠償保険等を使った場合です。弁護士費用特約は積極的に活用しましょう。'},
+  {q:'健康保険を使って交通事故の治療をすることができる。', type:'ox', ans:'○', exp:'可能です。ただし、健康保険組合や協会けんぽに<strong>第三者行為による傷病届</strong>を提出する必要があります。健保が立て替えた費用は加害者へ求償されます。'},
+  {q:'生命保険の入院給付金は、損益相殺の対象となる。', type:'ox', ans:'×', exp:'生命保険の入院給付金は<strong>損益相殺の対象外</strong>です。被害者が自分で保険料を支払って積み立てた給付金は、加害者の賠償額から控除されません。'},
+  {q:'交通事故の治療費を健康保険で支払った場合、健保組合は加害者へ求償できる。', type:'ox', ans:'○', exp:'健康保険組合等は、立て替えた給付分について<strong>加害者に対して求償権（代位）</strong>を持ちます。これが第三者行為届の仕組みです。'},
+  // 3択 書類・手続き
+  {q:'後遺障害等級の認定を行う機関はどれか？\nA. 警察\nB. 自賠責保険損害調査事務所（損害保険料率算出機構）\nC. 弁護士会', type:'abc', ans:'B', exp:'後遺障害等級の認定は<strong>損害保険料率算出機構（自賠責保険損害調査事務所）</strong>が行います。書類を審査し、1〜14級（＋要介護1・2級）の認定を行います。'},
+  {q:'給与所得者が休業損害を請求するために必要な書類は？\nA. 確定申告書\nB. 休業損害証明書（勤務先作成）\nC. 医師の意見書', type:'abc', ans:'B', exp:'給与所得者の休業損害請求には<strong>休業損害証明書（勤務先が作成）</strong>が必要です。給与明細・源泉徴収票も合わせて提出します。確定申告書は自営業者向けです。'},
+  {q:'後遺障害申請の「被害者請求」と「事前認定」の主な違いは？\nA. 申請にかかる費用\nB. 書類収集の主導権（誰が書類を集めるか）\nC. 認定される等級の基準', type:'abc', ans:'B', exp:'最大の違いは<strong>主導権</strong>です。被害者請求は被害者側が書類を集め申請します（証拠をコントロールできる）。事前認定は加害者側保険会社に任せます（楽だが内容確認しにくい）。認定基準は同じです。'},
+  {q:'症状固定後に行うべきことは？\nA. 示談書への署名\nB. 後遺障害等級の申請\nC. 自賠責への一括請求', type:'abc', ans:'B', exp:'症状固定後まずすべきことは<strong>後遺障害等級の申請</strong>です。等級が決まってから慰謝料・逸失利益が確定し、その後示談交渉または訴訟に進みます。示談は等級確定後に行うのが原則です。'},
+  {q:'自家用車で通院した場合の交通費の計算基準は？\nA. 実際のガソリン代（レシートで証明）\nB. 片道距離 × 2 × 15円/km\nC. 近くのタクシー代相当額', type:'abc', ans:'B', exp:'自家用車通院の交通費は<strong>片道距離(km) × 2 × 15円/km × 通院日数</strong>で計算します。ガソリン実費ではなくキロ単価方式が一般的な弁護士基準です。'},
+  {q:'死亡事故の自賠責保険限度額は？\nA. 120万円\nB. 3,000万円\nC. 5,000万円', type:'abc', ans:'B', exp:'死亡による損害の自賠責保険限度額は<strong>3,000万円</strong>です。傷害限度額（120万円）とは別枠です。高額の死亡事故では任意保険への追加請求が必要になります。'},
+  {q:'弁護士費用特約の一般的な補償限度額は？\nA. 100万円\nB. 300万円\nC. 500万円', type:'abc', ans:'B', exp:'弁護士費用特約の一般的な補償限度額は<strong>300万円</strong>（弁護士費用）＋法律相談費用10万円が多いです。保険会社・商品によって異なりますので、証券を確認してください。'},
+];
+
+let qaCurrentIdx = -1;
+let qaAnswered = false;
+
+function buildQA(){
+  qaCurrentIdx = Math.floor(Math.random() * QA_BANK.length);
+  qaAnswered = false;
+  const q = QA_BANK[qaCurrentIdx];
+  let btnHtml = '';
+  if(q.type==='ox'){
+    btnHtml = `<button class="btn-secondary" style="min-width:60px;font-size:18px;font-weight:800" onclick="answerQA('○')">○</button>
+               <button class="btn-secondary" style="min-width:60px;font-size:18px;font-weight:800" onclick="answerQA('×')">×</button>`;
+  } else {
+    btnHtml = `<button class="btn-secondary" onclick="answerQA('A')">A</button>
+               <button class="btn-secondary" onclick="answerQA('B')">B</button>
+               <button class="btn-secondary" onclick="answerQA('C')">C</button>`;
+  }
+  document.getElementById('jq-qa-section').innerHTML = `
+    <div class="quiz-question" style="white-space:pre-line">${q.q}</div>
+    <div style="display:flex;gap:10px;margin:12px 0;flex-wrap:wrap" id="qa-btn-area">${btnHtml}</div>
+    <div id="qa-feedback" style="display:none"></div>
+    <div style="margin-top:10px">
+      <button class="btn-calc" onclick="buildQA()" style="margin-top:8px">次の問題</button>
+    </div>`;
+}
+
+function answerQA(choice){
+  if(qaAnswered) return;
+  qaAnswered = true;
+  const q = QA_BANK[qaCurrentIdx];
+  const correct = choice === q.ans;
+  const fb = document.getElementById('qa-feedback');
+  fb.style.display = 'block';
+  fb.innerHTML = `
+    <div class="quiz-answer open" style="margin-top:0">
+      <div style="font-size:20px;font-weight:800;margin-bottom:8px;color:${correct?'var(--success)':'var(--danger)'}">
+        ${correct ? '✓ 正解！' : `✗ 不正解（正解: ${q.ans}）`}
+      </div>
+      <div class="quiz-step">${q.exp}</div>
+    </div>`;
+  // disable buttons
+  document.querySelectorAll('#qa-btn-area button').forEach(b=>{
+    b.disabled = true;
+    if(b.textContent.trim()===q.ans){ b.style.background='#4D7C5A'; b.style.color='#fff'; b.style.borderColor='#4D7C5A'; }
+    else { b.style.background='#eee'; b.style.color='#aaa'; }
+  });
+}
+
+// ============================================================
 // GLOSSARY
 // ============================================================
 const GLOSSARY = [
@@ -1691,6 +1773,19 @@ const HELP = {
   <h4>家事従事者（専業主婦・主夫）の計算</h4>
   <p>賃金センサス（女性全年齢平均賃金）を基礎に認められます。実際の収入がなくても請求できます。</p>
   <div class="help-note">証拠: 給与所得者は給与明細・源泉徴収票。自営業は確定申告書・帳簿。主婦は医師の診断書・家事不能期間の証明。</div>`},
+  fusoihi:{title:'付添費について',body:`<p>入院中または通院時に家族（近親者）が付き添った場合の費用です。</p>
+  <h4>弁護士基準の日額</h4>
+  <table><tr><th>区分</th><th>日額</th></tr>
+  <tr><td>入院中の近親者付添</td><td>6,500円/日</td></tr>
+  <tr><td>通院時の近親者付添</td><td>3,300円/日</td></tr>
+  <tr><td>職業的付添人（ヘルパー等）</td><td>実費相当額</td></tr>
+  </table>
+  <h4>認められる条件</h4>
+  <ul>
+  <li>医師が付添の必要性を認めていること（診断書・意見書）</li>
+  <li>実際に付添がなされた事実の証明</li>
+  </ul>
+  <div class="help-note">重傷・術後・高齢者・小児等の場合に認められやすいです。付添日誌・写真・証明書を用意しましょう。</div>`},
   nyutsuin_isharyo:{title:'入通院慰謝料について',body:`<p>入院・通院したことによる精神的苦痛に対する慰謝料です。</p>
   <h4>傷病区分</h4>
   <ul>
