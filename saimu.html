@@ -192,246 +192,88 @@
 </nav>
 <div class="container">
 
-  <!-- ===== Tab1: 任意整理 ===== -->
-  <div id="panel-nini" class="panel">
-    <div class="info-banner">
-      <p>任意整理とは、弁護士・司法書士が債権者と個別に交渉し、利息をカットして元本（または減額分）を分割払いにする手続きです。裁判所は関与しません。</p>
-    </div>
-
-    <!-- 任意整理の計算 -->
-    <div class="card">
-      <div class="card-title"><span class="icon icon-blue">計</span>任意整理の計算</div>
-      <div class="formula-header">
-        <div class="fh-title">計算式</div>
-        <div class="fh-eq">月額返済額 = 元本合計 ÷ 返済期間（月数）</div>
-        <div class="fh-vars">利息カット後の元本のみを均等返済します。過去の利息は原則免除。</div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>債権者数</label>
-          <select id="nini-creditor-count" onchange="updateCreditors()">
-            <option value="1">1社</option>
-            <option value="2">2社</option>
-            <option value="3">3社</option>
-            <option value="4">4社</option>
-            <option value="5">5社</option>
-            <option value="6">6社</option>
-            <option value="7">7社</option>
-            <option value="8">8社</option>
-            <option value="9">9社</option>
-            <option value="10">10社</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>返済期間</label>
-          <select id="nini-period">
-            <option value="36">36ヶ月（3年）</option>
-            <option value="60" selected>60ヶ月（5年）</option>
-            <option value="84">84ヶ月（7年）</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="nini-creditors-wrap"></div>
-
-      <button class="btn-calc" onclick="calcNini()">計算する</button>
-      <div id="nini-result" style="display:none;margin-top:14px"></div>
-    </div>
-
-    <!-- 相殺（銀行・金融機関） -->
-    <div class="card">
-      <div class="card-title"><span class="icon icon-warn">!</span>銀行口座がある場合の注意点（相殺権）<button class="help-btn" onclick="showModal('sousai')">詳しく</button></div>
-      <div class="note danger" style="margin-top:0">
-        <span class="note-icon">⚠</span>
-        <div>
-          <strong>銀行（金融機関）は、ローンの借主が任意整理・破産等の手続きに入った場合、その銀行に持つ預金口座の残高とローン残高を相殺（offset）することができます。</strong>
-          <br>手続き開始前に、対象となる銀行の口座から預金を別の金融機関に移しておくことが重要です。
-        </div>
-      </div>
-    </div>
-
-    <!-- メリット・デメリット -->
-    <div class="card">
-      <div class="card-title"><span class="icon icon-primary">概</span>メリット・デメリット</div>
-      <div class="merit-demerit">
-        <div class="merit-col">
-          <h4>メリット</h4>
-          <ul>
-            <li>裁判所を使わないため費用・期間が少ない</li>
-            <li>対象債権者を自分で選べる（住宅ローンや保証人付きは外せる）</li>
-            <li>財産を失わない</li>
-            <li>官報に掲載されない</li>
-            <li>信用情報（ブラックリスト）の影響期間が短い（約5年）</li>
-          </ul>
-        </div>
-        <div class="demerit-col">
-          <h4>デメリット</h4>
-          <ul>
-            <li>元本は原則として減額されない</li>
-            <li>債権者の同意が必要（応じない場合は効果なし）</li>
-            <li>過払い金がない場合、返済能力がなければ利用できない</li>
-            <li>信用情報機関に事故情報が登録される（約5年）</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- 手続き比較表 -->
-    <div class="card">
-      <div class="card-title"><span class="icon icon-primary">比</span>手続き比較表</div>
-      <div style="overflow-x:auto">
-        <table class="comp-table">
-          <thead>
-            <tr>
-              <th class="row-label"></th>
-              <th>任意整理</th>
-              <th>個人再生</th>
-              <th>自己破産</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td class="row-label">裁判所</td><td class="good">不要</td><td class="bad">必要</td><td class="bad">必要</td></tr>
-            <tr><td class="row-label">債務減額</td><td class="neutral">原則なし</td><td class="good">大幅圧縮</td><td class="good">免除（免責）</td></tr>
-            <tr><td class="row-label">財産</td><td class="good">維持</td><td class="good">原則維持</td><td class="bad">換価</td></tr>
-            <tr><td class="row-label">収入要件</td><td class="bad">必要</td><td class="bad">必要</td><td class="good">不要</td></tr>
-            <tr><td class="row-label">職業制限</td><td class="good">なし</td><td class="good">なし</td><td class="neutral">手続中あり</td></tr>
-            <tr><td class="row-label">官報掲載</td><td class="good">なし</td><td class="bad">あり</td><td class="bad">あり</td></tr>
-            <tr><td class="row-label">ブラックリスト</td><td class="neutral">約5年</td><td class="bad">約10年</td><td class="bad">約7〜10年</td></tr>
-            <tr><td class="row-label">住宅維持</td><td class="good">可能</td><td class="good">特則あり</td><td class="bad">困難</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== Tab2: 個人再生 ===== -->
-  <div id="panel-kojin" class="panel">
-    <div class="info-banner">
-      <p>個人再生とは、裁判所の監督下で借金を大幅に圧縮（最低弁済額・清算価値・可処分所得基準の最大値まで）し、原則3年で返済する手続きです。</p>
-    </div>
-
-    <!-- メリット・デメリット -->
-    <div class="card">
-      <div class="card-title"><span class="icon icon-primary">概</span>メリット・デメリット</div>
-      <div class="merit-demerit">
-        <div class="merit-col">
-          <h4>メリット</h4>
-          <ul>
-            <li>借金を大幅に圧縮できる（最大で1/5程度）</li>
-            <li>住宅ローン特則により自宅を維持できる可能性がある</li>
-            <li>財産を原則として失わない（ただし清算価値制限あり）</li>
-            <li>自己破産より社会的ダメージが小さい</li>
-            <li>官報には掲載されるが、一般的には気づかれにくい</li>
-          </ul>
-        </div>
-        <div class="demerit-col">
-          <h4>デメリット</h4>
-          <ul>
-            <li>継続した収入（安定した返済能力）が必要</li>
-            <li>清算価値保証原則により、資産が多いと圧縮できない場合がある <button class="help-btn" onclick="showModal('seisan_hosho')">詳しく</button></li>
-            <li>手続きが複雑で時間がかかる（通常6ヶ月〜1年）</li>
-            <li>信用情報機関に事故情報が登録される（約10年）</li>
-            <li>官報に掲載される</li>
-            <li>債権者の多数決（書面決議）が必要な場合がある</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- 弁済額の3基準 -->
-    <div class="card">
-      <div class="card-title"><span class="icon icon-blue">法</span>弁済額の根拠となる3つの基準</div>
-
-      <div class="formula-header">
-        <div class="fh-title">最低弁済額の計算表（民事再生法231条2項）</div>
-        <div class="fh-eq">
-          負債総額 100万円未満 → 全額<br>
-          負債総額 100〜500万円 → 100万円<br>
-          負債総額 500〜1500万円 → 負債総額 × 1/5<br>
-          負債総額 1500〜3000万円 → 300万円<br>
-          負債総額 3000〜5000万円 → 負債総額 × 1/10
-        </div>
-        <div class="fh-vars">※再生計画認可時の負債総額。最大5000万円まで利用可能。</div>
-      </div>
-
-      <div class="formula-header">
-        <div class="fh-title">② 清算価値保証原則（民事再生法231条2項3号）</div>
-        <div class="fh-eq">弁済額 ≥ 清算価値<br>清算価値 = 破産した場合に債権者に分配される金額</div>
-        <div class="fh-vars">趣旨：「破産した場合より少ない額しか払わなくてよい制度にするのは不公平」という考え方から定められています。債権者は少なくとも破産した場合と同じだけ回収できなければなりません。</div>
-      </div>
-
-      <div class="formula-header">
-        <div class="fh-title">③ 可処分所得基準（給与所得者等再生の場合・民事再生法239条）</div>
-        <div class="fh-eq">弁済額 ≥ 可処分所得（直近2年分）× 2年<br>可処分所得 = 年収 − 税金 − 社会保険料 − 生活費（政令基準額）</div>
-        <div class="fh-vars">※小規模個人再生の場合は③の可処分所得基準は不要。給与所得者等再生のみ適用。</div>
-      </div>
-
-      <div class="note success" style="margin-top:0">
-        <span class="note-icon">★</span>
-        <strong>最終的な弁済額 = MAX（① 最低弁済額, ② 清算価値, ③ 可処分所得）</strong>
-      </div>
-    </div>
-
-    <!-- 個人再生 計算 -->
-    <div class="card">
-      <div class="card-title"><span class="icon icon-blue">計</span>個人再生の弁済額計算</div>
-      <button class="help-btn" style="margin-bottom:10px" onclick="applySharedDebt()">← 任意整理の負債合計を反映</button>
-      <div class="form-row">
-        <div class="form-group">
-          <label>負債総額（万円）</label>
-          <div class="input-wrap"><input type="number" id="kojin-debt" placeholder="例：500" min="0"><span class="unit">万円</span></div>
-        </div>
-        <div class="form-group">
-          <label>申請種別</label>
-          <select id="kojin-type" onchange="toggleKojinType()">
-            <option value="shokibo">小規模個人再生</option>
-            <option value="kyuyo">給与所得者等再生</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>資産合計（万円）※現金・預金・保険解約返戻金・不動産等</label>
-          <div class="input-wrap"><input type="number" id="kojin-assets" placeholder="例：100" min="0"><span class="unit">万円</span></div>
-        </div>
-        <div class="form-group">
-          <label>住宅（自宅）の有無</label>
-          <select id="kojin-house" onchange="toggleHouse()">
-            <option value="none">なし</option>
-            <option value="yes">あり（住宅ローン特則を使う）</option>
-          </select>
-        </div>
-      </div>
-      <div id="kojin-house-fields" class="extra-fields" style="display:none">
-        <div class="form-group">
-          <label>住宅ローン残高（万円）※清算価値から住宅評価額を除外するための参考</label>
-          <div class="input-wrap"><input type="number" id="kojin-house-loan" placeholder="例：2000" min="0"><span class="unit">万円</span></div>
-        </div>
-        <div class="note" style="margin-top:8px"><span class="note-icon">ℹ</span>住宅ローン特則を使う場合、自宅の価値は清算価値から除外されます。<button class="help-btn" onclick="showModal('jutaku_toku')">詳しく</button></div>
-      </div>
-      <div id="kojin-kyuyo-fields" class="extra-fields" style="display:none">
-        <div class="form-row">
-          <div class="form-group">
-            <label>年収（万円）</label>
-            <div class="input-wrap"><input type="number" id="kojin-income" placeholder="例：400" min="0"><span class="unit">万円</span></div>
-          </div>
-          <div class="form-group">
-            <label>税・社保合計（万円／年）</label>
-            <div class="input-wrap"><input type="number" id="kojin-tax" placeholder="例：60" min="0"><span class="unit">万円</span></div>
-          </div>
-        </div>
-        <div class="note" style="margin-top:0"><span class="note-icon">ℹ</span>可処分所得 = 年収 − 税金 − 社会保険料 − 政令生活費基準額。政令生活費基準額は単身世帯約180万円が目安です（世帯構成により異なります）。</div>
-      </div>
-      <button class="btn-calc" onclick="calcKojin()">計算する</button>
-      <div id="kojin-result" style="display:none;margin-top:14px"></div>
-    </div>
-  </div>
-
-  <!-- ===== Tab3: 自己破産 ===== -->
+  <!-- ===== Tab1: 自己破産 ===== -->
   <div id="panel-hasan" class="panel active">
     <div class="info-banner">
       <p>自己破産とは、全財産（一定の自由財産を除く）を換価して債権者に分配し、裁判所から免責決定を受けることで、すべての借金の支払義務が免除される手続きです。</p>
+    </div>
+
+    <!-- A. 支払不能状態の判定 -->
+    <div class="card">
+      <div class="card-title">支払不能状態の確認</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>毎月の返済額合計（万円）</label>
+          <div class="input-wrap"><input type="number" id="hasan-monthly-repay" placeholder="例：8" min="0"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>毎月の手取り収入（万円）</label>
+          <div class="input-wrap"><input type="number" id="hasan-monthly-income" placeholder="例：18" min="0"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>毎月の生活費（万円）</label>
+          <div class="input-wrap"><input type="number" id="hasan-monthly-living" placeholder="例：15" min="0"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <button class="btn-calc" onclick="calcHasanStatus()">判定する</button>
+      <div id="hasan-status-result" style="margin-top:12px"></div>
+    </div>
+
+    <!-- B. 自由財産（手元に残せる財産）の目安 -->
+    <div class="card">
+      <div class="card-title">自由財産・手元に残せる財産</div>
+      <div class="bk-desc">破産しても手元に残せる財産（自由財産）があります。以下に入力して確認してください。</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>現金（万円）</label>
+          <div class="input-wrap"><input type="number" id="jiyu-cash" placeholder="例：20" min="0"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>預金（万円）</label>
+          <div class="input-wrap"><input type="number" id="jiyu-deposit" placeholder="例：30" min="0"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>生命保険解約返戻金（万円）</label>
+          <div class="input-wrap"><input type="number" id="jiyu-hoken" placeholder="例：50" min="0"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>退職金見込み×1/8（万円）</label>
+          <div class="input-wrap"><input type="number" id="jiyu-taishoku" placeholder="例：0" min="0"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <button class="btn-calc" onclick="calcJiyuZaisan()">自由財産を確認する</button>
+      <div id="jiyu-result" style="margin-top:12px"></div>
+    </div>
+
+    <!-- C. 配当率（予想）の表示 -->
+    <div class="card">
+      <div class="card-title">債権者への配当率（予想）<button class="help-btn" onclick="showModal('haito')">詳しく</button></div>
+      <div class="bk-desc">破産した場合、財産（破産財団）を全債権者に按分して配当します。</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>破産財団（換価できる資産合計・万円）</label>
+          <div class="input-wrap"><input type="number" id="haito-assets" placeholder="例：100" min="0"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>負債総額（万円）</label>
+          <div class="input-wrap"><input type="number" id="haito-debts" placeholder="例：500" min="0"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <button class="btn-calc" onclick="calcHaito()">配当率を計算</button>
+      <div id="haito-result" style="margin-top:12px"></div>
+    </div>
+
+    <!-- 同時廃止 vs 管財事件 説明 -->
+    <div class="card">
+      <div class="card-title">同時廃止 vs 管財事件</div>
+      <div class="bk-desc">
+        <strong>同時廃止</strong>：財産がほとんどない（20万円以下目安）場合、破産手続開始と同時に廃止される。管財人が選任されないため費用が安く手続きが短い。<br><br>
+        <strong>管財事件</strong>：一定以上の財産がある場合や免責調査が必要な場合。管財人が選任され、財産の換価・配当を行う。弁護士費用が高くなる。
+      </div>
     </div>
 
     <!-- メリット・デメリット -->
@@ -460,7 +302,7 @@
       </div>
     </div>
 
-    <!-- 自由財産 -->
+    <!-- 自由財産 説明表 -->
     <div class="card">
       <div class="card-title"><span class="icon icon-green">自</span>自由財産（破産しても手元に残せるもの）<button class="help-btn" onclick="showModal('jiyu_zaisan')">詳しく</button></div>
       <table class="free-table">
@@ -472,45 +314,6 @@
           <tr><td>自由財産の拡張</td><td>裁判所が認めたもの（東京地裁の目安：合計99万円以内の財産）</td></tr>
         </tbody>
       </table>
-    </div>
-
-    <!-- 同時廃止 vs 管財事件 判定 -->
-    <div class="card">
-      <div class="card-title"><span class="icon icon-blue">判</span>同時廃止 vs. 管財事件の判定</div>
-      <button class="help-btn" style="margin-bottom:10px" onclick="applySharedDebt()">← 任意整理の負債合計を反映</button>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">破産手続には「同時廃止」と「管財事件」の2種類があります。財産状況・免責不許可事由の有無によって決まります。</p>
-      <div class="form-row">
-        <div class="form-group">
-          <label>財産総額の目安（万円）</label>
-          <div class="input-wrap"><input type="number" id="hasan-assets" placeholder="例：50" min="0"><span class="unit">万円</span></div>
-        </div>
-        <div class="form-group">
-          <label>収入の種類</label>
-          <select id="hasan-income-type">
-            <option value="kyuyo">給与所得者</option>
-            <option value="jieiyo">自営業</option>
-            <option value="none">無収入</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>浪費・ギャンブルの有無</label>
-          <select id="hasan-gamble">
-            <option value="none">なし</option>
-            <option value="yes">あり（申立前に多額の浪費・ギャンブルがある）</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>法人役員かどうか</label>
-          <select id="hasan-yakuin">
-            <option value="no">役員ではない</option>
-            <option value="yes">法人の役員・元役員</option>
-          </select>
-        </div>
-      </div>
-      <button class="btn-calc" onclick="calcHasan()">判定する</button>
-      <div id="hasan-result" style="display:none;margin-top:14px"></div>
     </div>
 
     <!-- 非免責債権 -->
