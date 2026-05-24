@@ -1936,6 +1936,7 @@ let qaAnswered = false;
 let qaFilteredList = [];
 let qaPosition = 0;
 let selectedCat = '';
+let qaCurrentOptMap = null; // display letter → original letter
 
 function getQACat(idx){
   const q = QA_BANK[idx];
@@ -2035,10 +2036,25 @@ function buildQA(pos){
   const total = qaFilteredList.length;
   const num = qaPosition + 1;
   let btnHtml = '';
+  let displayQ = q.q;
+  qaCurrentOptMap = null;
   if(q.type==='ox'){
     btnHtml = `<button class="btn-secondary" style="min-width:60px;font-size:18px;font-weight:800" onclick="answerQA('○')">○</button>
                <button class="btn-secondary" style="min-width:60px;font-size:18px;font-weight:800" onclick="answerQA('×')">×</button>`;
   } else {
+    // Parse stem + options, shuffle display order
+    const optRe = /^([\s\S]*?)\nA\. ([\s\S]*?)\nB\. ([\s\S]*?)\nC\. ([\s\S]*)$/;
+    const pm = q.q.match(optRe);
+    if(pm){
+      const stem = pm[1];
+      const origOpts = {A: pm[2], B: pm[3], C: pm[4]};
+      const letters = ['A','B','C'];
+      // Fisher-Yates shuffle
+      for(let i=letters.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[letters[i],letters[j]]=[letters[j],letters[i]];}
+      // letters[0..2] = display A,B,C → origOpts[letters[i]]
+      qaCurrentOptMap = {A:letters[0], B:letters[1], C:letters[2]};
+      displayQ = stem + '\nA. ' + origOpts[letters[0]] + '\nB. ' + origOpts[letters[1]] + '\nC. ' + origOpts[letters[2]];
+    }
     btnHtml = `<button class="btn-secondary" onclick="answerQA('A')">A</button>
                <button class="btn-secondary" onclick="answerQA('B')">B</button>
                <button class="btn-secondary" onclick="answerQA('C')">C</button>`;
@@ -2051,7 +2067,7 @@ function buildQA(pos){
         onchange="qaJump(this.value)" onkeydown="if(event.key==='Enter')qaJump(this.value)">
       <span style="font-size:12px;color:var(--text-muted)">問にジャンプ</span>
     </div>
-    <div class="quiz-question" style="white-space:pre-line">${q.q}</div>
+    <div class="quiz-question" style="white-space:pre-line">${displayQ}</div>
     <div style="display:flex;gap:10px;margin:12px 0;flex-wrap:wrap" id="qa-btn-area">${btnHtml}</div>
     <div style="display:flex;gap:8px;margin-bottom:12px">
       <button class="btn-secondary" onclick="buildQA(${qaPosition-1})"${qaPosition===0?' disabled':''} style="min-width:80px">◀ 前へ</button>
@@ -2064,20 +2080,27 @@ function answerQA(choice){
   if(qaAnswered) return;
   qaAnswered = true;
   const q = QA_BANK[qaCurrentIdx];
-  const correct = choice === q.ans;
+  // For abc questions, map display letter → original letter to check answer
+  const origChoice = (qaCurrentOptMap && q.type==='abc') ? qaCurrentOptMap[choice] : choice;
+  const correct = origChoice === q.ans;
+  // Find which display letter corresponds to the correct original answer
+  let correctDisplay = q.ans;
+  if(qaCurrentOptMap && q.type==='abc'){
+    correctDisplay = Object.keys(qaCurrentOptMap).find(k => qaCurrentOptMap[k] === q.ans) || q.ans;
+  }
   const fb = document.getElementById('qa-feedback');
   fb.style.display = 'block';
   fb.innerHTML = `
     <div class="quiz-answer open" style="margin-top:0">
       <div style="font-size:20px;font-weight:800;margin-bottom:8px;color:${correct?'var(--success)':'var(--danger)'}">
-        ${correct ? '✓ 正解！' : `✗ 不正解（正解: ${q.ans}）`}
+        ${correct ? '✓ 正解！' : `✗ 不正解（正解: ${correctDisplay}）`}
       </div>
       <div class="quiz-step">${q.exp}</div>
     </div>`;
-  // disable buttons
+  // disable buttons, highlight correct display letter
   document.querySelectorAll('#qa-btn-area button').forEach(b=>{
     b.disabled = true;
-    if(b.textContent.trim()===q.ans){ b.style.background='#4D7C5A'; b.style.color='#fff'; b.style.borderColor='#4D7C5A'; }
+    if(b.textContent.trim()===correctDisplay){ b.style.background='#4D7C5A'; b.style.color='#fff'; b.style.borderColor='#4D7C5A'; }
     else { b.style.background='#eee'; b.style.color='#aaa'; }
   });
 }
