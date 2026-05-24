@@ -699,20 +699,9 @@
   <div id="jq-qa-cat-wrap" style="display:none">
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="qa-cat-filter">
       <button class="cat-btn active" data-cat="" onclick="setQACat('')">すべて</button>
-      <button class="cat-btn" data-cat="基礎" onclick="setQACat('基礎')">保険基礎</button>
-      <button class="cat-btn" data-cat="治療費" onclick="setQACat('治療費')">治療費・書類</button>
-      <button class="cat-btn" data-cat="交通費" onclick="setQACat('交通費')">通院交通費</button>
-      <button class="cat-btn" data-cat="入院費" onclick="setQACat('入院費')">入院雑費</button>
-      <button class="cat-btn" data-cat="慰謝料" onclick="setQACat('慰謝料')">慰謝料</button>
-      <button class="cat-btn" data-cat="休業損害" onclick="setQACat('休業損害')">休業損害</button>
-      <button class="cat-btn" data-cat="逸失利益" onclick="setQACat('逸失利益')">逸失利益</button>
-      <button class="cat-btn" data-cat="後遺障害" onclick="setQACat('後遺障害')">後遺障害</button>
-      <button class="cat-btn" data-cat="既払額" onclick="setQACat('既払額')">既払額</button>
-      <button class="cat-btn" data-cat="自賠責" onclick="setQACat('自賠責')">自賠責</button>
-      <button class="cat-btn" data-cat="人身傷害" onclick="setQACat('人身傷害')">人身傷害</button>
-      <button class="cat-btn" data-cat="健保労災" onclick="setQACat('健保労災')">健保・労災</button>
-      <button class="cat-btn" data-cat="過失" onclick="setQACat('過失')">過失相殺</button>
-      <button class="cat-btn" data-cat="訴状" onclick="setQACat('訴状')">訴状・訴訟</button>
+      <button class="cat-btn" data-cat="保険" onclick="setQACat('保険')">保険</button>
+      <button class="cat-btn" data-cat="損害" onclick="setQACat('損害')">積極損害・消極損害</button>
+      <button class="cat-btn" data-cat="その他" onclick="setQACat('その他')">その他</button>
     </div>
     <div id="jq-qa-section" class="card">
     </div>
@@ -1946,6 +1935,14 @@ let qaQueue = [];
 let selectedCat = '';
 
 function getQACat(idx){
+  // 旧詳細カテゴリ → 3大カテゴリへのマッピング
+  const MERGE={
+    '基礎':'保険','自賠責':'保険','人身傷害':'保険','健保労災':'保険',
+    '治療費':'損害','交通費':'損害','入院費':'損害','慰謝料':'損害',
+    '休業損害':'損害','逸失利益':'損害','後遺障害':'損害','既払額':'損害',
+    '過失':'損害','死亡':'損害',
+    '訴状':'その他',
+  };
   const R=[
     [0,15,'基礎'],
     [16,24,'治療費'],[72,79,'治療費'],[101,113,'治療費'],[114,121,'治療費'],
@@ -1958,8 +1955,10 @@ function getQACat(idx){
     [93,96,'交通費'],[145,157,'交通費'],
     [221,244,'訴状'],
   ];
-  for(const [s,e,c] of R) if(idx>=s&&idx<=e) return c;
-  return QA_BANK[idx]?.cat||'基礎';
+  let raw = null;
+  for(const [s,e,c] of R) if(idx>=s&&idx<=e){ raw=c; break; }
+  if(!raw) raw = QA_BANK[idx]?.cat||'基礎';
+  return MERGE[raw] || 'その他';
 }
 
 function setQACat(cat){
