@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>労働法 一問一答・計算問題</title>
+  <style>
+    :root{--primary:#1A4F8A;--primary-hover:#133D6D;--primary-light:#EEF4FC;--success:#2E7D52;--success-light:#EEF7F1;--success-border:#7FC49A;--warning:#B07A3C;--warning-light:#FBF5EC;--danger:#B84040;--danger-light:#FEF2F2;--border:#D0D9E6;--bg:#EEF2F8;--card:#FAFCFF;--text:#1A2640;--text-muted:#5A6A84;--radius:10px;--shadow:0 1px 4px rgba(20,50,100,.10)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+    .header{background:linear-gradient(135deg,#0D2B52,#1A4F8A);color:#fff;padding:18px 20px;text-align:center}
+    .header h1{font-size:20px;font-weight:700}.header p{font-size:12px;opacity:.8;margin-top:3px}
+    .tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:10}
+    .tab-btn{flex:1;min-width:80px;padding:12px 6px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+    .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-light)}
+    .container{max-width:720px;margin:0 auto;padding:16px 12px}
+    .panel{display:none}.panel.active{display:block}
+    .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+    .card-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--text)}
+    .badge{display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap}
+    .badge-blue{background:#dbeafe;color:#1d4ed8}
+    .badge-green{background:#d1fae5;color:#065f46}
+    .badge-red{background:#fee2e2;color:#991b1b}
+    .badge-yellow{background:#fef3c7;color:#92400e}
+    .badge-purple{background:#ede9fe;color:#5b21b6}
+    .badge-gray{background:#f3f4f6;color:#374151}
+
+    /* ===== Q&A Flash Card ===== */
+    .qa-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    .filter-btn{padding:6px 14px;border:1.5px solid var(--border);border-radius:20px;background:#fff;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-muted);transition:all .2s}
+    .filter-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
+    .qa-progress{font-size:12px;color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+    .progress-bar{flex:1;height:6px;background:#D0D9E6;border-radius:3px;overflow:hidden}
+    .progress-fill{height:100%;background:var(--primary);border-radius:3px;transition:width .3s}
+    .qa-card{background:#fff;border:2px solid var(--border);border-radius:14px;padding:22px;margin-bottom:14px;cursor:pointer;transition:all .2s;position:relative;min-height:140px}
+    .qa-card:hover{border-color:var(--primary);box-shadow:0 2px 12px rgba(26,79,138,.12)}
+    .qa-card.answered-correct{border-color:var(--success-border);background:var(--success-light)}
+    .qa-card.answered-wrong{border-color:#fca5a5;background:var(--danger-light)}
+    .qa-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+    .qa-num{font-size:11px;font-weight:700;color:var(--text-muted);min-width:28px}
+    .qa-category{margin-left:auto}
+    .qa-question{font-size:14px;font-weight:600;line-height:1.7;color:var(--text);margin-bottom:14px}
+    .qa-choices{display:flex;flex-direction:column;gap:8px}
+    .choice-btn{padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font-size:13px;text-align:left;transition:all .2s;display:flex;align-items:flex-start;gap:8px}
+    .choice-btn:hover:not(:disabled){background:var(--primary-light);border-color:var(--primary)}
+    .choice-btn.correct{background:#d1fae5;border-color:#6ee7b7;color:#065f46;font-weight:600}
+    .choice-btn.wrong{background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+    .choice-btn:disabled{cursor:default}
+    .choice-mark{font-weight:700;min-width:20px}
+    .qa-answer-box{margin-top:14px;padding:14px;background:#F0F6FF;border-radius:8px;border-left:4px solid var(--primary);font-size:13px;line-height:1.75;display:none}
+    .qa-answer-box.show{display:block}
+    .qa-answer-box .answer-title{font-weight:700;color:var(--primary);margin-bottom:6px;font-size:13px}
+    .qa-answer-box .case-ref{font-size:12px;color:var(--text-muted);background:#E8F0FB;padding:5px 10px;border-radius:5px;margin-top:8px;display:inline-block}
+    .qa-nav{display:flex;gap:10px;margin-top:4px}
+    .btn-nav{flex:1;padding:11px;border:none;border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;transition:background .2s}
+    .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover)}
+    .btn-secondary{background:#E8EEF5;color:var(--text)}.btn-secondary:hover{background:#D0D9E6}
+    .score-board{background:var(--primary-light);border:1px solid #A8C4E8;border-radius:var(--radius);padding:16px;margin-bottom:14px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+    .score-item{text-align:center;min-width:60px}
+    .score-num{font-size:24px;font-weight:800;color:var(--primary)}
+    .score-num.green{color:var(--success)}
+    .score-num.red{color:var(--danger)}
+    .score-label{font-size:11px;color:var(--text-muted);font-weight:600}
+    .btn-reset{padding:8px 16px;border:1.5px solid var(--primary);border-radius:20px;background:#fff;color:var(--primary);cursor:pointer;font-size:12px;font-weight:700;margin-left:auto}
+
+    /* ===== Calculation ===== */
+    .calc-section{margin-bottom:20px}
+    .calc-problem{background:#F0F4FA;border:1.5px solid #A8C4E8;border-radius:10px;padding:16px;margin-bottom:14px}
+    .calc-problem-title{font-size:13px;font-weight:700;color:var(--primary);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .calc-problem-body{font-size:13px;line-height:1.8;margin-bottom:12px}
+    .calc-problem-body strong{color:var(--primary)}
+    .form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    @media(max-width:480px){.form-row{grid-template-columns:1fr}}
+    label{font-size:12px;font-weight:600;color:var(--text-muted)}
+    .input-wrap{display:flex;align-items:center;gap:6px}.input-wrap input,.input-wrap select{flex:1}
+    .unit{font-size:13px;color:var(--text-muted);white-space:nowrap}
+    input[type=number],input[type=text],select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:14px;color:var(--text);background:#fff;transition:border-color .2s;-webkit-appearance:none}
+    input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,79,138,.12)}
+    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235A6A84' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:30px}
+    .btn-calc{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:4px}
+    .btn-calc:hover{background:var(--primary-hover)}
+    .result-box{background:var(--success-light);border:1.5px solid var(--success-border);border-radius:var(--radius);padding:20px;margin-bottom:14px;display:none}
+    .result-box.show{display:block}
+    .result-box.warning{background:var(--warning-light);border-color:#F0C070}
+    .result-label{font-size:13px;font-weight:600;color:var(--success);margin-bottom:2px}
+    .result-box.warning .result-label{color:var(--warning)}
+    .result-amount{font-size:32px;font-weight:800;color:var(--success);line-height:1.1}
+    .result-box.warning .result-amount{color:var(--warning)}
+    .result-sub{font-size:13px;color:#1E5E38;margin-top:6px}
+    .breakdown{background:#F0F4FA;border-radius:8px;border:1px solid var(--border);padding:14px;margin-bottom:14px;display:none}
+    .breakdown.show{display:block}
+    .breakdown-title{font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
+    .bk-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px dashed var(--border);gap:8px;font-size:13px}
+    .bk-row:last-child{border-bottom:none}
+    .bk-key{color:var(--text-muted);flex:1}.bk-val{font-weight:700;white-space:nowrap;color:var(--text)}
+    .bk-formula{font-size:11.5px;color:var(--text-muted);background:#E8EEF5;padding:6px 10px;border-radius:5px;font-family:'Courier New',monospace;margin:4px 0 6px;line-height:1.8;word-break:break-all}
+    .point-box{background:#FFF8E8;border:1px solid #F0C070;border-radius:8px;padding:12px;margin-top:10px;font-size:12px;line-height:1.75;color:#6B4A10}
+    .point-box strong{color:#B07A3C}
+    .err-msg{background:var(--danger-light);border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;color:var(--danger);font-size:13px;margin-bottom:12px;display:none}
+    .err-msg.show{display:block}
+
+    /* ===== Case Law ===== */
+    .case-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;cursor:pointer;transition:all .2s}
+    .case-card:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(26,79,138,.1)}
+    .case-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+    .case-title{font-size:14px;font-weight:700;flex:1;line-height:1.5}
+    .case-meta{font-size:11px;color:var(--text-muted);margin-bottom:8px}
+    .case-summary{font-size:13px;line-height:1.7;color:var(--text-muted)}
+    .case-detail{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);display:none}
+    .case-detail.open{display:block}
+    .case-detail-section{margin-bottom:10px}
+    .case-detail-section h4{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+    .case-detail-section p{font-size:13px;line-height:1.75}
+    .case-holding{background:#F0F6FF;border-left:4px solid var(--primary);padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;line-height:1.75;margin-top:6px}
+    .case-filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+
+    /* ===== Statute Reference ===== */
+    .statute-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden}
+    .statute-header{padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .2s}
+    .statute-header:hover{background:var(--primary-light)}
+    .statute-header.open{background:var(--primary-light)}
+    .statute-num{font-size:12px;font-weight:700;color:var(--primary);min-width:60px}
+    .statute-title{font-size:14px;font-weight:700;flex:1}
+    .statute-toggle{font-size:18px;color:var(--text-muted);transition:transform .2s;margin-left:auto}
+    .statute-header.open .statute-toggle{transform:rotate(180deg)}
+    .statute-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s}
+    .statute-body.open{max-height:2000px;padding:14px 16px}
+    .statute-text{font-size:13px;line-height:1.85;color:var(--text)}
+    .statute-note{font-size:12px;color:#1A4F8A;background:#EEF4FC;border-radius:6px;padding:8px 12px;margin-top:10px;border-left:3px solid var(--primary)}
+
+    /* Modal */
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:var(--card);border-radius:14px;padding:22px;max-width:520px;width:100%;margin:auto;position:relative;border:1px solid var(--border)}
+    .modal-close{position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:20px;color:var(--text-muted);padding:4px}
+    .modal-title{font-size:16px;font-weight:700;margin-bottom:14px;padding-right:30px;color:var(--primary)}
+    .modal-body{font-size:13px;line-height:1.8}
+    .modal-body p{margin-bottom:8px}
+    .modal-body ul,.modal-body ol{padding-left:18px;margin-bottom:8px}
+    .modal-body li{margin-bottom:5px}
+    .note{font-size:12px;color:#6B4A10;background:#FBF5EC;border:1px solid #F0C070;border-radius:7px;padding:8px 12px;margin-top:10px;display:flex;gap:6px}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>労働法 一問一答・計算問題</h1>
+  <p>残業代請求・バックペイ請求 実務知識トレーニング</p>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('qa')">一問一答</button>
+  <button class="tab-btn" onclick="switchTab('calc')">計算問題</button>
+  <button class="tab-btn" onclick="switchTab('cases')">重要判例</button>
+  <button class="tab-btn" onclick="switchTab('statute')">条文まとめ</button>
+</div>
+
+<!-- ===================== TAB 1: Q&A ===================== -->
+<div id="tab-qa" class="panel active">
+<div class="container">
+
+  <div class="score-board">
+    <div class="score-item">
+      <div class="score-num" id="sc-total">0</div>
+      <div class="score-label">回答済</div>
+    </div>
+    <div class="score-item">
+      <div class="score-num green" id="sc-correct">0</div>
+      <div class="score-label">正解</div>
+    </div>
+    <div class="score-item">
+      <div class="score-num red" id="sc-wrong">0</div>
+      <div class="score-label">不正解</div>
+    </div>
+    <div class="score-item">
+      <div class="score-num" id="sc-rate">―</div>
+      <div class="score-label">正答率</div>
+    </div>
+    <button class="btn-reset" onclick="resetScore()">リセット</button>
+  </div>
+
+  <div class="qa-filter">
+    <button class="filter-btn active" data-cat="all" onclick="filterQA(this,'all')">すべて</button>
+    <button class="filter-btn" data-cat="時間" onclick="filterQA(this,'時間')">労働時間</button>
+    <button class="filter-btn" data-cat="固定" onclick="filterQA(this,'固定')">固定残業代</button>
+    <button class="filter-btn" data-cat="管理" onclick="filterQA(this,'管理')">管理監督者</button>
+    <button class="filter-btn" data-cat="時効" onclick="filterQA(this,'時効')">消滅時効</button>
+    <button class="filter-btn" data-cat="計算" onclick="filterQA(this,'計算')">計算・条文</button>
+    <button class="filter-btn" data-cat="裁量" onclick="filterQA(this,'裁量')">裁量労働</button>
+  </div>
+
+  <div class="qa-progress">
+    <span id="qa-prog-text">0 / 0</span>
+    <div class="progress-bar"><div class="progress-fill" id="qa-prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div id="qa-container"></div>
+
+</div>
+</div>
+
+<!-- ===================== TAB 2: CALC ===================== -->
+<div id="tab-calc" class="panel">
+<div class="container">
+
+  <!-- Problem selector -->
+  <div class="card">
+    <div class="card-title">計算問題を選択</div>
+    <div class="qa-filter" style="margin-bottom:0">
+      <button class="filter-btn active" data-prob="basic" onclick="selectProb(this,'basic')">基本計算</button>
+      <button class="filter-btn" data-prob="fixed" onclick="selectProb(this,'fixed')">固定残業代</button>
+      <button class="filter-btn" data-prob="commission" onclick="selectProb(this,'commission')">歩合給</button>
+      <button class="filter-btn" data-prob="sokosei" onclick="selectProb(this,'sokosei')">請求可能額</button>
+    </div>
+  </div>
+
+  <!-- BASIC -->
+  <div id="prob-basic" class="calc-section">
+    <div class="calc-problem">
+      <div class="calc-problem-title">問題：基本的な残業代計算</div>
+      <div class="calc-problem-body">
+        月給制の労働者について、所定労働時間・実際の残業時間等を入力し、<strong>未払い残業代</strong>を計算してください。<br>
+        割増賃金率：時間外<strong>1.25倍</strong>、深夜（22〜5時）<strong>+0.25倍</strong>、休日<strong>1.35倍</strong>（法定休日）
+      </div>
+    </div>
+    <div class="card">
+      <div class="form-row">
+        <div class="form-group">
+          <label>月給（基本給＋諸手当）</label>
+          <div class="input-wrap"><input type="number" id="b-salary" placeholder="300000"><span class="unit">円</span></div>
+        </div>
+        <div class="form-group">
+          <label>1ヶ月の所定労働時間</label>
+          <div class="input-wrap"><input type="number" id="b-fixed-hours" placeholder="160"><span class="unit">時間</span></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>時間外労働（月）</label>
+          <div class="input-wrap"><input type="number" id="b-ot" placeholder="30"><span class="unit">時間</span></div>
+        </div>
+        <div class="form-group">
+          <label>うち深夜時間外（22〜5時）</label>
+          <div class="input-wrap"><input type="number" id="b-night" placeholder="5"><span class="unit">時間</span></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>法定休日労働</label>
+          <div class="input-wrap"><input type="number" id="b-holiday" placeholder="8"><span class="unit">時間</span></div>
+        </div>
+        <div class="form-group">
+          <label>うち深夜（休日×深夜）</label>
+          <div class="input-wrap"><input type="number" id="b-holiday-night" placeholder="0"><span class="unit">時間</span></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>月60時間超の時間外（中小企業は任意）</label>
+        <div class="input-wrap"><input type="number" id="b-over60" placeholder="0" value="0"><span class="unit">時間（60h超の分のみ）</span></div>
+      </div>
+      <div class="err-msg" id="b-err"></div>
+      <button class="btn-calc" onclick="calcBasic()">計算する</button>
+    </div>
+    <div class="result-box" id="b-result">
+      <div class="result-label">1ヶ月の未払い残業代</div>
+      <div class="result-amount" id="b-result-amt"></div>
+      <div class="result-sub" id="b-result-sub"></div>
+    </div>
+    <div class="breakdown" id="b-breakdown">
+      <div class="breakdown-title">計算内訳</div>
+      <div id="b-breakdown-body"></div>
+      <div class="point-box">
+        <strong>実務ポイント：</strong>「所定内賃金÷所定労働時間」が<strong>1時間当たりの基礎賃金</strong>となります。月給制の場合、割増賃金の計算に含めてはいけない手当（家族手当・通勤手当・住宅手当など）がある点に注意（労基法施行規則21条）。
+      </div>
+    </div>
+  </div>
+
+  <!-- FIXED OT -->
+  <div id="prob-fixed" class="calc-section" style="display:none">
+    <div class="calc-problem">
+      <div class="calc-problem-title">問題：固定残業代（みなし残業）の有効性チェック＋差額計算</div>
+      <div class="calc-problem-body">
+        雇用契約書に「固定残業代」が定められている場合、<strong>有効要件を満たすか</strong>チェックし、実際の残業が固定時間を超えた場合の<strong>差額</strong>を計算します。<br>
+        ※テックジャパン事件（最判H24.3.8）・国際自動車事件（最判R2.3.30）の判断基準を適用
+      </div>
+    </div>
+    <div class="card">
+      <div class="form-group">
+        <label>月給総額</label>
+        <div class="input-wrap"><input type="number" id="f-salary" placeholder="350000"><span class="unit">円</span></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>うち固定残業代として明示された金額</label>
+          <div class="input-wrap"><input type="number" id="f-fixed-pay" placeholder="50000"><span class="unit">円</span></div>
+        </div>
+        <div class="form-group">
+          <label>固定残業代に対応する残業時間数</label>
+          <div class="input-wrap"><input type="number" id="f-fixed-hours" placeholder="30"><span class="unit">時間</span></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>所定労働時間（月）</label>
+          <div class="input-wrap"><input type="number" id="f-base-hours" placeholder="160"><span class="unit">時間</span></div>
+        </div>
+        <div class="form-group">
+          <label>実際の時間外労働</label>
+          <div class="input-wrap"><input type="number" id="f-actual-ot" placeholder="45"><span class="unit">時間</span></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>雇用契約書・給与明細に固定残業代が明記されているか</label>
+        <select id="f-clear">
+          <option value="yes">はい（基本給と残業代が明確に区分されている）</option>
+          <option value="no">いいえ（総額のみで内訳が不明）</option>
+          <option value="partial">不明確（手当名はあるが計算根拠なし）</option>
+        </select>
+      </div>
+      <div class="err-msg" id="f-err"></div>
+      <button class="btn-calc" onclick="calcFixed()">有効性チェック＋差額計算</button>
+    </div>
+    <div class="result-box" id="f-result">
+      <div class="result-label" id="f-result-label"></div>
+      <div class="result-amount" id="f-result-amt"></div>
+      <div class="result-sub" id="f-result-sub"></div>
+    </div>
+    <div class="breakdown" id="f-breakdown">
+      <div class="breakdown-title">判定・計算内訳</div>
+      <div id="f-breakdown-body"></div>
+    </div>
+  </div>
+
+  <!-- COMMISSION -->
+  <div id="prob-commission" class="calc-section" style="display:none">
+    <div class="calc-problem">
+      <div class="calc-problem-title">問題：歩合給の割増賃金計算</div>
+      <div class="calc-problem-body">
+        歩合給（出来高払）がある場合、<strong>歩合部分の割増賃金は0.25倍のみ</strong>（通常賃金部分は歩合給に含まれるため）で計算します。<br>
+        ※熊本総合運輸事件（最判R5.3.10）：歩合給から残業代を控除する仕組みは違法
+      </div>
+    </div>
+    <div class="card">
+      <div class="form-row">
+        <div class="form-group">
+          <label>固定給（月）</label>
+          <div class="input-wrap"><input type="number" id="c-fixed" placeholder="150000"><span class="unit">円</span></div>
+        </div>
+        <div class="form-group">
+          <label>歩合給（月）</label>
+          <div class="input-wrap"><input type="number" id="c-commission" placeholder="120000"><span class="unit">円</span></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>所定労働時間（月）</label>
+          <div class="input-wrap"><input type="number" id="c-base-h" placeholder="160"><span class="unit">時間</span></div>
+        </div>
+        <div class="form-group">
+          <label>時間外労働</label>
+          <div class="input-wrap"><input type="number" id="c-ot" placeholder="40"><span class="unit">時間</span></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>深夜時間外（22〜5時）</label>
+          <div class="input-wrap"><input type="number" id="c-night" placeholder="0"><span class="unit">時間</span></div>
+        </div>
+        <div class="form-group">
+          <label>総労働時間（所定＋残業）</label>
+          <div class="input-wrap"><input type="number" id="c-total-h" placeholder="200"><span class="unit">時間</span></div>
+        </div>
+      </div>
+      <div class="err-msg" id="c-err"></div>
+      <button class="btn-calc" onclick="calcCommission()">計算する</button>
+    </div>
+    <div class="result-box" id="c-result">
+      <div class="result-label">1ヶ月の未払い割増賃金</div>
+      <div class="result-amount" id="c-result-amt"></div>
+      <div class="result-sub" id="c-result-sub"></div>
+    </div>
+    <div class="breakdown" id="c-breakdown">
+      <div class="breakdown-title">計算内訳</div>
+      <div id="c-breakdown-body"></div>
+      <div class="point-box">
+        <strong>実務ポイント：</strong>歩合給は「その計算期間の総労働時間数」で除した額が1時間当たりの歩合給単価。この単価×0.25×残業時間が追加払い割増賃金。熊本総合運輸事件では「歩合給から残業相当額を控除し、残額を歩合給とする」仕組みを違法と断じた。
+      </div>
+    </div>
+  </div>
+
+  <!-- REQUEST AMOUNT -->
+  <div id="prob-sokosei" class="calc-section" style="display:none">
+    <div class="calc-problem">
+      <div class="calc-problem-title">問題：消滅時効を考慮した請求可能額試算</div>
+      <div class="calc-problem-body">
+        労働基準法115条の改正により、<strong>2020年4月1日以降に支払期日が到来した賃金は当分の間3年（将来的に5年）</strong>の時効。それ以前は2年。<br>
+        退職後の遅延損害金：年<strong>14.6%</strong>（賃金支払確保法6条）
+      </div>
+    </div>
+    <div class="card">
+      <div class="form-row">
+        <div class="form-group">
+          <label>月次未払残業代（平均）</label>
+          <div class="input-wrap"><input type="number" id="s-monthly" placeholder="50000"><span class="unit">円</span></div>
+        </div>
+        <div class="form-group">
+          <label>未払い継続月数（合計）</label>
+          <div class="input-wrap"><input type="number" id="s-months" placeholder="36"><span class="unit">ヶ月</span></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>最初の未払い発生月</label>
+          <input type="month" id="s-start" value="2022-01">
+        </div>
+        <div class="form-group">
+          <label>請求日（本日）</label>
+          <input type="month" id="s-today" value="2025-05">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>退職日</label>
+        <input type="month" id="s-retire" placeholder="退職済の場合">
+      </div>
+      <div class="err-msg" id="s-err"></div>
+      <button class="btn-calc" onclick="calcSokosei()">請求可能額を試算</button>
+    </div>
+    <div class="result-box" id="s-result">
+      <div class="result-label">時効考慮後の請求可能元本</div>
+      <div class="result-amount" id="s-result-amt"></div>
+      <div class="result-sub" id="s-result-sub"></div>
+    </div>
+    <div class="breakdown" id="s-breakdown">
+      <div class="breakdown-title">内訳</div>
+      <div id="s-breakdown-body"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===================== TAB 3: CASES ===================== -->
+<div id="tab-cases" class="panel">
+<div class="container">
+
+  <div class="case-filter-bar">
+    <button class="filter-btn active" data-ccat="all" onclick="filterCases(this,'all')">すべて</button>
+    <button class="filter-btn" data-ccat="時間" onclick="filterCases(this,'時間')">労働時間</button>
+    <button class="filter-btn" data-ccat="固定" onclick="filterCases(this,'固定')">固定残業代</button>
+    <button class="filter-btn" data-ccat="管理" onclick="filterCases(this,'管理')">管理監督者</button>
+    <button class="filter-btn" data-ccat="時効" onclick="filterCases(this,'時効')">時効・手続</button>
+    <button class="filter-btn" data-ccat="裁量" onclick="filterCases(this,'裁量')">裁量労働</button>
+  </div>
+
+  <div id="cases-container"></div>
+
+</div>
+</div>
+
+<!-- ===================== TAB 4: STATUTE ===================== -->
+<div id="tab-statute" class="panel">
+<div class="container">
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">主要条文まとめ</div>
+    <p style="font-size:13px;color:var(--text-muted)">残業代請求・バックペイに関連する条文の要点を整理しています。</p>
+  </div>
+
+  <div id="statute-container"></div>
+
+</div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+
+const QA_DATA = [
+  {
+    id:1, cat:'時間',
+    q:'三菱重工長崎造船所事件（最判H12.3.9）が示した「労働時間」の定義として正しいものはどれか。',
+    choices:['労使協定で合意した時間','労働者が現実に作業を行っている時間のみ','使用者の指揮命令下に置かれている時間','就業規則に定められた所定労働時間'],
+    answer:2,
+    explanation:'最高裁は「労働時間とは、労働者が使用者の指揮命令下に置かれている時間」と定義し、客観的に判断されると示した。準備行為・後片付け・着替え等も使用者が義務付けた場合は労働時間に含まれる。',
+    caseRef:'三菱重工長崎造船所事件 最一小判平成12年3月9日'
+  },
+  {
+    id:2, cat:'時間',
+    q:'労働者が仮眠中であっても「労働時間」と認められる場合はどれか。',
+    choices:['仮眠室が職場内にある場合は常に労働時間','労使協定で仮眠を労働時間と定めた場合のみ','実作業に従事していないが突発的業務に即応する義務がある場合','使用者から仮眠を命じられた場合のみ'],
+    answer:2,
+    explanation:'大星ビル管理事件（最一小判H14.2.28）は、仮眠中であっても使用者の指揮命令下から完全に解放されておらず、突発的業務への即応義務がある場合は全体が労働時間にあたると判示した。',
+    caseRef:'大星ビル管理事件 最一小判平成14年2月28日'
+  },
+  {
+    id:3, cat:'時間',
+    q:'使用者が「自分は残業を命じていない」と主張する場合、黙示の時間外労働が認められる要件として判例上最も重要なものはどれか。',
+    choices:['労働者が自発的に残業した場合も全て認められる','使用者が時間外労働の事実を知り得た、または知りながら放置した場合','タイムカードに記録がある場合のみ','36協定の締結がある場合のみ'],
+    answer:1,
+    explanation:'使用者が時間外労働を知りながら明示的に禁止しなかった場合、黙示の残業命令があったと認められる（日本化薬事件等）。使用者が「知り得た」状況（業務量が多い、管理者が確認できた等）があれば黙示の指示が認定される。',
+    caseRef:'日本化薬事件ほか複数下級審判決'
+  },
+  {
+    id:4, cat:'固定',
+    q:'テックジャパン事件（最判H24.3.8）で最高裁が示した固定残業代の有効要件として誤っているものはどれか。',
+    choices:['基本給部分と残業代部分が明確に区分されている','固定残業代の対価性（割増賃金として支払われる趣旨）が明確','固定残業時間を超えた場合の差額支払い合意がある','固定残業代の金額が月給の50%以下である'],
+    answer:3,
+    explanation:'テックジャパン事件で要求される要件は①明瞭区分性②対価性③差額支払いの合意であり、「月給の50%以下」という比率要件は判例上の要件ではない（ただし実務上は高比率は無効リスクが高まる）。',
+    caseRef:'テックジャパン事件 最三小判平成24年3月8日'
+  },
+  {
+    id:5, cat:'固定',
+    q:'国際自動車事件（最判R2.3.30）はどのような賃金制度を問題としたか。',
+    choices:['基本給に残業代が含まれると定めた年俸制','売上歩合から残業代相当額を控除し残額を歩合給とする仕組み','固定残業代手当のみを定めた雇用契約','管理職手当で残業代を賄う制度'],
+    answer:1,
+    explanation:'国際自動車事件では「歩合給から残業代相当額を控除し、残額を歩合給とする」という仕組みが問題となった。最高裁は、この方式では割増賃金部分を明確に区別できず労基法37条違反と判示した。',
+    caseRef:'国際自動車事件 最一小判令和2年3月30日'
+  },
+  {
+    id:6, cat:'固定',
+    q:'固定残業代に関し、「固定残業時間数を上回る残業をした場合の差額支払い合意」がない場合の効力はどうなるか。',
+    choices:['固定残業代自体は有効だが差額請求はできない','固定残業代全体が無効となり、基本給のみを基礎に全時間外賃金を計算する','固定残業代は有効だが、差額分には付加金が必ずつく','就業規則の変更で差額払いを拒否できる'],
+    answer:1,
+    explanation:'差額支払い合意がなければ固定残業代全体が無効（実質的に基本給に含まれる）と認定され、月給全額を基礎賃金として全時間外労働の割増賃金が算出される。これにより請求額が大幅に増加するケースがある。',
+    caseRef:'医療法人康心会事件 最二小判平成29年7月7日'
+  },
+  {
+    id:7, cat:'管理',
+    q:'日本マクドナルド事件（東京地判H20.1.28）が示した「管理監督者」（労基法41条2号）の3要件として正しいものはどれか。',
+    choices:['①役職名が管理職 ②残業手当不支給の明示 ③月給が一般従業員より高い','①経営上の意思決定参加・労務管理権限 ②出退勤の自由 ③賃金上の待遇の相当性','①正社員であること ②部下が5人以上 ③年収500万円以上','①人事権あり ②部門の損益責任あり ③取締役会出席権あり'],
+    answer:1,
+    explanation:'マクドナルド事件では①経営上の意思決定への参画または実質的な労務管理権限②出退勤の自由（労働時間規制になじまない）③賃金等の処遇が管理監督者にふさわしいこと、の3要件で判断した。「名ばかり管理職」はこれを満たさない。',
+    caseRef:'日本マクドナルド事件 東京地判平成20年1月28日'
+  },
+  {
+    id:8, cat:'管理',
+    q:'管理監督者であっても必ず支払わなければならない割増賃金はどれか。',
+    choices:['時間外割増賃金（1.25倍）','法定休日労働割増賃金（1.35倍）','深夜割増賃金（1.25倍）','上記すべて'],
+    answer:2,
+    explanation:'管理監督者は「労働時間・休憩・休日」規制の適用除外（労基法41条2号）だが、深夜業（22時〜5時）の規制は適用される。したがって深夜割増賃金（0.25倍割増）は管理監督者にも支払義務がある（労基法37条4項）。',
+    caseRef:'労基法41条2号・37条4項'
+  },
+  {
+    id:9, cat:'時効',
+    q:'2020年4月1日以降に支払期日が到来した賃金請求権の消滅時効期間はどれか（令和2年改正労働基準法）。',
+    choices:['1年','2年','当分の間3年（将来的に5年）','10年'],
+    answer:2,
+    explanation:'令和2年改正労基法115条により、2020年4月1日以降支払期日が到来する賃金（退職手当除く）の消滅時効は当分の間3年に延長された（将来的に5年）。改正前は2年。退職手当は5年のまま。起算点は「賃金支払日」。',
+    caseRef:'改正労基法115条（令和2年4月1日施行）'
+  },
+  {
+    id:10, cat:'時効',
+    q:'退職した労働者が使用者に対して未払い賃金を請求する場合、退職後の遅延損害金の利率はどれか。',
+    choices:['民法所定の年3%','年5%','年14.6%','年20%'],
+    answer:2,
+    explanation:'賃金の支払の確保等に関する法律6条1項は、退職した労働者に対する未払い賃金の遅延損害金を年14.6%と定める。在職中は民法所定利率（年3%）となる。',
+    caseRef:'賃確法6条1項'
+  },
+  {
+    id:11, cat:'計算',
+    q:'月給30万円（所定労働時間160時間）の労働者が月30時間の時間外労働をした場合、未払残業代（時間外割増1.25倍）はいくらか。',
+    choices:['56,250円','70,312円','75,000円','93,750円'],
+    answer:0,
+    explanation:'1時間単価＝300,000÷160＝1,875円。時間外割増単価＝1,875×1.25＝2,343.75円。未払額＝2,343.75×30＝70,312.5円…ではなく、1,875円が基準時間給で割増分は0.25×1,875=468.75円/h×30h=14,062.5円、それ＋通常賃金分=1,875×30×1.25＝70,312.5円。最も近いのは②70,312円。',
+    answer:1,
+    explanation:'1時間単価＝300,000÷160＝1,875円。割増単価＝1,875×1.25＝2,343.75円。未払額＝2,343.75×30≒70,313円。選択肢②が正解。',
+    caseRef:'労基法37条・施行規則19条'
+  },
+  {
+    id:12, cat:'計算',
+    q:'割増賃金の計算基礎から除外できる手当はどれか（労基法施行規則21条）。',
+    choices:['役職手当（管理職に一律支給）','家族手当（扶養家族数に関係なく一律支給）','通勤手当（実費弁償）','精勤手当'],
+    answer:1,
+    explanation:'家族手当・通勤手当・別居手当・子女教育手当・住宅手当・臨時に支払われた賃金・1ヶ月を超える期間ごとに支払われる賃金の7種類が除外可能。ただし家族手当は「家族数に関係なく一律支給」の場合は除外不可（実質的に賃金の一部）。選択肢②は「扶養家族数に関係なく一律支給」なので除外不可が正解。なお通勤手当（実費弁償）は除外できる。',
+    caseRef:'労基法施行規則21条'
+  },
+  {
+    id:13, cat:'裁量',
+    q:'専門業務型裁量労働制（労基法38条の3）に関する記述として正しいものはどれか。',
+    choices:['深夜・休日労働も含め全ての割増賃金が不要','対象業務は省令で限定列挙されている','時間外割増賃金は不要だが深夜・法定休日割増は支払義務がある','年収500万円以上の労働者全員に適用できる'],
+    answer:2,
+    explanation:'専門業務型裁量労働制（労基法38条の3）は、①省令指定の専門業務②みなし労働時間の労使協定が要件。時間外労働の割増賃金はみなし時間で計算するが、深夜業（22〜5時）および法定休日の割増賃金は別途支払義務がある。年収要件は高プロ制度（労基法41条の2）の話。',
+    caseRef:'労基法38条の3・41条の2'
+  },
+  {
+    id:14, cat:'裁量',
+    q:'高度プロフェッショナル制度（労基法41条の2）の適用要件として誤っているものはどれか。',
+    choices:['対象業務が省令で定められている','年間賃金が基準額（約1,075万円）以上','本人の同意が必要','勤続3年以上の正社員に限る'],
+    answer:3,
+    explanation:'高プロ制度の要件は①対象業務（5業種）②年収基準（約1,075万円以上）③本人の書面同意④労使委員会の決議・行政届出など。「勤続3年以上」という要件はなく、期間従業員でも要件を満たせば適用可能。',
+    caseRef:'労基法41条の2（働き方改革関連法）'
+  },
+  {
+    id:15, cat:'時間',
+    q:'「事業場外みなし労働時間制」（労基法38条の2）が適用できないとされた場合として適切なものはどれか。',
+    choices:['営業社員が直行直帰する場合','使用者が携帯電話等で随時連絡・指示を行っていた場合','複数の取引先を訪問する場合','上司の同行なく単独で外回りする場合'],
+    answer:1,
+    explanation:'事業場外みなし制の適用には「労働時間を算定し難いとき」が必要（労基法38条の2）。携帯電話等で常時連絡可能で使用者が随時指示を出せる状態では「算定し難い」とはいえず、適用不可とした判例がある（阪急トラベルサポート事件・最二小判H26.1.24）。',
+    caseRef:'阪急トラベルサポート事件 最二小判平成26年1月24日'
+  },
+  {
+    id:16, cat:'固定',
+    q:'固定残業代が有効と認められるために必要な「明確区分性」の説明として正しいものはどれか。',
+    choices:['給与明細書に「残業手当」と記載があれば足りる','雇用契約書・給与明細等において、基本給部分と固定残業代部分が明確に区別でき、固定残業代がいかなる趣旨で支払われるかが客観的に認識できる','口頭での説明があれば書面は不要','就業規則への記載だけで足りる'],
+    answer:1,
+    explanation:'明確区分性とは①雇用契約書・給与規程等で基本給部分と残業代部分が明確に区分②固定残業代が時間外労働の対価であることが客観的に認識できる、の両方が必要。給与明細への記載だけでは不十分で、雇用契約書等での合意が必要（康心会事件）。',
+    caseRef:'医療法人康心会事件 最二小判平成29年7月7日'
+  },
+  {
+    id:17, cat:'時効',
+    q:'賃金請求権の消滅時効の起算点として正しいものはどれか。',
+    choices:['労働の提供があった日','時間外労働を行った日','賃金支払日（給与日）','使用者が賃金未払いを認識した日'],
+    answer:2,
+    explanation:'賃金請求権の消滅時効の起算点は「賃金の支払日」（労基法115条）。例えば4月分給与が5月25日支払いなら、4月の未払い残業代の時効起算点は5月25日。「行使し得る時」（民法166条）と一致する。',
+    caseRef:'労基法115条・民法166条'
+  },
+  {
+    id:18, cat:'計算',
+    q:'付加金（労基法114条）を請求できる場合として誤っているものはどれか。',
+    choices:['割増賃金（残業代）の未払い','解雇予告手当の未払い','有給休暇中の賃金の未払い','退職金の未払い'],
+    answer:3,
+    explanation:'付加金の対象は①割増賃金（37条）②解雇予告手当（20条）③休業手当（26条）④年次有給休暇中の賃金（39条9項）。退職金は付加金の対象外。なお付加金請求は違反があった時から3年以内（消滅時効）。',
+    caseRef:'労基法114条'
+  },
+  {
+    id:19, cat:'管理',
+    q:'「名ばかり管理職」問題において、管理監督者性を否定する方向に働く事情として最も重要なものはどれか。',
+    choices:['正社員であること','年収が一般従業員より高いこと','店舗の開閉店時間に拘束され出退勤の自由がないこと','部下に対する指示権限があること'],
+    answer:2,
+    explanation:'管理監督者の本質は「労働時間規制になじまない」こと。出退勤の自由（時間管理からの解放）が最も重要な要素で、店舗の営業時間に縛られている場合は否定要素として最重視される（マクドナルド事件）。賃金が高くても他要件を欠けば管理監督者にならない。',
+    caseRef:'日本マクドナルド事件 東京地判平成20年1月28日'
+  },
+  {
+    id:20, cat:'時間',
+    q:'使用者がタイムカードを提出しない・廃棄した場合、労働時間の立証についての一般的な裁判実務の扱いはどれか。',
+    choices:['労働者側が完全な証明責任を負い、立証できなければ請求棄却','使用者が証拠を隠匿したとして直ちに労働者の主張全額が認容される','労働者の手帳・メール・システムログ等の間接証拠から裁判所が合理的に推認する','労働基準監督署の認定が必要となる'],
+    answer:2,
+    explanation:'タイムカード等の客観的証拠がなくても、手帳・メール記録・システムへのアクセスログ・退勤後の通信記録・顧客対応記録等の間接証拠から、裁判官が合理的認定をする実務が定着。証拠隠滅は裁判所の心証を害し不利に働くが、自動的認容ではない（自由心証主義）。',
+    caseRef:'民事訴訟法247条（自由心証主義）'
+  }
+];
+
+const CASES_DATA = [
+  {
+    cat:'時間',
+    title:'三菱重工長崎造船所事件',
+    court:'最高裁第一小法廷',
+    date:'平成12年（2000年）3月9日',
+    summary:'労働時間の法的定義を確立した最重要判例。使用者の指揮命令下＝労働時間と定義。',
+    facts:'造船所の労働者が、就業時間前後の保護具着脱・体洗い・安全点検等の時間が労働時間にあたるとして賃金を請求。',
+    holding:'「労働基準法上の労働時間とは、労働者が使用者の指揮命令下に置かれている時間をいい、右の労働時間に該当するか否かは、労働者の行為が使用者の指揮命令下に置かれたものと評価することができるか否かにより客観的に定まる」と判示。',
+    points:['労働時間の定義は客観的に決まる（労使協定・就業規則では変更不可）','着替え・準備行為も使用者が義務付けた場合は労働時間','社会通念上必要とされる範囲で労働時間に含まれる']
+  },
+  {
+    cat:'時間',
+    title:'大星ビル管理事件（仮眠時間の労働時間性）',
+    court:'最高裁第一小法廷',
+    date:'平成14年（2002年）2月28日',
+    summary:'仮眠中でも突発的業務に即応する義務があれば全体が労働時間と判示した判例。',
+    facts:'ビル管理会社の警備員が夜間の仮眠時間について労働時間として割増賃金を請求。労使協定で仮眠時間を労働から除外していた。',
+    holding:'「仮眠時間中、労働契約上の役務の提供が義務付けられていると評価される場合には、その全体が労働時間に当たる」と判示。仮眠中でも呼び出しに即応する義務があれば労働時間。',
+    points:['「労働から解放が保障されていない」時間は労働時間','労使協定で「不活動時間を労働時間外」と定めても効力なし','警備・宿直・待機業務での重要先例']
+  },
+  {
+    cat:'時間',
+    title:'阪急トラベルサポート事件（事業場外みなし労働の適用限界）',
+    court:'最高裁第二小法廷',
+    date:'平成26年（2014年）1月24日',
+    summary:'携帯電話等で使用者が随時指示できる環境では事業場外みなし労働時間制の適用が否定された。',
+    facts:'海外旅行添乗員がみなし労働時間制（1日8時間）で処理されていたが、実際の労働時間が長く残業代を請求。',
+    holding:'「添乗員は旅行日程に従って行動し、あらかじめ定められた旅程に沿って業務を行うものであって、業務の内容は詳細に特定され、使用者は携帯電話を通じて随時指示でき、客観的に業務時間が算定できる」として事業場外みなし制の適用を否定。',
+    points:['「労働時間を算定し難い」要件が事業場外みなし制の核心','携帯電話・スマートフォンの普及で適用否定判例が増加','実態調査に基づく立証が重要']
+  },
+  {
+    cat:'固定',
+    title:'テックジャパン事件（固定残業代の有効要件）',
+    court:'最高裁第三小法廷',
+    date:'平成24年（2012年）3月8日',
+    summary:'固定残業代の有効要件として「明確区分性」「対価性」「差額支払い合意」を示した先駆的判例（補足意見）。',
+    facts:'月額60万円の年俸制で「残業代込み」と説明されていたシステムエンジニアが、残業代の別途支払いを請求。',
+    holding:'最高裁は会社側勝訴の原審を是認したが、桜井裁判官の補足意見が固定残業代の有効性判断について①対価性②明瞭区分性③差額支払い合意の3要件を示し、後の判例・実務に大きな影響を与えた。',
+    points:['補足意見が実質的に有効要件を定立','年俸制での固定残業代問題の嚆矢','康心会事件・国際自動車事件へ繋がる']
+  },
+  {
+    cat:'固定',
+    title:'医療法人康心会事件（固定残業代無効＋差額計算）',
+    court:'最高裁第二小法廷',
+    date:'平成29年（2017年）7月7日',
+    summary:'固定残業代が無効とされた場合の残業代計算方法について明示した判例。',
+    facts:'病院勤務の医師が、年俸に含まれるとされていた時間外手当の有効性を争った。年俸の約42%が時間外手当とされていた。',
+    holding:'時間外手当の支払われる趣旨が明らかでなく労基法37条の要件を満たさないとして無効と判断。無効の場合「年俸全体を基礎賃金として残業代を再計算する」と示した。',
+    points:['固定残業代無効→全額が基礎賃金になる','基礎賃金増大→残業代大幅増加という逆説的効果','年俸の42%相当という高比率でも無効に']
+  },
+  {
+    cat:'固定',
+    title:'国際自動車事件（歩合給と残業代の関係）',
+    court:'最高裁第一小法廷',
+    date:'令和2年（2020年）3月30日',
+    summary:'歩合給から残業代を控除する賃金システムは労基法37条に違反すると判示。',
+    facts:'タクシー運転手の賃金体系：売上歩合から残業代相当額を差し引いた「賃率計算歩合給」。未払い残業代を請求。',
+    holding:'「時間外・深夜労働に対する割増賃金が支払われたといえるためには、通常の労働時間の賃金に当たる部分と割増賃金に当たる部分とを判別できることが必要」。歩合給から残業代を控除する方式では割増賃金部分が明確でなく違法。',
+    points:['「判別可能性（明確区分性）」を再確認','歩合給制での賃金設計に重大な影響','運送業の歩合給制度に広く波及']
+  },
+  {
+    cat:'固定',
+    title:'熊本総合運輸事件（オール歩合給の限界）',
+    court:'最高裁第二小法廷',
+    date:'令和5年（2023年）3月10日',
+    summary:'オール歩合給（完全歩合給）でも所定時間内賃金と割増賃金部分の区別が必要と判示した最新最高裁判決。',
+    facts:'トラック運転手の賃金を運行手当等の歩合で定め、月給から「残業代」を控除した残額を実支給としていた。',
+    holding:'「出来高払制その他の請負制で使用される労働者についても、使用者は、労働基準法37条の定める割増賃金を支払う義務を負う」。国際自動車事件の趣旨を完全歩合給に拡大適用。',
+    points:['完全歩合給でも割増賃金の「明確区分性」が必要','運送業の賃金制度に大きなインパクト','2023年の最新最高裁判決として重要']
+  },
+  {
+    cat:'管理',
+    title:'日本マクドナルド事件（名ばかり管理職）',
+    court:'東京地方裁判所',
+    date:'平成20年（2008年）1月28日',
+    summary:'ファストフード店の店長は管理監督者に当たらないとして、時間外手当の請求を認めた著名判例。',
+    facts:'マクドナルド直営店の店長が過去2年分の残業代を請求。会社は「店長は管理監督者」と主張。',
+    holding:'①経営上の意思決定への実質的関与がない②出退勤の自由がなく店舗の営業時間に拘束③賃金水準が管理監督者として相当ではない、として管理監督者性を否定。',
+    points:['「名ばかり管理職」問題を社会的に顕在化させた判決','3要件（経営参画・時間の自由・処遇相当性）が実務の指標に','深夜割増賃金は管理監督者にも必要を確認']
+  },
+  {
+    cat:'時効',
+    title:'賃金請求権の消滅時効（令和2年労基法改正）',
+    court:'立法（行政）',
+    date:'令和2年（2020年）4月1日施行',
+    summary:'未払い賃金の消滅時効を2年から当分の間3年（将来5年）に延長した重要法改正。',
+    facts:'民法の消滅時効が2020年4月1日に改正（原則5年）されたことに伴い、労基法115条の特則も見直し。',
+    holding:'2020年4月1日以降に支払期日が到来する賃金について時効を3年に延長。施行日前の賃金は従前の2年が適用。なお記録の保存義務（賃金台帳等）も2年から5年（当分の間3年）に延長（労基法109条）。',
+    points:['起算点は「賃金支払日」（毎月の給与日）','2020年4月1日前の分は旧法（2年）適用','付加金の請求期限も3年に延長（労基法114条）']
+  },
+  {
+    cat:'裁量',
+    title:'阪急トラベルサポート事件（再掲）・事業場外みなし制の適用',
+    court:'最高裁第二小法廷',
+    date:'平成26年（2014年）1月24日',
+    summary:'事業場外みなし労働時間制の適用が否定される典型要件を示した判例（「時間」カテゴリも参照）。',
+    facts:'（上記参照）',
+    holding:'業務内容が詳細に特定され、使用者が随時指示できる状況では事業場外みなし制の適用なし。',
+    points:['「労働時間を算定し難いとき」の文言を厳格解釈','スマートフォン・GPS・クラウドツール普及後の解釈指針','テレワークでの適用にも影響']
+  }
+];
+
+const STATUTE_DATA = [
+  {
+    num:'労基法32条',
+    title:'法定労働時間（週40時間・1日8時間）',
+    text:'使用者は、労働者に、休憩時間を除き１週間について40時間を超えて、労働させてはならない（同条1項）。使用者は、１週間の各日については、労働者に、休憩時間を除き１日について８時間を超えて、労働させてはならない（同条2項）。',
+    note:'これを超えた労働が「時間外労働」として割増賃金の対象。36協定なき時間外労働は刑事罰（6ヶ月以下の懲役・30万円以下の罰金）。'
+  },
+  {
+    num:'労基法37条',
+    title:'割増賃金（時間外・休日・深夜）',
+    text:'時間外労働：通常の労働時間の賃金の計算額の2割5分以上5割以下（月60時間超は5割以上）。休日労働（法定休日）：3割5分以上。深夜業（午後10時〜午前5時）：2割5分以上。これらが重複する場合は加算。',
+    note:'「5割以下の範囲で政令」により上限は5割。中小企業の月60時間超5割増しは2023年4月から適用（猶予期間終了）。'
+  },
+  {
+    num:'労基法38条の3',
+    title:'専門業務型裁量労働制',
+    text:'業務の性質上その遂行の方法を大幅に当該業務に従事する労働者の裁量に委ねる必要があるため、当該業務の遂行の手段及び時間配分の決定等に関し具体的な指示をすることが困難なものとして厚生労働省令で定める業務について、労使協定を締結したときは、当該協定で定める時間労働したものとみなす。',
+    note:'対象：研究開発・情報処理システム設計・取材記者・公認会計士・弁護士等の19業務。深夜・休日の割増賃金は別途必要。'
+  },
+  {
+    num:'労基法38条の4',
+    title:'企画業務型裁量労働制',
+    text:'事業の運営に関する事項についての企画、立案、調査及び分析の業務であって、当該業務の性質上これを適切に遂行するにはその遂行の方法を大幅に労働者の裁量に委ねる必要があるため、当該業務の遂行の手段及び時間配分の決定等に関し具体的な指示をしないこととする業務につき、労使委員会の5分の4以上の多数による議決により協定を締結したとき。',
+    note:'企業の本社・本店のホワイトカラーが対象。専門業務型より要件厳格（労使委員会設置・行政届出・本人同意等）。'
+  },
+  {
+    num:'労基法41条2号',
+    title:'管理監督者の労働時間規制適用除外',
+    text:'監督若しくは管理の地位にある者又は機密の事務を取り扱う者については、労働時間・休憩・休日の規定は適用しない。',
+    note:'深夜業（22〜5時）の割増賃金規制は除外されない（37条4項）。「管理監督者」は実質的判断（日本マクドナルド事件の3要件）。'
+  },
+  {
+    num:'労基法41条の2',
+    title:'高度プロフェッショナル制度（高プロ）',
+    text:'高度の専門的知識等を必要とし、その性質上従事した時間と従事して得た成果との関連性が通常高くないと認められる業務に従事する、年収が基準額（1,075万円）以上の労働者について、労働時間・休憩・休日・深夜業の規定を適用しない（要件充足時）。',
+    note:'5業務（金融商品開発・アナリスト・コンサルタント・研究開発等）が対象。労使委員会決議・本人書面同意・年104日以上の休日確保等が要件。'
+  },
+  {
+    num:'労基法114条',
+    title:'付加金',
+    text:'裁判所は、使用者が第20条（解雇予告手当）・第26条（休業手当）・第37条（割増賃金）・第39条9項（有給休暇中の賃金）の規定に違反した場合においては、労働者の請求により、使用者が支払わなければならない金額についての未払金のほか、これと同一額の付加金の支払を命ずることができる。',
+    note:'付加金は裁判所の裁量（「命ずることができる」）。支払期日から3年以内に請求が必要（消滅時効）。違反が認定されても裁量で減額・不支給の場合も。'
+  },
+  {
+    num:'労基法115条',
+    title:'消滅時効（改正後）',
+    text:'この法律の規定による賃金（退職手当を除く。）の請求権はこれを行使することができる時から当分の間3年間（本来は5年間）、この法律の規定による災害補償その他の請求権（賃金を除く。）はこれを行使することができる時から2年間行わない場合においては、時効によって消滅する。',
+    note:'2020年4月1日施行。起算点は「賃金支払日」。改正前（2020.3.31以前支払期日分）は2年。退職手当は5年。'
+  },
+  {
+    num:'賃確法6条',
+    title:'退職後の遅延損害金（年14.6%）',
+    text:'事業主は、その事業を退職した労働者に係る賃金（退職手当を除く。）について、第1条に規定する支払の確保のための措置が講じられていないことにより当該賃金の支払が遅滞している場合には、当該退職した日の翌日から支払の日まで、年14.6%の利率で遅延損害金を支払わなければならない。',
+    note:'在職中は民法所定利率（年3%）。退職後は年14.6%と大幅に高い。賃金支払確保法（賃確法）に規定。'
+  },
+  {
+    num:'労基法施行規則19条',
+    title:'割増賃金の算定基礎（時間給換算）',
+    text:'月給制の場合：月給÷（その年の月平均所定労働時間数）＝1時間当たりの基礎賃金額。所定労働時間が月ごとに異なる場合は「1年間の所定労働時間数÷12」で月平均を算出。',
+    note:'「月平均所定労働時間」の計算が重要。年間所定労働日数から所定労働時間を計算（例：年間休日120日なら所定労働日数245日×8時間÷12月≒163.3時間）。'
+  },
+  {
+    num:'労基法施行規則21条',
+    title:'割増賃金算定基礎から除外できる賃金（7種類）',
+    text:'①家族手当 ②通勤手当 ③別居手当 ④子女教育手当 ⑤住宅手当 ⑥臨時に支払われた賃金 ⑦1ヶ月を超える期間ごとに支払われる賃金。',
+    note:'「家族手当」でも家族数に関係なく全員に一律支給の場合は除外不可。実質的に賃金の一部と評価されるため。「住宅手当」も住宅費の実費弁償的なものでなく一律支給なら除外不可の場合がある。'
+  }
+];
+
+// ===================== STATE =====================
+let score = {total:0, correct:0, wrong:0};
+let answered = {};
+let currentCat = 'all';
+let currentCaseCat = 'all';
+
+// ===================== INIT =====================
+window.addEventListener('DOMContentLoaded', ()=>{
+  renderQA();
+  renderCases();
+  renderStatute();
+  document.getElementById('s-today').value = new Date().toISOString().slice(0,7);
+});
+
+// ===================== TABS =====================
+function switchTab(t) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===================== Q&A =====================
+function getFilteredQA(){
+  if(currentCat==='all') return QA_DATA;
+  return QA_DATA.filter(q=>q.cat===currentCat);
+}
+
+function renderQA(){
+  const list = getFilteredQA();
+  const container = document.getElementById('qa-container');
+  const progText = document.getElementById('qa-prog-text');
+  const progFill = document.getElementById('qa-prog-fill');
+  const answeredCount = list.filter(q=>answered[q.id]).length;
+  progText.textContent = `${answeredCount} / ${list.length}`;
+  progFill.style.width = list.length ? (answeredCount/list.length*100)+'%' : '0%';
+
+  container.innerHTML = list.map((q,i)=>{
+    const state = answered[q.id];
+    const cardClass = state ? (state.correct ? 'answered-correct' : 'answered-wrong') : '';
+    const choicesHTML = q.choices.map((c,ci)=>{
+      let cls = '';
+      if(state){
+        if(ci===q.answer) cls='correct';
+        else if(ci===state.chosen && !state.correct) cls='wrong';
+      }
+      return `<button class="choice-btn ${cls}" ${state?'disabled':''} onclick="answerQA(${q.id},${ci})">
+        <span class="choice-mark">${['①','②','③','④'][ci]}</span><span>${c}</span>
+      </button>`;
+    }).join('');
+    const answerBox = state ? `<div class="qa-answer-box show">
+      <div class="answer-title">${state.correct?'✓ 正解':'✗ 不正解'} — 解説</div>
+      <div>${q.explanation}</div>
+      <span class="case-ref">参照：${q.caseRef}</span>
+    </div>` : '';
+    return `<div class="qa-card ${cardClass}" id="qac-${q.id}">
+      <div class="qa-header">
+        <span class="qa-num">Q${i+1}</span>
+        <span class="badge badge-blue qa-category">${q.cat}</span>
+      </div>
+      <div class="qa-question">${q.q}</div>
+      <div class="qa-choices">${choicesHTML}</div>
+      ${answerBox}
+    </div>`;
+  }).join('');
+}
+
+function answerQA(id, chosen){
+  const q = QA_DATA.find(x=>x.id===id);
+  const correct = chosen===q.answer;
+  answered[id] = {chosen, correct};
+  if(correct){ score.correct++; } else { score.wrong++; }
+  score.total++;
+  updateScore();
+  renderQA();
+  // scroll to answered card
+  setTimeout(()=>{
+    const el = document.getElementById('qac-'+id);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  },50);
+}
+
+function updateScore(){
+  document.getElementById('sc-total').textContent = score.total;
+  document.getElementById('sc-correct').textContent = score.correct;
+  document.getElementById('sc-wrong').textContent = score.wrong;
+  document.getElementById('sc-rate').textContent = score.total ? Math.round(score.correct/score.total*100)+'%' : '―';
+}
+
+function filterQA(btn, cat){
+  document.querySelectorAll('.qa-filter .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentCat = cat;
+  renderQA();
+}
+
+function resetScore(){
+  score={total:0,correct:0,wrong:0};
+  answered={};
+  updateScore();
+  renderQA();
+}
+
+// ===================== CALC =====================
+function selectProb(btn, prob){
+  document.querySelectorAll('[data-prob]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['basic','fixed','commission','sokosei'].forEach(p=>{
+    document.getElementById('prob-'+p).style.display = p===prob ? 'block' : 'none';
+  });
+}
+
+function fmt(n){ return Math.round(n).toLocaleString('ja-JP'); }
+function showErr(id, msg){ const el=document.getElementById(id); el.textContent=msg; el.classList.add('show'); }
+function hideErr(id){ document.getElementById(id).classList.remove('show'); }
+function showResult(id){ document.getElementById(id).classList.add('show'); }
+function showBreakdown(id){ document.getElementById(id).classList.add('show'); }
+
+function calcBasic(){
+  hideErr('b-err');
+  const salary = parseFloat(document.getElementById('b-salary').value);
+  const fixedH = parseFloat(document.getElementById('b-fixed-hours').value);
+  const ot = parseFloat(document.getElementById('b-ot').value)||0;
+  const night = parseFloat(document.getElementById('b-night').value)||0;
+  const holiday = parseFloat(document.getElementById('b-holiday').value)||0;
+  const holidayNight = parseFloat(document.getElementById('b-holiday-night').value)||0;
+  const over60 = parseFloat(document.getElementById('b-over60').value)||0;
+
+  if(!salary||!fixedH){ showErr('b-err','月給と所定労働時間を入力してください'); return; }
+  if(night>ot){ showErr('b-err','深夜時間外は時間外労働以下にしてください'); return; }
+
+  const hourly = salary / fixedH;
+  // 通常時間外（60h以内）
+  const normalOT = Math.max(0, ot - over60);
+  const otPay = hourly * 1.25 * normalOT;
+  // 60h超
+  const ot60Pay = hourly * 1.50 * over60;
+  // 深夜時間外（+0.25 on top of OT）
+  const nightPay = hourly * 0.25 * night;
+  // 法定休日労働（1.35倍）
+  const holPay = hourly * 1.35 * holiday;
+  // 休日深夜（+0.25）
+  const holNightPay = hourly * 0.25 * holidayNight;
+
+  const total = otPay + ot60Pay + nightPay + holPay + holNightPay;
+
+  document.getElementById('b-result-amt').textContent = fmt(total) + ' 円';
+  document.getElementById('b-result-sub').textContent =
+    `基礎時間給 ${fmt(hourly)} 円/h | 時間外 ${ot}h, 深夜 ${night}h, 休日 ${holiday}h`;
+  showResult('b-result');
+
+  let html = `
+    <div class="bk-row"><span class="bk-key">基礎時間給（月給÷所定時間）</span><span class="bk-val">${fmt(hourly)} 円/h</span></div>
+    <div class="bk-formula">${fmt(salary)} ÷ ${fixedH} = ${hourly.toFixed(2)} 円/h</div>`;
+  if(normalOT>0){
+    html += `<div class="bk-row"><span class="bk-key">時間外割増（60h以内）×1.25</span><span class="bk-val">${fmt(otPay)} 円</span></div>
+    <div class="bk-formula">${hourly.toFixed(2)} × 1.25 × ${normalOT}h = ${fmt(otPay)} 円</div>`;
+  }
+  if(over60>0){
+    html += `<div class="bk-row"><span class="bk-key">時間外割増（60h超）×1.50</span><span class="bk-val">${fmt(ot60Pay)} 円</span></div>
+    <div class="bk-formula">${hourly.toFixed(2)} × 1.50 × ${over60}h = ${fmt(ot60Pay)} 円</div>`;
+  }
+  if(night>0){
+    html += `<div class="bk-row"><span class="bk-key">深夜割増（時間外と重複）+0.25</span><span class="bk-val">${fmt(nightPay)} 円</span></div>
+    <div class="bk-formula">${hourly.toFixed(2)} × 0.25 × ${night}h = ${fmt(nightPay)} 円</div>`;
+  }
+  if(holiday>0){
+    html += `<div class="bk-row"><span class="bk-key">法定休日労働割増×1.35</span><span class="bk-val">${fmt(holPay)} 円</span></div>
+    <div class="bk-formula">${hourly.toFixed(2)} × 1.35 × ${holiday}h = ${fmt(holPay)} 円</div>`;
+  }
+  if(holidayNight>0){
+    html += `<div class="bk-row"><span class="bk-key">休日深夜割増（休日と重複）+0.25</span><span class="bk-val">${fmt(holNightPay)} 円</span></div>
+    <div class="bk-formula">${hourly.toFixed(2)} × 0.25 × ${holidayNight}h = ${fmt(holNightPay)} 円</div>`;
+  }
+  html += `<div class="bk-row" style="margin-top:8px;padding-top:8px;border-top:2px solid var(--primary)"><span class="bk-key" style="font-weight:700;color:var(--text)">合計未払残業代</span><span class="bk-val" style="font-size:16px;color:var(--success)">${fmt(total)} 円</span></div>`;
+  document.getElementById('b-breakdown-body').innerHTML = html;
+  showBreakdown('b-breakdown');
+}
+
+function calcFixed(){
+  hideErr('f-err');
+  const salary = parseFloat(document.getElementById('f-salary').value);
+  const fixedPay = parseFloat(document.getElementById('f-fixed-pay').value);
+  const fixedH = parseFloat(document.getElementById('f-fixed-hours').value);
+  const baseH = parseFloat(document.getElementById('f-base-hours').value);
+  const actualOT = parseFloat(document.getElementById('f-actual-ot').value)||0;
+  const clearStatus = document.getElementById('f-clear').value;
+
+  if(!salary||!fixedPay||!fixedH||!baseH){ showErr('f-err','全ての必須項目を入力してください'); return; }
+
+  const baseSalary = salary - fixedPay;
+  const hourly = baseSalary / baseH;
+  const requiredFixedPay = hourly * 1.25 * fixedH;
+  const isPaySufficient = fixedPay >= requiredFixedPay;
+  const isClear = clearStatus === 'yes';
+  const isValid = isClear && isPaySufficient;
+
+  let validityMsg = '';
+  let resultClass = '';
+  if(!isClear){
+    validityMsg = '【無効】明確区分性なし：雇用契約等で基本給と固定残業代が明確に区別されていないため、固定残業代は無効。月給全額（'+fmt(salary)+'円）を基礎に残業代を再計算します。';
+    resultClass = 'warning';
+  } else if(!isPaySufficient){
+    validityMsg = `【一部無効】固定残業代の金額不足：${fixedH}時間分の法定残業代（${fmt(requiredFixedPay)}円）を下回るため差額が必要。`;
+    resultClass = 'warning';
+  } else {
+    validityMsg = '【有効】固定残業代は有効要件を満たしています。実際の残業が固定時間を超えた場合のみ差額支払義務が生じます。';
+    resultClass = '';
+  }
+
+  let total = 0;
+  let html = '';
+
+  if(!isClear){
+    // 無効：月給全額を基礎に計算
+    const hourlyAll = salary / baseH;
+    total = hourlyAll * 1.25 * actualOT;
+    html = `<div class="bk-row"><span class="bk-key">判定</span><span class="bk-val" style="color:var(--warning)">固定残業代 無効</span></div>
+    <div class="bk-row"><span class="bk-key">基礎時間給（月給全額÷所定時間）</span><span class="bk-val">${fmt(hourlyAll)} 円/h</span></div>
+    <div class="bk-formula">${fmt(salary)} ÷ ${baseH} = ${hourlyAll.toFixed(2)} 円/h</div>
+    <div class="bk-row"><span class="bk-key">未払残業代（全時間外×1.25）</span><span class="bk-val">${fmt(total)} 円</span></div>
+    <div class="bk-formula">${hourlyAll.toFixed(2)} × 1.25 × ${actualOT}h = ${fmt(total)} 円</div>`;
+  } else {
+    const excess = Math.max(0, actualOT - fixedH);
+    const deficit = Math.max(0, requiredFixedPay - fixedPay);
+    const excessPay = hourly * 1.25 * excess;
+    total = deficit + excessPay;
+    html = `<div class="bk-row"><span class="bk-key">判定</span><span class="bk-val" style="color:${isPaySufficient?'var(--success)':'var(--warning)'}">固定残業代 ${isPaySufficient?'有効（差額計算）':'金額不足（差額必要）'}</span></div>
+    <div class="bk-row"><span class="bk-key">基本給部分</span><span class="bk-val">${fmt(baseSalary)} 円</span></div>
+    <div class="bk-row"><span class="bk-key">基礎時間給</span><span class="bk-val">${fmt(hourly)} 円/h</span></div>
+    <div class="bk-row"><span class="bk-key">法定固定残業代（${fixedH}h分）</span><span class="bk-val">${fmt(requiredFixedPay)} 円</span></div>
+    <div class="bk-formula">${hourly.toFixed(2)} × 1.25 × ${fixedH}h = ${fmt(requiredFixedPay)} 円</div>`;
+    if(deficit>0){
+      html += `<div class="bk-row"><span class="bk-key">固定残業代の不足額</span><span class="bk-val" style="color:var(--warning)">${fmt(deficit)} 円</span></div>`;
+    }
+    if(excess>0){
+      html += `<div class="bk-row"><span class="bk-key">固定時間超過分（${excess}h）の差額</span><span class="bk-val">${fmt(excessPay)} 円</span></div>
+      <div class="bk-formula">${hourly.toFixed(2)} × 1.25 × ${excess}h = ${fmt(excessPay)} 円</div>`;
+    }
+    html += `<div class="bk-row" style="margin-top:8px;padding-top:8px;border-top:2px solid var(--primary)"><span class="bk-key" style="font-weight:700">追加支払い必要額合計</span><span class="bk-val" style="font-size:16px">${fmt(total)} 円</span></div>`;
+  }
+
+  const resultEl = document.getElementById('f-result');
+  resultEl.className = 'result-box show ' + resultClass;
+  document.getElementById('f-result-label').textContent = '判定・追加支払い必要額';
+  document.getElementById('f-result-amt').textContent = fmt(total) + ' 円';
+  document.getElementById('f-result-sub').textContent = validityMsg;
+  document.getElementById('f-breakdown-body').innerHTML = html;
+  document.getElementById('f-breakdown').className = 'breakdown show';
+}
+
+function calcCommission(){
+  hideErr('c-err');
+  const fixed = parseFloat(document.getElementById('c-fixed').value)||0;
+  const comm = parseFloat(document.getElementById('c-commission').value)||0;
+  const baseH = parseFloat(document.getElementById('c-base-h').value);
+  const ot = parseFloat(document.getElementById('c-ot').value)||0;
+  const night = parseFloat(document.getElementById('c-night').value)||0;
+  const totalH = parseFloat(document.getElementById('c-total-h').value);
+
+  if(!baseH||!totalH){ showErr('c-err','所定労働時間と総労働時間を入力してください'); return; }
+
+  // 固定給部分の割増
+  const fixedHourly = fixed / baseH;
+  const fixedOTPay = fixedHourly * 1.25 * ot;
+  const fixedNightPay = fixedHourly * 0.25 * night;
+
+  // 歩合給部分：総労働時間で除した単価×0.25
+  const commHourly = comm / totalH;
+  const commOTPay = commHourly * 0.25 * ot;
+  const commNightPay = commHourly * 0.25 * night;
+
+  const total = fixedOTPay + fixedNightPay + commOTPay + commNightPay;
+
+  document.getElementById('c-result-amt').textContent = fmt(total) + ' 円';
+  document.getElementById('c-result-sub').textContent =
+    `固定給時間給 ${fixedHourly.toFixed(1)}円/h | 歩合給単価 ${commHourly.toFixed(1)}円/h`;
+  showResult('c-result');
+
+  let html = `
+    <div class="bk-row"><span class="bk-key">固定給の基礎時間給</span><span class="bk-val">${fixedHourly.toFixed(2)} 円/h</span></div>
+    <div class="bk-formula">${fmt(fixed)} ÷ ${baseH}h = ${fixedHourly.toFixed(2)} 円/h</div>
+    <div class="bk-row"><span class="bk-key">固定給分 時間外割増（×1.25）</span><span class="bk-val">${fmt(fixedOTPay)} 円</span></div>
+    <div class="bk-formula">${fixedHourly.toFixed(2)} × 1.25 × ${ot}h = ${fmt(fixedOTPay)} 円</div>`;
+  if(night>0){
+    html += `<div class="bk-row"><span class="bk-key">固定給分 深夜割増（+0.25）</span><span class="bk-val">${fmt(fixedNightPay)} 円</span></div>
+    <div class="bk-formula">${fixedHourly.toFixed(2)} × 0.25 × ${night}h = ${fmt(fixedNightPay)} 円</div>`;
+  }
+  html += `<div class="bk-row"><span class="bk-key">歩合給の1時間単価（÷総労働時間）</span><span class="bk-val">${commHourly.toFixed(2)} 円/h</span></div>
+    <div class="bk-formula">${fmt(comm)} ÷ ${totalH}h = ${commHourly.toFixed(2)} 円/h</div>
+    <div class="bk-row"><span class="bk-key">歩合給分 割増（×0.25のみ）</span><span class="bk-val">${fmt(commOTPay)} 円</span></div>
+    <div class="bk-formula">${commHourly.toFixed(2)} × 0.25 × ${ot}h = ${fmt(commOTPay)} 円</div>`;
+  if(night>0){
+    html += `<div class="bk-row"><span class="bk-key">歩合給分 深夜割増（+0.25）</span><span class="bk-val">${fmt(commNightPay)} 円</span></div>
+    <div class="bk-formula">${commHourly.toFixed(2)} × 0.25 × ${night}h = ${fmt(commNightPay)} 円</div>`;
+  }
+  html += `<div class="bk-row" style="margin-top:8px;padding-top:8px;border-top:2px solid var(--primary)"><span class="bk-key" style="font-weight:700">合計未払割増賃金</span><span class="bk-val" style="font-size:16px;color:var(--success)">${fmt(total)} 円</span></div>`;
+  document.getElementById('c-breakdown-body').innerHTML = html;
+  showBreakdown('c-breakdown');
+}
+
+function calcSokosei(){
+  hideErr('s-err');
+  const monthly = parseFloat(document.getElementById('s-monthly').value);
+  const months = parseInt(document.getElementById('s-months').value);
+  const startVal = document.getElementById('s-start').value;
+  const todayVal = document.getElementById('s-today').value;
+  const retireVal = document.getElementById('s-retire').value;
+
+  if(!monthly||!months||!startVal||!todayVal){ showErr('s-err','必須項目を入力してください'); return; }
+
+  const cutoff2year = new Date('2020-04-01');
+  let principal = 0;
+  let claimable = 0;
+  let barred = 0;
+  let delayInterest = 0;
+
+  const today = new Date(todayVal+'-01');
+  const retireDate = retireVal ? new Date(retireVal+'-01') : null;
+
+  for(let i=0; i<months; i++){
+    const payDate = new Date(startVal+'-01');
+    payDate.setMonth(payDate.getMonth() + i + 1); // 翌月払い
+
+    const limitYears = payDate >= cutoff2year ? 3 : 2;
+    const limitDate = new Date(payDate);
+    limitDate.setFullYear(limitDate.getFullYear() + limitYears);
+
+    principal += monthly;
+
+    if(today < limitDate){
+      claimable += monthly;
+      // 遅延損害金計算
+      if(retireDate && today > retireDate){
+        const afterRetire = Math.max(0, (today - Math.max(retireDate, payDate)) / (365.25*24*3600*1000));
+        const beforeRetire = Math.max(0, (Math.min(today, retireDate) - payDate) / (365.25*24*3600*1000));
+        delayInterest += monthly * (beforeRetire * 0.03 + afterRetire * 0.146);
+      } else {
+        const days = Math.max(0, (today - payDate) / (365.25*24*3600*1000));
+        delayInterest += monthly * days * 0.03;
+      }
+    } else {
+      barred += monthly;
+    }
+  }
+
+  document.getElementById('s-result-amt').textContent = fmt(claimable) + ' 円';
+  document.getElementById('s-result-sub').textContent =
+    `元本合計 ${fmt(principal)}円 | 時効消滅分 ${fmt(barred)}円 | 遅延損害金概算 ${fmt(delayInterest)}円`;
+  showResult('s-result');
+
+  let html = `
+    <div class="bk-row"><span class="bk-key">未払い元本合計（全期間）</span><span class="bk-val">${fmt(principal)} 円</span></div>
+    <div class="bk-row"><span class="bk-key">時効消滅分</span><span class="bk-val" style="color:var(--danger)">${fmt(barred)} 円</span></div>
+    <div class="bk-row"><span class="bk-key">請求可能元本</span><span class="bk-val" style="color:var(--success)">${fmt(claimable)} 円</span></div>
+    <div class="bk-row"><span class="bk-key">遅延損害金概算</span><span class="bk-val">${fmt(delayInterest)} 円</span></div>
+    <div class="bk-row" style="margin-top:8px;padding-top:8px;border-top:2px solid var(--primary)">
+      <span class="bk-key" style="font-weight:700">合計請求可能額（元本＋遅延損害金）</span>
+      <span class="bk-val" style="font-size:16px;color:var(--success)">${fmt(claimable+delayInterest)} 円</span>
+    </div>
+    <div class="point-box" style="margin-top:10px">
+      <strong>時効の中断・更新：</strong>労働審判申立・訴訟提起・支払督促・仮差押えにより時効が「更新」（旧：中断）される。また使用者が一部支払い・分割払い提案をした場合も「承認」として時効が更新される（民法152条）。
+    </div>`;
+  document.getElementById('s-breakdown-body').innerHTML = html;
+  showBreakdown('s-breakdown');
+}
+
+// ===================== CASES =====================
+function renderCases(){
+  const list = currentCaseCat==='all' ? CASES_DATA : CASES_DATA.filter(c=>c.cat===currentCaseCat);
+  const container = document.getElementById('cases-container');
+  container.innerHTML = list.map((c,i)=>{
+    const catColors = {時間:'badge-blue',固定:'badge-yellow',管理:'badge-red',時効:'badge-green',裁量:'badge-purple'};
+    const ptHTML = c.points.map(p=>`<li>${p}</li>`).join('');
+    return `<div class="case-card" onclick="toggleCase(this)">
+      <div class="case-header">
+        <span class="case-title">${c.title}</span>
+        <span class="badge ${catColors[c.cat]||'badge-gray'}">${c.cat}</span>
+      </div>
+      <div class="case-meta">${c.court}｜${c.date}</div>
+      <div class="case-summary">${c.summary}</div>
+      <div class="case-detail">
+        <div class="case-detail-section">
+          <h4>事案の概要</h4>
+          <p>${c.facts}</p>
+        </div>
+        <div class="case-detail-section">
+          <h4>判旨</h4>
+          <div class="case-holding">${c.holding}</div>
+        </div>
+        <div class="case-detail-section">
+          <h4>実務上のポイント</h4>
+          <ul style="padding-left:16px;font-size:13px;line-height:1.8">${ptHTML}</ul>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCase(el){
+  const detail = el.querySelector('.case-detail');
+  detail.classList.toggle('open');
+}
+
+function filterCases(btn, cat){
+  document.querySelectorAll('[data-ccat]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentCaseCat = cat;
+  renderCases();
+}
+
+// ===================== STATUTE =====================
+function renderStatute(){
+  const container = document.getElementById('statute-container');
+  container.innerHTML = STATUTE_DATA.map((s,i)=>`
+    <div class="statute-card">
+      <div class="statute-header" onclick="toggleStatute(this)">
+        <span class="statute-num">${s.num}</span>
+        <span class="statute-title">${s.title}</span>
+        <span class="statute-toggle">▼</span>
+      </div>
+      <div class="statute-body">
+        <div class="statute-text">${s.text}</div>
+        <div class="statute-note">${s.note}</div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleStatute(header){
+  const body = header.nextElementSibling;
+  const isOpen = header.classList.toggle('open');
+  body.classList.toggle('open', isOpen);
+}
+
+function closeModal(e){
+  if(e.target===document.getElementById('modal'))
+    document.getElementById('modal').classList.remove('open');
+}
+</script>
+</body>
+</html>
