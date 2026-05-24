@@ -699,7 +699,8 @@
   <div id="jq-qa-cat-wrap" style="display:none">
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="qa-cat-filter">
       <button class="cat-btn active" data-cat="" onclick="setQACat('')">すべて</button>
-      <button class="cat-btn" data-cat="保険" onclick="setQACat('保険')">保険</button>
+      <button class="cat-btn" data-cat="自賠責・任意" onclick="setQACat('自賠責・任意')">自賠責・任意保険</button>
+      <button class="cat-btn" data-cat="健保・労災" onclick="setQACat('健保・労災')">健保・労災</button>
       <button class="cat-btn" data-cat="積極損害" onclick="setQACat('積極損害')">積極損害</button>
       <button class="cat-btn" data-cat="消極損害" onclick="setQACat('消極損害')">消極損害</button>
       <button class="cat-btn" data-cat="その他" onclick="setQACat('その他')">その他</button>
@@ -1943,9 +1944,10 @@ function getQACat(idx){
   // cat フィールドがある問題（新規追加分）はそのまま分類
   if(q.cat){
     const MERGE={
-      '基礎':'保険','自賠責':'保険','人身傷害':'保険','健保労災':'保険',
-      '治療費':'積極損害','交通費':'積極損害','入院費':'積極損害','慰謝料':'積極損害',
-      '既払額':'積極損害','過失':'積極損害','死亡':'積極損害',
+      '自賠責':'自賠責・任意','人身傷害':'自賠責・任意','基礎':'自賠責・任意',
+      '健保労災':'健保・労災',
+      '治療費':'積極損害','交通費':'積極損害','入院費':'積極損害','慰謝料':'積極損害','死亡':'積極損害',
+      '既払額':'その他','過失':'その他',
       '休業損害':'消極損害','逸失利益':'消極損害','後遺障害':'消極損害',
       '訴状':'その他',
     };
@@ -1964,33 +1966,37 @@ function getQACat(idx){
   if(/症状固定後に行うべき/.test(t)) return '消極損害';
   if(/就労可能年数|67歳.*就労/.test(t)) return '消極損害';
 
-  // ── その他（訴状・訴訟） ──
+  // ── その他（訴状・過失相殺・既払額） ──
   if(/訴状|請求の趣旨|請求の原因|仮執行宣言|訴訟費用|民事訴訟法|よって書き/.test(t)) return 'その他';
   if(/遅延損害金|消滅時効|不法行為.*起算|民法709条|自賠法3条/.test(t)) return 'その他';
+  if(/過失相殺|過失割合|素因減額|判例タイムズ|判タ/.test(t)) return 'その他';
+  if(/既払額|内払金/.test(t)) return 'その他';
 
-  // ── 保険 ──
-  if(/自賠責保険(?!診断書|診療報酬|施術証明)/.test(t)) return '保険';
-  if(/強制保険|任意保険.*法律上|加入.*義務/.test(t)) return '保険';
-  if(/人身傷害保険/.test(t)) return '保険';
-  if(/弁護士費用特約/.test(t)) return '保険';
-  if(/搭乗者傷害/.test(t)) return '保険';
-  if(/被害者請求権|加害者請求権|16条請求|15条請求/.test(t)) return '保険';
-  if(/自賠責一括|一括対応|一括払い/.test(t)) return '保険';
-  if(/重過失減額/.test(t)) return '保険';
-  if(/傷病手当金/.test(t)) return '保険';
-  if(/休業.*補償.*給付|療養.*補償.*給付/.test(t)) return '保険';
-  if(/労災指定病院|労災保険.*使用|健康保険.*使用|健保.*使用/.test(t)) return '保険';
-  if(/第三者行為.*傷病届/.test(t)) return '保険';
-  if(/読替規定|過失部分払条項|人傷基準/.test(t)) return '保険';
-  if(/損益相殺.*対象外|等級.*下が/.test(t)) return '保険';
+  // ── 健保・労災 ──
+  if(/傷病手当金/.test(t)) return '健保・労災';
+  if(/休業.*補償.*給付|療養.*補償.*給付/.test(t)) return '健保・労災';
+  if(/労災指定病院|労災保険.*使用|健康保険.*使用|健保.*使用/.test(t)) return '健保・労災';
+  if(/第三者行為.*傷病届/.test(t)) return '健保・労災';
+  if(/国民健康保険|健保.*一括|健保レセプト|労災レセプト/.test(t)) return '健保・労災';
+  if(/通勤災害.*健康保険|健康保険.*通勤災害/.test(t)) return '健保・労災';
+
+  // ── 自賠責・任意保険 ──
+  if(/自賠責保険(?!診断書|診療報酬|施術証明)/.test(t)) return '自賠責・任意';
+  if(/強制保険|任意保険.*法律上|加入.*義務/.test(t)) return '自賠責・任意';
+  if(/人身傷害保険/.test(t)) return '自賠責・任意';
+  if(/弁護士費用特約/.test(t)) return '自賠責・任意';
+  if(/搭乗者傷害/.test(t)) return '自賠責・任意';
+  if(/被害者請求権|加害者請求権|16条請求|15条請求/.test(t)) return '自賠責・任意';
+  if(/自賠責一括|一括対応|一括払い/.test(t)) return '自賠責・任意';
+  if(/重過失減額/.test(t)) return '自賠責・任意';
+  if(/読替規定|過失部分払条項|人傷基準/.test(t)) return '自賠責・任意';
+  if(/損益相殺.*対象外|等級.*下が/.test(t)) return '自賠責・任意';
 
   // ── 積極損害 ──
   if(/治療関係費|治療費|自賠責診断書|自賠責診療報酬|施術証明|調剤|整骨院|薬局/.test(t)) return '積極損害';
   if(/通院交通費|ガソリン代|15円.*km|km.*15円|タクシー.*通院/.test(t)) return '積極損害';
   if(/入院雑費|差額ベッド|紙おむつ/.test(t)) return '積極損害';
-  if(/既払額|内払金/.test(t)) return '積極損害';
   if(/慰謝料/.test(t)) return '積極損害';
-  if(/過失相殺|過失割合|素因減額/.test(t)) return '積極損害';
   if(/葬儀費用|文書料|損害賠償請求関係費用/.test(t)) return '積極損害';
 
   return '保険';
