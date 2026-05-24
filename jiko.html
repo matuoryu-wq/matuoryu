@@ -1933,6 +1933,7 @@ const QA_BANK = [
 let qaCurrentIdx = -1;
 let qaAnswered = false;
 let qaQueue = [];
+let qaTotal = 0;
 let selectedCat = '';
 
 function getQACat(idx){
@@ -1975,6 +1976,7 @@ function qaRefillQueue(){
   const allIdx = Array.from({length:QA_BANK.length},(_,i)=>i)
     .filter(i=> !selectedCat || getQACat(i)===selectedCat);
   qaQueue = [...allIdx];
+  qaTotal = qaQueue.length;
   for(let i = qaQueue.length - 1; i > 0; i--){
     const j = Math.floor(Math.random() * (i + 1));
     [qaQueue[i], qaQueue[j]] = [qaQueue[j], qaQueue[i]];
@@ -2000,7 +2002,9 @@ function buildQA(){
                <button class="btn-secondary" onclick="answerQA('B')">B</button>
                <button class="btn-secondary" onclick="answerQA('C')">C</button>`;
   }
+  const qaNum = qaTotal - qaQueue.length;
   document.getElementById('jq-qa-section').innerHTML = `
+    <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:8px">${qaNum} / ${qaTotal} 問</div>
     <div class="quiz-question" style="white-space:pre-line">${q.q}</div>
     <div style="display:flex;gap:10px;margin:12px 0;flex-wrap:wrap" id="qa-btn-area">${btnHtml}</div>
     <button class="btn-calc" onclick="buildQA()" style="margin-bottom:12px">次の問題</button>
