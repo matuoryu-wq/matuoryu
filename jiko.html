@@ -1932,8 +1932,8 @@ const QA_BANK = [
 
 let qaCurrentIdx = -1;
 let qaAnswered = false;
-let qaQueue = [];
-let qaTotal = 0;
+let qaFilteredList = [];
+let qaPosition = 0;
 let selectedCat = '';
 
 function getQACat(idx){
@@ -1968,31 +1968,33 @@ function setQACat(cat){
   document.querySelectorAll('.cat-btn').forEach(b=>{
     b.classList.toggle('active',b.dataset.cat===cat);
   });
-  qaQueue=[];
+  qaFilteredList = Array.from({length:QA_BANK.length},(_,i)=>i)
+    .filter(i=> !selectedCat || getQACat(i)===selectedCat);
+  qaPosition = 0;
   buildQA();
 }
 
-function qaRefillQueue(){
-  const allIdx = Array.from({length:QA_BANK.length},(_,i)=>i)
-    .filter(i=> !selectedCat || getQACat(i)===selectedCat);
-  qaQueue = [...allIdx];
-  qaTotal = qaQueue.length;
-  for(let i = qaQueue.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [qaQueue[i], qaQueue[j]] = [qaQueue[j], qaQueue[i]];
-  }
-  // 前の周の最後の問題と同じにならないよう調整
-  if(qaCurrentIdx !== -1 && qaQueue[qaQueue.length - 1] === qaCurrentIdx && qaQueue.length > 1){
-    const swap = Math.floor(Math.random() * (qaQueue.length - 1));
-    [qaQueue[swap], qaQueue[qaQueue.length - 1]] = [qaQueue[qaQueue.length - 1], qaQueue[swap]];
+function qaJump(val){
+  const n = parseInt(val);
+  if(!isNaN(n) && n >= 1 && n <= qaFilteredList.length){
+    qaPosition = n - 1;
+    buildQA();
   }
 }
 
-function buildQA(){
-  if(qaQueue.length === 0) qaRefillQueue();
-  qaCurrentIdx = qaQueue.pop();
+function buildQA(pos){
+  if(qaFilteredList.length === 0){
+    qaFilteredList = Array.from({length:QA_BANK.length},(_,i)=>i)
+      .filter(i=> !selectedCat || getQACat(i)===selectedCat);
+  }
+  if(pos !== undefined) qaPosition = pos;
+  if(qaPosition >= qaFilteredList.length) qaPosition = 0;
+  if(qaPosition < 0) qaPosition = qaFilteredList.length - 1;
+  qaCurrentIdx = qaFilteredList[qaPosition];
   qaAnswered = false;
   const q = QA_BANK[qaCurrentIdx];
+  const total = qaFilteredList.length;
+  const num = qaPosition + 1;
   let btnHtml = '';
   if(q.type==='ox'){
     btnHtml = `<button class="btn-secondary" style="min-width:60px;font-size:18px;font-weight:800" onclick="answerQA('○')">○</button>
@@ -2002,12 +2004,20 @@ function buildQA(){
                <button class="btn-secondary" onclick="answerQA('B')">B</button>
                <button class="btn-secondary" onclick="answerQA('C')">C</button>`;
   }
-  const qaNum = qaTotal - qaQueue.length;
   document.getElementById('jq-qa-section').innerHTML = `
-    <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:8px">${qaNum} / ${qaTotal} 問</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <span style="font-size:13px;font-weight:700;color:var(--text-muted)">Q.${num} / ${total}</span>
+      <input type="number" min="1" max="${total}" value="${num}"
+        style="width:64px;padding:3px 6px;border:1.5px solid #ccc;border-radius:6px;font-size:13px;text-align:center"
+        onchange="qaJump(this.value)" onkeydown="if(event.key==='Enter')qaJump(this.value)">
+      <span style="font-size:12px;color:var(--text-muted)">問にジャンプ</span>
+    </div>
     <div class="quiz-question" style="white-space:pre-line">${q.q}</div>
     <div style="display:flex;gap:10px;margin:12px 0;flex-wrap:wrap" id="qa-btn-area">${btnHtml}</div>
-    <button class="btn-calc" onclick="buildQA()" style="margin-bottom:12px">次の問題</button>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn-secondary" onclick="buildQA(${qaPosition-1})"${qaPosition===0?' disabled':''} style="min-width:80px">◀ 前へ</button>
+      <button class="btn-calc" style="flex:1" onclick="buildQA(${qaPosition+1})">次へ ▶</button>
+    </div>
     <div id="qa-feedback" style="display:none"></div>`;
 }
 
