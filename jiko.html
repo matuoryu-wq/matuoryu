@@ -700,7 +700,8 @@
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="qa-cat-filter">
       <button class="cat-btn active" data-cat="" onclick="setQACat('')">すべて</button>
       <button class="cat-btn" data-cat="保険" onclick="setQACat('保険')">保険</button>
-      <button class="cat-btn" data-cat="損害" onclick="setQACat('損害')">積極損害・消極損害</button>
+      <button class="cat-btn" data-cat="積極損害" onclick="setQACat('積極損害')">積極損害</button>
+      <button class="cat-btn" data-cat="消極損害" onclick="setQACat('消極損害')">消極損害</button>
       <button class="cat-btn" data-cat="その他" onclick="setQACat('その他')">その他</button>
     </div>
     <div id="jq-qa-section" class="card">
@@ -1938,9 +1939,9 @@ function getQACat(idx){
   // 旧詳細カテゴリ → 3大カテゴリへのマッピング
   const MERGE={
     '基礎':'保険','自賠責':'保険','人身傷害':'保険','健保労災':'保険',
-    '治療費':'損害','交通費':'損害','入院費':'損害','慰謝料':'損害',
-    '休業損害':'損害','逸失利益':'損害','後遺障害':'損害','既払額':'損害',
-    '過失':'損害','死亡':'損害',
+    '治療費':'積極損害','交通費':'積極損害','入院費':'積極損害','慰謝料':'積極損害',
+    '既払額':'積極損害','過失':'積極損害','死亡':'積極損害',
+    '休業損害':'消極損害','逸失利益':'消極損害','後遺障害':'消極損害',
     '訴状':'その他',
   };
   const R=[
