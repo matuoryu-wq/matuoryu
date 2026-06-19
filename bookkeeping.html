@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>簿記仕訳 練習アプリ</title>
+  <style>
+    :root {
+      --primary: #1E4D7B;
+      --primary-light: #E8F0FA;
+      --bg: #F2F5F9;
+      --card: #FFFFFF;
+      --text: #1A2B3C;
+      --muted: #6B7B8D;
+      --border: #DDE3EC;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+    }
+    .header {
+      background: linear-gradient(135deg, #0D2B45, #1E4D7B);
+      color: #fff;
+      padding: 18px 20px 14px;
+      text-align: center;
+    }
+    .header h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.05em; }
+    .header p { font-size: 12px; opacity: 0.75; margin-top: 3px; }
+    .legend {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; }
+    .dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; }
+    .dot.asset     { background: #F9C400; }
+    .dot.expense   { background: #F4849A; }
+    .dot.liability { background: #70B8EA; }
+    .dot.revenue   { background: #5DC06A; }
+    .dot.equity    { background: #FF8A50; }
+    .filter-bar {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-label { font-size: 12px; color: var(--muted); }
+    .ftab {
+      padding: 5px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      background: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+    .ftab.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .controls {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .ctrl-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: none;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    .ctrl-btn:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+    .ctrl-btn.active { background: #FFF3E0; border-color: #FB8C00; color: #E65100; }
+    .stats-bar {
+      background: white;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+    }
+    .stat {
+      flex: 1;
+      text-align: center;
+      padding: 10px 6px;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-num { font-size: 22px; font-weight: 800; line-height: 1.1; }
+    .stat-num.total    { color: var(--primary); }
+    .stat-num.correct  { color: #2E7D32; }
+    .stat-num.wrong    { color: #C62828; }
+    .stat-num.mem      { color: #6A1B9A; }
+    .stat-label { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .card-area {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 16px 14px;
+    }
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .progress-bar {
+      height: 4px;
+      background: #DDE3EC;
+      border-radius: 2px;
+      margin-bottom: 14px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+    .flashcard {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 16px rgba(30,77,123,0.10);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .card-top {
+      background: var(--primary);
+      padding: 8px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .level-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+    .category-tag { font-size: 12px; color: rgba(255,255,255,0.85); }
+    .card-body { padding: 20px 18px; }
+    .scenario-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .scenario {
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--text);
+      min-height: 60px;
+    }
+    .divider { height: 1px; background: var(--border); margin: 16px 0; }
+    .reveal-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary-light);
+      border: 2px dashed #90B8E8;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+      transition: all 0.2s;
+    }
+    .reveal-btn:hover { background: #D0E3FA; }
+    .answer-area { display: none; }
+    .answer-area.show { display: block; }
+    .answer-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .journal-entry {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .entry-header {
+      background: #F7F9FC;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .entry-row { display: flex; }
+    .entry-side { flex: 1; padding: 10px 12px; }
+    .entry-sep { width: 1px; background: var(--border); }
+    .side-lbl { font-size: 10px; color: #999; margin-bottom: 6px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .tag {
+      padding: 4px 11px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .tag.asset     { background: #FFF9C4; color: #5D4037; border: 1.5px solid #F9C400; }
+    .tag.expense   { background: #FCE4EC; color: #880E4F; border: 1.5px solid #F4849A; }
+    .tag.liability { background: #E3F2FD; color: #0D47A1; border: 1.5px solid #70B8EA; }
+    .tag.revenue   { background: #E8F5E9; color: #1B5E20; border: 1.5px solid #5DC06A; }
+    .tag.equity    { background: #FFF3E0; color: #E65100; border: 1.5px solid #FF8A50; }
+    .tag.other     { background: #F3E5F5; color: #4A148C; border: 1.5px solid #CE93D8; }
+    .note-box {
+      margin-top: 6px;
+      padding: 6px 10px;
+      background: #FFF8E1;
+      border-left: 3px solid #FFC107;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #5D4037;
+      line-height: 1.5;
+    }
+    .judge-btns {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .judge-btn {
+      flex: 1;
+      padding: 13px;
+      border-radius: 10px;
+      border: 2px solid;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 700;
+      transition: all 0.15s;
+    }
+    .judge-btn.ok  { background: #E8F5E9; border-color: #4CAF50; color: #1B5E20; }
+    .judge-btn.ng  { background: #FFEBEE; border-color: #EF5350; color: #B71C1C; }
+    .judge-btn.ok:hover { background: #C8E6C9; }
+    .judge-btn.ng:hover { background: #FFCDD2; }
+    .nav-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .nav-btn {
+      padding: 11px 28px;
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+    .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .complete-card {
+      text-align: center;
+      padding: 50px 24px;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 16px rgba(30,77,123,0.10);
+    }
+    .complete-emoji { font-size: 48px; }
+    .complete-title { font-size: 20px; font-weight: 700; margin: 12px 0 6px; }
+    .complete-score { font-size: 42px; font-weight: 800; color: #2E7D32; }
+    .complete-sub { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+    .restart-btn {
+      padding: 13px 32px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1>簿記仕訳 練習アプリ</h1>
+  <p>問題を読んで仕訳を考え、答えを確認しよう</p>
+</div>
+<div class="legend">
+  <div class="legend-item"><div class="dot asset"></div>資産</div>
+  <div class="legend-item"><div class="dot expense"></div>費用</div>
+  <div class="legend-item"><div class="dot liability"></div>負債</div>
+  <div class="legend-item"><div class="dot revenue"></div>収益</div>
+  <div class="legend-item"><div class="dot equity"></div>純資産</div>
+</div>
+<div class="filter-bar">
+  <span class="filter-label">レベル：</span>
+  <button class="ftab active" onclick="setLevel('all',this)">すべて</button>
+  <button class="ftab" onclick="setLevel('3',this)">3級</button>
+  <button class="ftab" onclick="setLevel('2',this)">2級</button>
+</div>
+<div class="controls">
+  <button class="ctrl-btn" onclick="shuffle()">🔀 シャッフル</button>
+  <button class="ctrl-btn" id="btn-hide-mem" onclick="toggleHideMem()">習得済みを除く</button>
+  <button class="ctrl-btn" onclick="resetAll()">🔄 リセット</button>
+</div>
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num total" id="s-total">0</div><div class="stat-label">問題数</div></div>
+  <div class="stat"><div class="stat-num correct" id="s-ok">0</div><div class="stat-label">正解</div></div>
+  <div class="stat"><div class="stat-num wrong" id="s-ng">0</div><div class="stat-label">不正解</div></div>
+  <div class="stat"><div class="stat-num mem" id="s-mem">0</div><div class="stat-label">習得済</div></div>
+</div>
+<div class="card-area">
+  <div class="progress-row">
+    <span id="prog-text"></span>
+    <span id="prog-cat" style="font-size:12px;color:var(--muted)"></span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+  <div id="card-container"></div>
+  <div class="nav-row" id="nav-row">
+    <button class="nav-btn" id="btn-prev" onclick="go(-1)">← 前へ</button>
+    <button class="nav-btn" id="btn-next" onclick="go(+1)">次へ →</button>
+  </div>
+</div>
+<script>
+const T = {
+  '現金':'asset','普通預金':'asset','当座預金':'asset','受取手形':'asset',
+  '売掛金':'asset','電子記録債権':'asset','クレジット売掛金':'asset',
+  '繰越商品':'asset','仮払金':'asset','前払費用':'asset','前払利息':'asset',
+  '未収収益':'asset','未収利息':'asset','未収入金':'asset','立替金':'asset',
+  '仮払法人税等':'asset','差入保証金':'asset','貯蔵品':'asset',
+  '土地':'asset','建物':'asset','備品':'asset','貸付金':'asset',
+  '手形貸付金':'asset','前払金':'asset','受取商品券':'asset','現金過不足':'asset',
+  '買掛金':'liability','支払手形':'liability','電子記録債務':'liability',
+  '未払金':'liability','借入金':'liability','手形借入金':'liability',
+  '未払利息':'liability','前受金':'liability','仮受金':'liability',
+  '当座借越':'liability','預り金':'liability','社会保険預り金':'liability',
+  '所得税預り金':'liability','未払法人税等':'liability','未払消費税':'liability',
+  '仮受消費税':'liability','未払配当金':'liability','前受収益':'liability',
+  '受取家賃':'revenue','受取手数料':'revenue','受取利息':'revenue',
+  '売上':'revenue','固定資産売却益':'revenue','受取配当金':'revenue',
+  '償却債権取立益':'revenue','雑益':'revenue',
+  '仕入':'expense','支払家賃':'expense','支払手数料':'expense',
+  '支払利息':'expense','支払保険料':'expense','租税公課':'expense',
+  '広告宣伝費':'expense','通信費':'expense','旅費交通費':'expense',
+  '修繕費':'expense','貸倒損失':'expense','貸倒引当金繰入':'expense',
+  '減価償却費':'expense','発送費':'expense','雑損':'expense',
+  '法定福利費':'expense','給料':'expense','法人税等':'expense',
+  '固定資産売却損':'expense','仮払消費税':'expense',
+  '資本金':'equity','繰越利益剰余金':'equity','利益準備金':'equity',
+  '貸倒引当金':'other','減価償却累計額':'other',
+};
+function tagType(a){ return T[a] || 'other'; }
+const ALL = [
+  {id:1,lv:'3',cat:'商品売買',q:'商品（税込・仕入諸掛含む）を現金で買う',e:[{d:['仕入','仮払消費税'],c:['現金']}]},
+  {id:2,lv:'3',cat:'商品売買',q:'商品（税込・仕入諸掛含む）を掛けで買う',e:[{d:['仕入','仮払消費税'],c:['買掛金']}]},
+  {id:3,lv:'3',cat:'商品売買',q:'商品（税込）を約束手形で買う',e:[{d:['仕入','仮払消費税'],c:['支払手形']}]},
+  {id:4,lv:'3',cat:'商品売買',q:'商品（税込）を自己振出し小切手で買う',e:[{d:['仕入','仮払消費税'],c:['当座預金']}]},
+  {id:5,lv:'3',cat:'商品売買',q:'掛け（買掛金）を現金で払う',e:[{d:['買掛金'],c:['現金']}]},
+  {id:6,lv:'3',cat:'商品売買',q:'商品（税込）を掛けで売り上げる',e:[{d:['売掛金'],c:['売上','仮受消費税']}]},
+  {id:7,lv:'3',cat:'商品売買',q:'商品（税込）を売り上げ、他店振出し小切手で受け取る（現金扱い）',e:[{d:['現金'],c:['売上','仮受消費税']}]},
+  {id:8,lv:'3',cat:'商品売買',q:'商品（税込）を売り上げ、商品券で受け取る',e:[{d:['受取商品券'],c:['売上','仮受消費税']}]},
+  {id:9,lv:'3',cat:'商品売買',q:'商品（税込）を売り上げ、受取手形で受け取る',e:[{d:['受取手形'],c:['売上','仮受消費税']}]},
+  {id:10,lv:'3',cat:'商品売買',q:'売掛金を現金で回収する',e:[{d:['現金'],c:['売掛金']}]},
+  {id:11,lv:'3',cat:'商品売買',q:'商品をクレジットカードで売り上げる（手数料あり）',e:[{d:['支払手数料','クレジット売掛金'],c:['売上']}]},
+  {id:12,lv:'3',cat:'商品売買',q:'クレジット売掛金を当座預金で回収',e:[{d:['当座預金'],c:['クレジット売掛金']}]},
+  {id:13,lv:'3',cat:'商品売買',q:'掛けで商品を売り、送料（売上諸掛）は当社負担（現金払い）',e:[{d:['発送費','売掛金'],c:['現金','売上']}]},
+  {id:14,lv:'3',cat:'商品売買',q:'受取商品券を現金化する',e:[{d:['現金'],c:['受取商品券']}]},
+  {id:15,lv:'3',cat:'電子記録',q:'Aが買掛金を電子記録債務に振り替える（取引銀行経由で発生記録）',e:[{d:['買掛金'],c:['電子記録債務']}]},
+  {id:16,lv:'3',cat:'電子記録',q:'Bが電子記録債権の発生通知を受ける',e:[{d:['電子記録債権'],c:['売掛金']}]},
+  {id:17,lv:'3',cat:'電子記録',q:'売掛金を電子記録債権で回収する',e:[{d:['電子記録債権'],c:['売掛金']}]},
+  {id:18,lv:'3',cat:'手形',q:'手形で商品を仕入れる',e:[{d:['仕入'],c:['支払手形']}]},
+  {id:19,lv:'3',cat:'手形',q:'支払手形が期日に当座預金から引き落とされる',e:[{d:['支払手形'],c:['当座預金']}]},
+  {id:20,lv:'3',cat:'手形',q:'受取手形が期日を迎え、当座預金に入金される',e:[{d:['当座預金'],c:['受取手形']}]},
+  {id:21,lv:'3',cat:'固定資産',q:'建物を後払いで購入（仲介手数料・登記費用は現金払い、付随費用は取得原価に含む）',e:[{d:['建物'],c:['未払金','現金']}],note:'付随費用は取得原価に含む'},
+  {id:22,lv:'3',cat:'固定資産',q:'建物の後払い代金を現金で払う（未払金の決済）',e:[{d:['未払金'],c:['現金']}]},
+  {id:23,lv:'3',cat:'固定資産',q:'土地（購入価格50・購入手数料2）を55で売却（後払い）',e:[{d:['未収入金'],c:['土地','固定資産売却益']}],note:'未収入金55 | 土地52・固定資産売却益3'},
+  {id:24,lv:'3',cat:'当座預金',q:'当座預金残高が不足しているのに小切手で支払う（当座借越）',e:[{d:['当座預金'],c:['当座借越']}],note:'翌期首に再振替仕訳'},
+  {id:25,lv:'3',cat:'当座預金',q:'普通預金口座に利息を受け取る',e:[{d:['普通預金'],c:['受取利息']}]},
+  {id:26,lv:'3',cat:'前払金・前受金',q:'商品の手付金（内金）を現金で払う',e:[{d:['前払金'],c:['現金']}]},
+  {id:27,lv:'3',cat:'前払金・前受金',q:'現金で商品代の手付金（前受金）を受け取る',e:[{d:['現金'],c:['前受金']}]},
+  {id:28,lv:'3',cat:'前払金・前受金',q:'前受金の残金を受け取り、商品を売り上げる',e:[{d:['前受金','現金'],c:['売上']}]},
+  {id:29,lv:'3',cat:'現金過不足',q:'実地査定の結果、手許現金 ＜ 帳簿現金（現金不足が判明）',e:[{d:['現金過不足'],c:['現金']}]},
+  {id:30,lv:'3',cat:'現金過不足',q:'現金過不足（借方）のうち一部は発送費、残りは原因不明',e:[{d:['発送費','雑損'],c:['現金過不足']}]},
+  {id:31,lv:'3',cat:'現金過不足',q:'現金過不足（貸方）のうち一部は受取手数料、残りは原因不明',e:[{d:['現金過不足'],c:['受取手数料','雑益']}]},
+  {id:32,lv:'3',cat:'給与・社保',q:'従業員の昼食代を現金で立て替える',e:[{d:['立替金'],c:['現金']}]},
+  {id:33,lv:'3',cat:'給与・社保',q:'立替金・社会保険料・所得税を差し引いて給料を支払う',e:[{d:['給料'],c:['現金','立替金','社会保険預り金','所得税預り金']}]},
+  {id:34,lv:'3',cat:'給与・社保',q:'預り金（社保・所得税）を会社負担分と合わせて年金機構・税務署に支払う',e:[{d:['預り金','法定福利費'],c:['現金']}]},
+  {id:35,lv:'3',cat:'貸付・借入',q:'貸付金が返済され、利息とともに現金で受け取る',e:[{d:['現金'],c:['貸付金','受取利息']}]},
+  {id:36,lv:'3',cat:'貸付・借入',q:'借入金と利息を現金で払う',e:[{d:['借入金','支払利息'],c:['現金']}]},
+  {id:37,lv:'3',cat:'貸付・借入',q:'現金を貸し、代わりに手形を受け取る（手形貸付金）',e:[{d:['手形貸付金'],c:['現金']}],note:'相手方は「現金 | 手形借入金」'},
+  {id:38,lv:'3',cat:'法人税',q:'①期中に法人税を中間納付（仮払い）する',e:[{d:['仮払法人税等'],c:['現金']}]},
+  {id:39,lv:'3',cat:'法人税',q:'②税引前利益700の30%を法人税等として計上（中間納付済120）',e:[{d:['法人税等'],c:['仮払法人税等','未払法人税等']}],note:'法人税等210 | 仮払法人税等120・未払法人税等90'},
+  {id:40,lv:'3',cat:'法人税',q:'③未払法人税等を現金で確定納付する',e:[{d:['未払法人税等'],c:['現金']}]},
+  {id:41,lv:'3',cat:'消費税',q:'①決算で消費税が確定する（仕入時に一部仮払済み）',e:[{d:['仮受消費税'],c:['仮払消費税','未払消費税']}]},
+  {id:42,lv:'3',cat:'消費税',q:'②未払消費税を現金で納付する',e:[{d:['未払消費税'],c:['現金']}]},
+  {id:43,lv:'3',cat:'資本',q:'株式を発行（設立時・新株）し、当座預金に払込みを受ける',e:[{d:['当座預金'],c:['資本金']}]},
+  {id:44,lv:'2',cat:'剰余金',q:'①配当金と準備金の積立が確定する（利益処分）',e:[{d:['繰越利益剰余金'],c:['未払配当金','利益準備金']}]},
+  {id:45,lv:'2',cat:'剰余金',q:'②当座預金から配当金を払う（未払配当金の決済）',e:[{d:['未払配当金'],c:['当座預金']}]},
+  {id:46,lv:'2',cat:'家賃・手数料',q:'現金で家賃と手数料を受け取る',e:[{d:['現金'],c:['受取家賃','受取手数料']}]},
+  {id:47,lv:'2',cat:'租税・貯蔵品',q:'①収入印紙代・固定資産税・広告費・切手代を現金で払う',e:[{d:['租税公課','広告宣伝費','通信費'],c:['現金']}]},
+  {id:48,lv:'2',cat:'租税・貯蔵品',q:'②期末に未使用の切手・収入印紙を貯蔵品に振り替える',e:[{d:['貯蔵品'],c:['通信費','租税公課']}],note:'翌期首に再振替仕訳（貯蔵品→通信費・租税公課）'},
+  {id:49,lv:'2',cat:'仮払金',q:'①出張前に旅費を仮払い（概算払い）する',e:[{d:['仮払金'],c:['現金']}]},
+  {id:50,lv:'2',cat:'仮払金',q:'②旅費確定後、差額（過払い分）を現金で返還してもらう',e:[{d:['旅費交通費','現金'],c:['仮払金']}]},
+  {id:51,lv:'2',cat:'仮受金',q:'①口座に原因不明の入金がある',e:[{d:['普通預金'],c:['仮受金']}]},
+  {id:52,lv:'2',cat:'仮受金',q:'②商品代金の前受（先払い）と判明する',e:[{d:['仮受金'],c:['前受金']}]},
+  {id:53,lv:'2',cat:'差入保証金',q:'①入居時に家賃・手数料・敷金（差入保証金）を現金で支払う',e:[{d:['支払家賃','支払手数料','差入保証金'],c:['現金']}]},
+  {id:54,lv:'2',cat:'差入保証金',q:'②退去時、修理費を差し引いて敷金が現金で返還される',e:[{d:['修繕費','現金'],c:['差入保証金']}]},
+  {id:55,lv:'2',cat:'貸倒',q:'売掛金が貸し倒れる（前期末に貸倒引当金の計上なし）',e:[{d:['貸倒損失'],c:['売掛金']}]},
+  {id:56,lv:'2',cat:'貸倒',q:'①期末に貸倒引当金を設定する（差額補充法）',e:[{d:['貸倒引当金繰入'],c:['貸倒引当金']}],note:'例：残高100×3%=3 → 貸倒引当金繰入3 | 貸倒引当金3'},
+  {id:57,lv:'2',cat:'貸倒',q:'②売掛金が貸し倒れる（貸倒引当金を超える金額）',e:[{d:['貸倒引当金','貸倒損失'],c:['売掛金']}]},
+  {id:58,lv:'2',cat:'貸倒',q:'③当期に貸倒損失分のみ現金で回収される',e:[{d:['現金'],c:['貸倒損失']}]},
+  {id:59,lv:'2',cat:'貸倒',q:'④翌期に残りの一部が回収される（償却債権取立益）',e:[{d:['現金'],c:['償却債権取立益']}]},
+  {id:60,lv:'2',cat:'借入金',q:'①利息付きで借金し、現金で受け取る',e:[{d:['現金'],c:['借入金']}]},
+  {id:61,lv:'2',cat:'借入金',q:'②未払利息につき決算整理する（経過勘定）',e:[{d:['支払利息'],c:['未払利息']}],note:'期首に再振替仕訳（未払利息 | 支払利息）'},
+  {id:62,lv:'2',cat:'借入金',q:'③元金と利息を現金で弁済する',e:[{d:['借入金','支払利息'],c:['現金']}]},
+  {id:63,lv:'2',cat:'経過勘定',q:'①家賃を期末日に未だ受け取っていない（未収収益）',e:[{d:['未収収益'],c:['受取家賃']}],note:'期首に再振替仕訳（受取家賃 | 未収収益）'},
+  {id:64,lv:'2',cat:'経過勘定',q:'②翌期に家賃を現金で受け取る',e:[{d:['現金'],c:['受取家賃']}]},
+  {id:65,lv:'2',cat:'経過勘定',q:'①保険料を現金で支払う',e:[{d:['支払保険料'],c:['現金']}]},
+  {id:66,lv:'2',cat:'経過勘定',q:'②翌期分の保険料を前払費用に振り替える',e:[{d:['前払費用'],c:['支払保険料']}],note:'期首に再振替仕訳（支払保険料 | 前払費用）'},
+  {id:67,lv:'2',cat:'経過勘定',q:'支払利息の翌期分につき決算整理する（前払利息）',e:[{d:['前払利息'],c:['支払利息']}]},
+  {id:68,lv:'2',cat:'経過勘定',q:'①現金を貸し付ける',e:[{d:['貸付金'],c:['現金']}]},
+  {id:69,lv:'2',cat:'経過勘定',q:'①同時に1年分の利息を現金で受け取る',e:[{d:['現金'],c:['受取利息']}]},
+  {id:70,lv:'2',cat:'経過勘定',q:'②翌期分の利息を前受収益に振り替える',e:[{d:['受取利息'],c:['前受収益']}],note:'期首に再振替仕訳（前受収益 | 受取利息）'},
+  {id:71,lv:'2',cat:'経過勘定',q:'1/1に年利12%で¥1000を貸付け。決算整理(3/31)で利息の未収分を計上',e:[{d:['未収利息'],c:['受取利息']}],note:'1000×12%×3/12 = 30 → 未収利息30 | 受取利息30'},
+  {id:72,lv:'2',cat:'減価償却',q:'①取得原価50万・耐用年数5年・残存価値10%の備品を定額法で減価償却',e:[{d:['減価償却費'],c:['減価償却累計額']}],note:'(50－50×0.1)÷5＝9万 → 減価償却費9万 | 減価償却累計額9万'},
+  {id:73,lv:'2',cat:'減価償却',q:'②3年目に備品（帳簿価格23万）を10万で売却する',e:[{d:['減価償却費','減価償却累計額','現金','固定資産売却損'],c:['備品']}],note:'減価償却費9万・減価償却累計額18万・現金10万・固定資産売却損13万 | 備品50万'},
+  {id:74,lv:'2',cat:'売上原価',q:'期首商品棚卸高を仕入勘定に振り替える（売上原価の計算①）',e:[{d:['仕入'],c:['繰越商品']}],note:'例：仕入120 | 繰越商品120'},
+  {id:75,lv:'2',cat:'売上原価',q:'期末商品棚卸高を繰越商品勘定に振り替える（売上原価の計算②）',e:[{d:['繰越商品'],c:['仕入']}],note:'例：繰越商品130 | 仕入130'},
+  {id:76,lv:'2',cat:'伝票',q:'出金伝票：備品50 ／ 振替伝票：備品200｜当座預金200（同一取引を起票）',e:[{d:['備品'],c:['現金','当座預金']}],note:'備品250 | 現金50・当座預金200'},
+];
+let deck=[],idx=0,answered={},memorized={},hideMem=false,levelFilter='all';
+function buildDeck(){
+  deck=ALL.filter(q=>{
+    if(levelFilter!=='all'&&q.lv!==levelFilter)return false;
+    if(hideMem&&memorized[q.id])return false;
+    return true;
+  });
+}
+function shuffle(){
+  buildDeck();
+  for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
+  idx=0;render();
+}
+function setLevel(lv,btn){
+  levelFilter=lv;
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildDeck();idx=0;render();
+}
+function toggleHideMem(){
+  hideMem=!hideMem;
+  const btn=document.getElementById('btn-hide-mem');
+  btn.classList.toggle('active',hideMem);
+  btn.textContent=hideMem?'全問題を表示':'習得済みを除く';
+  buildDeck();idx=0;render();
+}
+function resetAll(){
+  answered={};memorized={};hideMem=false;
+  document.getElementById('btn-hide-mem').classList.remove('active');
+  document.getElementById('btn-hide-mem').textContent='習得済みを除く';
+  buildDeck();idx=0;render();
+}
+function go(dir){idx=Math.max(0,Math.min(deck.length-1,idx+dir));render();}
+function revealAnswer(){
+  document.getElementById('rev-btn').style.display='none';
+  document.getElementById('ans-area').classList.add('show');
+}
+function judge(ok){
+  const q=deck[idx];
+  answered[q.id]=ok;
+  if(ok)memorized[q.id]=true;
+  updateStats();
+  if(idx<deck.length-1){idx++;render();}else{showComplete();}
+}
+function showComplete(){
+  const total=Object.keys(answered).length;
+  const ok=Object.values(answered).filter(v=>v).length;
+  document.getElementById('card-container').innerHTML=`<div class="complete-card"><div class="complete-emoji">🎉</div><div class="complete-title">全問完了！</div><div class="complete-score">${ok}<span style="font-size:24px;color:var(--muted)">/${total}</span></div><div class="complete-sub">正解数 / 回答数</div><button class="restart-btn" onclick="resetAll()">もう一度</button></div>`;
+  document.getElementById('nav-row').style.display='none';
+  document.getElementById('prog-text').textContent='';
+  document.getElementById('prog-cat').textContent='';
+  document.getElementById('prog-fill').style.width='100%';
+}
+function updateStats(){
+  document.getElementById('s-total').textContent=deck.length;
+  document.getElementById('s-ok').textContent=Object.values(answered).filter(v=>v).length;
+  document.getElementById('s-ng').textContent=Object.values(answered).filter(v=>!v).length;
+  document.getElementById('s-mem').textContent=Object.keys(memorized).length;
+}
+function makeTags(arr){return arr.map(a=>`<span class="tag ${tagType(a)}">${a}</span>`).join('');}
+function render(){
+  document.getElementById('nav-row').style.display='flex';
+  updateStats();
+  if(deck.length===0){
+    document.getElementById('card-container').innerHTML='<div class="complete-card" style="padding:40px 24px;"><div style="font-size:32px">📭</div><div style="margin-top:12px;font-size:16px;font-weight:700">表示できる問題がありません</div><div style="margin-top:6px;color:var(--muted);font-size:13px">フィルターを変えるか「リセット」してください</div></div>';
+    document.getElementById('prog-text').textContent='';
+    document.getElementById('prog-cat').textContent='';
+    document.getElementById('prog-fill').style.width='0%';
+    document.getElementById('btn-prev').disabled=true;
+    document.getElementById('btn-next').disabled=true;
+    return;
+  }
+  const q=deck[idx];
+  const pct=Math.round((idx+1)/deck.length*100);
+  document.getElementById('prog-text').textContent=`${idx+1} / ${deck.length}`;
+  document.getElementById('prog-cat').textContent=q.cat;
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('btn-prev').disabled=idx===0;
+  document.getElementById('btn-next').disabled=idx===deck.length-1;
+  let entriesHtml='';
+  q.e.forEach((entry,i)=>{
+    const label=q.e.length>1?`仕訳 ${i+1}`:'仕訳';
+    entriesHtml+=`<div class="journal-entry"><div class="entry-header">${label}</div><div class="entry-row"><div class="entry-side"><div class="side-lbl">借　方</div><div class="tags">${makeTags(entry.d)}</div></div><div class="entry-sep"></div><div class="entry-side"><div class="side-lbl">貸　方</div><div class="tags">${makeTags(entry.c)}</div></div></div></div>`;
+  });
+  if(q.note)entriesHtml+=`<div class="note-box">💡 ${q.note}</div>`;
+  document.getElementById('card-container').innerHTML=`<div class="flashcard"><div class="card-top"><span class="level-badge">簿記${q.lv}級</span><span class="category-tag">${q.cat}</span></div><div class="card-body"><div class="scenario-label">問題</div><div class="scenario">${q.q}</div><div class="divider"></div><button class="reveal-btn" id="rev-btn" onclick="revealAnswer()">▼ 答えを見る</button><div class="answer-area" id="ans-area"><div class="answer-label">仕訳（解答）</div>${entriesHtml}<div class="judge-btns"><button class="judge-btn ng" onclick="judge(false)">✗ 不正解</button><button class="judge-btn ok" onclick="judge(true)">○ 正解！</button></div></div></div></div>`;
+}
+buildDeck();render();
+</script>
+</body>
+</html>
