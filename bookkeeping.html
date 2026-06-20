@@ -439,12 +439,6 @@ const T = {
 
 function tagType(a){ return T[a] || 'other'; }
 
-// カテゴリ分類
-// 商品売買グループ
-const CAT_TRADE = new Set(['商品売買','電子記録','手形','前払金・前受金','現金過不足']);
-// 帳簿・決算グループ
-const CAT_CLOSING = new Set(['決算振替','帳簿・精算表']);
-
 const ALL = [
   // ===== 商品売買 =====
   { id:1, cat:'商品売買',
