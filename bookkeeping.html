@@ -411,11 +411,6 @@
   </div>
   <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
 
-  <div class="nav-row" id="nav-row">
-    <button class="nav-btn" id="btn-prev" onclick="go(-1)">← 前へ</button>
-    <button class="nav-btn" id="btn-next" onclick="go(+1)">次へ →</button>
-  </div>
-
   <div id="card-container"></div>
 </div>
 
@@ -1074,7 +1069,6 @@ function showComplete(){
       <div class="complete-sub">正解数 / 回答数</div>
       <button class="restart-btn" onclick="resetAll()">もう一度</button>
     </div>`;
-  document.getElementById('nav-row').style.display = 'none';
   document.getElementById('prog-text').textContent = '';
   document.getElementById('prog-cat').textContent = '';
   document.getElementById('prog-fill').style.width = '100%';
@@ -1092,7 +1086,6 @@ function makeTags(arr){
 }
 
 function render(){
-  document.getElementById('nav-row').style.display = 'flex';
   updateStats();
 
   if(deck.length === 0){
@@ -1105,8 +1098,6 @@ function render(){
     document.getElementById('prog-text').textContent = '';
     document.getElementById('prog-cat').textContent = '';
     document.getElementById('prog-fill').style.width = '0%';
-    document.getElementById('btn-prev').disabled = true;
-    document.getElementById('btn-next').disabled = true;
     return;
   }
 
@@ -1116,8 +1107,6 @@ function render(){
   document.getElementById('prog-text').textContent = `${idx+1} / ${deck.length}`;
   document.getElementById('prog-cat').textContent  = q.cat;
   document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('btn-prev').disabled = idx === 0;
-  document.getElementById('btn-next').disabled = idx === deck.length-1;
 
   let ansContent = '';
   if(q.ans_html){
@@ -1157,6 +1146,10 @@ function render(){
         <div class="scenario-label">問題</div>
         <div class="scenario">${q.q}</div>
         <div class="divider"></div>
+        <div class="nav-row" style="margin-bottom:10px;">
+          <button class="nav-btn" onclick="go(-1)" ${idx===0?'disabled':''}>← 前へ</button>
+          <button class="nav-btn" onclick="go(+1)" ${idx===deck.length-1?'disabled':''}>次へ →</button>
+        </div>
         <button class="reveal-btn" id="rev-btn" onclick="revealAnswer()">
           ▼ 答えを見る
         </button>
