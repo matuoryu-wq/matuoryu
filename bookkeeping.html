@@ -50,28 +50,6 @@
     .dot.revenue   { background: #0288D1; }
     .dot.equity    { background: #D32F2F; }
 
-    .filter-bar {
-      background: white;
-      border-bottom: 1px solid var(--border);
-      padding: 10px 16px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .filter-label { font-size: 12px; color: var(--muted); }
-    .ftab {
-      padding: 5px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 20px;
-      background: none;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
-      transition: all 0.15s;
-    }
-    .ftab.active { background: var(--primary); color: white; border-color: var(--primary); }
 
     .controls {
       background: white;
@@ -352,13 +330,6 @@
   <div class="legend-item"><div class="dot equity"></div>純資産</div>
 </div>
 
-<div class="filter-bar">
-  <span class="filter-label">カテゴリ：</span>
-  <button class="ftab active" onclick="setCat('all',this)">すべて</button>
-  <button class="ftab" onclick="setCat('商品売買',this)">商品売買</button>
-  <button class="ftab" onclick="setCat('決算',this)">帳簿・決算</button>
-  <button class="ftab" onclick="setCat('その他',this)">その他</button>
-</div>
 
 <div class="controls">
   <button class="ctrl-btn" onclick="shuffle()">🔀 シャッフル</button>
@@ -865,22 +836,14 @@ const ALL = [
     exp:'精算表の貸借対照表欄では、決算整理後の資産（繰越商品・前払費用・未収収益など）と負債（前受収益・未払費用など）をそれぞれ対応する列に記入する。試算表の残高に修正記入を加減した金額を転記する。' },
 ];
 
-// カテゴリ分類
-const CAT_TRADE   = new Set(['商品売買','電子記録','手形','前払金・前受金','現金過不足']);
-const CAT_CLOSING = new Set(['決算振替','帳簿・精算表']);
-
 let deck = [];
 let idx  = 0;
 let answered = {};
 let memorized = {};
 let hideMem  = false;
-let catFilter = 'all';
 
 function buildDeck(){
   deck = ALL.filter(q => {
-    if(catFilter === '商品売買' && !CAT_TRADE.has(q.cat)) return false;
-    if(catFilter === '決算'     && !CAT_CLOSING.has(q.cat)) return false;
-    if(catFilter === 'その他'   && (CAT_TRADE.has(q.cat) || CAT_CLOSING.has(q.cat))) return false;
     if(hideMem && memorized[q.id]) return false;
     return true;
   });
@@ -896,14 +859,6 @@ function shuffle(){
   render();
 }
 
-function setCat(c, btn){
-  catFilter = c;
-  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  buildDeck();
-  idx = 0;
-  render();
-}
 
 function toggleHideMem(){
   hideMem = !hideMem;
