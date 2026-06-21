@@ -1322,11 +1322,16 @@ function updateGroupButtons(){
 
 let deck = [];
 let idx  = 0;
-let answered = {};
-let memorized = {};
+let answered  = JSON.parse(localStorage.getItem('bk_answered')  || '{}');
+let memorized = JSON.parse(localStorage.getItem('bk_memorized') || '{}');
 let hideMem    = false;
 let groupFilter = 0;
 let levelFilter = 0;
+
+function saveProgress(){
+  localStorage.setItem('bk_answered',  JSON.stringify(answered));
+  localStorage.setItem('bk_memorized', JSON.stringify(memorized));
+}
 
 function buildDeck(){
   deck = ALL.filter(q => {
@@ -1389,6 +1394,7 @@ function toggleHideMem(){
 function resetAll(){
   answered = {};
   memorized = {};
+  saveProgress();
   hideMem = false;
   groupFilter = 0;
   levelFilter = 0;
@@ -1418,6 +1424,7 @@ function judge(ok){
   const q = deck[idx];
   answered[q.id] = ok;
   if(ok) memorized[q.id] = true;
+  saveProgress();
   updateStats();
   if(idx < deck.length-1){
     idx++;
