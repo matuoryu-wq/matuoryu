@@ -221,8 +221,8 @@
     .tag.expense   { background: #E8F5E9; color: #1B5E20; border: 1.5px solid #388E3C; }
     /* 収益：水色 */
     .tag.revenue   { background: #E1F5FE; color: #01579B; border: 1.5px solid #0288D1; }
-    /* 純資産：赤 */
-    .tag.equity    { background: #FFEBEE; color: #B71C1C; border: 1.5px solid #D32F2F; }
+    /* 純資産：紫 */
+    .tag.equity    { background: #EDE7F6; color: #4A148C; border: 1.5px solid #7B1FA2; }
     /* その他（評価勘定・損益等）*/
     .tag.other     { background: #F3E5F5; color: #4A148C; border: 1.5px solid #CE93D8; }
 
@@ -425,7 +425,7 @@ const T = {
   '仮払法人税等':'asset','差入保証金':'asset','貯蔵品':'asset',
   '土地':'asset','建物':'asset','備品':'asset','貸付金':'asset',
   '手形貸付金':'asset','前払金':'asset','受取商品券':'asset','現金過不足':'asset',
-  '消耗品':'asset','小口現金':'asset',
+  '消耗品':'asset','小口現金':'asset','仮払消費税':'asset',
   // 負債
   '買掛金':'liability','支払手形':'liability','電子記録債務':'liability',
   '未払金':'liability','借入金':'liability','手形借入金':'liability',
@@ -445,7 +445,7 @@ const T = {
   '修繕費':'expense','貸倒損失':'expense','貸倒引当金繰入':'expense',
   '減価償却費':'expense','発送費':'expense','雑損':'expense',
   '法定福利費':'expense','給料':'expense','法人税等':'expense',
-  '固定資産売却損':'expense','仮払消費税':'expense','消耗品費':'expense',
+  '固定資産売却損':'expense','消耗品費':'expense',
   '手形売却損':'expense',
   // 純資産
   '資本金':'equity','繰越利益剰余金':'equity','利益準備金':'equity',
@@ -1347,7 +1347,7 @@ const ALL = [
     exp:'簿記では「お金が動いてから記録する（現金主義）」ではなく「取引が起きた時点で記録する（発生主義）」が原則です。貸借対照表はある日の財産の「静止画」、損益計算書は1年間の損益の「動画（記録）」と覚えましょう。' },
 ];
 
-const GROUPS3 = [[1,20],[21,40],[41,60],[61,80],[81,100],[101,9999]];
+const GROUPS3 = [[1,20],[21,40],[41,60],[61,80],[81,100],[101,120]];
 const GROUPS2 = [[1,20],[21,40],[41,9999]];
 
 function q2Id(q){ if((q.level||3)===2) return q.id-110; if(q.id>156) return q.id-46; return q.id; }
