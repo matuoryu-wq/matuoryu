@@ -48,7 +48,7 @@
     .dot.liability { background: #C2185B; }
     .dot.expense   { background: #388E3C; }
     .dot.revenue   { background: #0288D1; }
-    .dot.equity    { background: #D32F2F; }
+    .dot.equity    { background: #7B1FA2; }
 
 
     .controls {
@@ -1347,7 +1347,7 @@ const ALL = [
     exp:'簿記では「お金が動いてから記録する（現金主義）」ではなく「取引が起きた時点で記録する（発生主義）」が原則です。貸借対照表はある日の財産の「静止画」、損益計算書は1年間の損益の「動画（記録）」と覚えましょう。' },
 ];
 
-const GROUPS3 = [[1,20],[21,40],[41,60],[61,80],[81,100],[101,110],[111,9999]];
+const GROUPS3 = [[1,20],[21,40],[41,60],[61,80],[81,100],[101,9999]];
 const GROUPS2 = [[1,20],[21,40],[41,9999]];
 
 function q2Id(q){ if((q.level||3)===2) return q.id-110; if(q.id>156) return q.id-46; return q.id; }
