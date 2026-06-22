@@ -355,6 +355,32 @@
       font-size: 16px;
       font-weight: 700;
     }
+    /* ===== Appendix modal ===== */
+    .apx-btn { position:fixed; bottom:20px; right:20px; background:var(--primary); color:#fff; border:none; border-radius:50px; padding:10px 18px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.25); z-index:100; }
+    .apx-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:200; overflow-y:auto; padding:16px; }
+    .apx-overlay.show { display:block; }
+    .apx-modal { background:#fff; max-width:680px; margin:0 auto; border-radius:18px; padding:20px 18px; }
+    .apx-hd { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+    .apx-title { font-size:17px; font-weight:800; color:var(--primary); }
+    .apx-subtitle { font-size:11px; color:var(--muted); margin-top:2px; }
+    .apx-close { background:none; border:none; font-size:22px; cursor:pointer; color:var(--muted); line-height:1; }
+    .apx-search { width:100%; padding:9px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:14px; margin-bottom:16px; outline:none; color:var(--text); }
+    .apx-search:focus { border-color:var(--primary); }
+    .apx-section { margin-bottom:22px; }
+    .apx-section-hd { font-size:13px; font-weight:800; padding:7px 12px; border-radius:8px; margin-bottom:5px; display:flex; align-items:center; gap:8px; }
+    .apx-section-hd.asset     { background:#FFF9C4; color:#5D4037; border:1.5px solid #F9C400; }
+    .apx-section-hd.liability { background:#FCE4EC; color:#880E4F; border:1.5px solid #C2185B; }
+    .apx-section-hd.expense   { background:#E8F5E9; color:#1B5E20; border:1.5px solid #388E3C; }
+    .apx-section-hd.revenue   { background:#E1F5FE; color:#01579B; border:1.5px solid #0288D1; }
+    .apx-section-hd.equity    { background:#EDE7F6; color:#4A148C; border:1.5px solid #7B1FA2; }
+    .apx-section-hd.other     { background:#F3E5F5; color:#4A148C; border:1.5px solid #CE93D8; }
+    .apx-section-sub { font-size:11px; color:var(--muted); margin-bottom:6px; padding-left:4px; }
+    .apx-row { padding:8px 4px; border-bottom:1px solid var(--border); }
+    .apx-row.hidden { display:none; }
+    .apx-row-top { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px; }
+    .apx-en { font-size:11px; color:var(--muted); }
+    .apx-note { font-size:12px; color:#444; }
+    .apx-lv { display:inline-block; font-size:9px; font-weight:700; background:var(--primary); color:#fff; border-radius:4px; padding:1px 5px; }
   </style>
 </head>
 <body>
@@ -415,6 +441,18 @@
   <div id="card-container"></div>
 </div>
 
+<button class="apx-btn" onclick="showApx()">📖 勘定科目一覧</button>
+<div class="apx-overlay" id="apx-overlay" onclick="if(event.target===this)hideApx()">
+  <div class="apx-modal">
+    <div class="apx-hd">
+      <div><div class="apx-title">📚 勘定科目一覧</div><div class="apx-subtitle">3級・2級対応 ／ 色で分類（2級のみ「2級」バッジ表示）</div></div>
+      <button class="apx-close" onclick="hideApx()">✕</button>
+    </div>
+    <input class="apx-search" id="apx-search" type="text" placeholder="科目名・英語で検索..." oninput="filterApx(this.value)">
+    <div id="apx-content"></div>
+  </div>
+</div>
+
 <script>
 const T = {
   // 資産
@@ -470,6 +508,182 @@ const T = {
 };
 
 function tagType(a){ return T[a] || 'other'; }
+
+// ===== 勘定科目一覧データ [名前, 英語, 説明, 級] =====
+const ACCT_DATA = [
+  // 資産
+  ['現金','Cash','財布の中のお金。最も流動性が高い資産。',3],
+  ['普通預金','Savings Account','銀行の普通預金口座のお金。いつでも出し入れできる。',3],
+  ['当座預金','Checking Account','小切手・手形の決済に使う銀行口座。利息なし。',3],
+  ['受取手形','Notes Receivable','もらった「○月○日に払います」の約束書（手形）。',3],
+  ['売掛金','Accounts Receivable','商品を売ったがまだもらっていない代金。',3],
+  ['電子記録債権','Electronic Receivable','売掛金をデジタル化したもの。紛失リスクなし。',3],
+  ['クレジット売掛金','Credit Card Receivable','クレジット払いで売った代金（カード会社からもらう）。',3],
+  ['繰越商品','Merchandise Inventory','期末に売れ残った商品の在庫金額。',3],
+  ['仮払金','Advance Payment','使途未定で仮に払ったお金（後で精算する）。',3],
+  ['前払費用','Prepaid Expenses','来期分をあらかじめ払った費用（来期まで資産扱い）。',3],
+  ['前払利息','Prepaid Interest','来期分をあらかじめ払った利息。',3],
+  ['未収収益','Accrued Revenue','今期分だがまだ受け取っていない収益。',3],
+  ['未収利息','Accrued Interest Receivable','今期分だがまだ受け取っていない利息。',3],
+  ['未収入金','Non-trade Receivable','固定資産などを売った代金でまだもらっていない分。',3],
+  ['立替金','Advance Paid for Others','他人の代わりに一時的に払ったお金（後で返してもらう）。',3],
+  ['仮払法人税等','Prepaid Corporate Tax','中間納付した法人税の仮払い（確定時に精算する）。',3],
+  ['仮払消費税','Prepaid Consumption Tax','仕入時に払った消費税の立替分（国への代金回収権）。',3],
+  ['差入保証金','Security Deposit','敷金として差し入れたお金（退去時に戻ってくる）。',3],
+  ['貯蔵品','Supplies Inventory','未使用の切手・収入印紙など（費用から振り戻す）。',3],
+  ['土地','Land','会社が持っている土地（減価償却しない）。',3],
+  ['建物','Building','会社が持っている建物（毎期減価償却する）。',3],
+  ['備品','Equipment','机・パソコン・棚など（毎期減価償却する）。',3],
+  ['貸付金','Loans Receivable','他人に貸したお金（元本）。',3],
+  ['手形貸付金','Notes Receivable (Loans)','手形を担保にして貸したお金。',3],
+  ['前払金','Advance Payment (Purchase)','商品を受け取る前に払った手付金（内金）。',3],
+  ['受取商品券','Gift Vouchers Received','受け取った商品券（後で発行会社に換金できる）。',3],
+  ['現金過不足','Cash Overage/Shortage','帳簿と実際の現金のズレを一時的に記録する科目。',3],
+  ['消耗品','Supplies (Unused)','買ったがまだ使っていないペン・用紙など。',3],
+  ['小口現金','Petty Cash','少額の現金払い用に渡す小銭入れのお金。',3],
+  ['別段預金','Separate Deposit','株式申込専用の銀行口座（発行確定後に普通預金へ移す）。',2],
+  ['のれん','Goodwill','合併で余分に払ったブランド・顧客・信頼の見えない価値。',2],
+  ['創立費','Organization Costs','会社設立のためにかかった費用（資産計上後に償却）。',2],
+  ['株式交付費','Stock Issuance Costs','株式を発行するためにかかった費用（資産計上後に償却）。',2],
+  ['商品','Merchandise','売るための商品（三分法以外の記帳方法で使う）。',2],
+  ['不渡手形','Dishonored Notes','期日に支払われなかった（不渡りになった）手形。',2],
+  ['建設仮勘定','Construction in Progress','建設・製作中の固定資産（完成まで仮に計上）。',2],
+  ['未決算','Suspense Account','保険金など金額未確定のものを一時的に記録する科目。',2],
+  ['車両運搬具','Vehicles','会社所有の車・トラックなど（毎期減価償却する）。',2],
+  ['営業外受取手形','Non-trade Notes Receivable','固定資産などの売却代金として受け取った手形。',2],
+  // 負債
+  ['買掛金','Accounts Payable','商品を買ったがまだ払っていない代金。',3],
+  ['支払手形','Notes Payable','振り出した「○月○日に払います」の約束書（手形）。',3],
+  ['電子記録債務','Electronic Payable','買掛金をデジタル化したもの。紛失リスクなし。',3],
+  ['未払金','Non-trade Payable','固定資産などを買ったがまだ払っていない代金。',3],
+  ['借入金','Borrowings','銀行などから借りたお金（元本）。',3],
+  ['手形借入金','Notes Payable (Loans)','手形を担保に借りたお金。',3],
+  ['未払利息','Accrued Interest Payable','今期分だがまだ払っていない利息。',3],
+  ['前受金','Customer Advances','商品を渡す前にもらった手付金（内金）。',3],
+  ['仮受金','Temporary Receipt','理由が不明の入金（後で正しい科目に振り替える）。',3],
+  ['当座借越','Bank Overdraft','当座預金の残高を超えて引き落とされた部分（銀行への借金）。',3],
+  ['預り金','Deposits Received','従業員から預かった社会保険料・所得税など。',3],
+  ['社会保険預り金','Social Insurance Withheld','給料から天引きした従業員負担の社会保険料。',3],
+  ['所得税預り金','Income Tax Withheld','給料から天引きした所得税（税務署に納める）。',3],
+  ['未払法人税等','Corporate Tax Payable','確定したがまだ払っていない法人税。',3],
+  ['未払消費税','Consumption Tax Payable','お客様から預かったが国にまだ納めていない消費税。',3],
+  ['仮受消費税','Consumption Tax Collected','売上時にお客様から預かった消費税（仮置き）。',3],
+  ['未払配当金','Dividends Payable','株主総会で決議したが未払いの配当金。',3],
+  ['前受収益','Deferred Revenue','来期分として先受けした収益（まだサービスを提供していない）。',3],
+  ['未払費用','Accrued Expenses','今期分だがまだ払っていない費用（給料・家賃など）。',3],
+  ['株式申込証拠金','Stock Subscription Deposits','株式申込時に受け取った証拠金（発行確定で資本金へ振替）。',2],
+  ['営業外電子記録債務','Non-trade Electronic Payable','固定資産などの購入代金をデジタル記録した債務。',2],
+  ['営業外支払手形','Non-trade Notes Payable','固定資産などの購入代金として振り出した手形。',2],
+  // 費用
+  ['仕入','Purchases','商品を仕入れたときの費用。',3],
+  ['支払家賃','Rent Expense','支払った家賃・地代。',3],
+  ['支払手数料','Commission Expense','支払った仲介手数料・振込手数料など。',3],
+  ['支払利息','Interest Expense','借金に対して払う利息。',3],
+  ['支払保険料','Insurance Expense','支払った火災保険・生命保険などの保険料。',3],
+  ['租税公課','Taxes and Dues','固定資産税・収入印紙・印紙税など（所得税以外の税金）。',3],
+  ['広告宣伝費','Advertising Expense','広告・チラシ・看板などの宣伝費用。',3],
+  ['通信費','Communication Expense','電話代・切手代・郵便代・インターネット代など。',3],
+  ['旅費交通費','Travel Expense','電車賃・タクシー代・出張費・宿泊費など。',3],
+  ['修繕費','Repair Expense','建物・備品の現状を維持するための補修費用。',3],
+  ['貸倒損失','Bad Debt Expense','回収できなくなった売掛金・貸付金などの損失。',3],
+  ['貸倒引当金繰入','Bad Debt Allowance Expense','将来の貸し倒れに備えた見積もりの積立（費用）。',3],
+  ['減価償却費','Depreciation Expense','固定資産の価値が毎期少しずつ目減りする費用。',3],
+  ['発送費','Shipping Expense','商品を送るための配送料。',3],
+  ['雑損','Miscellaneous Loss','少額の損失・原因不明の現金不足など。',3],
+  ['法定福利費','Welfare Expense','会社が負担する社会保険料（厚生年金・健康保険など）。',3],
+  ['給料','Salaries','従業員に支払う給与・賃金。',3],
+  ['法人税等','Corporate Tax Expense','法人税・住民税・事業税の合計。',3],
+  ['固定資産売却損','Loss on Sale of Fixed Assets','帳簿価額より安く固定資産を売ったときの損失。',3],
+  ['消耗品費','Supplies Expense','使い切ったペン・コピー用紙などの費用。',3],
+  ['手形売却損','Loss on Sale of Notes','手形を銀行で割り引いたときに引かれる手数料分の損失。',3],
+  ['売上原価','Cost of Goods Sold','売れた商品の仕入れコスト（期首商品＋仕入－期末商品）。',2],
+  ['電子記録債権売却損','Loss on Electronic Receivable Sale','電子記録債権を売却したときの損失。',2],
+  ['法人税・住民税及び事業税','Corporate/Residence/Business Tax','法人税等の2級での正式表記。',2],
+  ['火災損失','Fire Loss','火災で固定資産などが焼失したときの損失。',2],
+  ['固定資産除却損','Loss on Retirement of Assets','使えなくなった固定資産を帳簿から消したときの損失。',2],
+  ['固定資産廃棄損','Loss on Disposal of Assets','固定資産を廃棄したときの残存帳簿価額分の損失。',2],
+  // 収益
+  ['売上','Sales Revenue','商品・サービスを売って得た収益（会社の主な稼ぎ）。',3],
+  ['受取家賃','Rent Revenue','部屋・土地を貸してもらった家賃・地代収入。',3],
+  ['受取手数料','Commission Revenue','仲介などのサービスに対してもらった手数料。',3],
+  ['受取利息','Interest Revenue','預金や貸付金に対してもらう利息。',3],
+  ['固定資産売却益','Gain on Sale of Fixed Assets','帳簿価額より高く固定資産を売ったときの利益。',3],
+  ['受取配当金','Dividend Revenue','株式を持っていてもらえる配当金収入。',3],
+  ['償却債権取立益','Recovery of Written-off Claims','貸倒処理した売掛金が後から回収できた収益。',3],
+  ['雑益','Miscellaneous Revenue','少額の収益・原因不明の現金超過など。',3],
+  // 純資産
+  ['資本金','Common Stock','株主から出資してもらった会社の元手のお金（返済不要）。',3],
+  ['繰越利益剰余金','Retained Earnings','これまでに稼いで積み上げてきた利益の貯金。',3],
+  ['利益準備金','Legal Reserve (Profit)','法律で義務付けられた利益の積立（配当額の10分の1）。',3],
+  ['資本準備金','Capital Reserve','株式発行差益など法律で積み立てが必要な資本の準備金。',2],
+  ['別途積立金','Special Reserve','会社が自由に積み立てる任意の準備金。',2],
+  ['その他資本剰余金','Other Capital Surplus','自己株式の処分差益などのその他剰余金。',2],
+  // 評価勘定・その他
+  ['貸倒引当金','Allowance for Bad Debts','売掛金の貸倒れ見積分を差し引く評価勘定（マイナス資産）。',3],
+  ['減価償却累計額','Accumulated Depreciation','固定資産のこれまでの価値目減り合計（マイナス資産）。',3],
+  ['損益','Income Summary','決算で全費用・全収益を集めて純損益を計算する一時勘定。',3],
+  ['車両運搬具減価償却累計額','Accum. Depr. (Vehicles)','車両の価値目減り累計額（マイナス資産）。',2],
+  ['建物減価償却累計額','Accum. Depr. (Building)','建物の価値目減り累計額（マイナス資産）。',2],
+  ['備品減価償却累計額','Accum. Depr. (Equipment)','備品の価値目減り累計額（マイナス資産）。',2],
+];
+
+const APX_TYPE_INFO = {
+  asset:     { name:'資産 (Assets)',           sub:'会社が持っているもの・もらえる権利' },
+  liability: { name:'負債 (Liabilities)',       sub:'将来払わなければならない義務・借金' },
+  expense:   { name:'費用 (Expenses)',          sub:'お金を使ったとき・価値が減ったとき' },
+  revenue:   { name:'収益 (Revenue)',           sub:'お金が増えたとき・稼いだとき' },
+  equity:    { name:'純資産 (Equity)',          sub:'本当に自分のものの総額（資産－負債）' },
+  other:     { name:'評価勘定・その他 (Other)', sub:'固定資産・売掛金のマイナス調整など' },
+};
+
+function buildApxContent(){
+  const order = ['asset','liability','expense','revenue','equity','other'];
+  const byType = {};
+  order.forEach(t => byType[t] = []);
+  ACCT_DATA.forEach(([name, en, note, lv]) => {
+    const type = T[name] || 'other';
+    byType[type].push({ name, en, note, lv });
+  });
+  return order.map(type => {
+    const { name, sub } = APX_TYPE_INFO[type];
+    const rows = byType[type].map(({ name, en, note, lv }) =>
+      `<div class="apx-row" data-name="${name}" data-en="${en}">
+        <div class="apx-row-top">
+          <span class="tag ${type}">${name}</span>
+          <span class="apx-en">(${en})</span>
+          ${lv === 2 ? '<span class="apx-lv">2級</span>' : ''}
+        </div>
+        <div class="apx-note">${note}</div>
+      </div>`
+    ).join('');
+    return `<div class="apx-section">
+      <div class="apx-section-hd ${type}"><span class="dot ${type}"></span>${name}</div>
+      <div class="apx-section-sub">${sub}</div>
+      ${rows}
+    </div>`;
+  }).join('');
+}
+
+function showApx(){
+  const el = document.getElementById('apx-overlay');
+  if(!document.getElementById('apx-content').innerHTML)
+    document.getElementById('apx-content').innerHTML = buildApxContent();
+  el.classList.add('show');
+  document.getElementById('apx-search').value = '';
+  filterApx('');
+}
+function hideApx(){ document.getElementById('apx-overlay').classList.remove('show'); }
+function filterApx(q){
+  const kw = q.trim().toLowerCase();
+  document.querySelectorAll('#apx-content .apx-row').forEach(row => {
+    const match = !kw || row.dataset.name.includes(kw) || row.dataset.en.toLowerCase().includes(kw);
+    row.classList.toggle('hidden', !match);
+  });
+  document.querySelectorAll('#apx-content .apx-section').forEach(sec => {
+    const visible = sec.querySelectorAll('.apx-row:not(.hidden)').length > 0;
+    sec.style.display = visible ? '' : 'none';
+  });
+}
 
 const ALL = [
   // ===== 商品売買 =====
@@ -1471,7 +1685,9 @@ function go(dir){
 
 function revealAnswer(){
   document.getElementById('rev-btn').style.display = 'none';
-  document.getElementById('ans-area').classList.add('show');
+  const area = document.getElementById('ans-area');
+  area.classList.add('show');
+  colorizeAccountsInEl(area);
 }
 
 function judge(ok){
@@ -1520,6 +1736,30 @@ function makeTags(arr){
     }
     return `<span class="tag ${tagType(a)}">${a}</span>`;
   }).join('');
+}
+
+function colorizeAccountsInEl(el){
+  const sorted = Object.entries(T).sort((a,b) => b[0].length - a[0].length);
+  el.querySelectorAll('table').forEach(tbl => {
+    const ths = tbl.querySelectorAll('th');
+    const isJournal = Array.from(ths).some(th => /借|貸/.test(th.textContent));
+    if(!isJournal) return;
+    tbl.querySelectorAll('td').forEach(td => {
+      if(td.querySelector('.tag')) return;
+      let h = td.innerHTML;
+      const reps = [];
+      sorted.forEach(([name, type]) => {
+        const esc = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        h = h.replace(new RegExp(esc, 'g'), () => {
+          const i = reps.length;
+          reps.push(`<span class="tag ${type}">${name}</span>`);
+          return `\x00${i}\x00`;
+        });
+      });
+      h = h.replace(/\x00(\d+)\x00/g, (_, i) => reps[+i]);
+      td.innerHTML = h;
+    });
+  });
 }
 
 function render(){
