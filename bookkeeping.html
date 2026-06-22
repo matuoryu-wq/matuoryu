@@ -452,9 +452,9 @@
     .exp-tab-row { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
     .exp-tab { padding:5px 12px; border:1.5px solid var(--border); border-radius:16px; background:#fff; font-size:12px; font-weight:700; cursor:pointer; }
     .exp-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
-    .exp-scroll-tabs { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px; }
-    .exp-scroll-tab { padding:4px 10px; border:1.5px solid var(--border); border-radius:12px; background:#fff; font-size:11px; font-weight:700; cursor:pointer; }
-    .exp-scroll-tab.active { background:#FF8F00; color:#fff; border-color:#FF8F00; }
+    .exp-scroll-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+    .exp-scroll-tab { padding:5px 11px; border:1.5px solid var(--border); border-radius:16px; background:#fff; font-size:12px; font-weight:700; cursor:pointer; color:var(--text); }
+    .exp-scroll-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
     .exp-readonly-ans { margin:10px 0; padding:10px; background:#f5f5f5; border-radius:8px; display:none; overflow-x:auto; }
     .exp-reveal-btn { width:100%; padding:10px; border:none; border-radius:8px; background:#546E7A; color:#fff; font-size:13px; font-weight:700; cursor:pointer; margin-bottom:8px; }
   </style>
@@ -479,7 +479,7 @@
   <button class="ctrl-btn" onclick="shuffle()">🔀 シャッフル</button>
   <button class="ctrl-btn" id="btn-hide-mem" onclick="toggleHideMem()">習得済みを除く</button>
   <button class="ctrl-btn" onclick="resetAll()">🔄 リセット</button>
-  <button class="exp-btn" id="exp-toggle-btn" onclick="toggleExp()">🧪 実験</button>
+  <button class="exp-btn" id="exp-toggle-btn" onclick="toggleExp()">スクロール</button>
 </div>
 <div class="controls" style="padding-top:6px;border-top:1px solid var(--border);">
   <span style="font-size:11px;font-weight:700;color:var(--muted);align-self:center;">級：</span>
@@ -2410,17 +2410,10 @@ function setGroup(n){
   render();
 }
 
-// ===== 実験モード =====
-let expActive=false, expLevelFilter=0, expScrollPage=0;
+// ===== スクロールモード =====
+let expActive=false, expScrollPage=0;
 let expQuestions=[], expQIdx=0, expCardIdx=0;
 let expPlaced={d:[],c:[]}, expScore=0;
-
-function getExpQList(){
-  let list = expLevelFilter===1 ? ALL.filter(q=>(q.level||3)===3)
-           : expLevelFilter===2 ? ALL.filter(q=>(q.level||3)===2)
-           : ALL; // 0 or -1 (scroll) = all
-  return list;
-}
 
 function getExpAccounts(q){
   if(!q.e) return null;
@@ -2437,13 +2430,7 @@ function toggleExp(){
   document.getElementById('exp-panel').style.display=expActive?'block':'none';
   document.querySelector('.stats-bar').style.display=expActive?'none':'flex';
   document.querySelector('.card-area').style.display=expActive?'none':'block';
-  if(expActive){ expQIdx=0; expScore=0; expLevelFilter=0; expScrollPage=0; expQuestions=getExpQList(); renderExpPanel(); }
-}
-
-function setExpLevel(lv){
-  expLevelFilter=lv; expScrollPage=0; expQIdx=0; expScore=0;
-  expQuestions=getExpQList();
-  renderExpPanel();
+  if(expActive){ expScrollPage=0; renderExpPanel(); }
 }
 
 function setExpScrollPage(p){
@@ -2453,34 +2440,15 @@ function setExpScrollPage(p){
 
 function renderExpPanel(){
   const panel=document.getElementById('exp-panel');
-  const allQ=getExpQList();
-  const totalPages=Math.ceil(allQ.length/20);
-
-  // Build tab HTML
-  const tabs=['全級','3級','2級','スクロール'].map((label,i)=>{
-    const lv=i===3?-1:i;
-    return `<button class="exp-tab${expLevelFilter===lv?' active':''}" onclick="setExpLevel(${lv})">${label}</button>`;
-  }).join('');
-
-  // Build scroll sub-tabs if needed
-  let scrollTabs='';
-  if(expLevelFilter===-1){
-    scrollTabs='<div class="exp-scroll-tabs">';
-    for(let p=0;p<totalPages;p++){
-      const start=p*20+1, end=Math.min((p+1)*20, allQ.length);
-      scrollTabs+=`<button class="exp-scroll-tab${expScrollPage===p?' active':''}" onclick="setExpScrollPage(${p})">${start}-${end}</button>`;
-    }
-    scrollTabs+='</div>';
+  const totalPages=Math.ceil(ALL.length/20);
+  let pageTabs='<div class="exp-scroll-tabs">';
+  for(let p=0;p<totalPages;p++){
+    const start=p*20+1, end=Math.min((p+1)*20, ALL.length);
+    pageTabs+=`<button class="exp-scroll-tab${expScrollPage===p?' active':''}" onclick="setExpScrollPage(${p})">${start}〜${end}</button>`;
   }
-
-  panel.innerHTML=`<div class="exp-tab-row">${tabs}</div>${scrollTabs}<div id="exp-main"></div>`;
-
-  // Determine effective question list
-  if(expLevelFilter===-1){
-    expQuestions=allQ.slice(expScrollPage*20, expScrollPage*20+20);
-  } else {
-    expQuestions=allQ;
-  }
+  pageTabs+='</div>';
+  panel.innerHTML=`${pageTabs}<div id="exp-main"></div>`;
+  expQuestions=ALL.slice(expScrollPage*20, expScrollPage*20+20);
   expQIdx=0; expScore=0; expPlaced={d:[],c:[]};
   loadExpQ();
 }
@@ -2631,7 +2599,7 @@ function expFinish(){
   const pct=Math.round(expScore/expQuestions.length*100);
   document.getElementById('exp-main').innerHTML=`
     <div class="exp-fin">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">🧪 実験モード 結果</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">スクロールモード 結果</div>
       <div class="exp-fin-score">${expScore}<span style="font-size:24px;color:var(--muted);"> / ${expQuestions.length}</span></div>
       <div class="exp-fin-label">${pct}% 正解　${pct>=80?'🎉 素晴らしい！':pct>=50?'💪 もう一息！':'📚 復習しよう！'}</div>
       <div class="exp-fin-btns">
