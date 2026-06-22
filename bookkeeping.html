@@ -2411,386 +2411,163 @@ function setGroup(n){
 }
 
 // ===== 実験モード =====
-const EXP_DATA = [
-  // ① 現金・商品の基本
-  { q:'商品1,000円を現金で仕入れた。',
-    accounts:[{name:'仕入',amt:1000,side:'d'},{name:'現金',amt:1000,side:'c'}],
-    exp:'仕入（費用）発生→借方。現金（資産）減少→貸方。' },
-  { q:'商品2,000円を現金で売り上げた。',
-    accounts:[{name:'現金',amt:2000,side:'d'},{name:'売上',amt:2000,side:'c'}],
-    exp:'現金（資産）増加→借方。売上（収益）発生→貸方。' },
-  { q:'商品3,000円を掛けで仕入れた。',
-    accounts:[{name:'仕入',amt:3000,side:'d'},{name:'買掛金',amt:3000,side:'c'}],
-    exp:'仕入（費用）発生→借方。掛けなので買掛金（負債）発生→貸方。' },
-  { q:'商品5,000円を掛けで売り上げた。',
-    accounts:[{name:'売掛金',amt:5000,side:'d'},{name:'売上',amt:5000,side:'c'}],
-    exp:'売掛金（資産：代金をもらう権利）増加→借方。売上（収益）発生→貸方。' },
-  { q:'買掛金2,000円を現金で支払った。',
-    accounts:[{name:'買掛金',amt:2000,side:'d'},{name:'現金',amt:2000,side:'c'}],
-    exp:'買掛金（負債）消滅→借方で取り消し。現金（資産）減少→貸方。' },
-  { q:'売掛金3,000円を現金で回収した。',
-    accounts:[{name:'現金',amt:3000,side:'d'},{name:'売掛金',amt:3000,side:'c'}],
-    exp:'現金（資産）増加→借方。売掛金（資産）消滅→貸方。' },
+let expActive=false, expLevelFilter=0, expScrollPage=0;
+let expQuestions=[], expQIdx=0, expCardIdx=0;
+let expPlaced={d:[],c:[]}, expScore=0;
 
-  // ② 預金
-  { q:'現金50,000円を普通預金に預け入れた。',
-    accounts:[{name:'普通預金',amt:50000,side:'d'},{name:'現金',amt:50000,side:'c'}],
-    exp:'普通預金（資産）増加→借方。現金（資産）減少→貸方。' },
-  { q:'普通預金から現金30,000円を引き出した。',
-    accounts:[{name:'現金',amt:30000,side:'d'},{name:'普通預金',amt:30000,side:'c'}],
-    exp:'現金（資産）増加→借方。普通預金（資産）減少→貸方。' },
-  { q:'売掛金10,000円が普通預金に振り込まれた。',
-    accounts:[{name:'普通預金',amt:10000,side:'d'},{name:'売掛金',amt:10000,side:'c'}],
-    exp:'普通預金（資産）増加→借方。売掛金（資産）消滅→貸方。' },
-  { q:'買掛金8,000円を普通預金から振り込んで支払った。',
-    accounts:[{name:'買掛金',amt:8000,side:'d'},{name:'普通預金',amt:8000,side:'c'}],
-    exp:'買掛金（負債）消滅→借方。普通預金（資産）減少→貸方。' },
-  { q:'普通預金の利息300円が入金された。',
-    accounts:[{name:'普通預金',amt:300,side:'d'},{name:'受取利息',amt:300,side:'c'}],
-    exp:'普通預金（資産）増加→借方。受取利息（収益）発生→貸方。' },
+function getExpQList(){
+  let list = expLevelFilter===1 ? ALL.filter(q=>(q.level||3)===3)
+           : expLevelFilter===2 ? ALL.filter(q=>(q.level||3)===2)
+           : ALL; // 0 or -1 (scroll) = all
+  return list;
+}
 
-  // ③ 手形
-  { q:'売掛金5,000円を約束手形で受け取った。',
-    accounts:[{name:'受取手形',amt:5000,side:'d'},{name:'売掛金',amt:5000,side:'c'}],
-    exp:'受取手形（資産：将来もらえる権利）増加→借方。売掛金（資産）消滅→貸方。' },
-  { q:'商品4,000円を仕入れ、約束手形を振り出した。',
-    accounts:[{name:'仕入',amt:4000,side:'d'},{name:'支払手形',amt:4000,side:'c'}],
-    exp:'仕入（費用）発生→借方。支払手形（負債：後で払う義務）発生→貸方。' },
-  { q:'受取手形6,000円が満期になり、普通預金に入金された。',
-    accounts:[{name:'普通預金',amt:6000,side:'d'},{name:'受取手形',amt:6000,side:'c'}],
-    exp:'普通預金（資産）増加→借方。受取手形（資産）消滅→貸方。' },
-  { q:'支払手形3,000円が満期になり、普通預金から引き落とされた。',
-    accounts:[{name:'支払手形',amt:3000,side:'d'},{name:'普通預金',amt:3000,side:'c'}],
-    exp:'支払手形（負債）消滅→借方。普通預金（資産）減少→貸方。' },
-
-  // ④ 固定資産取得
-  { q:'備品100,000円を現金で購入した。',
-    accounts:[{name:'備品',amt:100000,side:'d'},{name:'現金',amt:100000,side:'c'}],
-    exp:'備品（資産）増加→借方。現金（資産）減少→貸方。' },
-  { q:'土地500,000円を普通預金で購入した。',
-    accounts:[{name:'土地',amt:500000,side:'d'},{name:'普通預金',amt:500000,side:'c'}],
-    exp:'土地（資産）増加→借方。普通預金（資産）減少→貸方。' },
-  { q:'車両運搬具800,000円を現金で購入した。',
-    accounts:[{name:'車両運搬具',amt:800000,side:'d'},{name:'現金',amt:800000,side:'c'}],
-    exp:'車両運搬具（資産）増加→借方。現金（資産）減少→貸方。' },
-
-  // ⑤ 借入・貸付
-  { q:'銀行から現金300,000円を借り入れた。',
-    accounts:[{name:'現金',amt:300000,side:'d'},{name:'借入金',amt:300000,side:'c'}],
-    exp:'現金（資産）増加→借方。借入金（負債）発生→貸方。' },
-  { q:'借入金100,000円を現金で返済した。',
-    accounts:[{name:'借入金',amt:100000,side:'d'},{name:'現金',amt:100000,side:'c'}],
-    exp:'借入金（負債）消滅→借方。現金（資産）減少→貸方。' },
-  { q:'取引先に現金50,000円を貸し付けた。',
-    accounts:[{name:'貸付金',amt:50000,side:'d'},{name:'現金',amt:50000,side:'c'}],
-    exp:'貸付金（資産：将来戻ってくる権利）増加→借方。現金（資産）減少→貸方。' },
-  { q:'貸付金50,000円が現金で返済された。',
-    accounts:[{name:'現金',amt:50000,side:'d'},{name:'貸付金',amt:50000,side:'c'}],
-    exp:'現金（資産）増加→借方。貸付金（資産）消滅→貸方。' },
-
-  // ⑥ 利息
-  { q:'借入金の利息5,000円を現金で支払った。',
-    accounts:[{name:'支払利息',amt:5000,side:'d'},{name:'現金',amt:5000,side:'c'}],
-    exp:'支払利息（費用）発生→借方。現金（資産）減少→貸方。' },
-  { q:'貸付金の利息3,000円を現金で受け取った。',
-    accounts:[{name:'現金',amt:3000,side:'d'},{name:'受取利息',amt:3000,side:'c'}],
-    exp:'現金（資産）増加→借方。受取利息（収益）発生→貸方。' },
-
-  // ⑦ 各種経費
-  { q:'給料250,000円を普通預金から振り込んだ。',
-    accounts:[{name:'給料',amt:250000,side:'d'},{name:'普通預金',amt:250000,side:'c'}],
-    exp:'給料（費用）発生→借方。普通預金（資産）減少→貸方。' },
-  { q:'事務所の家賃60,000円を現金で支払った。',
-    accounts:[{name:'支払家賃',amt:60000,side:'d'},{name:'現金',amt:60000,side:'c'}],
-    exp:'支払家賃（費用）発生→借方。現金（資産）減少→貸方。' },
-  { q:'所有する不動産の家賃80,000円を現金で受け取った。',
-    accounts:[{name:'現金',amt:80000,side:'d'},{name:'受取家賃',amt:80000,side:'c'}],
-    exp:'現金（資産）増加→借方。受取家賃（収益）発生→貸方。' },
-  { q:'電話代（通信費）5,000円を現金で支払った。',
-    accounts:[{name:'通信費',amt:5000,side:'d'},{name:'現金',amt:5000,side:'c'}],
-    exp:'通信費（費用）発生→借方。現金（資産）減少→貸方。' },
-  { q:'出張の交通費・宿泊費（旅費交通費）30,000円を現金で支払った。',
-    accounts:[{name:'旅費交通費',amt:30000,side:'d'},{name:'現金',amt:30000,side:'c'}],
-    exp:'旅費交通費（費用）発生→借方。現金（資産）減少→貸方。' },
-  { q:'コピー用紙等の消耗品費2,000円を現金で支払った。',
-    accounts:[{name:'消耗品費',amt:2000,side:'d'},{name:'現金',amt:2000,side:'c'}],
-    exp:'消耗品費（費用）発生→借方。現金（資産）減少→貸方。' },
-  { q:'広告掲載料（広告宣伝費）50,000円を普通預金で支払った。',
-    accounts:[{name:'広告宣伝費',amt:50000,side:'d'},{name:'普通預金',amt:50000,side:'c'}],
-    exp:'広告宣伝費（費用）発生→借方。普通預金（資産）減少→貸方。' },
-  { q:'火災保険料（支払保険料）12,000円を現金で支払った。',
-    accounts:[{name:'支払保険料',amt:12000,side:'d'},{name:'現金',amt:12000,side:'c'}],
-    exp:'支払保険料（費用）発生→借方。現金（資産）減少→貸方。' },
-  { q:'固定資産税（租税公課）40,000円を現金で納付した。',
-    accounts:[{name:'租税公課',amt:40000,side:'d'},{name:'現金',amt:40000,side:'c'}],
-    exp:'租税公課（費用）発生→借方。現金（資産）減少→貸方。' },
-  { q:'建物の修繕費10,000円を現金で支払った。',
-    accounts:[{name:'修繕費',amt:10000,side:'d'},{name:'現金',amt:10000,side:'c'}],
-    exp:'修繕費（費用）発生→借方。現金（資産）減少→貸方。' },
-  { q:'手数料収入15,000円を普通預金で受け取った。',
-    accounts:[{name:'普通預金',amt:15000,side:'d'},{name:'受取手数料',amt:15000,side:'c'}],
-    exp:'普通預金（資産）増加→借方。受取手数料（収益）発生→貸方。' },
-  { q:'商品の発送費（発送費）2,500円を現金で支払った。',
-    accounts:[{name:'発送費',amt:2500,side:'d'},{name:'現金',amt:2500,side:'c'}],
-    exp:'発送費（費用）発生→借方。現金（資産）減少→貸方。' },
-
-  // ⑧ 純資産・資本
-  { q:'現金200,000円を元入れして事業を開始した。',
-    accounts:[{name:'現金',amt:200000,side:'d'},{name:'資本金',amt:200000,side:'c'}],
-    exp:'現金（資産）増加→借方。資本金（純資産）増加→貸方。' },
-
-  // ⑨ 仮払金・仮受金・立替金
-  { q:'出張前に現金50,000円を仮払いした。',
-    accounts:[{name:'仮払金',amt:50000,side:'d'},{name:'現金',amt:50000,side:'c'}],
-    exp:'仮払金（資産：使途未確定の前払い）増加→借方。現金（資産）減少→貸方。' },
-  { q:'仮払金50,000円を精算した。全額旅費交通費だった。',
-    accounts:[{name:'旅費交通費',amt:50000,side:'d'},{name:'仮払金',amt:50000,side:'c'}],
-    exp:'旅費交通費（費用）確定→借方。仮払金（資産）消滅→貸方。' },
-  { q:'用途不明の入金20,000円を仮受金とした。',
-    accounts:[{name:'現金',amt:20000,side:'d'},{name:'仮受金',amt:20000,side:'c'}],
-    exp:'現金（資産）増加→借方。仮受金（負債：原因不明の受取）発生→貸方。' },
-  { q:'仮受金20,000円は売掛金の回収と判明した。',
-    accounts:[{name:'仮受金',amt:20000,side:'d'},{name:'売掛金',amt:20000,side:'c'}],
-    exp:'仮受金（負債）消滅→借方。売掛金（資産）消滅→貸方。原因確定により整理。' },
-  { q:'従業員の交通費3,000円を現金で立て替えた。',
-    accounts:[{name:'立替金',amt:3000,side:'d'},{name:'現金',amt:3000,side:'c'}],
-    exp:'立替金（資産：後で戻ってくる）増加→借方。現金（資産）減少→貸方。' },
-  { q:'立替金3,000円を従業員から現金で回収した。',
-    accounts:[{name:'現金',amt:3000,side:'d'},{name:'立替金',amt:3000,side:'c'}],
-    exp:'現金（資産）増加→借方。立替金（資産）消滅→貸方。' },
-
-  // ⑩ 前払金・前受金
-  { q:'商品注文時に手付金10,000円を現金で支払った。',
-    accounts:[{name:'前払金',amt:10000,side:'d'},{name:'現金',amt:10000,side:'c'}],
-    exp:'前払金（資産：商品を受け取る権利）増加→借方。現金（資産）減少→貸方。' },
-  { q:'受注時に手付金15,000円を現金で受け取った。',
-    accounts:[{name:'現金',amt:15000,side:'d'},{name:'前受金',amt:15000,side:'c'}],
-    exp:'現金（資産）増加→借方。前受金（負債：商品を引き渡す義務）発生→貸方。' },
-
-  // ⑪ 小口現金
-  { q:'小口現金20,000円を普通預金から補給した。',
-    accounts:[{name:'小口現金',amt:20000,side:'d'},{name:'普通預金',amt:20000,side:'c'}],
-    exp:'小口現金（資産）増加→借方。普通預金（資産）減少→貸方。' },
-  { q:'小口現金から旅費交通費1,500円、通信費800円を支払った。',
-    accounts:[{name:'旅費交通費',amt:1500,side:'d'},{name:'通信費',amt:800,side:'d'},{name:'小口現金',amt:2300,side:'c'}],
-    exp:'旅費交通費・通信費（費用）発生→借方。小口現金（資産）2,300円減少→貸方。' },
-
-  // ⑫ 現金過不足
-  { q:'帳簿より現金が500円少ない。原因不明。',
-    accounts:[{name:'現金過不足',amt:500,side:'d'},{name:'現金',amt:500,side:'c'}],
-    exp:'現金が帳簿より少ない→帳簿上の現金を減らす。現金（資産）減少→貸方。現金過不足→借方。' },
-  { q:'現金過不足500円の原因が通信費の記入漏れと判明。',
-    accounts:[{name:'通信費',amt:500,side:'d'},{name:'現金過不足',amt:500,side:'c'}],
-    exp:'通信費（費用）として確定→借方。現金過不足→消滅（貸方）。' },
-
-  // ⑬ クレジット売上
-  { q:'クレジットカードで商品5,000円を売り上げた。',
-    accounts:[{name:'クレジット売掛金',amt:5000,side:'d'},{name:'売上',amt:5000,side:'c'}],
-    exp:'クレジット売掛金（資産：カード会社への請求権）増加→借方。売上（収益）発生→貸方。' },
-  { q:'クレジット売掛金5,000円が普通預金に振り込まれた。',
-    accounts:[{name:'普通預金',amt:5000,side:'d'},{name:'クレジット売掛金',amt:5000,side:'c'}],
-    exp:'普通預金（資産）増加→借方。クレジット売掛金（資産）消滅→貸方。' },
-
-  // ⑭ 複合仕訳
-  { q:'商品3,000円を仕入れ、現金1,000円と掛け2,000円で支払った。',
-    accounts:[{name:'仕入',amt:3000,side:'d'},{name:'現金',amt:1000,side:'c'},{name:'買掛金',amt:2000,side:'c'}],
-    exp:'仕入（費用）3,000円→借方。現金1,000円と買掛金2,000円→貸方。借方合計＝貸方合計！' },
-  { q:'備品200,000円を購入し、現金100,000円を払い、残りは翌月払いとした。',
-    accounts:[{name:'備品',amt:200000,side:'d'},{name:'現金',amt:100000,side:'c'},{name:'未払金',amt:100000,side:'c'}],
-    exp:'備品（資産）増加→借方。現金（資産）減少と未払金（負債）発生→貸方。' },
-  { q:'給料200,000円のうち所得税20,000円を差し引き、残りを普通預金で支払った。',
-    accounts:[{name:'給料',amt:200000,side:'d'},{name:'所得税預り金',amt:20000,side:'c'},{name:'普通預金',amt:180000,side:'c'}],
-    exp:'給料（費用）200,000円→借方。所得税預り金（負債）20,000円と普通預金（資産）180,000円→貸方。' },
-  { q:'建物1,000,000円を購入し、普通預金500,000円と借入金500,000円で支払った。',
-    accounts:[{name:'建物',amt:1000000,side:'d'},{name:'普通預金',amt:500000,side:'c'},{name:'借入金',amt:500000,side:'c'}],
-    exp:'建物（資産）増加→借方。普通預金（資産）と借入金（負債）→貸方。' },
-  { q:'商品10,000円を仕入れ、手付金（前払金）3,000円を充当し、残りは掛けとした。',
-    accounts:[{name:'仕入',amt:10000,side:'d'},{name:'前払金',amt:3000,side:'c'},{name:'買掛金',amt:7000,side:'c'}],
-    exp:'仕入（費用）10,000円→借方。前払金（資産）消滅3,000円と買掛金（負債）7,000円→貸方。' },
-
-  // ⑮ 減価償却
-  { q:'備品200,000円（耐用年数5年、残存価額0）を定額法で減価償却した。',
-    accounts:[{name:'減価償却費',amt:40000,side:'d'},{name:'備品減価償却累計額',amt:40000,side:'c'}],
-    exp:'減価償却費（費用）発生→借方。備品減価償却累計額（評価勘定）増加→貸方。200,000÷5＝40,000円。' },
-  { q:'建物1,000,000円（耐用年数20年、残存価額0）を定額法で減価償却した。',
-    accounts:[{name:'減価償却費',amt:50000,side:'d'},{name:'建物減価償却累計額',amt:50000,side:'c'}],
-    exp:'減価償却費（費用）→借方。建物減価償却累計額（評価勘定）→貸方。1,000,000÷20＝50,000円。' },
-  { q:'車両運搬具900,000円（耐用年数3年、残存価額0）を定額法で減価償却した。',
-    accounts:[{name:'減価償却費',amt:300000,side:'d'},{name:'車両運搬具減価償却累計額',amt:300000,side:'c'}],
-    exp:'減価償却費（費用）→借方。車両運搬具減価償却累計額（評価勘定）→貸方。900,000÷3＝300,000円。' },
-
-  // ⑯ 固定資産売却
-  { q:'帳簿価額150,000円の備品を200,000円で現金売却した。',
-    accounts:[{name:'現金',amt:200000,side:'d'},{name:'備品',amt:150000,side:'c'},{name:'固定資産売却益',amt:50000,side:'c'}],
-    exp:'現金（資産）200,000円増加→借方。備品（資産）150,000円消滅と固定資産売却益（収益）50,000円→貸方。' },
-  { q:'帳簿価額300,000円の備品を250,000円で現金売却した。',
-    accounts:[{name:'現金',amt:250000,side:'d'},{name:'固定資産売却損',amt:50000,side:'d'},{name:'備品',amt:300000,side:'c'}],
-    exp:'現金（資産）250,000円と固定資産売却損（費用）50,000円→借方。備品（資産）300,000円消滅→貸方。' },
-
-  // ⑰ 貸倒れ・貸倒引当金
-  { q:'売掛金10,000円が回収不能となった（貸倒引当金はない）。',
-    accounts:[{name:'貸倒損失',amt:10000,side:'d'},{name:'売掛金',amt:10000,side:'c'}],
-    exp:'貸倒損失（費用）発生→借方。売掛金（資産）消滅→貸方。' },
-  { q:'決算で売掛金残高100,000円の2%を貸倒引当金として繰り入れた。',
-    accounts:[{name:'貸倒引当金繰入',amt:2000,side:'d'},{name:'貸倒引当金',amt:2000,side:'c'}],
-    exp:'貸倒引当金繰入（費用）→借方。貸倒引当金（評価勘定）増加→貸方。100,000×2%＝2,000円。' },
-  { q:'貸倒引当金2,000円が設定済みの売掛金10,000円が貸し倒れた。',
-    accounts:[{name:'貸倒引当金',amt:2000,side:'d'},{name:'貸倒損失',amt:8000,side:'d'},{name:'売掛金',amt:10000,side:'c'}],
-    exp:'貸倒引当金（評価勘定）2,000円消滅と貸倒損失（費用）8,000円→借方。売掛金（資産）10,000円消滅→貸方。' },
-
-  // ⑱ 有価証券（2級）
-  { q:'売買目的で株式200,000円を現金で購入した。',
-    accounts:[{name:'売買目的有価証券',amt:200000,side:'d'},{name:'現金',amt:200000,side:'c'}],
-    exp:'売買目的有価証券（資産）増加→借方。現金（資産）減少→貸方。' },
-  { q:'売買目的有価証券（帳簿価額200,000円）を250,000円で売却し、普通預金に入金した。',
-    accounts:[{name:'普通預金',amt:250000,side:'d'},{name:'売買目的有価証券',amt:200000,side:'c'},{name:'有価証券売却益',amt:50000,side:'c'}],
-    exp:'普通預金（資産）250,000円→借方。有価証券（資産）200,000円消滅と売却益（収益）50,000円→貸方。' },
-  { q:'売買目的有価証券（帳簿価額200,000円）を160,000円で売却し、普通預金に入金した。',
-    accounts:[{name:'普通預金',amt:160000,side:'d'},{name:'有価証券売却損',amt:40000,side:'d'},{name:'売買目的有価証券',amt:200000,side:'c'}],
-    exp:'普通預金（資産）160,000円と売却損（費用）40,000円→借方。有価証券（資産）200,000円消滅→貸方。' },
-  { q:'決算で売買目的有価証券（帳簿価額200,000円）の時価が220,000円になった。',
-    accounts:[{name:'売買目的有価証券',amt:20000,side:'d'},{name:'有価証券評価益',amt:20000,side:'c'}],
-    exp:'時価上昇分を評価益に計上。売買目的有価証券（資産）増加→借方。有価証券評価益（収益）→貸方。' },
-
-  // ⑲ 決算整理（2級）
-  { q:'決算で保険料の前払い分3,000円を計上した。',
-    accounts:[{name:'前払費用',amt:3000,side:'d'},{name:'支払保険料',amt:3000,side:'c'}],
-    exp:'翌期分の費用を前払費用（資産）として計上→借方。支払保険料（費用）を減額→貸方。' },
-  { q:'決算で家賃の未払い分20,000円を計上した。',
-    accounts:[{name:'支払家賃',amt:20000,side:'d'},{name:'未払費用',amt:20000,side:'c'}],
-    exp:'当期分の費用（支払家賃）を計上→借方。未払費用（負債）発生→貸方。' },
-  { q:'決算で利息の未収分5,000円を計上した。',
-    accounts:[{name:'未収収益',amt:5000,side:'d'},{name:'受取利息',amt:5000,side:'c'}],
-    exp:'未収収益（資産：まだもらっていない収益の権利）増加→借方。受取利息（収益）計上→貸方。' },
-  { q:'決算で受取家賃の前受分10,000円を計上した。',
-    accounts:[{name:'受取家賃',amt:10000,side:'d'},{name:'前受収益',amt:10000,side:'c'}],
-    exp:'翌期分の収益を取り消し（受取家賃を借方で減額）。前受収益（負債）発生→貸方。' },
-
-  // ⑳ 法人税等
-  { q:'決算で法人税等200,000円を計上した。',
-    accounts:[{name:'法人税等',amt:200000,side:'d'},{name:'未払法人税等',amt:200000,side:'c'}],
-    exp:'法人税等（費用）発生→借方。未払法人税等（負債）発生→貸方。' },
-  { q:'法人税等200,000円を普通預金から納付した。',
-    accounts:[{name:'未払法人税等',amt:200000,side:'d'},{name:'普通預金',amt:200000,side:'c'}],
-    exp:'未払法人税等（負債）消滅→借方。普通預金（資産）減少→貸方。' },
-
-  // ㉑ 消費税（2級）
-  { q:'商品11,000円（うち消費税1,000円）を現金で仕入れた。',
-    accounts:[{name:'仕入',amt:10000,side:'d'},{name:'仮払消費税',amt:1000,side:'d'},{name:'現金',amt:11000,side:'c'}],
-    exp:'仕入（費用）10,000円と仮払消費税（資産）1,000円→借方。現金（資産）11,000円→貸方。' },
-  { q:'商品22,000円（うち消費税2,000円）を現金で売り上げた。',
-    accounts:[{name:'現金',amt:22000,side:'d'},{name:'売上',amt:20000,side:'c'},{name:'仮受消費税',amt:2000,side:'c'}],
-    exp:'現金（資産）22,000円→借方。売上（収益）20,000円と仮受消費税（負債）2,000円→貸方。' },
-  { q:'決算で仮受消費税2,000円から仮払消費税1,000円を差し引き、未払消費税を計上した。',
-    accounts:[{name:'仮受消費税',amt:2000,side:'d'},{name:'仮払消費税',amt:1000,side:'c'},{name:'未払消費税',amt:1000,side:'c'}],
-    exp:'仮受消費税（負債）消滅→借方。仮払消費税（資産）消滅と未払消費税（負債）計上→貸方。' },
-
-  // ㉒ 株式発行（2級）
-  { q:'株式を発行し、払込金500,000円が普通預金に入金された。',
-    accounts:[{name:'普通預金',amt:500000,side:'d'},{name:'資本金',amt:500000,side:'c'}],
-    exp:'普通預金（資産）増加→借方。資本金（純資産）増加→貸方。' },
-
-  // ㉓ 社債（2級）
-  { q:'社債1,000,000円を発行し、普通預金に入金された。',
-    accounts:[{name:'普通預金',amt:1000000,side:'d'},{name:'社債',amt:1000000,side:'c'}],
-    exp:'普通預金（資産）増加→借方。社債（負債）発生→貸方。' },
-  { q:'社債の利息50,000円を現金で支払った。',
-    accounts:[{name:'社債利息',amt:50000,side:'d'},{name:'現金',amt:50000,side:'c'}],
-    exp:'社債利息（費用）発生→借方。現金（資産）減少→貸方。' },
-
-  // ㉔ のれん（2級）
-  { q:'のれん300,000円（耐用年数10年）を定額法で償却した。',
-    accounts:[{name:'のれん償却',amt:30000,side:'d'},{name:'のれん',amt:30000,side:'c'}],
-    exp:'のれん償却（費用）発生→借方。のれん（資産）減少→貸方。300,000÷10＝30,000円。' },
-
-  // ㉕ 退職給付（2級）
-  { q:'退職給付費用100,000円を計上した。',
-    accounts:[{name:'退職給付費用',amt:100000,side:'d'},{name:'退職給付引当金',amt:100000,side:'c'}],
-    exp:'退職給付費用（費用）発生→借方。退職給付引当金（負債）増加→貸方。' },
-
-  // ㉖ 棚卸（2級）
-  { q:'決算で棚卸減耗損15,000円を計上した。',
-    accounts:[{name:'棚卸減耗損',amt:15000,side:'d'},{name:'繰越商品',amt:15000,side:'c'}],
-    exp:'棚卸減耗損（費用）発生→借方。繰越商品（資産）減少→貸方。' },
-  { q:'決算で商品評価損8,000円を計上した。',
-    accounts:[{name:'商品評価損',amt:8000,side:'d'},{name:'繰越商品',amt:8000,side:'c'}],
-    exp:'商品評価損（費用）発生→借方。繰越商品（資産）時価へ減額→貸方。' },
-
-  // ㉗ 手形割引（2級）
-  { q:'受取手形100,000円を銀行で割り引き、割引料2,000円を差し引いた残額を普通預金に入金した。',
-    accounts:[{name:'普通預金',amt:98000,side:'d'},{name:'手形売却損',amt:2000,side:'d'},{name:'受取手形',amt:100000,side:'c'}],
-    exp:'普通預金（資産）98,000円と手形売却損（費用）2,000円→借方。受取手形（資産）100,000円消滅→貸方。' },
-
-  // ㉘ 電子記録（2級）
-  { q:'売掛金50,000円について電子記録債権が発生した。',
-    accounts:[{name:'電子記録債権',amt:50000,side:'d'},{name:'売掛金',amt:50000,side:'c'}],
-    exp:'電子記録債権（資産）増加→借方。売掛金（資産）消滅→貸方。' },
-  { q:'電子記録債務30,000円が決済され、普通預金から引き落とされた。',
-    accounts:[{name:'電子記録債務',amt:30000,side:'d'},{name:'普通預金',amt:30000,side:'c'}],
-    exp:'電子記録債務（負債）消滅→借方。普通預金（資産）減少→貸方。' },
-];
-
-let expQIdx=0, expCardIdx=0, expPlaced={d:[],c:[]}, expScore=0, expShuffled=[], expActive=false;
+function getExpAccounts(q){
+  if(!q.e) return null;
+  const entry=q.e[0];
+  return [
+    ...entry.d.map(([name,amt])=>({name,amt,side:'d'})),
+    ...entry.c.map(([name,amt])=>({name,amt,side:'c'}))
+  ];
+}
 
 function toggleExp(){
-  expActive = !expActive;
-  document.getElementById('exp-toggle-btn').classList.toggle('active', expActive);
-  document.getElementById('exp-panel').style.display = expActive ? 'block' : 'none';
-  document.querySelector('.stats-bar').style.display = expActive ? 'none' : 'flex';
-  document.querySelector('.card-area').style.display = expActive ? 'none' : 'block';
-  if(expActive){ expQIdx=0; expScore=0; loadExpQ(); }
+  expActive=!expActive;
+  document.getElementById('exp-toggle-btn').classList.toggle('active',expActive);
+  document.getElementById('exp-panel').style.display=expActive?'block':'none';
+  document.querySelector('.stats-bar').style.display=expActive?'none':'flex';
+  document.querySelector('.card-area').style.display=expActive?'none':'block';
+  if(expActive){ expQIdx=0; expScore=0; expLevelFilter=0; expScrollPage=0; expQuestions=getExpQList(); renderExpPanel(); }
+}
+
+function setExpLevel(lv){
+  expLevelFilter=lv; expScrollPage=0; expQIdx=0; expScore=0;
+  expQuestions=getExpQList();
+  renderExpPanel();
+}
+
+function setExpScrollPage(p){
+  expScrollPage=p; expQIdx=0; expScore=0;
+  renderExpPanel();
+}
+
+function renderExpPanel(){
+  const panel=document.getElementById('exp-panel');
+  const allQ=getExpQList();
+  const totalPages=Math.ceil(allQ.length/20);
+
+  // Build tab HTML
+  const tabs=['全級','3級','2級','スクロール'].map((label,i)=>{
+    const lv=i===3?-1:i;
+    return `<button class="exp-tab${expLevelFilter===lv?' active':''}" onclick="setExpLevel(${lv})">${label}</button>`;
+  }).join('');
+
+  // Build scroll sub-tabs if needed
+  let scrollTabs='';
+  if(expLevelFilter===-1){
+    scrollTabs='<div class="exp-scroll-tabs">';
+    for(let p=0;p<totalPages;p++){
+      const start=p*20+1, end=Math.min((p+1)*20, allQ.length);
+      scrollTabs+=`<button class="exp-scroll-tab${expScrollPage===p?' active':''}" onclick="setExpScrollPage(${p})">${start}-${end}</button>`;
+    }
+    scrollTabs+='</div>';
+  }
+
+  panel.innerHTML=`<div class="exp-tab-row">${tabs}</div>${scrollTabs}<div id="exp-main"></div>`;
+
+  // Determine effective question list
+  if(expLevelFilter===-1){
+    expQuestions=allQ.slice(expScrollPage*20, expScrollPage*20+20);
+  } else {
+    expQuestions=allQ;
+  }
+  expQIdx=0; expScore=0; expPlaced={d:[],c:[]};
+  loadExpQ();
 }
 
 function loadExpQ(){
-  const panel = document.getElementById('exp-panel');
-  const q = EXP_DATA[expQIdx];
-  expPlaced = {d:[],c:[]};
-  expCardIdx = 0;
-  expShuffled = [...q.accounts].sort(()=>Math.random()-0.5);
-  panel.innerHTML = `
-    <div class="exp-prog-row">
-      <span>問${expQIdx+1} / ${EXP_DATA.length}</span>
-      <span style="font-weight:700;color:var(--primary)">✓ ${expScore}問正解</span>
-    </div>
-    <div class="exp-q-card">${q.q}</div>
-    <div class="exp-swipe-wrap" id="exp-sw">
-      <div class="exp-hint" style="left:8px;color:#0288D1;">← 借方</div>
-      <div class="exp-hint" style="right:8px;color:#388E3C;">貸方 →</div>
-    </div>
-    <div class="exp-zones">
-      <div class="exp-zone exp-zone-d"><div class="exp-zone-label">借　方</div><div id="exp-pd" class="exp-placed"></div></div>
-      <div class="exp-zone exp-zone-c"><div class="exp-zone-label">貸　方</div><div id="exp-pc" class="exp-placed"></div></div>
-    </div>
-    <div class="exp-actions" id="exp-acts">
-      <button class="exp-act-btn exp-act-d" onclick="expPlace('d')">← 借方に配置</button>
-      <button class="exp-act-btn exp-act-c" onclick="expPlace('c')">貸方に配置 →</button>
-    </div>
-    <div class="exp-result" id="exp-res"></div>`;
-  renderExpCard();
+  if(expQIdx>=expQuestions.length){ expFinish(); return; }
+  const main=document.getElementById('exp-main');
+  const q=expQuestions[expQIdx];
+  expPlaced={d:[],c:[]};
+  expCardIdx=0;
+  const accounts=getExpAccounts(q);
+  const isLast=expQIdx>=expQuestions.length-1;
+  const isReadOnly=!accounts;
+
+  if(isReadOnly){
+    // ans_html mode
+    main.innerHTML=`
+      <div class="exp-prog-row">
+        <span>問${expQIdx+1} / ${expQuestions.length}</span>
+        <span style="font-weight:700;color:var(--primary)">✓ ${expScore}問正解</span>
+      </div>
+      <div class="exp-q-card">${q.q}</div>
+      <div style="margin:8px 0;">
+        <button class="exp-reveal-btn" onclick="expRevealAns(this)">答えを見る ▼</button>
+        <div class="exp-readonly-ans" id="exp-ro-ans">${q.ans_html||''}</div>
+      </div>
+      <button class="exp-next-btn" onclick="${isLast?'expFinish()':'expNext()'}">
+        ${isLast?'結果を見る':'次の問題 →'}
+      </button>`;
+  } else {
+    // Swipe card mode
+    const expShuffledLocal = [...accounts]; // no shuffle — use defined order
+    // Store on window for access by other functions
+    window._expCards = expShuffledLocal;
+
+    main.innerHTML=`
+      <div class="exp-prog-row">
+        <span>問${expQIdx+1} / ${expQuestions.length}</span>
+        <span style="font-weight:700;color:var(--primary)">✓ ${expScore}問正解</span>
+      </div>
+      <div class="exp-q-card">${q.q}</div>
+      <div class="exp-swipe-wrap" id="exp-sw">
+        <div class="exp-hint" style="left:8px;color:#0288D1;">← 借方</div>
+        <div class="exp-hint" style="right:8px;color:#388E3C;">貸方 →</div>
+      </div>
+      <div class="exp-zones">
+        <div class="exp-zone exp-zone-d"><div class="exp-zone-label">借　方</div><div id="exp-pd" class="exp-placed"></div></div>
+        <div class="exp-zone exp-zone-c"><div class="exp-zone-label">貸　方</div><div id="exp-pc" class="exp-placed"></div></div>
+      </div>
+      <div class="exp-actions" id="exp-acts">
+        <button class="exp-act-btn exp-act-d" onclick="expPlace('d')">← 借方に配置</button>
+        <button class="exp-act-btn exp-act-c" onclick="expPlace('c')">貸方に配置 →</button>
+      </div>
+      <div class="exp-result" id="exp-res"></div>`;
+    renderExpCard();
+  }
+}
+
+function expRevealAns(btn){
+  btn.style.display='none';
+  document.getElementById('exp-ro-ans').style.display='block';
 }
 
 function renderExpCard(){
-  const wrap = document.getElementById('exp-sw');
-  const old = wrap.querySelector('.exp-swipe-card');
+  const wrap=document.getElementById('exp-sw');
+  if(!wrap) return;
+  const old=wrap.querySelector('.exp-swipe-card');
   if(old) old.remove();
-  if(expCardIdx >= expShuffled.length){ expCheckResult(); return; }
-  const acc = expShuffled[expCardIdx];
-  const card = document.createElement('div');
-  card.className = 'exp-swipe-card';
-  card.innerHTML = `<span class="tag ${T[acc.name]||'other'}" style="font-size:15px;">${acc.name}</span><div style="font-size:12px;color:var(--muted);margin-top:5px;font-weight:600;">${acc.amt.toLocaleString()}円</div>`;
+  const cards=window._expCards||[];
+  if(expCardIdx>=cards.length){ expCheckResult(); return; }
+  const acc=cards[expCardIdx];
+  const card=document.createElement('div');
+  card.className='exp-swipe-card';
+  card.innerHTML=`<span class="tag ${T[acc.name]||'other'}" style="font-size:15px;">${acc.name}</span><div style="font-size:12px;color:var(--muted);margin-top:5px;font-weight:600;">${acc.amt.toLocaleString()}円</div>`;
   wrap.appendChild(card);
   initExpSwipe(card);
 }
 
 function initExpSwipe(card){
-  let sx=0, dragging=false, md=false;
+  let sx=0,dragging=false,md=false;
   const move=(dx)=>{
     card.style.transform=`translateX(${dx}px) rotate(${dx*0.07}deg)`;
     card.className='exp-swipe-card'+(dx<-30?' tilt-l':dx>30?' tilt-r':'');
   };
   const finish=(dx)=>{
     if(Math.abs(dx)>55) expPlace(dx<0?'d':'c');
-    else { card.classList.add('anim'); card.style.transform=''; card.className='exp-swipe-card anim'; setTimeout(()=>card.classList.remove('anim'),280); }
+    else{ card.classList.add('anim'); card.style.transform=''; card.className='exp-swipe-card anim'; setTimeout(()=>card.classList.remove('anim'),280); }
   };
   card.addEventListener('touchstart',e=>{e.preventDefault();sx=e.touches[0].clientX;dragging=true;card.style.transition='';},{passive:false});
   card.addEventListener('touchmove',e=>{e.preventDefault();if(dragging)move(e.touches[0].clientX-sx);},{passive:false});
@@ -2801,7 +2578,8 @@ function initExpSwipe(card){
 }
 
 function expPlace(side){
-  const acc = expShuffled[expCardIdx];
+  const cards=window._expCards||[];
+  const acc=cards[expCardIdx];
   expPlaced[side].push(acc);
   expCardIdx++;
   ['d','c'].forEach(s=>{
@@ -2818,21 +2596,24 @@ function expPlace(side){
 }
 
 function expCheckResult(){
-  const q=EXP_DATA[expQIdx];
+  const q=expQuestions[expQIdx];
+  const cards=window._expCards||[];
   let ok=true;
-  expShuffled.forEach(acc=>{ if(expPlaced.d.includes(acc)!==(acc.side==='d')) ok=false; });
+  cards.forEach(acc=>{ if(expPlaced.d.includes(acc)!==(acc.side==='d')) ok=false; });
   if(ok) expScore++;
   const res=document.getElementById('exp-res');
   const acts=document.getElementById('exp-acts');
   if(acts) acts.style.display='none';
-  const debit=q.accounts.filter(a=>a.side==='d');
-  const credit=q.accounts.filter(a=>a.side==='c');
+  const accounts=getExpAccounts(q);
+  const debit=(accounts||[]).filter(a=>a.side==='d');
+  const credit=(accounts||[]).filter(a=>a.side==='c');
   const tagHtml=arr=>arr.map(a=>`<span class="tag ${T[a.name]||'other'}">${a.name}<span class="tag-amt"> ${a.amt.toLocaleString()}円</span></span>`).join('');
-  const isLast=expQIdx>=EXP_DATA.length-1;
+  const isLast=expQIdx>=expQuestions.length-1;
   res.className=`exp-result ${ok?'ok':'ng'}`;
   res.style.display='block';
   res.innerHTML=`
     <div class="exp-res-hd">${ok?'⭕ 正解！':'❌ 不正解'}</div>
+    <button class="exp-next-btn" onclick="${isLast?'expFinish()':'expNext()'}" style="margin-bottom:10px;">${isLast?'結果を見る':'次の問題 →'}</button>
     <div class="exp-res-ans">
       <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">正解の仕訳</div>
       <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:start;">
@@ -2841,18 +2622,17 @@ function expCheckResult(){
         <div style="display:flex;flex-wrap:wrap;gap:4px;">${tagHtml(credit)}</div>
       </div>
     </div>
-    <div class="exp-res-exp">${q.exp}</div>
-    <button class="exp-next-btn" onclick="${isLast?'expFinish()':'expNext()'}">${isLast?'結果を見る':'次の問題 →'}</button>`;
+    <div class="exp-res-exp">${q.exp||''}</div>`;
 }
 
 function expNext(){ expQIdx++; loadExpQ(); }
 
 function expFinish(){
-  const pct=Math.round(expScore/EXP_DATA.length*100);
-  document.getElementById('exp-panel').innerHTML=`
+  const pct=Math.round(expScore/expQuestions.length*100);
+  document.getElementById('exp-main').innerHTML=`
     <div class="exp-fin">
       <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">🧪 実験モード 結果</div>
-      <div class="exp-fin-score">${expScore}<span style="font-size:24px;color:var(--muted);"> / ${EXP_DATA.length}</span></div>
+      <div class="exp-fin-score">${expScore}<span style="font-size:24px;color:var(--muted);"> / ${expQuestions.length}</span></div>
       <div class="exp-fin-label">${pct}% 正解　${pct>=80?'🎉 素晴らしい！':pct>=50?'💪 もう一息！':'📚 復習しよう！'}</div>
       <div class="exp-fin-btns">
         <button class="exp-fin-btn exp-fin-btn-retry" onclick="expQIdx=0;expScore=0;loadExpQ()">🔁 もう一度</button>
