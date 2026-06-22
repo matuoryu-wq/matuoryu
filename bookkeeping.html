@@ -405,9 +405,8 @@
     .gloss-def strong { color:#1A2B3C; }
     .gloss-def mark { background:#FFF9C4; padding:0 2px; border-radius:2px; }
 
-    /* ===== 実験モード ===== */
+    /* ===== スクロールモード ===== */
     .exp-panel { display:none; max-width:640px; margin:0 auto; padding:14px 14px; }
-    .exp-prog-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:12px; color:var(--muted); }
     .exp-q-card { background:#fff; border-radius:12px; padding:14px 16px; margin-bottom:14px; border:1.5px solid var(--border); font-size:14px; line-height:1.7; font-weight:500; }
     .exp-swipe-wrap { position:relative; height:130px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
     .exp-hint { position:absolute; font-size:11px; font-weight:700; top:50%; transform:translateY(-50%); pointer-events:none; }
@@ -420,7 +419,7 @@
     .exp-swipe-card.tilt-l { border-color:#0288D1; background:#E3F2FD; }
     .exp-swipe-card.tilt-r { border-color:#388E3C; background:#E8F5E9; }
     .exp-swipe-card.anim { transition:transform 0.28s cubic-bezier(.4,0,.2,1), opacity 0.28s; }
-    .exp-zones { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+    .exp-zones { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
     .exp-zone { border-radius:12px; padding:10px; min-height:62px; border:2px dashed; }
     .exp-zone-d { border-color:#90CAF9; background:#F0F8FF; }
     .exp-zone-c { border-color:#A5D6A7; background:#F0FBF0; }
@@ -428,18 +427,18 @@
     .exp-zone-d .exp-zone-label { color:#0277BD; }
     .exp-zone-c .exp-zone-label { color:#2E7D32; }
     .exp-placed { display:flex; flex-wrap:wrap; gap:4px; min-height:24px; }
-    .exp-actions { display:flex; gap:8px; margin-bottom:4px; }
-    .exp-act-btn { flex:1; padding:11px 8px; border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; }
-    .exp-act-btn:active { opacity:0.75; }
-    .exp-act-d { background:#0288D1; color:#fff; }
-    .exp-act-c { background:#388E3C; color:#fff; }
+    .exp-nav-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:6px; }
+    .exp-nav-btn { padding:7px 12px; border:1.5px solid var(--border); border-radius:18px; background:#fff; font-size:12px; font-weight:700; cursor:pointer; color:var(--text); white-space:nowrap; }
+    .exp-nav-btn:disabled { opacity:0.3; cursor:default; }
+    .exp-nav-next { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .exp-nav-info { font-size:13px; font-weight:700; color:var(--muted); flex:1; text-align:center; }
+    .exp-undo-btn { width:100%; padding:9px; border:1.5px solid var(--border); border-radius:10px; background:#fff; font-size:13px; font-weight:700; cursor:pointer; color:var(--text); margin-bottom:8px; }
     .exp-result { background:#fff; border-radius:12px; padding:14px 16px; margin-top:12px; border:2px solid var(--border); display:none; }
     .exp-result.ok { border-color:#2E7D32; background:#F1FBF4; }
     .exp-result.ng { border-color:#C62828; background:#FFF5F5; }
     .exp-res-hd { font-size:20px; font-weight:800; margin-bottom:8px; }
     .exp-res-ans { margin-bottom:8px; }
     .exp-res-exp { font-size:12px; color:#555; line-height:1.6; padding:8px 10px; background:rgba(0,0,0,0.04); border-radius:8px; }
-    .exp-next-btn { width:100%; padding:12px; border:none; border-radius:10px; background:var(--primary); color:#fff; font-size:15px; font-weight:700; cursor:pointer; margin-top:10px; }
     .exp-fin { text-align:center; padding:30px 16px; background:#fff; border-radius:14px; }
     .exp-fin-score { font-size:52px; font-weight:900; color:var(--primary); line-height:1; }
     .exp-fin-label { font-size:14px; color:var(--muted); margin:6px 0 16px; }
@@ -449,11 +448,8 @@
     .exp-fin-btn-back { background:var(--bg); color:var(--text); border:1.5px solid var(--border); }
     .exp-btn { background:#FF8F00; color:#fff; border:none; border-radius:20px; padding:6px 14px; font-size:13px; font-weight:600; cursor:pointer; }
     .exp-btn.active { background:#E65100; }
-    .exp-tab-row { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
-    .exp-tab { padding:5px 12px; border:1.5px solid var(--border); border-radius:16px; background:#fff; font-size:12px; font-weight:700; cursor:pointer; }
-    .exp-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
-    .exp-scroll-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
-    .exp-scroll-tab { padding:5px 11px; border:1.5px solid var(--border); border-radius:16px; background:#fff; font-size:12px; font-weight:700; cursor:pointer; color:var(--text); }
+    .exp-scroll-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+    .exp-scroll-tab { padding:5px 13px; border:1.5px solid var(--border); border-radius:16px; background:#fff; font-size:12px; font-weight:700; cursor:pointer; color:var(--text); }
     .exp-scroll-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
     .exp-readonly-ans { margin:10px 0; padding:10px; background:#f5f5f5; border-radius:8px; display:none; overflow-x:auto; }
     .exp-reveal-btn { width:100%; padding:10px; border:none; border-radius:8px; background:#546E7A; color:#fff; font-size:13px; font-weight:700; cursor:pointer; margin-bottom:8px; }
@@ -2413,7 +2409,7 @@ function setGroup(n){
 // ===== スクロールモード =====
 let expActive=false, expScrollPage=0;
 let expQuestions=[], expQIdx=0, expCardIdx=0;
-let expPlaced={d:[],c:[]}, expScore=0;
+let expPlaced={d:[],c:[]}, expScore=0, expHistory=[];
 
 function getExpAccounts(q){
   if(!q.e) return null;
@@ -2443,52 +2439,48 @@ function renderExpPanel(){
   const totalPages=Math.ceil(ALL.length/20);
   let pageTabs='<div class="exp-scroll-tabs">';
   for(let p=0;p<totalPages;p++){
-    const start=p*20+1, end=Math.min((p+1)*20, ALL.length);
-    pageTabs+=`<button class="exp-scroll-tab${expScrollPage===p?' active':''}" onclick="setExpScrollPage(${p})">${start}〜${end}</button>`;
+    pageTabs+=`<button class="exp-scroll-tab${expScrollPage===p?' active':''}" onclick="setExpScrollPage(${p})">${p+1}</button>`;
   }
   pageTabs+='</div>';
   panel.innerHTML=`${pageTabs}<div id="exp-main"></div>`;
   expQuestions=ALL.slice(expScrollPage*20, expScrollPage*20+20);
-  expQIdx=0; expScore=0; expPlaced={d:[],c:[]};
+  expQIdx=0; expScore=0; expPlaced={d:[],c:[]}; expHistory=[];
   loadExpQ();
 }
 
+function expNavBar(){
+  const total=expQuestions.length, i=expQIdx;
+  const isLast=i>=total-1;
+  return `<div class="exp-nav-row">
+    <button class="exp-nav-btn" onclick="expGoTo(${i-1})"${i===0?' disabled':''}>← 前へ</button>
+    <span class="exp-nav-info">問${i+1} / ${total}</span>
+    <button class="exp-nav-btn exp-nav-next" onclick="expGoTo(${i+1})">${isLast?'結果を見る →':'次の問題 →'}</button>
+  </div>`;
+}
+
+function expGoTo(idx){
+  if(idx<0) return;
+  if(idx>=expQuestions.length){ expFinish(); return; }
+  expQIdx=idx; loadExpQ();
+}
+
 function loadExpQ(){
-  if(expQIdx>=expQuestions.length){ expFinish(); return; }
   const main=document.getElementById('exp-main');
   const q=expQuestions[expQIdx];
-  expPlaced={d:[],c:[]};
+  expPlaced={d:[],c:[]}; expHistory=[];
   expCardIdx=0;
   const accounts=getExpAccounts(q);
-  const isLast=expQIdx>=expQuestions.length-1;
-  const isReadOnly=!accounts;
 
-  if(isReadOnly){
-    // ans_html mode
+  if(!accounts){
     main.innerHTML=`
-      <div class="exp-prog-row">
-        <span>問${expQIdx+1} / ${expQuestions.length}</span>
-        <span style="font-weight:700;color:var(--primary)">✓ ${expScore}問正解</span>
-      </div>
+      ${expNavBar()}
       <div class="exp-q-card">${q.q}</div>
-      <div style="margin:8px 0;">
-        <button class="exp-reveal-btn" onclick="expRevealAns(this)">答えを見る ▼</button>
-        <div class="exp-readonly-ans" id="exp-ro-ans">${q.ans_html||''}</div>
-      </div>
-      <button class="exp-next-btn" onclick="${isLast?'expFinish()':'expNext()'}">
-        ${isLast?'結果を見る':'次の問題 →'}
-      </button>`;
+      <button class="exp-reveal-btn" onclick="expRevealAns(this)">答えを見る ▼</button>
+      <div class="exp-readonly-ans" id="exp-ro-ans">${q.ans_html||''}</div>`;
   } else {
-    // Swipe card mode
-    const expShuffledLocal = [...accounts]; // no shuffle — use defined order
-    // Store on window for access by other functions
-    window._expCards = expShuffledLocal;
-
+    window._expCards=[...accounts];
     main.innerHTML=`
-      <div class="exp-prog-row">
-        <span>問${expQIdx+1} / ${expQuestions.length}</span>
-        <span style="font-weight:700;color:var(--primary)">✓ ${expScore}問正解</span>
-      </div>
+      ${expNavBar()}
       <div class="exp-q-card">${q.q}</div>
       <div class="exp-swipe-wrap" id="exp-sw">
         <div class="exp-hint" style="left:8px;color:#0288D1;">← 借方</div>
@@ -2498,10 +2490,7 @@ function loadExpQ(){
         <div class="exp-zone exp-zone-d"><div class="exp-zone-label">借　方</div><div id="exp-pd" class="exp-placed"></div></div>
         <div class="exp-zone exp-zone-c"><div class="exp-zone-label">貸　方</div><div id="exp-pc" class="exp-placed"></div></div>
       </div>
-      <div class="exp-actions" id="exp-acts">
-        <button class="exp-act-btn exp-act-d" onclick="expPlace('d')">← 借方に配置</button>
-        <button class="exp-act-btn exp-act-c" onclick="expPlace('c')">貸方に配置 →</button>
-      </div>
+      <button class="exp-undo-btn" id="exp-undo" onclick="expUndo()" style="display:none;">↩ 取り消す</button>
       <div class="exp-result" id="exp-res"></div>`;
     renderExpCard();
   }
@@ -2545,15 +2534,22 @@ function initExpSwipe(card){
   document.addEventListener('mouseup',e=>{if(md){md=false;finish(e.clientX-sx);}});
 }
 
-function expPlace(side){
-  const cards=window._expCards||[];
-  const acc=cards[expCardIdx];
-  expPlaced[side].push(acc);
-  expCardIdx++;
+function updateExpZones(){
   ['d','c'].forEach(s=>{
     const el=document.getElementById('exp-p'+s);
     if(el) el.innerHTML=expPlaced[s].map(a=>`<span class="tag ${T[a.name]||'other'}">${a.name}<span class="tag-amt"> ${a.amt.toLocaleString()}円</span></span>`).join('');
   });
+}
+
+function expPlace(side){
+  const cards=window._expCards||[];
+  const acc=cards[expCardIdx];
+  expHistory.push({side,acc});
+  expPlaced[side].push(acc);
+  expCardIdx++;
+  updateExpZones();
+  const undoBtn=document.getElementById('exp-undo');
+  if(undoBtn) undoBtn.style.display='block';
   const card=document.querySelector('#exp-sw .exp-swipe-card');
   if(card){
     card.classList.add('anim');
@@ -2563,6 +2559,20 @@ function expPlace(side){
   } else renderExpCard();
 }
 
+function expUndo(){
+  if(expHistory.length===0) return;
+  const last=expHistory.pop();
+  const arr=expPlaced[last.side];
+  arr.splice(arr.indexOf(last.acc),1);
+  expCardIdx--;
+  updateExpZones();
+  const undoBtn=document.getElementById('exp-undo');
+  if(undoBtn) undoBtn.style.display=expHistory.length>0?'block':'none';
+  const res=document.getElementById('exp-res');
+  if(res) res.style.display='none';
+  renderExpCard();
+}
+
 function expCheckResult(){
   const q=expQuestions[expQIdx];
   const cards=window._expCards||[];
@@ -2570,18 +2580,16 @@ function expCheckResult(){
   cards.forEach(acc=>{ if(expPlaced.d.includes(acc)!==(acc.side==='d')) ok=false; });
   if(ok) expScore++;
   const res=document.getElementById('exp-res');
-  const acts=document.getElementById('exp-acts');
-  if(acts) acts.style.display='none';
+  const undoBtn=document.getElementById('exp-undo');
+  if(undoBtn) undoBtn.style.display='none';
   const accounts=getExpAccounts(q);
   const debit=(accounts||[]).filter(a=>a.side==='d');
   const credit=(accounts||[]).filter(a=>a.side==='c');
   const tagHtml=arr=>arr.map(a=>`<span class="tag ${T[a.name]||'other'}">${a.name}<span class="tag-amt"> ${a.amt.toLocaleString()}円</span></span>`).join('');
-  const isLast=expQIdx>=expQuestions.length-1;
   res.className=`exp-result ${ok?'ok':'ng'}`;
   res.style.display='block';
   res.innerHTML=`
     <div class="exp-res-hd">${ok?'⭕ 正解！':'❌ 不正解'}</div>
-    <button class="exp-next-btn" onclick="${isLast?'expFinish()':'expNext()'}" style="margin-bottom:10px;">${isLast?'結果を見る':'次の問題 →'}</button>
     <div class="exp-res-ans">
       <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">正解の仕訳</div>
       <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:start;">
@@ -2592,8 +2600,6 @@ function expCheckResult(){
     </div>
     <div class="exp-res-exp">${q.exp||''}</div>`;
 }
-
-function expNext(){ expQIdx++; loadExpQ(); }
 
 function expFinish(){
   const pct=Math.round(expScore/expQuestions.length*100);
@@ -2608,7 +2614,7 @@ function expFinish(){
       </div>
     </div>`;
 }
-// ===== 実験モードここまで =====
+// ===== スクロールモードここまで =====
 
 function setLevel(n){
   levelFilter = n;
