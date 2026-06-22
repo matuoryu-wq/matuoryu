@@ -357,9 +357,9 @@
     }
     /* ===== Appendix modal ===== */
     .apx-btn { position:fixed; bottom:20px; right:20px; background:var(--primary); color:#fff; border:none; border-radius:50px; padding:10px 18px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.25); z-index:100; }
-    .apx-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:200; overflow-y:auto; padding:16px; }
-    .apx-overlay.show { display:block; }
-    .apx-modal { background:#fff; max-width:680px; margin:0 auto; border-radius:18px; display:flex; flex-direction:column; max-height:calc(100vh - 32px); overflow:hidden; }
+    .apx-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:200; padding:0; }
+    .apx-overlay.show { display:flex; }
+    .apx-modal { background:#fff; width:100%; max-width:none; border-radius:0; display:flex; flex-direction:column; height:100vh; max-height:100vh; overflow:hidden; margin:0; }
     .apx-sticky-header { flex-shrink:0; padding:16px 18px 10px; background:#fff; border-bottom:1px solid var(--border); }
     .apx-modal-body { overflow-y:auto; flex:1; padding:10px 18px 20px; -webkit-overflow-scrolling:touch; }
     .apx-hd { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
@@ -395,7 +395,8 @@
     .apx-hide-btn { flex:1; padding:7px 10px; border:1.5px solid var(--border); border-radius:10px; background:#fff; font-size:12px; cursor:pointer; color:var(--text); font-weight:600; text-align:center; transition:background 0.15s; }
     .apx-hide-btn.active { background:#eee; border-color:#999; }
     #apx-content.names-hidden .tag { color:transparent !important; background:#e0e0e0 !important; border-color:#bbb !important; user-select:none; min-width:50px; display:inline-block; }
-    #apx-content.en-hidden .apx-en { display:none; }
+    #apx-content.names-hidden .gloss-term-text { color:transparent !important; background:#e0e0e0 !important; border-radius:3px; user-select:none; }
+    #apx-content.en-hidden .apx-en, #apx-content.en-hidden .gloss-en { display:none; }
     /* ===== Glossary ===== */
     .gloss-section { margin-bottom:10px; }
     .gloss-hd { font-size:14px; font-weight:800; color:var(--primary); padding:8px 12px; background:var(--primary-light); border-radius:8px; margin:14px 0 6px; }
@@ -1052,46 +1053,153 @@ const INDUSTRIAL_DATA = [
 
 // ===== 用語解説集データ =====
 const GLOSSARY_DATA = [
-  { category:'基本概念', items:[
-    { term:'借方（かりかた）', en:'Debit (Dr.)', def:'<strong>仕訳の左側</strong>を「借方（かりかた）」といいます。資産の増加・費用の発生・負債の減少・純資産の減少を記録します。「借」という字は由来が複雑ですが、<mark>左側＝借方</mark>と覚えましょう。「か・り・か・た（左！）」という語呂合わせが有名です。' },
-    { term:'貸方（かしかた）', en:'Credit (Cr.)', def:'<strong>仕訳の右側</strong>を「貸方（かしかた）」といいます。負債の増加・収益の発生・資産の減少・純資産の増加を記録します。<mark>右側＝貸方</mark>と覚えましょう。' },
-    { term:'仕訳（しわけ）', en:'Journal Entry', def:'取引が起きたときに<strong>借方と貸方に分けて記録する作業</strong>です。すべての取引は必ず「借方の合計＝貸方の合計」になります（貸借平均の原則）。仕訳は会計の入口で、最も基本的な作業です。' },
-    { term:'勘定科目（かんじょうかもく）', en:'Account Title', def:'取引の内容を表すための<mark>分類名称</mark>です。現金・売掛金・借入金などの名前が勘定科目です。会社によって多少異なりますが、商法・会計基準で一般的な名称が定まっています。' },
-    { term:'複式簿記（ふくしきぼき）', en:'Double-entry Bookkeeping', def:'すべての取引を<strong>必ず借方と貸方の両方に記録</strong>する会計の仕組みです（1つの取引を2つの面から記録）。これにより「借方合計＝貸方合計」が常に成立し、記録ミスを発見しやすくなります。日本の企業会計はすべてこの方式です。' },
+  { category:'① 簿記の基本', items:[
+    { term:'借方', en:'Debit (Dr.)', def:'<strong>仕訳の左側</strong>を「借方」といいます。<mark>資産の増加・費用の発生・負債の減少・純資産の減少</mark>を記録します。「左＝借方」と体で覚えましょう。語源は複雑ですが試験では「左＝借方」だけ覚えれば十分です。' },
+    { term:'貸方', en:'Credit (Cr.)', def:'<strong>仕訳の右側</strong>を「貸方」といいます。<mark>負債の増加・収益の発生・資産の減少・純資産の増加</mark>を記録します。「右＝貸方」と覚えましょう。' },
+    { term:'仕訳', en:'Journal Entry', def:'取引が起きたときに<strong>借方と貸方に分けて記録する基本作業</strong>です。すべての取引は必ず「借方合計＝貸方合計」になります（貸借平均の原則）。仕訳は会計作業の出発点です。' },
+    { term:'複式簿記', en:'Double-entry Bookkeeping', def:'すべての取引を<strong>借方と貸方の両面から記録</strong>する仕組みです。「借方合計＝貸方合計」が常に成立するため、記録ミスを自動的に発見できます。日本の企業会計はすべてこの方式です。単式簿記（収支だけ記録）との違いに注意です。' },
+    { term:'勘定科目', en:'Account Title', def:'取引の内容を表す<mark>分類名称</mark>です。現金・売掛金・借入金などがそれぞれ勘定科目です。試験では「正しい勘定科目名で書くこと」が求められます。' },
+    { term:'勘定', en:'Account', def:'勘定科目ごとに増減を集計する記録欄です。T字型の図（Tフォーム）で左側が借方・右側が貸方となり、残高（差額）がその科目の現在の金額です。' },
+    { term:'転記', en:'Posting', def:'仕訳帳に記録した内容を、<strong>勘定科目ごとの元帳（総勘定元帳）に書き写す作業</strong>です。仕訳帳→元帳の流れが簿記の基本的な記帳の流れです。' },
+    { term:'会計期間', en:'Accounting Period', def:'財務諸表を作成する一定の区切りの期間です。<mark>一般に1年間（4月1日〜翌年3月31日など）</mark>で、期間の始まりを「期首」、終わりを「期末（決算日）」といいます。' },
+    { term:'貸借平均の原則', en:'Principle of Debit-Credit Balance', def:'複式簿記において、<strong>すべての仕訳で借方の合計と貸方の合計が必ず一致する</strong>というルールです。試算表の借方合計と貸方合計が一致するのもこの原則があるためです。' },
   ]},
-  { category:'帳簿の種類', items:[
-    { term:'総勘定元帳（そうかんじょうもとちょう）', en:'General Ledger', def:'仕訳帳の記録を<strong>勘定科目ごとに集計・整理した帳簿</strong>です。「元帳」とも呼ばれます。例えば「現金」の元帳には現金の増減がすべて記録されます。残高を見ればその科目の現在の金額がわかります。' },
-    { term:'仕訳帳（しわけちょう）', en:'Journal', def:'取引が発生した<strong>時系列の順番で仕訳を記録</strong>していく帳簿です。すべての取引がここに記録され、ここから総勘定元帳に転記されます。「日記帳」のイメージです。' },
-    { term:'試算表（しさんひょう）', en:'Trial Balance', def:'決算前に<strong>帳簿に誤りがないか確かめるための一覧表</strong>です。すべての勘定科目の残高を並べ、借方合計と貸方合計が一致すれば記録ミスがないことが確認できます。合計試算表・残高試算表・合計残高試算表の3種類があります。' },
-    { term:'精算表（せいさんひょう）', en:'Worksheet', def:'決算整理を行いながら<strong>財務諸表を作成するための作業用一覧表</strong>です。試算表・決算整理仕訳・損益計算書・貸借対照表の列に分かれており、1枚で決算作業の全体像を把握できます。' },
+  { category:'② 帳簿の種類', items:[
+    { term:'仕訳帳', en:'Journal', def:'取引発生順に<strong>時系列で仕訳を記録していく主要帳簿</strong>です。「日記帳」のイメージで、すべての取引はまずここに記録されます。ここから勘定ごとに総勘定元帳へ転記します。' },
+    { term:'総勘定元帳', en:'General Ledger', def:'<strong>勘定科目ごとに取引を集計した主要帳簿</strong>です。「元帳」とも呼びます。現金の元帳には現金の増減がすべて記録され、残高を見れば現在の現金残高がわかります。' },
+    { term:'補助元帳', en:'Subsidiary Ledger', def:'総勘定元帳の特定科目（売掛金・買掛金など）を<strong>取引先別に詳細管理する補助的な帳簿</strong>です。売掛金元帳（得意先元帳）・買掛金元帳（仕入先元帳）が代表的です。' },
+    { term:'現金出納帳', en:'Cash Book', def:'現金の入出金を日付順に記録する補助記入帳です。<strong>現金科目の補助帳</strong>で、帳簿残高と実際の手元現金が一致するか確認するために使います。' },
+    { term:'小口現金出納帳', en:'Petty Cash Book', def:'小口現金係が<strong>小口現金の受け取りと支払いを記録する帳簿</strong>です。使途別（交通費・消耗品費など）に集計し、一定期間後に報告・補充する際に使います。' },
+    { term:'商品有高帳', en:'Inventory Record', def:'商品の入庫・出庫・残高を<strong>数量と単価で管理する補助帳簿</strong>です。先入先出法・移動平均法などの棚卸評価法を適用して単価を計算します。' },
+    { term:'受取手形記入帳', en:'Notes Receivable Book', def:'受け取った手形を<strong>振出人・金額・期日ごとに管理する補助帳簿</strong>です。期日管理に重要で、決済・割引・裏書の管理もここで行います。' },
+    { term:'支払手形記入帳', en:'Notes Payable Book', def:'振り出した手形を<strong>受取人・金額・期日ごとに管理する補助帳簿</strong>です。期日を過ぎると不渡りになるため、期日管理が非常に重要です。' },
+    { term:'仕訳日計表', en:'Daily Summary Journal', def:'<strong>伝票方式で1日の取引を集計して仕訳帳に代わる集計表</strong>です。入金・出金・振替の3種の伝票をまとめ、月次で元帳に転記します。多数の取引がある会社で利用されます。' },
   ]},
-  { category:'財務諸表', items:[
-    { term:'貸借対照表（たいしゃくたいしょうひょう）', en:'Balance Sheet (B/S)', def:'<mark>決算日時点</mark>での会社の財産状況を表す表です。左側（借方）に資産、右側（貸方）に負債と純資産が並びます。「資産＝負債＋純資産」という等式が常に成立します。会社の財政状態を知る最重要書類です。' },
-    { term:'損益計算書（そんえきけいさんしょ）', en:'Profit and Loss Statement (P/L)', def:'<mark>一定期間（1年間）</mark>の会社の経営成績を表す表です。収益から費用を差し引いて当期純利益（または純損失）を計算します。会社がどれだけ儲けたかを示す書類です。' },
-    { term:'当期純利益（とうきじゅんりえき）', en:'Net Income', def:'収益から費用をすべて差し引いた後の<strong>最終的な利益</strong>です。この金額が繰越利益剰余金（純資産）に加算されます。マイナスの場合は「当期純損失」となります。' },
+  { category:'③ 財務諸表', items:[
+    { term:'貸借対照表', en:'Balance Sheet (B/S)', def:'<mark>決算日時点</mark>での財産状態を示す表です。左（借方）に資産、右（貸方）に負債と純資産が並び、<strong>「資産＝負債＋純資産」</strong>が常に成立します。会社の財政状態を示す最重要書類です。' },
+    { term:'損益計算書', en:'Income Statement (P/L)', def:'<mark>一定期間（会計期間）</mark>の経営成績を示す表です。収益から費用を差し引いて当期純利益を計算します。会社がいくら儲けたかを示す書類です。' },
+    { term:'株主資本等変動計算書', en:'Statement of Changes in Equity', def:'純資産の各項目（資本金・剰余金など）が<strong>1年間でどのように変動したか</strong>を示す財務諸表です。配当・増資・利益の積み立てなどが記録されます。2級の重要書類です。' },
+    { term:'売上総利益', en:'Gross Profit', def:'<strong>売上高から売上原価を差し引いた最初の段階の利益</strong>です。「粗利益（あらりえき）」とも呼ばれます。この数値が低いと、どれだけ売ってもコストで食われてしまいます。' },
+    { term:'営業利益', en:'Operating Profit', def:'売上総利益から<strong>販売費・一般管理費を差し引いた本業の利益</strong>です。会社の本業での稼ぎ力を示す最も重要な利益指標です。' },
+    { term:'経常利益', en:'Ordinary Profit', def:'営業利益に<strong>営業外収益を加え、営業外費用を差し引いた利益</strong>です。本業以外（利息収入・受取配当・支払利息など）も含めた通常の企業活動全体の利益です。' },
+    { term:'税引前当期純利益', en:'Income Before Tax', def:'経常利益に<strong>特別損益（臨時的な損益）を加減した利益</strong>です。法人税等を引く前の最終的な利益で、ここから税金を引くと当期純利益になります。' },
+    { term:'当期純利益', en:'Net Income', def:'税引前当期純利益から<strong>法人税等を差し引いた最終的な利益</strong>です。この金額が繰越利益剰余金に加算されます。マイナスの場合を「当期純損失」といいます。' },
   ]},
-  { category:'売上・仕入の記録方法', items:[
-    { term:'三分法（さんぶんほう）', en:'Three-Account Method', def:'商品売買を<strong>「仕入」「売上」「繰越商品」の3科目</strong>に分けて記録する方法です。日本で最も一般的な方法で、日商簿記3級の基本です。仕入時は仕入（費用）、売上時は売上（収益）に記録し、期末に繰越商品で在庫調整します。' },
-    { term:'分記法（ぶんきほう）', en:'Separate Method', def:'商品を売るたびに<strong>「商品（資産）」の減少と「商品売買益（収益）」</strong>を同時に記録する方法です。リアルタイムで利益がわかりますが、記録が複雑になります。3級では三分法が主流です。' },
-    { term:'売上原価対立法（うりあげげんかたいりつほう）', en:'Cost of Sales Method', def:'売上時に<strong>「売上原価（費用）」と「商品（資産）の減少」</strong>も同時記録する方法です。売上原価をリアルタイムで把握できます。分記法と三分法の中間的な方法です。' },
+  { category:'④ 試算表・精算表', items:[
+    { term:'試算表', en:'Trial Balance', def:'すべての勘定科目の残高を一覧にして、<strong>借方合計と貸方合計が一致するか確認する表</strong>です。合計が一致すれば転記ミスはないと判断できます（ただし相殺ミスなどは発見できない）。' },
+    { term:'合計試算表', en:'Sum Trial Balance', def:'<strong>各勘定の借方合計・貸方合計を並べた試算表</strong>です。仕訳帳の借方合計・貸方合計の確認に使います。残高はわかりにくいです。' },
+    { term:'残高試算表', en:'Balance Trial Balance', def:'<strong>各勘定の残高（借方超か貸方超かの差額）を並べた試算表</strong>です。残高がひと目でわかり、決算に使いやすいです。合計試算表より実務でよく使われます。' },
+    { term:'合計残高試算表', en:'Sum-Balance Trial Balance', def:'合計試算表と残高試算表を合体させた表です。<strong>合計と残高の両方が一覧</strong>できるため、もっとも情報量が多いですが作成に手間がかかります。' },
+    { term:'精算表', en:'Worksheet', def:'試算表に決算整理仕訳を加え、<strong>損益計算書・貸借対照表を作成するための作業用一覧表</strong>です。6桁精算表（試算表・整理・BS/PL）や8桁精算表が使われます。試験でも頻出です。' },
   ]},
-  { category:'決算整理', items:[
-    { term:'発生主義（はっせいしゅぎ）', en:'Accrual Basis', def:'<strong>現金の収支ではなく、取引が発生した時点</strong>で収益・費用を認識する会計の考え方です。例えば12月に仕事をして翌年1月に入金された場合でも、収益は12月に計上します。日本の企業会計はすべてこの原則に基づきます。' },
-    { term:'引当金（ひきあてきん）', en:'Reserve / Allowance', def:'<strong>将来の費用や損失をあらかじめ見積もって計上</strong>した負債（または資産の控除）です。貸倒引当金（売掛金の回収不能見込み）・退職給付引当金（将来の退職金）などが代表例です。実際の支出前でも適切な期間に費用を配分する効果があります。' },
-    { term:'繰延資産（くりのべしさん）', en:'Deferred Assets', def:'すでにお金を払ったが、<mark>将来の期間にまたがって費用化</mark>していく特殊な資産です。創立費・開業費・株式交付費などが該当します。通常の資産と違い、明確な価値のある財産ではなく「将来に繰り延べる費用」という性質です。' },
-    { term:'減価償却（げんかしょうきゃく）', en:'Depreciation', def:'建物・機械・車など<strong>長期間使う固定資産の価値の減少</strong>を、耐用年数にわたって毎期少しずつ費用計上する手続きです。土地は価値が減らないので減価償却しません。<mark>定額法（毎年同額）と定率法（残高の一定率）</mark>が主な方法です。' },
-    { term:'貸倒引当金（かしだおれひきあてきん）', en:'Allowance for Bad Debts', def:'売掛金・受取手形などの<strong>回収できなくなりそうな見込み額</strong>を事前に積み立てた評価勘定です。資産（売掛金）のマイナスとして表示します。実際に回収不能になったときに取り崩し、貸倒損失（費用）と相殺します。' },
+  { category:'⑤ 商品売買・在庫', items:[
+    { term:'三分法', en:'Three-Account Method', def:'商品売買を<strong>「仕入（費用）」「売上（収益）」「繰越商品（資産）」の3科目</strong>で記録する方法です。最もポピュラーな方法で3級の基本です。期末に「しくりくりし」の決算整理で売上原価を計算します。' },
+    { term:'分記法', en:'Separate Method', def:'売上時に<strong>「商品（資産）の減少」と「商品売買益（収益）」を同時記録</strong>する方法です。つねに利益が見える反面、仕訳が複雑になります。' },
+    { term:'売上原価対立法', en:'Cost of Sales Method', def:'売上時に売上とともに<strong>「売上原価（費用）」「商品（資産）の減少」</strong>も同時計上する方法です。売上原価をリアルタイムで把握できます。' },
+    { term:'しくりくりし', en:'Inventory Adjustment (Period-end)', def:'三分法の期末在庫調整のことです。<strong>「仕入／繰越商品（期首）」で期首在庫を仕入に加算し、「繰越商品／仕入（期末）」で期末在庫を仕入から控除</strong>します。この2つの仕訳で売上原価が正確に計算されます。' },
+    { term:'棚卸', en:'Inventory Count', def:'期末に倉庫にある商品を実際に数えて数量を確認する作業です。帳簿上の数量と実際の数量が一致するか確認し、差があれば棚卸減耗損として処理します。' },
+    { term:'先入先出法', en:'FIFO (First-In, First-Out)', def:'先に仕入れた商品から先に売れたと<strong>仮定して在庫を評価する方法</strong>です。物価が上昇中は利益が多く計上されます。商品有高帳で管理します。' },
+    { term:'移動平均法', en:'Moving Average Method', def:'仕入のたびに<strong>平均単価を再計算して在庫を評価する方法</strong>です。「（既存在庫金額＋今回仕入金額）÷（既存数量＋今回数量）」で平均単価を求めます。' },
+    { term:'低価法', en:'Lower of Cost or Market', def:'在庫を<strong>「取得原価と正味売却価額のうち低い方」で評価</strong>するルールです。在庫の価値が下がった場合に商品評価損を計上し、過大な資産計上を防ぎます。' },
+    { term:'棚卸減耗損', en:'Inventory Shrinkage Loss', def:'実際の在庫数量が帳簿数量より少ない場合の差額損失です。<strong>盗難・紛失・腐敗・破損</strong>などが原因で、正常分は売上原価に算入し、異常分は特別損失とします。' },
+    { term:'売上原価', en:'Cost of Goods Sold', def:'販売した商品の<strong>仕入れにかかったコストの合計</strong>です。「期首繰越商品＋当期仕入高－期末繰越商品」で計算します。売上高から引くと売上総利益になります。' },
   ]},
-  { category:'税金', items:[
-    { term:'消費税の処理方式', en:'Consumption Tax Method', def:'消費税の会計処理には<strong>税込処理（本体＋消費税をひとまとめにする）</strong>と<strong>税抜処理（本体と消費税を分けて仮払消費税・仮受消費税で管理する）</strong>の2種類があります。3級では主に税抜処理を学びます。' },
-    { term:'税効果会計（ぜいこうかかいけい）', en:'Tax Effect Accounting', def:'会計上の利益と課税上の利益の<mark>ズレを調整する</mark>ための会計処理です。繰延税金資産（将来節税できる分）や繰延税金負債（将来納税が増える分）を計上し、税金費用を適正な金額に調整します。2級の重要論点です。' },
+  { category:'⑥ 手形・電子記録', items:[
+    { term:'約束手形', en:'Promissory Note', def:'「○月○日に○円支払います」という<strong>支払いの約束を書いた証書</strong>です。振り出した側は支払手形（負債）、受け取った側は受取手形（資産）に記録します。' },
+    { term:'為替手形', en:'Bill of Exchange', def:'振出人が第三者（引受人）に対して「受取人へ支払え」と命令する<strong>3者間の手形</strong>です。振出人・指図人・引受人の3者が登場します。約束手形より複雑な仕組みです。' },
+    { term:'手形の裏書譲渡', en:'Endorsement Transfer', def:'受け取った手形を<strong>第三者への支払いに流用すること</strong>です。手形の裏面に署名して相手に渡します。裏書した側は手形の支払い保証義務（遡及債務）が残ります。' },
+    { term:'手形の割引', en:'Discounting Notes', def:'受取手形を期日前に銀行等で<strong>現金化すること</strong>です。残存期間分の割引料（手形売却損）が差し引かれます。急いで現金が必要なときに使います。' },
+    { term:'不渡り', en:'Dishonor', def:'手形の期日に銀行に呈示したが、<strong>振出人の口座残高不足等で決済されなかった</strong>状態です。不渡りを2回起こすと銀行取引停止（事実上の倒産）になります。受け取った側は受取手形→不渡手形に振り替えます。' },
+    { term:'電子記録債権・債務', en:'Electronic Receivables/Payables', def:'でんさいネット（電子債権記録機関）に登録した<strong>デジタルの債権・債務</strong>です。手形と同じ機能を電子化したもので、紛失・盗難がなく分割譲渡も可能です。近年急速に普及しています。' },
+    { term:'クレジット売掛金', en:'Credit Card Receivable', def:'クレジットカード払いで売り上げたとき、<strong>カード会社からまだ入金されていない代金</strong>を記録する科目です。通常の売掛金と区別して管理します。入金時に手数料（支払手数料）が引かれます。' },
   ]},
-  { category:'工業簿記の基本', items:[
-    { term:'原価計算（げんかけいさん）', en:'Cost Accounting', def:'製品1個あたりの<strong>製造にかかった費用（原価）を計算</strong>する仕組みです。材料費・労務費・製造間接費の3つに分けて集計します。原価を正確に把握することで、適切な販売価格の設定や利益管理ができます。' },
-    { term:'直接費と間接費', en:'Direct & Indirect Costs', def:'<mark>特定の製品に直接割り当てられる費用</mark>を「直接費」、複数製品に共通してかかるため直接割り当てられない費用を「間接費」といいます。直接費は仕掛品に直接集計し、間接費は製造間接費にまとめてから配賦します。' },
-    { term:'配賦（はいふ）', en:'Cost Allocation', def:'製造間接費などを<strong>一定の基準（配賦基準）で各製品に割り振る</strong>作業です。直接作業時間・機械稼働時間・直接材料費などが配賦基準として使われます。「製造間接費÷配賦基準合計×各製品の配賦基準」で計算します。' },
-    { term:'標準原価計算（ひょうじゅんげんかけいさん）', en:'Standard Costing', def:'<strong>あらかじめ設定した目標コスト（標準原価）</strong>と実際にかかったコストを比較して、差異（原価差異）を分析する原価計算の方法です。コスト管理・業績評価に役立ちます。材料・労務費・製造間接費それぞれで差異分析を行います。' },
-    { term:'原価差異（げんかさい）', en:'Cost Variance', def:'標準原価と実際原価の差額です。<mark>実際 > 標準なら不利差異（借方差異）、実際 < 標準なら有利差異（貸方差異）</mark>となります。差異の原因を分析することで、製造現場の問題点（価格の上昇・作業の非効率など）を特定できます。' },
+  { category:'⑦ 固定資産・減価償却', items:[
+    { term:'有形固定資産', en:'Tangible Fixed Assets', def:'<strong>形のある長期使用の資産</strong>で、建物・機械・車両・土地などが該当します。土地以外は使用とともに価値が減少するため、毎期減価償却して費用化します。' },
+    { term:'無形固定資産', en:'Intangible Fixed Assets', def:'<strong>形はないが法律上の権利・価値を持つ長期資産</strong>です。特許権・ソフトウェア・のれんなどが該当します。有形固定資産と同様に、耐用年数で均等償却します。' },
+    { term:'取得原価', en:'Acquisition Cost', def:'固定資産を取得するためにかかった<strong>すべての費用（購入代金＋附随費用）</strong>です。附随費用には運送費・据付費・試運転費などが含まれます。これが減価償却の出発点となる金額です。' },
+    { term:'帳簿価額', en:'Book Value', def:'固定資産の<strong>「取得原価－減価償却累計額」で計算される現在の帳簿上の価値</strong>です。「簿価」とも呼ばれます。売却・除却時の損益計算の基準になります。' },
+    { term:'耐用年数', en:'Useful Life', def:'固定資産が使用に耐えられると見込まれる<strong>年数</strong>です。税法で固定資産の種類ごとに定められており（法定耐用年数）、これをもとに減価償却額を計算します。' },
+    { term:'定額法', en:'Straight-line Method', def:'取得原価から残存価額を引いた額を耐用年数で割り、<strong>毎年同額を減価償却</strong>する方法です。シンプルで計算しやすく、建物・ソフトウェアなどに多く使われます。' },
+    { term:'定率法', en:'Declining Balance Method', def:'毎年の期首帳簿価額（未償却残高）に<strong>一定率をかけて減価償却</strong>する方法です。初期に償却額が多く、年々減少します。機械・車両などに使われます。' },
+    { term:'間接法', en:'Indirect Method (Depreciation)', def:'減価償却を「<strong>減価償却費（費用）／減価償却累計額（評価勘定）</strong>」と仕訳する方法です。固定資産の取得原価を帳簿に残しつつ、累計額を別に管理します。貸借対照表での表示はわかりやすいです。' },
+    { term:'資本的支出', en:'Capital Expenditure', def:'固定資産の<strong>価値や耐用年数を増加させる改良・増設工事</strong>の支出です。固定資産の取得原価に加算して資産計上します。「収益的支出（修繕費）」との区別が重要な試験頻出テーマです。' },
+    { term:'収益的支出', en:'Revenue Expenditure', def:'固定資産を<strong>現状に維持・回復するための修繕費用</strong>です。修繕費（費用）として計上します。現状を超えた改良は「資本的支出」になります。' },
+    { term:'ファイナンス・リース', en:'Finance Lease', def:'実質的に<strong>資産を分割払いで購入するのと同様のリース契約</strong>です。「リース資産（資産）／リース債務（負債）」として帳簿計上し、毎期減価償却します。' },
+    { term:'オペレーティング・リース', en:'Operating Lease', def:'通常の<strong>賃貸借と同様に扱うリース契約</strong>です。資産計上せず、支払うたびに「支払リース料（費用）」として計上します。車のカーリースなどが典型例です。' },
+    { term:'圧縮記帳', en:'Compression Entry', def:'国庫補助金や保険差益で固定資産を取得した際、<strong>帳簿価額を圧縮（減額）して課税を将来に繰り延べる処理</strong>です。「固定資産圧縮損（費用）」を計上して取得価額を下げます。' },
+  ]},
+  { category:'⑧ 有価証券', items:[
+    { term:'売買目的有価証券', en:'Trading Securities', def:'<strong>短期的な値上がり益を狙って保有</strong>する株式・債券です。<mark>期末に時価評価</mark>し、差額を「有価証券評価益・損（損益）」として計上します（洗替法）。' },
+    { term:'満期保有目的債券', en:'Held-to-maturity Securities', def:'<strong>満期まで保有し続けることを目的とした債券</strong>です。時価評価は行わず「償却原価法」を適用します。取得価額と額面の差額を満期まで少しずつ調整します。' },
+    { term:'その他有価証券', en:'Available-for-sale Securities', def:'売買目的でも満期保有目的でも子会社株式でもない<strong>長期保有目的の株式・債券</strong>です。期末に時価評価し、差額は損益でなく純資産「その他有価証券評価差額金」に計上します。' },
+    { term:'洗替法', en:'Mark-to-Market (Reset Method)', def:'売買目的有価証券の期末評価差額を計上した後、<strong>翌期首に帳簿価額を元の取得原価に戻す（洗い替える）</strong>方法です。毎期ゼロからスタートするため差額管理がシンプルです。' },
+    { term:'切放法', en:'Cost Retention Method', def:'期末評価差額を翌期に戻さず<strong>そのまま据え置く方法</strong>です。洗替法と対比して覚えましょう。切放法は売買目的有価証券では認められません。' },
+    { term:'償却原価法', en:'Amortized Cost Method', def:'取得価額と額面価額の差額を<strong>満期まで毎期均等に調整していく方法</strong>です。満期保有目的債券に適用します。額面より低く買った場合（割引発行）は毎期帳簿価額が増加します。' },
+  ]},
+  { category:'⑨ 引当金・評価勘定', items:[
+    { term:'引当金', en:'Allowance / Reserve', def:'<strong>将来の費用・損失をあらかじめ見積もって当期に計上</strong>した負債または資産の控除項目です。発生主義の考え方に基づきます。4要件：①将来の費用等、②当期以前原因、③発生可能性大、④合理的見積もり可能。' },
+    { term:'評価勘定', en:'Valuation Account', def:'資産や負債の<strong>帳簿価額をマイナス調整するための対照勘定</strong>です。貸倒引当金（売掛金のマイナス）・減価償却累計額（固定資産のマイナス）が代表例です。間接控除法では資産から直接引かず評価勘定を使って表示します。' },
+    { term:'差額補充法', en:'Allowance Adjustment Method', def:'引当金の残高と必要額の差額だけを<strong>追加計上（または取り崩し）する方法</strong>です。試算表の残高を確認して必要額との差を計上します。洗替法と対比して覚えましょう。' },
+    { term:'洗替法（引当金）', en:'Full Reversal Method', def:'毎期まず既存の引当金残高を全額取り崩してゼロにし、<strong>そこから当期必要額を新たに計上する方法</strong>です。貸倒引当金でよく使われます。差額補充法より仕訳は多いです。' },
+    { term:'退職給付引当金', en:'Retirement Benefit Obligation', def:'将来従業員に支払う退職金の<strong>見積もり額を毎期積み立てる負債</strong>です。退職給付費用（費用）と対になり、実際に退職金を払ったとき取り崩します。' },
+  ]},
+  { category:'⑩ 資本・株式', items:[
+    { term:'純資産', en:'Net Assets / Equity', def:'<strong>資産から負債を差し引いた、会社が実質的に所有している財産</strong>です。「資本」「自己資本」とも呼ばれます。資本金・資本準備金・利益準備金・剰余金・自己株式などで構成されます。' },
+    { term:'法定準備金', en:'Legal Reserve', def:'会社法で積み立てが義務付けられている準備金です。<strong>資本準備金（出資関連）</strong>と<strong>利益準備金（配当関連）</strong>の2種類があります。どちらも損失補填・資本組入れ以外には使えません。' },
+    { term:'任意積立金', en:'Voluntary Reserve', def:'法律上の義務ではなく<strong>会社が自由に目的を決めて積み立てる剰余金の留保</strong>です。別途積立金・新築積立金などが該当します。株主総会の決議で設定・取り崩しができます。' },
+    { term:'自己株式', en:'Treasury Stock', def:'自社が発行した株式を市場から<strong>買い戻した株式（金庫株）</strong>です。純資産のマイナスとして貸借対照表に計上します。再発行（処分）や消却が可能です。' },
+    { term:'新株予約権', en:'Stock Warrants', def:'将来<strong>一定価格で株式を購入できる権利</strong>です。ストックオプション（役員・従業員向け）や転換社債型新株予約権付社債で使われます。発行時は純資産に計上します。' },
+    { term:'株主資本', en:'Shareholders\' Equity', def:'純資産のうち<strong>資本金・資本剰余金・利益剰余金・自己株式で構成される部分</strong>です。新株予約権・その他有価証券評価差額金は株主資本には含まれません。' },
+    { term:'配当', en:'Dividend', def:'会社の利益の一部を<strong>株主に分配するお金</strong>です。株主総会で決議され、決議後に未払配当金（負債）を計上し、支払時に消去します。同時に利益準備金の積み立ても行います。' },
+    { term:'増資', en:'Capital Increase', def:'新しく株式を発行して<strong>出資金を集め、資本金を増やすこと</strong>です。払込金額のうち最大半分まで資本準備金にできます（残りは資本金）。' },
+  ]},
+  { category:'⑪ 決算整理', items:[
+    { term:'発生主義', en:'Accrual Basis', def:'<strong>現金の受払いに関係なく、取引が発生した時点で収益・費用を認識する</strong>会計原則です。12月に仕事をして翌1月に入金でも、収益は12月に計上します。日本の企業会計の基本原則です。' },
+    { term:'現金主義', en:'Cash Basis', def:'<strong>実際に現金を受け取ったとき収益、払ったとき費用を認識</strong>する方法です。個人の家計や小規模事業向けです。企業会計では原則として発生主義が使われます。' },
+    { term:'費用収益対応の原則', en:'Matching Principle', def:'<strong>収益に対応する費用を同じ会計期間に計上する</strong>原則です。例えば商品の仕入コストは「その商品が売れた期」に売上原価として計上します（期ずれ防止）。' },
+    { term:'前払費用', en:'Prepaid Expenses', def:'来期以降の費用を当期に先払いした場合、<strong>来期分を資産に振り替えた金額</strong>です。決算整理で計上し、来期に費用に戻します。保険料・地代の前払いが典型例です。' },
+    { term:'前受収益', en:'Deferred Revenue', def:'来期以降の収益を当期に先もらいした場合、<strong>来期分を負債に振り替えた金額</strong>です。「まだサービスを提供していない義務」として計上します。' },
+    { term:'未払費用', en:'Accrued Expenses', def:'当期に発生している費用だが、まだ支払っていない分を<strong>負債として計上</strong>します。給料・利息などの当期発生未払い分が対象です。' },
+    { term:'未収収益', en:'Accrued Revenue', def:'当期に稼いでいる収益だが、まだ受け取っていない分を<strong>資産として計上</strong>します。家賃・利息などの当期発生未収分が対象です。' },
+    { term:'継続性の原則', en:'Consistency Principle', def:'一度採用した会計方針（評価方法・償却方法など）を<strong>みだりに変更してはならない</strong>という原則です。変更すると過去との比較ができなくなり、恣意的な利益操作につながります。' },
+    { term:'保守主義の原則', en:'Conservatism Principle', def:'<strong>利益は控えめに、損失は早めに認識する</strong>という原則です。在庫の低価法評価・引当金の積み立てなどがこの原則に基づいています。' },
+    { term:'重要性の原則', en:'Materiality Principle', def:'<strong>金額の重要性が低い項目は簡便な処理でよい</strong>という原則です。例えば少額の固定資産を一括で費用計上したり、端数の前払費用を調整しないなどが許されます。' },
+    { term:'繰延資産', en:'Deferred Assets', def:'すでに支出されたが<strong>将来にわたって費用化する特殊な資産</strong>です。創立費・開業費・株式交付費・社債発行費の4種が主なものです。5年以内（または3年以内）に均等償却します。' },
+  ]},
+  { category:'⑫ 税金', items:[
+    { term:'消費税（税込処理）', en:'Tax Inclusive Method', def:'本体価格と消費税を<strong>まとめて一つの科目で記録する方法</strong>です。仕訳がシンプルですが、決算時に消費税分を調整する必要があります。' },
+    { term:'消費税（税抜処理）', en:'Tax Exclusive Method', def:'<strong>本体価格と消費税を別々に記録する方法</strong>です。仕入時は仮払消費税（資産）、売上時は仮受消費税（負債）を計上し、差額を税務署に納めます。3級の標準的な処理方法です。' },
+    { term:'税効果会計', en:'Tax Effect Accounting', def:'会計上の利益と税法上の課税所得の<mark>ズレを繰延税金資産・負債で調整する処理</mark>です。税金費用を当期純利益に正しく対応させるための会計技術です。2級の重要論点です。' },
+    { term:'一時差異', en:'Temporary Difference', def:'税効果会計で、<strong>会計と税法の認識のズレが将来解消される差異</strong>です。繰延税金資産（将来節税）や繰延税金負債（将来納税増加）が計上されます。' },
+    { term:'法人税の中間申告', en:'Interim Tax Filing', def:'法人税は年1回確定申告しますが、<strong>期中に前年実績の50%を先払いする「中間申告・中間納付」</strong>の制度があります。先払い分は「仮払法人税等（資産）」に計上し、確定申告で精算します。' },
+  ]},
+  { category:'⑬ 伝票会計', items:[
+    { term:'入金伝票', en:'Receipt Voucher', def:'<strong>現金の受け取りを記録する伝票</strong>です。入金伝票では借方が必ず「現金」になります。' },
+    { term:'出金伝票', en:'Payment Voucher', def:'<strong>現金の支払いを記録する伝票</strong>です。出金伝票では貸方が必ず「現金」になります。' },
+    { term:'振替伝票', en:'Transfer Voucher', def:'<strong>現金以外の取引を記録する伝票</strong>です。掛け取引・手形取引・振替処理などに使います。' },
+    { term:'仕訳日計表', en:'Daily Summary Journal', def:'3種の伝票を集計して<strong>1日分の仕訳をまとめた表</strong>です。ここから元帳への転記を行います。多拠点・多取引の会社で効率的に記帳できます。' },
+  ]},
+  { category:'⑭ 本支店会計', items:[
+    { term:'本支店会計', en:'Head Office / Branch Accounting', def:'本社と支店が<strong>それぞれ独立した帳簿を持ち、別々に仕訳を記録する方法</strong>です。本社の帳簿には「支店（資産）」、支店の帳簿には「本店（純資産的科目）」が生じます。決算時に合算して合計財務諸表を作成します。' },
+    { term:'内部取引の消去', en:'Elimination of Internal Transactions', def:'本支店合算決算で、<strong>本社の「支店」勘定と支店の「本店」勘定を相殺消去する処理</strong>です。内部取引を消去しないと、資産・利益が二重計上されます。' },
+    { term:'未達取引', en:'In-transit Transactions', def:'本社が処理したが<strong>支店にまだ連絡・到達していない取引</strong>（または逆）です。合算決算前に支店側で未達分の仕訳を追加して残高を合わせます。' },
+  ]},
+  { category:'⑮ 工業簿記・原価計算', items:[
+    { term:'原価計算', en:'Cost Accounting', def:'製品1つあたりの<strong>製造原価を計算する仕組み</strong>です。材料費・労務費・製造間接費の3要素に分けて集計します。原価を正確に把握することで適切な価格設定・利益管理ができます。' },
+    { term:'原価の3要素', en:'Three Cost Elements', def:'製造原価を構成する<strong>①材料費（物にかかるコスト）・②労務費（人にかかるコスト）・③製造間接費（その他の製造コスト）</strong>の3種類です。これらが仕掛品に集まり製品へ移ります。' },
+    { term:'直接費', en:'Direct Costs', def:'<strong>特定の製品に直接割り当てられる費用</strong>です。直接材料費（主要材料）・直接労務費（直接工の賃金）が代表例です。仕掛品に直接集計します。' },
+    { term:'間接費', en:'Indirect Costs', def:'<strong>複数の製品に共通してかかるため直接割り当てられない費用</strong>です。補助材料・間接工賃金・工場の電力代・減価償却費などです。製造間接費として集計し、配賦で各製品に配分します。' },
+    { term:'配賦', en:'Cost Allocation', def:'製造間接費を<strong>一定の基準（配賦基準）で各製品に割り振る計算</strong>です。「製造間接費÷配賦基準合計×各製品の基準値」で計算します。直接作業時間・機械時間・直接材料費などが配賦基準として使われます。' },
+    { term:'予定配賦', en:'Predetermined Allocation', def:'実際の間接費集計を待たずに<strong>あらかじめ定めた予定配賦率で間接費を配賦する方法</strong>です。「予定配賦率＝予算間接費÷予算配賦基準」で求めます。期中に迅速に原価計算できます。' },
+    { term:'配賦差異', en:'Allocation Variance', def:'予定配賦額と実際間接費の差額です。<strong>実際 > 予定 → 不利差異（借方）、実際 < 予定 → 有利差異（貸方）</strong>となります。期末に売上原価・仕掛品・製品に按分または一括処理します。' },
+    { term:'個別原価計算', en:'Job Order Costing', def:'<strong>製品1件ごと（オーダーごと）に原価を集計する方法</strong>です。建設業・印刷業・造船業など受注生産に向いています。製造指図書（オーダー）ごとに原価を集計します。' },
+    { term:'総合原価計算', en:'Process Costing', def:'<strong>大量生産の場合に、一定期間の製造コストを全生産量で割って単位原価を求める方法</strong>です。食品・化学・自動車部品などの規格品大量生産に向いています。月末仕掛品の完成品換算が重要です。' },
+    { term:'標準原価計算', en:'Standard Costing', def:'<strong>あらかじめ設定した目標原価（標準原価）と実際原価を比較して差異を分析する方法</strong>です。コスト管理・業績評価・予算編成に役立ちます。差異分析（価格差異・数量差異・能率差異・操業度差異）が核心です。' },
+    { term:'不利差異', en:'Unfavorable Variance', def:'標準原価計算で<strong>実際原価が標準原価を上回った差額</strong>です。「借方差異」とも呼ばれます。コストオーバーの状態でコスト削減が必要なことを示します。' },
+    { term:'有利差異', en:'Favorable Variance', def:'標準原価計算で<strong>実際原価が標準原価を下回った差額</strong>です。「貸方差異」とも呼ばれます。コストセービングを意味しますが、品質低下の原因になることもあるため注意が必要です。' },
+    { term:'CVP分析', en:'Cost-Volume-Profit Analysis', def:'<strong>売上高・費用・利益の関係を分析する手法</strong>です。固定費・変動費に分けて損益分岐点（売上ゼロ利益となる売上高）を求めます。「いくら売れば黒字になるか」がわかります。' },
+    { term:'損益分岐点', en:'Break-even Point', def:'<strong>売上高と総費用が等しくなり、利益がゼロになる売上高</strong>です。「固定費÷（1－変動費率）」で計算します。これ以上売れば黒字、以下なら赤字です。' },
+    { term:'貢献利益', en:'Contribution Margin', def:'<strong>売上高から変動費だけを引いた利益</strong>です。「変動費を回収して固定費・利益にあてられる金額」です。貢献利益÷売上高＝貢献利益率（限界利益率）とも呼ばれます。' },
   ]},
 ];
 
@@ -1159,7 +1267,7 @@ function buildApxContent(){
       `<div class="gloss-hd">📌 ${category}</div>` +
       items.map(({ term, en, def }) =>
         `<div class="gloss-row" data-name="${term}" data-en="${en}">
-          <div class="gloss-term">${term} <span class="gloss-en">(${en})</span></div>
+          <div class="gloss-term"><span class="gloss-term-text">${term}</span> <span class="gloss-en">(${en})</span></div>
           <div class="gloss-def">${def}</div>
         </div>`
       ).join('')
