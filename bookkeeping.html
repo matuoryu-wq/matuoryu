@@ -359,36 +359,52 @@
     .apx-btn { position:fixed; bottom:20px; right:20px; background:var(--primary); color:#fff; border:none; border-radius:50px; padding:10px 18px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.25); z-index:100; }
     .apx-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:200; overflow-y:auto; padding:16px; }
     .apx-overlay.show { display:block; }
-    .apx-modal { background:#fff; max-width:680px; margin:0 auto; border-radius:18px; padding:20px 18px; }
-    .apx-hd { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+    .apx-modal { background:#fff; max-width:680px; margin:0 auto; border-radius:18px; display:flex; flex-direction:column; max-height:calc(100vh - 32px); overflow:hidden; }
+    .apx-sticky-header { flex-shrink:0; padding:16px 18px 10px; background:#fff; border-bottom:1px solid var(--border); }
+    .apx-modal-body { overflow-y:auto; flex:1; padding:10px 18px 20px; -webkit-overflow-scrolling:touch; }
+    .apx-hd { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
     .apx-title { font-size:17px; font-weight:800; color:var(--primary); }
     .apx-subtitle { font-size:11px; color:var(--muted); margin-top:2px; }
     .apx-close { background:none; border:none; font-size:22px; cursor:pointer; color:var(--muted); line-height:1; }
-    .apx-search { width:100%; padding:9px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:14px; margin-bottom:16px; outline:none; color:var(--text); }
+    .apx-search { width:100%; padding:9px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:14px; margin-bottom:8px; outline:none; color:var(--text); }
     .apx-search:focus { border-color:var(--primary); }
     .apx-section { margin-bottom:22px; }
     .apx-section-hd { font-size:13px; font-weight:800; padding:7px 12px; border-radius:8px; margin-bottom:5px; display:flex; align-items:center; gap:8px; }
-    .apx-section-hd.asset     { background:#FFF9C4; color:#5D4037; border:1.5px solid #F9C400; }
-    .apx-section-hd.liability { background:#FCE4EC; color:#880E4F; border:1.5px solid #C2185B; }
-    .apx-section-hd.expense   { background:#E8F5E9; color:#1B5E20; border:1.5px solid #388E3C; }
-    .apx-section-hd.revenue   { background:#E1F5FE; color:#01579B; border:1.5px solid #0288D1; }
-    .apx-section-hd.equity    { background:#EDE7F6; color:#4A148C; border:1.5px solid #7B1FA2; }
-    .apx-section-hd.other     { background:#F3E5F5; color:#4A148C; border:1.5px solid #CE93D8; }
+    .apx-section-hd.asset      { background:#FFF9C4; color:#5D4037; border:1.5px solid #F9C400; }
+    .apx-section-hd.liability  { background:#FCE4EC; color:#880E4F; border:1.5px solid #C2185B; }
+    .apx-section-hd.expense    { background:#E8F5E9; color:#1B5E20; border:1.5px solid #388E3C; }
+    .apx-section-hd.revenue    { background:#E1F5FE; color:#01579B; border:1.5px solid #0288D1; }
+    .apx-section-hd.equity     { background:#EDE7F6; color:#4A148C; border:1.5px solid #7B1FA2; }
+    .apx-section-hd.other      { background:#F3E5F5; color:#4A148C; border:1.5px solid #CE93D8; }
+    .apx-section-hd.industrial { background:#FFF3E0; color:#BF360C; border:1.5px solid #FF8F00; }
     .apx-section-sub { font-size:11px; color:var(--muted); margin-bottom:6px; padding-left:4px; }
     .apx-row { padding:8px 4px; border-bottom:1px solid var(--border); }
     .apx-row.hidden { display:none; }
     .apx-row-top { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px; }
     .apx-en { font-size:11px; color:var(--muted); }
-    .apx-note { font-size:12px; color:#444; }
+    .apx-note { font-size:12px; color:#444; line-height:1.6; }
+    .apx-note strong { color:#1A2B3C; }
+    .apx-note mark { background:#FFF9C4; padding:0 2px; border-radius:2px; }
     .apx-lv { display:inline-block; font-size:9px; font-weight:700; background:var(--primary); color:#fff; border-radius:4px; padding:1px 5px; }
-    .apx-tabs { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
+    .apx-lv.ind { background:#FF8F00; }
+    .apx-tabs { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
     .apx-tab { padding:5px 11px; border:1.5px solid var(--border); border-radius:20px; background:#fff; font-size:12px; cursor:pointer; color:var(--muted); font-weight:600; transition:background 0.15s,color 0.15s,border-color 0.15s; }
     .apx-tab:hover { background:#f5f5f5; }
     .apx-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
-    .apx-hide-btn { width:100%; padding:7px 10px; border:1.5px solid var(--border); border-radius:10px; background:#fff; font-size:12px; cursor:pointer; color:var(--text); font-weight:600; margin-bottom:10px; text-align:center; transition:background 0.15s; }
+    .apx-hide-btns { display:flex; gap:8px; margin-bottom:0; }
+    .apx-hide-btn { flex:1; padding:7px 10px; border:1.5px solid var(--border); border-radius:10px; background:#fff; font-size:12px; cursor:pointer; color:var(--text); font-weight:600; text-align:center; transition:background 0.15s; }
     .apx-hide-btn.active { background:#eee; border-color:#999; }
     #apx-content.names-hidden .tag { color:transparent !important; background:#e0e0e0 !important; border-color:#bbb !important; user-select:none; min-width:50px; display:inline-block; }
-    #apx-content.names-hidden .apx-en { visibility:hidden; }
+    #apx-content.en-hidden .apx-en { display:none; }
+    /* ===== Glossary ===== */
+    .gloss-section { margin-bottom:10px; }
+    .gloss-hd { font-size:14px; font-weight:800; color:var(--primary); padding:8px 12px; background:var(--primary-light); border-radius:8px; margin:14px 0 6px; }
+    .gloss-row { padding:9px 4px; border-bottom:1px solid var(--border); }
+    .gloss-term { font-size:13px; font-weight:800; margin-bottom:3px; }
+    .gloss-en { font-size:11px; color:var(--muted); }
+    .gloss-def { font-size:12px; color:#444; line-height:1.6; }
+    .gloss-def strong { color:#1A2B3C; }
+    .gloss-def mark { background:#FFF9C4; padding:0 2px; border-radius:2px; }
   </style>
 </head>
 <body>
@@ -452,22 +468,31 @@
 <button class="apx-btn" onclick="showApx()">📖 勘定科目一覧</button>
 <div class="apx-overlay" id="apx-overlay" onclick="if(event.target===this)hideApx()">
   <div class="apx-modal">
-    <div class="apx-hd">
-      <div><div class="apx-title">📚 勘定科目一覧</div><div class="apx-subtitle">3級・2級対応 ／ 色で分類（2級のみ「2級」バッジ）</div></div>
-      <button class="apx-close" onclick="hideApx()">✕</button>
+    <div class="apx-sticky-header">
+      <div class="apx-hd">
+        <div><div class="apx-title">📚 勘定科目一覧</div><div class="apx-subtitle">3級・2級対応 ／ 色で分類（2級のみ「2級」バッジ）</div></div>
+        <button class="apx-close" onclick="hideApx()">✕</button>
+      </div>
+      <div class="apx-tabs" id="apx-tabs">
+        <button class="apx-tab active" data-type="all" onclick="setApxTab('all')">全て</button>
+        <button class="apx-tab" data-type="asset" onclick="setApxTab('asset')">資産</button>
+        <button class="apx-tab" data-type="liability" onclick="setApxTab('liability')">負債</button>
+        <button class="apx-tab" data-type="expense" onclick="setApxTab('expense')">費用</button>
+        <button class="apx-tab" data-type="revenue" onclick="setApxTab('revenue')">収益</button>
+        <button class="apx-tab" data-type="equity" onclick="setApxTab('equity')">純資産</button>
+        <button class="apx-tab" data-type="other" onclick="setApxTab('other')">その他</button>
+        <button class="apx-tab" data-type="industrial" onclick="setApxTab('industrial')">🏭 工業簿記</button>
+        <button class="apx-tab" data-type="glossary" onclick="setApxTab('glossary')">📖 用語集</button>
+      </div>
+      <input class="apx-search" id="apx-search" type="text" placeholder="科目名・英語で検索..." oninput="filterApx(this.value)">
+      <div class="apx-hide-btns">
+        <button class="apx-hide-btn" id="apx-hide-btn" onclick="toggleHideNames()">👁 科目名を隠す</button>
+        <button class="apx-hide-btn" id="apx-hide-en-btn" onclick="toggleHideEnglish()">🔤 英語を隠す</button>
+      </div>
     </div>
-    <div class="apx-tabs" id="apx-tabs">
-      <button class="apx-tab active" data-type="all" onclick="setApxTab('all')">全て</button>
-      <button class="apx-tab" data-type="asset" onclick="setApxTab('asset')">資産</button>
-      <button class="apx-tab" data-type="liability" onclick="setApxTab('liability')">負債</button>
-      <button class="apx-tab" data-type="expense" onclick="setApxTab('expense')">費用</button>
-      <button class="apx-tab" data-type="revenue" onclick="setApxTab('revenue')">収益</button>
-      <button class="apx-tab" data-type="equity" onclick="setApxTab('equity')">純資産</button>
-      <button class="apx-tab" data-type="other" onclick="setApxTab('other')">その他</button>
+    <div class="apx-modal-body">
+      <div id="apx-content"></div>
     </div>
-    <input class="apx-search" id="apx-search" type="text" placeholder="科目名・英語で検索..." oninput="filterApx(this.value)">
-    <button class="apx-hide-btn" id="apx-hide-btn" onclick="toggleHideNames()">👁 科目名を隠す（練習モード）</button>
-    <div id="apx-content"></div>
   </div>
 </div>
 
@@ -550,6 +575,33 @@ const T = {
   // 2級追加（評価勘定）
   '機械装置減価償却累計額':'other','構築物減価償却累計額':'other',
   '工具器具備品減価償却累計額':'other',
+  // 2級追加（商業簿記・追加分）
+  '契約資産':'asset','特許権':'asset','ソフトウェア仮勘定':'asset',
+  '開業費':'asset','支店':'asset',
+  '本店':'other',
+  '返金負債':'liability','契約負債':'liability',
+  '賞与引当金':'liability','役員賞与引当金':'liability',
+  '役務収益':'revenue','為替差益':'revenue','保険差益':'revenue',
+  '負のれん発生益':'revenue','国庫補助金受贈益':'revenue','工事負担金受贈益':'revenue',
+  '役務原価':'expense','賞与引当金繰入':'expense','役員賞与引当金繰入':'expense',
+  '賞与':'expense','支払リース料':'expense',
+  '特許権償却':'expense','創立費償却':'expense','株式交付費償却':'expense',
+  '開業費償却':'expense','ソフトウェア償却':'expense','研究開発費':'expense',
+  '為替差損':'expense','固定資産圧縮損':'expense','法人税等調整額':'other',
+  '新築積立金':'equity',
+  // 工業簿記（材料・在庫）
+  '材料':'asset','素材':'asset','買入部品':'asset','補助材料':'asset',
+  '工場消耗品':'asset','消耗工具器具備品':'asset',
+  '仕掛品':'asset','半製品':'asset','製品':'asset','副産物':'asset','作業くず':'asset',
+  // 工業簿記（費用）
+  '賃金':'expense','雑給':'expense','従業員賞与手当':'expense',
+  '製造間接費':'expense','外注加工費':'expense',
+  // 工業簿記（原価差異）
+  '材料消費価格差異':'other','材料消費数量差異':'other',
+  '賃率差異':'other','作業時間差異':'other',
+  '製造間接費予算差異':'other','製造間接費能率差異':'other','製造間接費操業度差異':'other',
+  // 工業簿記（本社・工場）
+  '本社':'other','工場':'other','月次損益':'other',
 };
 
 function tagType(a){ return T[a] || 'other'; }
@@ -872,15 +924,185 @@ const ACCT_DATA = [
    '構築物のこれまでの減価償却費の合計額です。貸借対照表で「構築物（資産）」のマイナスとして表示します。',2],
   ['工具器具備品減価償却累計額','Accum. Depr. (Tools/Fixtures)',
    '工具器具備品のこれまでの減価償却費の合計額です。貸借対照表で「工具器具備品（資産）」のマイナスとして表示します。',2],
+  // ===== 2級追加（商業簿記・テキスト追加分）=====
+  ['契約資産','Contract Asset',
+   'サービスや工事を提供する前に、将来お金をもらえる権利のうち、まだ条件を満たしていない部分を記録します。例えば工事の途中で「完成したらもらえるお金の権利」がこれにあたります。<strong>売掛金との違いは、代金請求権がまだ確定していない点</strong>です。',2],
+  ['特許権','Patent Rights',
+   '発明した技術を独占的に使える権利を資産計上したものです。<mark>無形固定資産</mark>に分類され、登録から20年間有効ですが、帳簿上は有効期間で均等償却します。毎期「特許権償却（費用）」として費用化します。',2],
+  ['ソフトウェア仮勘定','Software in Progress',
+   'ソフトウェアを<strong>開発中・未完成の段階</strong>で支払った費用を一時的に記録する科目です。建設仮勘定のソフトウェア版です。完成・稼働開始後に「ソフトウェア（資産）」に振り替えます。',2],
+  ['開業費','Organization & Pre-opening Costs',
+   '会社設立後、営業開始前にかかった費用（宣伝費・従業員研修費・試験運転費など）を資産計上した<mark>繰延資産</mark>です。5年以内に均等償却します。創立費（設立時）と混同しないよう注意してください。',2],
+  ['支店','Branch Office',
+   '本社の帳簿上で「支店に対する投資額・立替額」を記録する科目です。<strong>本社と支店の帳簿を別々に管理する「本支店会計」</strong>で使われます。支店の帳簿では「本店」勘定が対応します。決算時に合算して合計財務諸表を作ります。',2],
+  ['本店','Head Office (from Branch)',
+   '支店の帳簿上で「本社から受け取った資金・立替金」を記録する科目です。<strong>本支店会計</strong>で使われ、本社の「支店」勘定と対応関係にあります。純資産的な性格（本社の投資額）を持つため純資産に近い扱いをすることもあります。',2],
+  ['返金負債','Refund Liability',
+   'お客さんに返金する可能性がある金額を負債として積み立てる科目です。<mark>新収益認識基準（IFRS15号準拠）</mark>で登場します。例えば売上から返品見込み額を差し引く際に使います。返品が確定したときに取り崩します。',2],
+  ['契約負債','Contract Liability',
+   'お客さんからお金を先にもらったが、まだサービスや商品を提供していない場合の義務を記録します。<strong>前受金と似ていますが、履行義務（契約で決まったサービス提供義務）を重視した表現</strong>です。新収益認識基準で多く使われます。',2],
+  ['賞与引当金','Bonus Reserve',
+   '従業員に支給する賞与（ボーナス）を、支給日に一括費用化するのではなく、<mark>発生した期間に少しずつ見積もって積み立てる</mark>負債です。例えば12月支給のボーナスの発生分を毎月「賞与引当金繰入（費用）」として計上します。',2],
+  ['役員賞与引当金','Directors\' Bonus Reserve',
+   '取締役・監査役などの役員に支給する賞与を事前に見積もって積み立てる負債です。<strong>役員賞与は株主総会の承認が必要</strong>なため、従業員賞与と区別して管理します。積立時に「役員賞与引当金繰入（費用）」を計上します。',2],
+  ['役務収益','Service Revenue',
+   'サービス（役務）を提供することで得た収益です。<mark>工事業・運送業・コンサルティング業</mark>など、物ではなくサービスを売る会社で使います。売上と性格は同じですが、物品販売と区別するためにこの科目名を使います。',2],
+  ['為替差益','Foreign Exchange Gain',
+   '外貨建ての取引（ドルやユーロで行った売買・借入等）を円換算するとき、<strong>円安（外貨が高くなる）方向に動いた場合</strong>に生じる利益です。例えばドル建て売掛金を決済したとき、決済時の為替レートの方が有利だった場合に計上します。',2],
+  ['為替差損','Foreign Exchange Loss',
+   '外貨建て取引を円換算するとき、<strong>円高（外貨が安くなる）方向に動いた場合</strong>に生じる損失です。例えばドル建て買掛金を決済したとき、円高で円換算額が増えた場合に計上します。為替差益の反対です。',2],
+  ['保険差益','Insurance Proceeds Gain',
+   '火災などで焼失した固定資産の<mark>保険金が帳簿価額（簿価）を上回った場合</mark>の差額利益です。固定資産売却益に相当しますが、保険金収入特有の科目です。損失が出る場合は「火災損失（費用）」になります。',2],
+  ['負のれん発生益','Bargain Purchase Gain',
+   '会社買収のとき、引き継いだ純資産の時価より<strong>安く買えた場合</strong>の差額を計上する収益です。のれん（高く買った場合）の反対です。「お得に買えた利益」として即座に当期利益に計上します（資産計上はしません）。',2],
+  ['国庫補助金受贈益','Government Grant Revenue',
+   '国や地方公共団体から受け取った補助金・助成金を記録する収益です。固定資産の取得に使う場合、取得後に「<mark>固定資産圧縮損（費用）</mark>」を計上して実質的に課税を繰り延べる「圧縮記帳」という方法が使われます。',2],
+  ['工事負担金受贈益','Contribution in Aid Revenue',
+   '電力会社・ガス会社などが顧客から工事費の一部を負担してもらうときに計上する収益です。国庫補助金受贈益と同様に圧縮記帳の対象となります。',2],
+  ['固定資産圧縮損','Fixed Asset Compression Loss',
+   '国庫補助金や保険差益などで取得した固定資産の取得価額を<mark>帳簿上で圧縮（減額）する</mark>ための費用科目です。課税の繰り延べが目的で、圧縮した分だけ将来の減価償却費も少なくなります。',2],
+  ['法人税等調整額','Deferred Tax Expense',
+   '税効果会計を適用するときに使う調整科目です。<strong>繰延税金資産の増減や繰延税金負債の増減</strong>を損益に反映させます。法人税等（費用）のプラス・マイナスとして表示し、税引前利益と税金費用を対応させます。',2],
+  ['役務原価','Cost of Services',
+   'サービス（役務）を提供するためにかかった費用です。役務収益（売上）に対応する原価で、売上原価と同じ概念です。<mark>コンサル・運送・工事業</mark>などサービス業で使います。',2],
+  ['賞与引当金繰入','Bonus Reserve Expense',
+   '賞与引当金を積み立てるために計上する費用です。支給予定額を支給日が属する期間にまんべんなく配分するため、<strong>「賞与引当金繰入（費用）／賞与引当金（負債）」</strong>と仕訳します。',2],
+  ['役員賞与引当金繰入','Directors\' Bonus Reserve Expense',
+   '役員賞与引当金を積み立てるための費用科目です。役員賞与は損益計算書上「販売費及び一般管理費」に計上されます。',2],
+  ['賞与','Bonus',
+   '従業員に直接支給した賞与（ボーナス）の実績額を記録する費用です。<strong>引当金を設定しない場合</strong>は支給日に一括費用計上します。引当金を設定していた場合は、実績額と引当金の差額を調整します。',2],
+  ['支払リース料','Lease Payment Expense',
+   'オペレーティング・リース（賃貸借処理）の場合の毎月のリース料を記録する費用です。<mark>ファイナンス・リース（資産計上）とは異なり</mark>、資産を帳簿に載せず、支払うたびに費用計上します。',2],
+  ['特許権償却','Patent Amortization',
+   '無形固定資産の特許権を毎期費用化していく科目です。有効期間（または20年以内）で<strong>均等償却（定額法）</strong>します。「特許権償却（費用）／特許権（資産）」と仕訳します（間接法でも直接法でも可）。',2],
+  ['創立費償却','Organization Cost Amortization',
+   '繰延資産の創立費を毎期費用化していく科目です。計上した金額を<strong>5年以内に均等償却</strong>します。「創立費償却（費用）／創立費（資産）」と仕訳します。',2],
+  ['株式交付費償却','Stock Issuance Cost Amortization',
+   '繰延資産の株式交付費を毎期費用化していく科目です。計上した金額を<strong>3年以内に均等償却</strong>します。',2],
+  ['開業費償却','Pre-opening Cost Amortization',
+   '繰延資産の開業費を毎期費用化していく科目です。計上した金額を<strong>5年以内に均等償却</strong>します。',2],
+  ['ソフトウェア償却','Software Amortization',
+   '無形固定資産のソフトウェアを毎期費用化していく科目です。<mark>耐用年数は原則5年</mark>で、定額法で均等償却します。有形固定資産の減価償却費に相当します。',2],
+  ['研究開発費','Research and Development Expense',
+   '新製品・新技術の研究や開発にかかった費用です。<strong>資産計上は認められず、発生した期に全額費用計上</strong>します。将来の利益に貢献するとしても繰り延べ（資産化）できません。',2],
+  ['新築積立金','Building Renewal Reserve',
+   '将来の建物の建て替え・大規模修繕に備えて積み立てる<mark>任意積立金（純資産）</mark>です。別途積立金と同様に法律上の義務はなく、取締役会や株主総会の決議で設定・取り崩しができます。',2],
+];
+
+// ===== 工業簿記データ [名前, 英語, 説明, サブカテゴリ] =====
+const INDUSTRIAL_DATA = [
+  // --- 材料・在庫 ---
+  ['材料','Materials',
+   '製品を作るために購入した<mark>原材料全般</mark>を記録する科目です。購入時に「材料（資産）」に計上し、製造に使ったとき「仕掛品（または製造間接費）」に振り替えます。主要材料・補助材料を含む総称として使うことも多いです。','材料・在庫'],
+  ['素材','Raw Materials',
+   '製品の<strong>主な材料（主要材料）</strong>で、製品の本体を構成する材料です。鉄・木材・プラスチックペレットなどが典型例です。「材料」科目に含まれることもありますが、素材として独立計上する場合もあります。','材料・在庫'],
+  ['買入部品','Purchased Components',
+   '外部から買ってそのまま組み込む完成部品です。<strong>自社で加工しない</strong>という点で素材（原材料）と区別されます。自動車のエンジン・液晶パネルなど。消費時は直接材料費として仕掛品に振り替えます。','材料・在庫'],
+  ['補助材料','Indirect Materials',
+   '製品の一部にはなるが、<mark>主要材料ほど多くは使わない材料</mark>です。塗料・接着剤・ネジなどが該当します。製造間接費として処理することが多く、個別に製品に割り当てにくいという特徴があります。','材料・在庫'],
+  ['工場消耗品','Factory Supplies',
+   '工場で使う<strong>消耗品（製品にはならないもの）</strong>です。潤滑油・砥石・清掃用品・安全用品など。製造間接費に分類され、製品の製造に間接的に必要な消耗品です。','材料・在庫'],
+  ['消耗工具器具備品','Consumable Tools',
+   '比較的早く使い捨てになる工具・器具・備品（ドリル刃・計測器・作業台など）を記録します。耐久性は低いため固定資産ではなく<mark>流動資産</mark>として扱い、使用時に製造間接費へ振り替えます。','材料・在庫'],
+  ['仕掛品','Work in Process',
+   '製造の途中にある<strong>半完成品（製造中の製品）</strong>の原価を記録する科目です。材料費・労務費・製造間接費を集計していき、完成したときに「製品（資産）」に振り替えます。原価計算の中心となる重要な科目です。','材料・在庫'],
+  ['半製品','Semi-finished Goods',
+   '製造の途中で<strong>いったん倉庫に入れた中間製品</strong>で、そのまま外部に販売もできる状態のものです。仕掛品（完成前）と製品（最終完成品）の中間に位置します。一部の製造業に特有の科目です。','材料・在庫'],
+  ['製品','Finished Goods',
+   '製造が完成した販売可能な<mark>完成品</mark>を記録する科目です。「仕掛品」から完成品になったタイミングで「製品（資産）」に振り替え、販売されたとき「売上原価（費用）」に振り替えます。商業簿記の「繰越商品」に相当します。','材料・在庫'],
+  ['副産物','By-products',
+   '主製品を製造する過程で<strong>偶然に生じる別の製品</strong>です。ビール醸造の麦かす・木材加工時のおが屑など。売却可能なため資産として評価しますが、評価額は低廉に抑え、その分主製品の原価を下げる処理をします。','材料・在庫'],
+  ['作業くず','Scrap',
+   '製造中に出る端材・切り屑・廃棄物など<mark>価値の低い残材</mark>です。売却できる場合は評価額を資産計上し、主製品原価から控除します。鉄くず・木くず・金属片などが典型例です。','材料・在庫'],
+  // --- 労務費 ---
+  ['賃金','Wages',
+   '工場の<strong>直接工員（製品を直接作る作業者）</strong>に支払う給料（時間給・出来高給）を記録する費用です。商業簿記の「給料」に相当しますが、工業簿記では<mark>製品の製造に直接かかる賃金</mark>として仕掛品原価に集計します。','労務費'],
+  ['雑給','Miscellaneous Wages',
+   '直接工員以外の補助的な作業者（間接工・パート・臨時工など）の給与を記録します。<strong>製造間接費として処理</strong>され、製品への直接割り当てではなく、配賦基準（作業時間など）で各製品に間接的に配分します。','労務費'],
+  ['従業員賞与手当','Employee Bonuses and Allowances',
+   '工場の従業員に支払う賞与・各種手当（残業手当・通勤手当・家族手当など）を記録します。<mark>直接工員分は直接労務費、間接工員分は製造間接費</mark>として処理します。','労務費'],
+  // --- 製造間接費 ---
+  ['製造間接費','Manufacturing Overhead',
+   '特定の製品に直接割り当てられない<strong>工場全体にかかる費用</strong>を一時的にまとめる科目です。間接材料費・間接労務費・工場の家賃・電力代・減価償却費などが含まれます。期末に<mark>配賦基準（機械時間・直接労務時間など）</mark>で各製品に配分（配賦）します。','製造間接費'],
+  ['外注加工費','Subcontract Costs',
+   '自社工場で加工できない工程を<strong>外部の会社に委託（外注）</strong>した加工費用です。直接外注できる場合は直接費として仕掛品に計上し、間接的な場合は製造間接費に含めます。','製造間接費'],
+  // --- 原価差異 ---
+  ['材料消費価格差異','Material Price Variance',
+   '標準原価計算で、<strong>材料の実際購入価格と標準価格の差額</strong>に消費数量をかけたものです。実際価格が標準より高ければ「不利差異（借方）」、低ければ「有利差異（貸方）」となります。<mark>原材料の価格変動や購買効率</mark>を測る指標です。','原価差異'],
+  ['材料消費数量差異','Material Quantity Variance',
+   '標準原価計算で、<strong>材料の実際消費量と標準消費量の差額</strong>に標準価格をかけたものです。実際消費量が多ければ不利差異（無駄遣い）、少なければ有利差異（節約）を示します。<mark>製造現場の材料使用効率</mark>を表します。','原価差異'],
+  ['賃率差異','Wage Rate Variance',
+   '標準原価計算で、<strong>実際賃率と標準賃率の差額</strong>に実際作業時間をかけたものです。予想より高い賃率で雇用した場合に不利差異が生じます。<mark>人件費のコントロール</mark>を管理する指標です。','原価差異'],
+  ['作業時間差異','Labor Efficiency Variance',
+   '標準原価計算で、<strong>実際作業時間と標準作業時間の差額</strong>に標準賃率をかけたものです。実際作業時間が多いほど不利差異（非効率）となります。<mark>作業員の生産性・作業効率</mark>を測る指標です。','原価差異'],
+  ['製造間接費予算差異','MOH Budget Variance',
+   '標準原価計算で、<strong>製造間接費の実際発生額と予算額の差額</strong>です（固定費部分は予算額、変動費部分は実際操業度に対応する予算額と比較）。コスト管理上の<mark>無駄遣いや節約</mark>を示します。','原価差異'],
+  ['製造間接費能率差異','MOH Efficiency Variance',
+   '標準原価計算で、<strong>実際操業度と標準操業度の差額</strong>に変動費率（または標準配賦率）をかけたものです。作業効率の良し悪しが製造間接費に与えた影響を示します。<mark>作業時間差異の製造間接費版</mark>です。','原価差異'],
+  ['製造間接費操業度差異','MOH Volume Variance',
+   '標準原価計算で、<strong>実際操業度と基準操業度の差額</strong>に固定費率をかけたものです。工場を十分に稼働させているかどうか（遊休設備の有無）を示す差異です。<mark>操業度が低いと不利差異</mark>（固定費の回収不足）となります。','原価差異'],
+  // --- 本社・工場 ---
+  ['本社','Head Office (Factory Books)',
+   '工場が独立した帳簿を持つ「<strong>本社工場会計</strong>」において、工場の帳簿に記録する科目です。本社から送られてきた材料費・経費などを「本社」勘定で受け取ります。本社の「工場」勘定と対応関係にあります。','本社・工場'],
+  ['工場','Factory (Head Office Books)',
+   '本社工場会計において、<strong>本社の帳簿に記録する科目</strong>です。工場に送った材料費・経費・設備費などを「工場」勘定で処理します。工場の「本社」勘定と対応し、合算すると消去される内部勘定です。','本社・工場'],
+  ['月次損益','Monthly Profit and Loss',
+   '本社工場会計で、工場が当月に計上した<mark>損益（製品原価に含まれる損益）</mark>を本社に報告するために使う科目です。月末に工場の損益を本社に振り替える仕訳で使用します。','本社・工場'],
+];
+
+// ===== 用語解説集データ =====
+const GLOSSARY_DATA = [
+  { category:'基本概念', items:[
+    { term:'借方（かりかた）', en:'Debit (Dr.)', def:'<strong>仕訳の左側</strong>を「借方（かりかた）」といいます。資産の増加・費用の発生・負債の減少・純資産の減少を記録します。「借」という字は由来が複雑ですが、<mark>左側＝借方</mark>と覚えましょう。「か・り・か・た（左！）」という語呂合わせが有名です。' },
+    { term:'貸方（かしかた）', en:'Credit (Cr.)', def:'<strong>仕訳の右側</strong>を「貸方（かしかた）」といいます。負債の増加・収益の発生・資産の減少・純資産の増加を記録します。<mark>右側＝貸方</mark>と覚えましょう。' },
+    { term:'仕訳（しわけ）', en:'Journal Entry', def:'取引が起きたときに<strong>借方と貸方に分けて記録する作業</strong>です。すべての取引は必ず「借方の合計＝貸方の合計」になります（貸借平均の原則）。仕訳は会計の入口で、最も基本的な作業です。' },
+    { term:'勘定科目（かんじょうかもく）', en:'Account Title', def:'取引の内容を表すための<mark>分類名称</mark>です。現金・売掛金・借入金などの名前が勘定科目です。会社によって多少異なりますが、商法・会計基準で一般的な名称が定まっています。' },
+    { term:'複式簿記（ふくしきぼき）', en:'Double-entry Bookkeeping', def:'すべての取引を<strong>必ず借方と貸方の両方に記録</strong>する会計の仕組みです（1つの取引を2つの面から記録）。これにより「借方合計＝貸方合計」が常に成立し、記録ミスを発見しやすくなります。日本の企業会計はすべてこの方式です。' },
+  ]},
+  { category:'帳簿の種類', items:[
+    { term:'総勘定元帳（そうかんじょうもとちょう）', en:'General Ledger', def:'仕訳帳の記録を<strong>勘定科目ごとに集計・整理した帳簿</strong>です。「元帳」とも呼ばれます。例えば「現金」の元帳には現金の増減がすべて記録されます。残高を見ればその科目の現在の金額がわかります。' },
+    { term:'仕訳帳（しわけちょう）', en:'Journal', def:'取引が発生した<strong>時系列の順番で仕訳を記録</strong>していく帳簿です。すべての取引がここに記録され、ここから総勘定元帳に転記されます。「日記帳」のイメージです。' },
+    { term:'試算表（しさんひょう）', en:'Trial Balance', def:'決算前に<strong>帳簿に誤りがないか確かめるための一覧表</strong>です。すべての勘定科目の残高を並べ、借方合計と貸方合計が一致すれば記録ミスがないことが確認できます。合計試算表・残高試算表・合計残高試算表の3種類があります。' },
+    { term:'精算表（せいさんひょう）', en:'Worksheet', def:'決算整理を行いながら<strong>財務諸表を作成するための作業用一覧表</strong>です。試算表・決算整理仕訳・損益計算書・貸借対照表の列に分かれており、1枚で決算作業の全体像を把握できます。' },
+  ]},
+  { category:'財務諸表', items:[
+    { term:'貸借対照表（たいしゃくたいしょうひょう）', en:'Balance Sheet (B/S)', def:'<mark>決算日時点</mark>での会社の財産状況を表す表です。左側（借方）に資産、右側（貸方）に負債と純資産が並びます。「資産＝負債＋純資産」という等式が常に成立します。会社の財政状態を知る最重要書類です。' },
+    { term:'損益計算書（そんえきけいさんしょ）', en:'Profit and Loss Statement (P/L)', def:'<mark>一定期間（1年間）</mark>の会社の経営成績を表す表です。収益から費用を差し引いて当期純利益（または純損失）を計算します。会社がどれだけ儲けたかを示す書類です。' },
+    { term:'当期純利益（とうきじゅんりえき）', en:'Net Income', def:'収益から費用をすべて差し引いた後の<strong>最終的な利益</strong>です。この金額が繰越利益剰余金（純資産）に加算されます。マイナスの場合は「当期純損失」となります。' },
+  ]},
+  { category:'売上・仕入の記録方法', items:[
+    { term:'三分法（さんぶんほう）', en:'Three-Account Method', def:'商品売買を<strong>「仕入」「売上」「繰越商品」の3科目</strong>に分けて記録する方法です。日本で最も一般的な方法で、日商簿記3級の基本です。仕入時は仕入（費用）、売上時は売上（収益）に記録し、期末に繰越商品で在庫調整します。' },
+    { term:'分記法（ぶんきほう）', en:'Separate Method', def:'商品を売るたびに<strong>「商品（資産）」の減少と「商品売買益（収益）」</strong>を同時に記録する方法です。リアルタイムで利益がわかりますが、記録が複雑になります。3級では三分法が主流です。' },
+    { term:'売上原価対立法（うりあげげんかたいりつほう）', en:'Cost of Sales Method', def:'売上時に<strong>「売上原価（費用）」と「商品（資産）の減少」</strong>も同時記録する方法です。売上原価をリアルタイムで把握できます。分記法と三分法の中間的な方法です。' },
+  ]},
+  { category:'決算整理', items:[
+    { term:'発生主義（はっせいしゅぎ）', en:'Accrual Basis', def:'<strong>現金の収支ではなく、取引が発生した時点</strong>で収益・費用を認識する会計の考え方です。例えば12月に仕事をして翌年1月に入金された場合でも、収益は12月に計上します。日本の企業会計はすべてこの原則に基づきます。' },
+    { term:'引当金（ひきあてきん）', en:'Reserve / Allowance', def:'<strong>将来の費用や損失をあらかじめ見積もって計上</strong>した負債（または資産の控除）です。貸倒引当金（売掛金の回収不能見込み）・退職給付引当金（将来の退職金）などが代表例です。実際の支出前でも適切な期間に費用を配分する効果があります。' },
+    { term:'繰延資産（くりのべしさん）', en:'Deferred Assets', def:'すでにお金を払ったが、<mark>将来の期間にまたがって費用化</mark>していく特殊な資産です。創立費・開業費・株式交付費などが該当します。通常の資産と違い、明確な価値のある財産ではなく「将来に繰り延べる費用」という性質です。' },
+    { term:'減価償却（げんかしょうきゃく）', en:'Depreciation', def:'建物・機械・車など<strong>長期間使う固定資産の価値の減少</strong>を、耐用年数にわたって毎期少しずつ費用計上する手続きです。土地は価値が減らないので減価償却しません。<mark>定額法（毎年同額）と定率法（残高の一定率）</mark>が主な方法です。' },
+    { term:'貸倒引当金（かしだおれひきあてきん）', en:'Allowance for Bad Debts', def:'売掛金・受取手形などの<strong>回収できなくなりそうな見込み額</strong>を事前に積み立てた評価勘定です。資産（売掛金）のマイナスとして表示します。実際に回収不能になったときに取り崩し、貸倒損失（費用）と相殺します。' },
+  ]},
+  { category:'税金', items:[
+    { term:'消費税の処理方式', en:'Consumption Tax Method', def:'消費税の会計処理には<strong>税込処理（本体＋消費税をひとまとめにする）</strong>と<strong>税抜処理（本体と消費税を分けて仮払消費税・仮受消費税で管理する）</strong>の2種類があります。3級では主に税抜処理を学びます。' },
+    { term:'税効果会計（ぜいこうかかいけい）', en:'Tax Effect Accounting', def:'会計上の利益と課税上の利益の<mark>ズレを調整する</mark>ための会計処理です。繰延税金資産（将来節税できる分）や繰延税金負債（将来納税が増える分）を計上し、税金費用を適正な金額に調整します。2級の重要論点です。' },
+  ]},
+  { category:'工業簿記の基本', items:[
+    { term:'原価計算（げんかけいさん）', en:'Cost Accounting', def:'製品1個あたりの<strong>製造にかかった費用（原価）を計算</strong>する仕組みです。材料費・労務費・製造間接費の3つに分けて集計します。原価を正確に把握することで、適切な販売価格の設定や利益管理ができます。' },
+    { term:'直接費と間接費', en:'Direct & Indirect Costs', def:'<mark>特定の製品に直接割り当てられる費用</mark>を「直接費」、複数製品に共通してかかるため直接割り当てられない費用を「間接費」といいます。直接費は仕掛品に直接集計し、間接費は製造間接費にまとめてから配賦します。' },
+    { term:'配賦（はいふ）', en:'Cost Allocation', def:'製造間接費などを<strong>一定の基準（配賦基準）で各製品に割り振る</strong>作業です。直接作業時間・機械稼働時間・直接材料費などが配賦基準として使われます。「製造間接費÷配賦基準合計×各製品の配賦基準」で計算します。' },
+    { term:'標準原価計算（ひょうじゅんげんかけいさん）', en:'Standard Costing', def:'<strong>あらかじめ設定した目標コスト（標準原価）</strong>と実際にかかったコストを比較して、差異（原価差異）を分析する原価計算の方法です。コスト管理・業績評価に役立ちます。材料・労務費・製造間接費それぞれで差異分析を行います。' },
+    { term:'原価差異（げんかさい）', en:'Cost Variance', def:'標準原価と実際原価の差額です。<mark>実際 > 標準なら不利差異（借方差異）、実際 < 標準なら有利差異（貸方差異）</mark>となります。差異の原因を分析することで、製造現場の問題点（価格の上昇・作業の非効率など）を特定できます。' },
+  ]},
 ];
 
 const APX_TYPE_INFO = {
-  asset:     { name:'資産 (Assets)',           sub:'会社が持っているもの・もらえる権利' },
-  liability: { name:'負債 (Liabilities)',       sub:'将来払わなければならない義務・借金' },
-  expense:   { name:'費用 (Expenses)',          sub:'お金を使ったとき・価値が減ったとき' },
-  revenue:   { name:'収益 (Revenue)',           sub:'お金が増えたとき・稼いだとき' },
-  equity:    { name:'純資産 (Equity)',          sub:'本当に自分のものの総額（資産－負債）' },
-  other:     { name:'評価勘定・その他 (Other)', sub:'固定資産・売掛金のマイナス調整など' },
+  asset:      { name:'資産 (Assets)',              sub:'会社が持っているもの・もらえる権利' },
+  liability:  { name:'負債 (Liabilities)',          sub:'将来払わなければならない義務・借金' },
+  expense:    { name:'費用 (Expenses)',             sub:'お金を使ったとき・価値が減ったとき' },
+  revenue:    { name:'収益 (Revenue)',              sub:'お金が増えたとき・稼いだとき' },
+  equity:     { name:'純資産 (Equity)',             sub:'本当に自分のものの総額（資産－負債）' },
+  other:      { name:'評価勘定・その他 (Other)',    sub:'固定資産・売掛金のマイナス調整など' },
+  industrial: { name:'工業簿記 (Industrial)',       sub:'製造業の原価計算で使う勘定科目' },
 };
 
 function buildApxContent(){
@@ -891,7 +1113,7 @@ function buildApxContent(){
     const type = T[name] || 'other';
     byType[type].push({ name, en, note, lv });
   });
-  return order.map(type => {
+  const commercialHtml = order.map(type => {
     const { name, sub } = APX_TYPE_INFO[type];
     const rows = byType[type].map(({ name, en, note, lv }) =>
       `<div class="apx-row" data-name="${name}" data-en="${en}">
@@ -903,12 +1125,48 @@ function buildApxContent(){
         <div class="apx-note">${note}</div>
       </div>`
     ).join('');
-    return `<div class="apx-section" data-type="${type}">
+    return `<div class="apx-section" data-type="${type}" data-category="commercial">
       <div class="apx-section-hd ${type}"><span class="dot ${type}"></span>${name}</div>
       <div class="apx-section-sub">${sub}</div>
       ${rows}
     </div>`;
   }).join('');
+
+  // 工業簿記
+  const subCats = [...new Set(INDUSTRIAL_DATA.map(([,,, sc]) => sc))];
+  const indHtml = subCats.map(sc => {
+    const items = INDUSTRIAL_DATA.filter(([,,, s]) => s === sc);
+    const rows = items.map(([name, en, note]) => {
+      const type = T[name] || 'other';
+      return `<div class="apx-row" data-name="${name}" data-en="${en}">
+        <div class="apx-row-top">
+          <span class="tag ${type}">${name}</span>
+          <span class="apx-en">(${en})</span>
+          <span class="apx-lv ind">工業</span>
+        </div>
+        <div class="apx-note">${note}</div>
+      </div>`;
+    }).join('');
+    return `<div class="apx-section" data-type="industrial" data-category="industrial">
+      <div class="apx-section-hd industrial">🏭 ${sc}</div>
+      ${rows}
+    </div>`;
+  }).join('');
+
+  // 用語解説集
+  const glossHtml = '<div class="gloss-section" data-type="glossary">' +
+    GLOSSARY_DATA.map(({ category, items }) =>
+      `<div class="gloss-hd">📌 ${category}</div>` +
+      items.map(({ term, en, def }) =>
+        `<div class="gloss-row" data-name="${term}" data-en="${en}">
+          <div class="gloss-term">${term} <span class="gloss-en">(${en})</span></div>
+          <div class="gloss-def">${def}</div>
+        </div>`
+      ).join('')
+    ).join('') +
+  '</div>';
+
+  return commercialHtml + indHtml + glossHtml;
 }
 
 let apxCurrentTab = 'all';
@@ -937,21 +1195,71 @@ function toggleHideNames(){
   const content = document.getElementById('apx-content');
   const nowActive = btn.classList.toggle('active');
   content.classList.toggle('names-hidden', nowActive);
-  btn.textContent = nowActive ? '👁 科目名を表示する（練習モード解除）' : '👁 科目名を隠す（練習モード）';
+  btn.textContent = nowActive ? '👁 科目名を表示' : '👁 科目名を隠す';
+}
+
+function toggleHideEnglish(){
+  const btn = document.getElementById('apx-hide-en-btn');
+  const content = document.getElementById('apx-content');
+  const nowActive = btn.classList.toggle('active');
+  content.classList.toggle('en-hidden', nowActive);
+  btn.textContent = nowActive ? '🔤 英語を表示' : '🔤 英語を隠す';
 }
 
 function filterApx(q){
-  applyApxFilter(q, q.trim() ? 'all' : apxCurrentTab);
+  if(!q.trim()){
+    applyApxFilter('', apxCurrentTab);
+  } else {
+    applyApxFilter(q, apxCurrentTab === 'glossary' ? 'glossary' : 'search');
+  }
 }
 
 function applyApxFilter(q, tab){
   const kw = q.trim().toLowerCase();
-  document.querySelectorAll('#apx-content .apx-section').forEach(sec => {
-    const typeMatch = (tab === 'all' || sec.dataset.type === tab);
+  const content = document.getElementById('apx-content');
+
+  // glossary section
+  const glossEl = content.querySelector('.gloss-section');
+  if(glossEl){
+    if(tab === 'glossary'){
+      glossEl.style.display = '';
+      if(kw){
+        glossEl.querySelectorAll('.gloss-row').forEach(row => {
+          const match = row.dataset.name.includes(kw) || row.dataset.en.toLowerCase().includes(kw);
+          row.style.display = match ? '' : 'none';
+        });
+        glossEl.querySelectorAll('.gloss-hd').forEach(hd => {
+          const next = hd.nextElementSibling;
+          let any = false;
+          let el = hd.nextElementSibling;
+          while(el && !el.classList.contains('gloss-hd')){
+            if(el.style.display !== 'none') any = true;
+            el = el.nextElementSibling;
+          }
+          hd.style.display = any ? '' : 'none';
+        });
+      } else {
+        glossEl.querySelectorAll('.gloss-row,.gloss-hd').forEach(el => el.style.display = '');
+      }
+    } else {
+      glossEl.style.display = 'none';
+    }
+  }
+
+  content.querySelectorAll('.apx-section').forEach(sec => {
+    const type = sec.dataset.type;
+    const category = sec.dataset.category;
+    let typeMatch;
+    if(tab === 'all') typeMatch = category !== 'industrial';
+    else if(tab === 'search') typeMatch = true;
+    else if(tab === 'industrial') typeMatch = category === 'industrial';
+    else if(tab === 'glossary') typeMatch = false;
+    else typeMatch = (type === tab && category !== 'industrial');
     if(!typeMatch){ sec.style.display = 'none'; return; }
+    if(!kw){ sec.style.display = ''; sec.querySelectorAll('.apx-row').forEach(r => r.classList.remove('hidden')); return; }
     let anyVisible = false;
     sec.querySelectorAll('.apx-row').forEach(row => {
-      const match = !kw || row.dataset.name.includes(kw) || row.dataset.en.toLowerCase().includes(kw);
+      const match = row.dataset.name.includes(kw) || row.dataset.en.toLowerCase().includes(kw);
       row.classList.toggle('hidden', !match);
       if(match) anyVisible = true;
     });
