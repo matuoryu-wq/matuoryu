@@ -366,8 +366,6 @@
     .apx-title { font-size:17px; font-weight:800; color:var(--primary); }
     .apx-subtitle { font-size:11px; color:var(--muted); margin-top:2px; }
     .apx-close { background:none; border:none; font-size:22px; cursor:pointer; color:var(--muted); line-height:1; }
-    .apx-search { width:100%; padding:9px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:14px; margin-bottom:8px; outline:none; color:var(--text); }
-    .apx-search:focus { border-color:var(--primary); }
     .apx-section { margin-bottom:22px; }
     .apx-section-hd { font-size:13px; font-weight:800; padding:7px 12px; border-radius:8px; margin-bottom:5px; display:flex; align-items:center; gap:8px; }
     .apx-section-hd.asset      { background:#FFF9C4; color:#5D4037; border:1.5px solid #F9C400; }
@@ -476,6 +474,8 @@
       </div>
       <div class="apx-tabs" id="apx-tabs">
         <button class="apx-tab active" data-type="all" onclick="setApxTab('all')">全て</button>
+        <button class="apx-tab" data-type="level3" onclick="setApxTab('level3')">3級</button>
+        <button class="apx-tab" data-type="level2" onclick="setApxTab('level2')">2級</button>
         <button class="apx-tab" data-type="asset" onclick="setApxTab('asset')">資産</button>
         <button class="apx-tab" data-type="liability" onclick="setApxTab('liability')">負債</button>
         <button class="apx-tab" data-type="expense" onclick="setApxTab('expense')">費用</button>
@@ -485,7 +485,6 @@
         <button class="apx-tab" data-type="industrial" onclick="setApxTab('industrial')">🏭 工業簿記</button>
         <button class="apx-tab" data-type="glossary" onclick="setApxTab('glossary')">📖 用語集</button>
       </div>
-      <input class="apx-search" id="apx-search" type="text" placeholder="科目名・英語で検索..." oninput="filterApx(this.value)">
       <div class="apx-hide-btns">
         <button class="apx-hide-btn" id="apx-hide-btn" onclick="toggleHideNames()">👁 科目名を隠す</button>
         <button class="apx-hide-btn" id="apx-hide-en-btn" onclick="toggleHideEnglish()">🔤 英語を隠す</button>
@@ -1268,7 +1267,7 @@ function buildApxContent(){
   const commercialHtml = order.map(type => {
     const { name, sub } = APX_TYPE_INFO[type];
     const rows = byType[type].map(({ name, en, note, lv }) =>
-      `<div class="apx-row" data-name="${name}" data-en="${en}">
+      `<div class="apx-row" data-name="${name}" data-en="${en}" data-level="${lv}">
         <div class="apx-row-top">
           <span class="tag ${type}">${name}</span>
           <span class="apx-en">(${en})</span>
@@ -1328,18 +1327,16 @@ function showApx(){
   if(!document.getElementById('apx-content').innerHTML)
     document.getElementById('apx-content').innerHTML = buildApxContent();
   el.classList.add('show');
-  document.getElementById('apx-search').value = '';
   apxCurrentTab = 'all';
   document.querySelectorAll('#apx-tabs .apx-tab').forEach(t => t.classList.toggle('active', t.dataset.type === 'all'));
-  applyApxFilter('', 'all');
+  applyApxFilter('all');
 }
 function hideApx(){ document.getElementById('apx-overlay').classList.remove('show'); }
 
 function setApxTab(type){
   apxCurrentTab = type;
   document.querySelectorAll('#apx-tabs .apx-tab').forEach(t => t.classList.toggle('active', t.dataset.type === type));
-  document.getElementById('apx-search').value = '';
-  applyApxFilter('', type);
+  applyApxFilter(type);
 }
 
 function toggleHideNames(){
@@ -1358,44 +1355,14 @@ function toggleHideEnglish(){
   btn.textContent = nowActive ? '🔤 英語を表示' : '🔤 英語を隠す';
 }
 
-function filterApx(q){
-  if(!q.trim()){
-    applyApxFilter('', apxCurrentTab);
-  } else {
-    applyApxFilter(q, apxCurrentTab === 'glossary' ? 'glossary' : 'search');
-  }
-}
-
-function applyApxFilter(q, tab){
-  const kw = q.trim().toLowerCase();
+function applyApxFilter(tab){
   const content = document.getElementById('apx-content');
 
-  // glossary section
   const glossEl = content.querySelector('.gloss-section');
   if(glossEl){
-    if(tab === 'glossary'){
-      glossEl.style.display = '';
-      if(kw){
-        glossEl.querySelectorAll('.gloss-row').forEach(row => {
-          const match = row.dataset.name.includes(kw) || row.dataset.en.toLowerCase().includes(kw);
-          row.style.display = match ? '' : 'none';
-        });
-        glossEl.querySelectorAll('.gloss-hd').forEach(hd => {
-          const next = hd.nextElementSibling;
-          let any = false;
-          let el = hd.nextElementSibling;
-          while(el && !el.classList.contains('gloss-hd')){
-            if(el.style.display !== 'none') any = true;
-            el = el.nextElementSibling;
-          }
-          hd.style.display = any ? '' : 'none';
-        });
-      } else {
-        glossEl.querySelectorAll('.gloss-row,.gloss-hd').forEach(el => el.style.display = '');
-      }
-    } else {
-      glossEl.style.display = 'none';
-    }
+    glossEl.style.display = (tab === 'glossary') ? '' : 'none';
+    if(tab === 'glossary')
+      glossEl.querySelectorAll('.gloss-row,.gloss-hd').forEach(el => el.style.display = '');
   }
 
   content.querySelectorAll('.apx-section').forEach(sec => {
@@ -1403,19 +1370,26 @@ function applyApxFilter(q, tab){
     const category = sec.dataset.category;
     let typeMatch;
     if(tab === 'all') typeMatch = category !== 'industrial';
-    else if(tab === 'search') typeMatch = true;
     else if(tab === 'industrial') typeMatch = category === 'industrial';
     else if(tab === 'glossary') typeMatch = false;
+    else if(tab === 'level3' || tab === 'level2') typeMatch = category !== 'industrial';
     else typeMatch = (type === tab && category !== 'industrial');
+
     if(!typeMatch){ sec.style.display = 'none'; return; }
-    if(!kw){ sec.style.display = ''; sec.querySelectorAll('.apx-row').forEach(r => r.classList.remove('hidden')); return; }
-    let anyVisible = false;
-    sec.querySelectorAll('.apx-row').forEach(row => {
-      const match = row.dataset.name.includes(kw) || row.dataset.en.toLowerCase().includes(kw);
-      row.classList.toggle('hidden', !match);
-      if(match) anyVisible = true;
-    });
-    sec.style.display = anyVisible ? '' : 'none';
+
+    if(tab === 'level3' || tab === 'level2'){
+      const targetLevel = tab === 'level3' ? '3' : '2';
+      let anyVisible = false;
+      sec.querySelectorAll('.apx-row').forEach(row => {
+        const match = row.dataset.level === targetLevel;
+        row.classList.toggle('hidden', !match);
+        if(match) anyVisible = true;
+      });
+      sec.style.display = anyVisible ? '' : 'none';
+    } else {
+      sec.style.display = '';
+      sec.querySelectorAll('.apx-row').forEach(r => r.classList.remove('hidden'));
+    }
   });
 }
 
@@ -1986,7 +1960,12 @@ const ALL = [
 
   { id:112, level:2, cat:'株式発行',
     q:'①株式の申込を受け付け、申込証拠金300円を受け入れた。②株式を正式に発行し、証拠金を資本金・資本準備金（各150円）に振り替え、普通預金に移した。仕訳を示せ。',
-    ans_html:`<table><thead><tr><th>時点</th><th colspan="2">借　方</th><th colspan="2">貸　方</th></tr></thead><tbody><tr><td>①申込受付</td><td>別段預金</td><td>300</td><td>株式申込証拠金</td><td>300</td></tr><tr><td>②発行（証拠金→資本）</td><td>株式申込証拠金</td><td>300</td><td>資本金<br>資本準備金</td><td>150<br>150</td></tr><tr><td>②発行（別段→普通）</td><td>普通預金</td><td>300</td><td>別段預金</td><td>300</td></tr></tbody></table>`,
+    e:[
+      {d:[['別段預金',300]], c:[['株式申込証拠金',300]]},
+      {d:[['株式申込証拠金',300]], c:[['資本金',150],['資本準備金',150]]},
+      {d:[['普通預金',300]], c:[['別段預金',300]]}
+    ],
+    note:'①申込受付：別段預金に入金　②発行確定：証拠金→資本金・資本準備金（各150）、別段→普通預金へ移動',
     exp:'株式発行は2ステップです。①申込受付時：まだ正式に株式を出していないのでもらったお金を「別段預金（申込専用の銀行口座）」に入れて、もらった義務「株式申込証拠金（負債）」を記録します。②発行確定時：「証拠金→資本金・資本準備金」に振り替え、「別段預金→普通預金」に移します。「まず仮置きして、確定したら本番に移す」という2段階処理です。' },
 
   { id:113, level:2, cat:'企業合併',
@@ -2028,7 +2007,11 @@ const ALL = [
   // ===== 2級：法人税等・消費税 =====
   { id:119, level:2, cat:'法人税等',
     q:'①決算で当期の法人税・住民税及び事業税2,500円を確定させた（中間納付1,000円は仮払法人税等として計上済）。②翌期に未払分を現金で納付した。仕訳を示せ。',
-    ans_html:`<table><thead><tr><th>時点</th><th colspan="2">借　方</th><th colspan="2">貸　方</th></tr></thead><tbody><tr><td>①決算確定</td><td>法人税・住民税及び事業税</td><td>2,500</td><td>仮払法人税等<br>未払法人税等</td><td>1,000<br>1,500</td></tr><tr><td>②翌期納付</td><td>未払法人税等</td><td>1,500</td><td>現金</td><td>1,500</td></tr></tbody></table>`,
+    e:[
+      {d:[['法人税・住民税及び事業税',2500]], c:[['仮払法人税等',1000],['未払法人税等',1500]]},
+      {d:[['未払法人税等',1500]], c:[['現金',1500]]}
+    ],
+    note:'①決算確定：中間納付1,000を相殺→残1,500を未払計上　②翌期：未払分を現金で納付',
     exp:'2級では法人税の正式名称「法人税・住民税及び事業税」を使います。年度の途中で払う1,000円は「まだ確定していない仮払い（仮払法人税等・資産）」として帳簿に置いておきます。年末に2,500円と確定したら「仮払い1,000円を差し引いた残り1,500円がまだ払っていない税金（未払法人税等・負債）」として記録します。翌年に払って負債が消えます。' },
 
   { id:120, level:2, cat:'消費税',
@@ -2039,7 +2022,11 @@ const ALL = [
 
   { id:121, level:2, cat:'消費税',
     q:'①決算：仮払消費税1,000円・仮受消費税3,000円を確定させた。②翌期：確定した消費税を現金で納付した。仕訳を示せ。',
-    ans_html:`<table><thead><tr><th>時点</th><th colspan="2">借　方</th><th colspan="2">貸　方</th></tr></thead><tbody><tr><td>①決算確定</td><td>仮受消費税</td><td>3,000</td><td>仮払消費税<br>未払消費税</td><td>1,000<br>2,000</td></tr><tr><td>②翌期納付</td><td>未払消費税</td><td>2,000</td><td>現金</td><td>2,000</td></tr></tbody></table>`,
+    e:[
+      {d:[['仮受消費税',3000]], c:[['仮払消費税',1000],['未払消費税',2000]]},
+      {d:[['未払消費税',2000]], c:[['現金',2000]]}
+    ],
+    note:'①決算：仮受3,000から仮払1,000を相殺→未払消費税2,000　②翌期：現金で納付',
     exp:'決算時に「仮受消費税（3,000円）から仮払消費税（1,000円）を引いた差額（2,000円）」が国に払う「未払消費税（負債）」になります。3,000円預かって1,000円立て替えたので差し引き2,000円を国に納めます。翌期に実際に払って負債が消えます。' },
 
   // ===== 2級：商品売買 =====
@@ -2068,7 +2055,11 @@ const ALL = [
 
   { id:126, level:2, cat:'手形',
     q:'①満期日に受取手形500円が不渡りとなり、償還請求費用20円を現金で支払った。②その後、不渡分の全額（520円）が回収された。仕訳を示せ。',
-    ans_html:`<table><thead><tr><th>時点</th><th colspan="2">借　方</th><th colspan="2">貸　方</th></tr></thead><tbody><tr><td>①不渡り発生</td><td>不渡手形</td><td>520</td><td>受取手形<br>現金</td><td>500<br>20</td></tr><tr><td>②全額回収</td><td>現金</td><td>520</td><td>不渡手形</td><td>520</td></tr></tbody></table>`,
+    e:[
+      {d:[['不渡手形',520]], c:[['受取手形',500],['現金',20]]},
+      {d:[['現金',520]], c:[['不渡手形',520]]}
+    ],
+    note:'①不渡り発生：手形500＋償還費用20＝520を不渡手形に振替　②全額回収：現金で回収・不渡手形を消去',
     exp:'不渡りとは「期日になったのにお金が入ってこなかった手形」のことです。手形の名前を「受取手形（普通の権利）」から「不渡手形（問題のある権利）」に変えて管理します。法的な取り立て費用20円もプラスして520円として追跡します。全額回収できたら「不渡手形を消して現金を増やす」だけです。回収できなければ「貸倒損失」として損失にします。' },
 
   { id:127, level:2, cat:'手形',
@@ -2079,12 +2070,20 @@ const ALL = [
   // ===== 2級：電子記録 =====
   { id:128, level:2, cat:'電子記録',
     q:'電子記録債務の支払期日が到来し、A社（債務者）の当座預金からB社（債権者）へ1,000円が決済された。A・B両社それぞれの仕訳を示せ。',
-    ans_html:`<table><thead><tr><th>立場</th><th colspan="2">借　方</th><th colspan="2">貸　方</th></tr></thead><tbody><tr><td>A社（債務者）</td><td>電子記録債務</td><td>1,000</td><td>当座預金</td><td>1,000</td></tr><tr><td>B社（債権者）</td><td>当座預金</td><td>1,000</td><td>電子記録債権</td><td>1,000</td></tr></tbody></table>`,
+    e:[
+      {d:[['電子記録債務',1000]], c:[['当座預金',1000]]},
+      {d:[['当座預金',1000]], c:[['電子記録債権',1000]]}
+    ],
+    note:'A社（債務者）の仕訳　B社（債権者）の仕訳',
     exp:'電子記録の期日決済は「電子データが消えてお金が動く」瞬間です。支払うA社は「電子記録の借金が消えて銀行残高が減り」、受け取るB社は「電子記録の権利が消えて銀行残高が増え」ます。紙の手形と違ってデータだけでやり取りするので、A社とB社の仕訳は「かがみ写し（まったく逆）」になります。' },
 
   { id:129, level:2, cat:'電子記録',
     q:'BはAに対する電子記録債権1,000円を、C社への買掛金支払いとしてCに譲渡した。B・C両社それぞれの仕訳を示せ。',
-    ans_html:`<table><thead><tr><th>立場</th><th colspan="2">借　方</th><th colspan="2">貸　方</th></tr></thead><tbody><tr><td>B（譲渡人）</td><td>買掛金</td><td>1,000</td><td>電子記録債権</td><td>1,000</td></tr><tr><td>C（譲受人）</td><td>電子記録債権</td><td>1,000</td><td>売掛金</td><td>1,000</td></tr></tbody></table>`,
+    e:[
+      {d:[['買掛金',1000]], c:[['電子記録債権',1000]]},
+      {d:[['電子記録債権',1000]], c:[['売掛金',1000]]}
+    ],
+    note:'B（譲渡人）の仕訳　C（譲受人）の仕訳',
     exp:'電子記録債権の譲渡は「電子化した受取手形の裏書き渡し」とまったく同じです。BはAから受け取った「電子記録の権利」をCへの買掛金支払いに使います。C商店は「AさんからBさんに支払われるはずだったお金を、直接自分がもらう権利」を受け取ります。現金なしでB・C間の借金が解決できます。' },
 
   { id:130, level:2, cat:'電子記録',
@@ -2172,12 +2171,12 @@ const ALL = [
 
   { id:145, level:2, cat:'固定資産',
     q:'当期12/1に購入した備品（取得原価30,000円）を定率法（償却率20%）で減価償却。決算日3/31・間接法。①取得後1年目②2年目③3年目の決算整理仕訳を示せ。',
-    ans_html:`<table><thead><tr><th>年度</th><th colspan="2">借　方</th><th colspan="2">貸　方</th></tr></thead><tbody>
-<tr><td>①1年目<br>（4か月分）</td><td>減価償却費</td><td>2,000</td><td>備品減価償却累計額</td><td>2,000</td></tr>
-<tr><td>②2年目<br>（12か月分）</td><td>減価償却費</td><td>5,600</td><td>備品減価償却累計額</td><td>5,600</td></tr>
-<tr><td>③3年目<br>（12か月分）</td><td>減価償却費</td><td>4,480</td><td>備品減価償却累計額</td><td>4,480</td></tr>
-</tbody></table>
-<div class="formula-box">①30,000×20%×4/12＝2,000　②(30,000－2,000)×20%＝5,600　③(28,000－5,600)×20%＝4,480</div>`,
+    e:[
+      {d:[['減価償却費',2000]], c:[['備品減価償却累計額',2000]]},
+      {d:[['減価償却費',5600]], c:[['備品減価償却累計額',5600]]},
+      {d:[['減価償却費',4480]], c:[['備品減価償却累計額',4480]]}
+    ],
+    note:'①1年目(4か月)：30,000×20%×4/12＝2,000　②2年目(12か月)：(30,000－2,000)×20%＝5,600　③3年目(12か月)：(28,000－5,600)×20%＝4,480',
     exp:'定率法とは「残っている価値の一定割合（20%）を毎年减価償却する方法」です。最初は減る金額が大きく、年々小さくなります。①1年目は12/1購入なので4か月分のみ：30,000×20%×4/12＝2,000円。②2年目は残り28,000円の20%：5,600円。③3年目は残り22,400円の20%：4,480円。残る価値が減るので、毎年少しずつ償却額も減っていきます。' },
 
   { id:146, level:2, cat:'固定資産',
@@ -2194,12 +2193,8 @@ const ALL = [
 
   { id:148, level:2, cat:'固定資産',
     q:'車両（取得原価200,000円・期首減価償却累計額108,000円・間接法）を下取り価額85,000円で下取りに出し、新車両300,000円を購入した。差額は翌月末に支払う。仕訳を示せ。',
-    ans_html:`<table><thead><tr><th colspan="2">借　方</th><th colspan="2">貸　方</th></tr></thead><tbody>
-<tr><td>車両運搬具</td><td>300,000</td><td>車両運搬具</td><td>200,000</td></tr>
-<tr><td>車両運搬具減価償却累計額</td><td>108,000</td><td>未払金</td><td>215,000</td></tr>
-<tr><td>固定資産売却損</td><td>7,000</td><td></td><td></td></tr>
-</tbody></table>
-<div class="formula-box">帳簿価額＝200,000－108,000＝92,000　売却損＝92,000－85,000＝7,000　未払金＝300,000－85,000＝215,000</div>`,
+    e:[{d:[['車両運搬具',300000],['車両運搬具減価償却累計額',108000],['固定資産売却損',7000]], c:[['車両運搬具',200000],['未払金',215000]]}],
+    note:'帳簿価額＝200,000－108,000＝92,000　売却損＝92,000－85,000＝7,000　未払金＝300,000－85,000＝215,000',
     exp:'下取りとは「古い物を売って、その代金を新しい物の購入代金の一部に充てること」です。①古い車を売る：帳簿価額92,000円（200,000－108,000）の車を85,000円で売ったので7,000円の損（固定資産売却損）が出ます。②新しい車300,000円を買う：古い車の下取り代金85,000円を引いて残り215,000円を後払い（未払金）にします。' },
 
   { id:149, level:2, cat:'固定資産',
