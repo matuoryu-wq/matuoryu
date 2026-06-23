@@ -428,55 +428,38 @@
     .qa-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
     .qa-prog-bar-wrap { height:5px; background:#E0E0E0; border-radius:3px; overflow:hidden; }
     .qa-prog-bar-fill { height:100%; background:var(--primary); border-radius:3px; transition:width 0.3s; }
-    .qa-body { overflow-y:auto; flex:1; padding:14px 14px 24px; -webkit-overflow-scrolling:touch; display:flex; flex-direction:column; gap:14px; }
+    .qa-body { overflow-y:auto; flex:1; padding:14px 14px 24px; -webkit-overflow-scrolling:touch; display:flex; flex-direction:column; gap:12px; }
 
-    /* 全体像カード */
-    .qa-overview-card { background:linear-gradient(135deg,#E3F2FD 0%,#F3E5F5 100%); border-radius:14px; padding:16px; border:1.5px solid #B3C9E8; }
-    .qa-overview-title { font-size:15px; font-weight:800; color:#1A237E; margin-bottom:10px; }
-    .qa-bs-table { width:100%; border-collapse:collapse; margin-bottom:8px; font-size:12px; }
-    .qa-bs-table td { padding:5px 8px; border:1.5px solid #B3C9E8; text-align:center; font-weight:700; }
-    .qa-bs-table .bs-asset { background:#FFF9C4; color:#5D4037; }
-    .qa-bs-table .bs-liab  { background:#FCE4EC; color:#880E4F; }
-    .qa-bs-table .bs-eq    { background:#F3E5F5; color:#4A148C; }
-    .qa-formula-row { font-size:12px; font-weight:700; color:#1A237E; margin:4px 0; text-align:center; }
-    .qa-5elem { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
-    .qa-elem-tag { flex:1; min-width:80px; padding:6px 4px; border-radius:8px; text-align:center; font-size:11px; font-weight:700; }
-    .qa-elem-tag.asset    { background:#FFF9C4; color:#5D4037; border:1.5px solid #F9C400; }
-    .qa-elem-tag.liability{ background:#FCE4EC; color:#880E4F; border:1.5px solid #C2185B; }
-    .qa-elem-tag.equity   { background:#F3E5F5; color:#4A148C; border:1.5px solid #CE93D8; }
-    .qa-elem-tag.revenue  { background:#E1F5FE; color:#01579B; border:1.5px solid #0288D1; }
-    .qa-elem-tag.expense  { background:#E8F5E9; color:#1B5E20; border:1.5px solid #388E3C; }
-    .qa-debit-credit { margin-top:10px; font-size:11px; background:#fff; border-radius:8px; overflow:hidden; border:1px solid var(--border); }
-    .qa-dc-hd { display:grid; grid-template-columns:1fr 1fr; text-align:center; font-weight:800; font-size:11px; }
-    .qa-dc-hd .dbt { padding:5px; background:#E8F5E9; color:#1B5E20; }
-    .qa-dc-hd .crd { padding:5px; background:#E1F5FE; color:#01579B; }
-    .qa-dc-body { display:grid; grid-template-columns:1fr 1fr; font-size:11px; }
-    .qa-dc-body .dbt { padding:4px 6px; color:#1B5E20; border-top:1px solid var(--border); line-height:1.5; }
-    .qa-dc-body .crd { padding:4px 6px; color:#01579B; border-top:1px solid var(--border); border-left:1px solid var(--border); line-height:1.5; }
+    /* 問題カード */
+    .qa-q-card { background:#fff; border-radius:14px; border:1.5px solid var(--border); padding:16px 18px; }
+    .qa-q-meta { display:flex; gap:6px; margin-bottom:10px; align-items:center; flex-wrap:wrap; }
+    .qa-q-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; }
+    .qa-q-badge.asset     { background:#FFF9C4; color:#5D4037; border:1.5px solid #F9C400; }
+    .qa-q-badge.liability { background:#FCE4EC; color:#880E4F; border:1.5px solid #C2185B; }
+    .qa-q-badge.revenue   { background:#E1F5FE; color:#01579B; border:1.5px solid #0288D1; }
+    .qa-q-badge.expense   { background:#E8F5E9; color:#1B5E20; border:1.5px solid #388E3C; }
+    .qa-q-badge.equity    { background:#F3E5F5; color:#4A148C; border:1.5px solid #CE93D8; }
+    .qa-q-badge.gloss     { background:#FFF3E0; color:#BF360C; border:1.5px solid #FF8F00; }
+    .qa-q-badge.industrial{ background:#FFF3E0; color:#BF360C; border:1.5px solid #FF8F00; }
+    .qa-q-badge.cat       { background:#E8EAF6; color:#283593; border:1.5px solid #9FA8DA; }
+    .qa-q-text { font-size:13px; color:#333; line-height:1.8; }
+    .qa-q-text mark { background:#FFF9C4; padding:0 2px; border-radius:2px; }
+    .qa-q-text strong { color:#1A2B3C; }
+    .qa-mask { display:inline-block; background:#333; color:transparent; border-radius:3px; padding:0 4px; min-width:3em; user-select:none; }
+    .qa-q-suffix { display:block; margin-top:10px; font-size:13px; font-weight:700; color:var(--primary); }
 
-    /* フラッシュカード */
-    .qa-card-wrap { background:#fff; border-radius:14px; border:1.5px solid var(--border); overflow:hidden; cursor:pointer; transition:box-shadow 0.2s; user-select:none; }
-    .qa-card-wrap:active { box-shadow:0 0 0 3px rgba(0,84,175,0.2); }
-    .qa-face-front { padding:20px 18px 16px; min-height:160px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
-    .qa-face-back { padding:16px 18px; display:none; }
-    .qa-card-wrap.flipped .qa-face-front { display:none; }
-    .qa-card-wrap.flipped .qa-face-back { display:block; }
-    .qa-src-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; background:#E3F2FD; color:#01579B; margin-bottom:2px; align-self:flex-start; }
-    .qa-term-big { font-size:26px; font-weight:800; color:var(--primary); text-align:center; }
-    .qa-term-en { font-size:12px; color:var(--muted); text-align:center; }
-    .qa-tap-hint { margin-top:8px; font-size:12px; color:var(--muted); border:1px dashed var(--border); border-radius:20px; padding:4px 14px; }
-    .qa-back-badge { display:inline-block; font-size:11px; font-weight:700; padding:2px 10px; border-radius:10px; margin-bottom:10px; }
-    .qa-back-badge.asset     { background:#FFF9C4; color:#5D4037; border:1.5px solid #F9C400; }
-    .qa-back-badge.liability { background:#FCE4EC; color:#880E4F; border:1.5px solid #C2185B; }
-    .qa-back-badge.revenue   { background:#E1F5FE; color:#01579B; border:1.5px solid #0288D1; }
-    .qa-back-badge.expense   { background:#E8F5E9; color:#1B5E20; border:1.5px solid #388E3C; }
-    .qa-back-badge.equity    { background:#F3E5F5; color:#4A148C; border:1.5px solid #CE93D8; }
-    .qa-back-badge.gloss     { background:#FFF3E0; color:#BF360C; border:1.5px solid #FF8F00; }
-    .qa-back-badge.industrial{ background:#FFF3E0; color:#BF360C; border:1.5px solid #FF8F00; }
-    .qa-back-def { font-size:13px; color:#333; line-height:1.7; }
-    .qa-back-def-en { font-size:11px; color:var(--muted); line-height:1.6; margin-top:8px; padding-top:8px; border-top:1px dashed var(--border); }
+    /* 答え表示エリア */
+    .qa-ans-area { background:#F8F9FF; border-radius:14px; border:1.5px solid var(--border); padding:16px 18px; }
+    .qa-ans-area.hidden { display:none; }
+    .qa-ans-label { font-size:11px; color:var(--muted); font-weight:700; margin-bottom:6px; }
+    .qa-ans-text { font-size:28px; font-weight:800; color:var(--primary); margin-bottom:4px; }
+    .qa-ans-en { font-size:12px; color:var(--muted); }
 
-    /* 判定ボタン */
+    /* 答えを見るボタン */
+    .qa-reveal-btn { width:100%; padding:12px; border:2px dashed var(--border); border-radius:12px; background:#fff; font-size:14px; font-weight:700; color:var(--muted); cursor:pointer; transition:background 0.15s,border-color 0.15s; }
+    .qa-reveal-btn:active { background:#f5f5f5; }
+
+    /* 自己評価ボタン */
     .qa-judge-row { display:flex; gap:10px; }
     .qa-judge-row.hidden { display:none; }
     .qa-judge-btn { flex:1; padding:12px 10px; border-radius:12px; border:2px solid; font-size:14px; font-weight:700; cursor:pointer; transition:background 0.15s; }
@@ -1730,46 +1713,81 @@ function hideApx(){ document.getElementById('apx-overlay').classList.remove('sho
 let qaAllItems = null;
 let qaActive   = [];
 let qaIdx      = 0;
-let qaFlipped  = false;
+let qaRevealed = false;
 let qaKnown    = new Set();
 let qaFilter   = 'all';
 
 const QA_TYPE_LABEL = {asset:'資産',liability:'負債',expense:'費用',revenue:'収益',equity:'純資産',other:'その他'};
 
+// 答えの単語を問題文から伏せる
+function qaMask(html, term){
+  if(!term) return html;
+  const esc = term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return html.replace(new RegExp(esc,'g'),'<span class="qa-mask">▓▓▓</span>');
+}
+
+// HTMLタグを除いた表示用テキストを抽出（問題文のプレビュー用）
+function qaStripTags(html){ return html.replace(/<[^>]+>/g,''); }
+
 function buildQAAllItems(){
   const items = [];
-  // 商業簿記 勘定科目
+  const typeLabel = QA_TYPE_LABEL;
+
+  // 商業簿記 勘定科目：説明文が問い、科目名が答え
   ACCT_DATA.forEach(([name, en, note, lv, note_en]) => {
     const type = T[name]||'other';
-    items.push({ src:'acct', type, q:name, en, def:note, def_en:note_en||'', lv:lv||3 });
-  });
-  // 工業簿記 勘定科目
-  INDUSTRIAL_DATA.forEach(([name, en, note, subcat, note_en]) => {
-    const type = T[name]||'industrial';
-    items.push({ src:'industrial', type:'industrial', subcat, q:name, en, def:note, def_en:note_en||'' });
-  });
-  // 用語集
-  GLOSSARY_DATA.forEach(({category, items:gi}) => {
-    gi.forEach(({term, en, def, def_en}) => {
-      items.push({ src:'gloss', type:'gloss', cat:category, q:term, en, def, def_en:def_en||'' });
+    items.push({
+      src:'acct', type, lv:lv||3,
+      hint: typeLabel[type]+'科目',
+      hintCls: type,
+      q: qaMask(note, name),       // 説明文（答えを伏せる）
+      ans: name,
+      ans_en: en,
     });
   });
+
+  // 工業簿記 勘定科目
+  INDUSTRIAL_DATA.forEach(([name, en, note, subcat, note_en]) => {
+    items.push({
+      src:'industrial', type:'industrial', subcat,
+      hint: subcat,
+      hintCls: 'industrial',
+      q: qaMask(note, name),
+      ans: name,
+      ans_en: en,
+    });
+  });
+
+  // 用語集：定義が問い、用語名が答え
+  GLOSSARY_DATA.forEach(({category, items:gi}) => {
+    gi.forEach(({term, en, def, def_en}) => {
+      items.push({
+        src:'gloss', type:'gloss', cat:category,
+        hint: category,
+        hintCls: 'gloss',
+        q: qaMask(def, term),
+        ans: term,
+        ans_en: en,
+      });
+    });
+  });
+
   return items;
 }
 
 function getQAFiltered(){
   if(!qaAllItems) qaAllItems = buildQAAllItems();
-  if(qaFilter==='all') return [...qaAllItems];
-  if(qaFilter==='acct') return qaAllItems.filter(i=>i.src==='acct');
+  if(qaFilter==='all')        return [...qaAllItems];
+  if(qaFilter==='acct')       return qaAllItems.filter(i=>i.src==='acct');
   if(qaFilter==='industrial') return qaAllItems.filter(i=>i.src==='industrial');
-  if(qaFilter==='gloss') return qaAllItems.filter(i=>i.src==='gloss');
+  if(qaFilter==='gloss')      return qaAllItems.filter(i=>i.src==='gloss');
   return [...qaAllItems];
 }
 
 function showQA(){
   if(!qaAllItems) qaAllItems = buildQAAllItems();
-  qaFilter='all'; qaIdx=0; qaFlipped=false; qaKnown=new Set();
-  qaActive=getQAFiltered();
+  qaFilter='all'; qaIdx=0; qaRevealed=false; qaKnown=new Set();
+  qaActive = getQAFiltered();
   document.querySelectorAll('#qa-tabs .qa-tab').forEach(t=>t.classList.toggle('active',t.dataset.f==='all'));
   document.getElementById('qa-overlay').classList.add('show');
   renderQABody();
@@ -1778,91 +1796,83 @@ function showQA(){
 function closeQA(){ document.getElementById('qa-overlay').classList.remove('show'); }
 
 function setQAFilter(f){
-  qaFilter=f; qaIdx=0; qaFlipped=false; qaKnown=new Set();
-  qaActive=getQAFiltered();
+  qaFilter=f; qaIdx=0; qaRevealed=false; qaKnown=new Set();
+  qaActive = getQAFiltered();
   document.querySelectorAll('#qa-tabs .qa-tab').forEach(t=>t.classList.toggle('active',t.dataset.f===f));
   renderQABody();
 }
 
 function renderQABody(){
-  const body = document.getElementById('qa-body');
+  const body  = document.getElementById('qa-body');
   const total = qaActive.length;
-  const prog = total ? Math.round((qaIdx+1)/total*100) : 0;
+  const prog  = total ? Math.round((qaIdx+1)/total*100) : 0;
   document.getElementById('qa-prog-text').textContent = total ? `${qaIdx+1} / ${total}` : '0 / 0';
-  document.getElementById('qa-prog-fill').style.width = prog+'%';
+  document.getElementById('qa-prog-fill').style.width  = prog+'%';
 
   if(!total){ body.innerHTML='<p style="text-align:center;color:var(--muted);padding:40px">問題がありません</p>'; return; }
 
-  const overviewHtml = qaIdx===0 ? buildQAOverview() : '';
-
   if(qaIdx >= total){
-    body.innerHTML = overviewHtml + buildQADone(total);
+    body.innerHTML = buildQADone(total);
     return;
   }
 
   const item = qaActive[qaIdx];
   const knownCount = qaKnown.size;
-  const srcLabel = item.src==='acct' ? '勘定科目 3級' : item.src==='industrial' ? '工業簿記 勘定科目' : (item.cat||'用語集');
-  const typeCls = item.type;
-  const badgeLabel = item.src==='acct'||item.src==='industrial' ? (QA_TYPE_LABEL[item.type]||'その他') : (item.cat||'用語');
-  const badgeCls = item.src==='gloss' ? 'gloss' : typeCls;
 
-  const frontHtml = `
-    <div class="qa-face-front">
-      <span class="qa-src-badge">${srcLabel}</span>
-      <div class="qa-term-big">${item.q}</div>
-      <div class="qa-term-en">${item.en}</div>
-      <div class="qa-tap-hint">▼ タップして答えを確認</div>
-    </div>`;
+  // 問題文のサフィックス（何を答えるかを示す）
+  const suffix = item.src==='acct'       ? 'この<b>勘定科目</b>は何？'
+               : item.src==='industrial' ? 'この<b>工業簿記の科目</b>は何？'
+               :                           'この<b>簿記用語</b>は何？';
 
-  const backHtml = `
-    <div class="qa-face-back">
-      <span class="qa-back-badge ${badgeCls}">${badgeLabel}</span>
-      <div class="qa-back-def">${item.def}</div>
-      ${item.def_en ? `<div class="qa-back-def-en">${item.def_en}</div>` : ''}
-    </div>`;
-
-  body.innerHTML = `
-    ${overviewHtml}
-    <div class="qa-card-wrap${qaFlipped?' flipped':''}" id="qa-card" onclick="flipQACard()">
-      ${frontHtml}${backHtml}
+  const ansHtml = qaRevealed ? `
+    <div class="qa-ans-area">
+      <div class="qa-ans-label">答え</div>
+      <div class="qa-ans-text">${item.ans}</div>
+      <div class="qa-ans-en">${item.ans_en}</div>
     </div>
-    <div class="qa-judge-row${qaFlipped?'':' hidden'}" id="qa-judge">
+    <div class="qa-judge-row">
       <button class="qa-judge-btn qa-again-btn" onclick="qaJudge(false)">↩ もう一度</button>
       <button class="qa-judge-btn qa-known-btn" onclick="qaJudge(true)">✓ 知ってた!</button>
+    </div>` : `
+    <button class="qa-reveal-btn" onclick="qaReveal()">▼ 答えを確認する</button>`;
+
+  body.innerHTML = `
+    <div class="qa-q-card">
+      <div class="qa-q-meta">
+        <span class="qa-q-badge ${item.hintCls}">${item.hint}</span>
+        ${item.lv===2?'<span class="qa-q-badge cat">2級</span>':''}
+      </div>
+      <div class="qa-q-text">${item.q}<span class="qa-q-suffix">${suffix}</span></div>
     </div>
+    ${ansHtml}
     <div class="qa-nav-row">
       <button class="qa-nav-btn" onclick="qaPrev()" ${qaIdx===0?'disabled':''}>← 前</button>
       <span class="qa-known-count">✓ 済み ${knownCount}問</span>
-      <button class="qa-nav-btn" onclick="qaNext()">次 →</button>
+      <button class="qa-nav-btn" onclick="qaSkip()">スキップ →</button>
     </div>`;
 }
 
-function buildQAOverview(){
-  return `<div class="qa-overview-card">
-    <div class="qa-overview-title">📊 簿記の全体像をまず押さえよう！</div>
-    <table class="qa-bs-table">
-      <tr><td colspan="1" rowspan="2" class="bs-asset">🟡 資産<br><small>現金・建物・<br>売掛金など</small></td>
-          <td class="bs-liab">🔴 負債<br><small>借入金・<br>買掛金など</small></td></tr>
-      <tr><td class="bs-eq">⚪ 純資産<br><small>資本金・<br>利益剰余金</small></td></tr>
-    </table>
-    <div class="qa-formula-row">資産 ＝ 負債 ＋ 純資産（貸借対照表 B/S）</div>
-    <div class="qa-formula-row">収益 − 費用 ＝ 利益 → 純資産が増える（損益計算書 P/L）</div>
-    <div class="qa-5elem">
-      <div class="qa-elem-tag asset">🟡 資産<br><small>増→借方↑</small></div>
-      <div class="qa-elem-tag liability">🔴 負債<br><small>増→貸方↑</small></div>
-      <div class="qa-elem-tag equity">⚪ 純資産<br><small>増→貸方↑</small></div>
-      <div class="qa-elem-tag revenue">🔵 収益<br><small>増→貸方↑</small></div>
-      <div class="qa-elem-tag expense">🟢 費用<br><small>増→借方↑</small></div>
-    </div>
-    <div class="qa-debit-credit">
-      <div class="qa-dc-hd"><span class="dbt">借方（左）に来るもの</span><span class="crd">貸方（右）に来るもの</span></div>
-      <div class="qa-dc-body">
-        <span class="dbt">資産の増加<br>費用の発生<br>負債の減少<br>純資産の減少</span>
-        <span class="crd">負債の増加<br>収益の発生<br>資産の減少<br>純資産の増加</span>
-      </div>
-    </div>
-  </div>`;
+function qaReveal(){
+  qaRevealed = true;
+  renderQABody();
+  document.getElementById('qa-body').scrollTop = 999;
+}
+
+function qaJudge(known){
+  if(known) qaKnown.add(qaIdx);
+  qaIdx++; qaRevealed=false;
+  renderQABody();
+  document.getElementById('qa-body').scrollTop = 0;
+}
+
+function qaSkip(){
+  qaIdx++; qaRevealed=false;
+  renderQABody();
+  document.getElementById('qa-body').scrollTop = 0;
+}
+
+function qaPrev(){
+  if(qaIdx>0){ qaIdx--; qaRevealed=false; renderQABody(); document.getElementById('qa-body').scrollTop=0; }
 }
 
 function buildQADone(total){
@@ -1876,33 +1886,8 @@ function buildQADone(total){
   </div>`;
 }
 
-function flipQACard(){
-  qaFlipped=!qaFlipped;
-  const card=document.getElementById('qa-card');
-  if(card) card.classList.toggle('flipped',qaFlipped);
-  const judge=document.getElementById('qa-judge');
-  if(judge) judge.classList.toggle('hidden',!qaFlipped);
-}
-
-function qaJudge(known){
-  if(known) qaKnown.add(qaIdx);
-  qaNext();
-}
-
-function qaNext(){
-  if(qaIdx < qaActive.length){
-    qaIdx++; qaFlipped=false;
-    renderQABody();
-    document.getElementById('qa-body').scrollTop=0;
-  }
-}
-
-function qaPrev(){
-  if(qaIdx>0){ qaIdx--; qaFlipped=false; renderQABody(); document.getElementById('qa-body').scrollTop=0; }
-}
-
 function qaRestart(){
-  qaIdx=0; qaFlipped=false; qaKnown=new Set();
+  qaIdx=0; qaRevealed=false; qaKnown=new Set();
   renderQABody();
   document.getElementById('qa-body').scrollTop=0;
 }
