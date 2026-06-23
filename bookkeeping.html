@@ -4115,6 +4115,866 @@ const ALL = [
     exp_en:'Inventory turnover (4×) = the inventory is replaced 4 times a year. Turnover period (3 months) = inventory is held for an average of 3 months. High turnover / short period = goods sell quickly, efficient management. Low turnover / long period = slow-moving inventory, risk of obsolescence.',
     note:'回転率=6,000,000÷1,500,000=4回 / 回転期間=12÷4=3ヶ月'
   },
+  {
+    id:267,
+    level:2,
+    cat:'工業簿記基礎',
+    q:'（穴埋め）製造原価の3要素を答えよ。①製品に直接使われる素材のコストを【ア　　　　　　】費という。②工員の給与・賃金のコストを【イ　　　　　　】費という。③①②以外の製造コスト（電力・減価償却等）を【ウ　　　　　　　】費という。',
+    q_en:'(Fill in) Name the three elements of manufacturing cost. ①The cost of materials directly used in products is [ア___] cost. ②The cost of worker wages is [イ___] cost. ③Other manufacturing costs (utilities, depreciation, etc.) are [ウ___] cost.',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>材料（費）</td></tr><tr><td class="hl">イ</td><td>労務（費）</td></tr><tr><td class="hl">ウ</td><td>経（費）</td></tr></tbody></table><div class="formula-box">製造原価＝材料費＋労務費＋経費<br>さらに「直接費」と「間接費」に分類される</div>`,
+    exp:'工業簿記は「モノを作るコストをどう記録するか」を扱います。製造原価の3要素は①材料費（原材料・部品）②労務費（工員の給与・賃金）③経費（それ以外：電気代・機械の減価償却費など）。「材労経（ざいろうけい）」と覚えると便利です。',
+    exp_en:'Manufacturing cost has three components: ①Materials (raw materials, parts) ②Labor (wages, salaries of production workers) ③Overhead (everything else: utilities, depreciation). Remember: "Materials + Labor + Overhead" — the fundamental cost classification in industrial bookkeeping.'
+  },
+  {
+    id:268,
+    level:2,
+    cat:'工業簿記基礎',
+    q:'（穴埋め）工業簿記における原価の流れを答えよ。購入した素材は【①　　　】勘定、生産中の製品は【②　　　　　　】勘定、完成した製品は【③　　　】勘定に集計される。そして販売時に【④　　　　　　】に振り替えられる。',
+    q_en:'(Fill in) Trace the cost flow in industrial bookkeeping. Purchased materials → [①___] account; products being made → [②___] account; finished products → [③___] account; on sale → transferred to [④___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>材料</td></tr><tr><td class="hl">②</td><td>仕掛品</td></tr><tr><td class="hl">③</td><td>製品</td></tr><tr><td class="hl">④</td><td>売上原価</td></tr></tbody></table><div class="formula-box">材料 → 仕掛品 → 製品 → 売上原価<br>（購入）  （製造中） （完成）  （販売）</div>`,
+    exp:'工業簿記の原価の流れを「料理の比喩」で覚えましょう。①材料（食材を買う）→②仕掛品（調理中）→③製品（料理完成）→④売上原価（お客様に出す）。この流れが工業簿記の骨格です。商業簿記では「商品→売上原価」の1ステップだけでしたが、工業簿記では製造プロセスを細かく追跡します。',
+    exp_en:'Visualize the cost flow as a cooking analogy: ①Materials (buying ingredients) → ②WIP (cooking in progress) → ③Finished Goods (dish complete) → ④Cost of Goods Sold (served to customer). Industrial bookkeeping tracks manufacturing step-by-step, unlike commercial bookkeeping which has just Merchandise → COGS.'
+  },
+  {
+    id:269,
+    level:2,
+    cat:'工業簿記基礎',
+    q:'（穴埋め）製造コストは「製品との関連性」から【①　　　　　　費】（特定製品に直接追跡できる）と【②　　　　　　費】（複数製品に共通するため配賦が必要）に分類される。直接材料費・直接労務費・【③　　　　　　　　　　　　　　　　】が直接費の代表例。',
+    q_en:'(Fill in) Manufacturing costs are classified as [①___] costs (traceable directly to a specific product) and [②___] costs (shared across multiple products, requiring allocation). Direct material cost, direct labor cost, and [③___] are the main direct costs.',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>直接（費）</td></tr><tr><td class="hl">②</td><td>間接（費）</td></tr><tr><td class="hl">③</td><td>直接経費（外注加工費など）</td></tr></tbody></table><div class="formula-box">直接費→仕掛品へ直接集計<br>間接費→製造間接費に集計→配賦基準で仕掛品へ配賦</div>`,
+    exp:'直接費と間接費の違いは「追跡できるかどうか」。直接材料費（A製品には何kg使ったか分かる）、直接労務費（A製品に何時間かけたか分かる）は直接費。電気代や工場長の給与は複数製品共通→間接費→配賦（割り振り）が必要。「どの製品のコストか特定できる＝直接費」と覚えましょう。',
+    exp_en:'Direct vs. indirect: "Can we trace it to a specific product?" Direct material (how many kg for Product A?), direct labor (how many hours on Product A?) — traceable. Electricity, plant manager\'s salary — shared across products → indirect → must be allocated. Rule: "traceable to a product = direct cost."'
+  },
+  {
+    id:270,
+    level:2,
+    cat:'工業簿記基礎',
+    q:'（穴埋め）製造原価報告書（製造原価明細書）の構造を答えよ。【①　　　　】費＋【②　　　　】費＋【③　　　　】費＝当期製造費用。当期製造費用＋月初仕掛品原価－月末仕掛品原価＝【④　　　　　　　　　　　　】。',
+    q_en:'(Fill in) Structure of the cost of production report. [①___] + [②___] + [③___] = Current period manufacturing cost. Current period cost + Opening WIP − Closing WIP = [④___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①②③</td><td>材料費・労務費・経費（順不同）</td></tr><tr><td class="hl">④</td><td>当期完成品製造原価（当期製品製造原価）</td></tr></tbody></table><div class="formula-box">当期完成品原価＝月初仕掛品＋当期製造費用－月末仕掛品<br>（材料費＋労務費＋経費）</div>`,
+    exp:'製造原価報告書は「今月どのくらいのコストで製品を作ったか」をまとめた報告書です。当期完成品原価＝（月初の作りかけ）＋（今月の材料・人件費・経費）－（月末の作りかけ）。「在庫回転の考え方と同じ：期首在庫＋仕入－期末在庫＝売上原価」の工業版です。',
+    exp_en:'The cost of production report summarizes "how much did we spend making products this month?" Cost of goods manufactured = Opening WIP + Current period costs (materials + labor + overhead) − Closing WIP. Same logic as COGS calculation: opening inventory + purchases − closing inventory = COGS, but applied to manufacturing.'
+  },
+  {
+    id:271,
+    level:2,
+    cat:'工業簿記基礎',
+    q:'（穴埋め）原価は「製品との関係」で「製品原価」と「期間原価」に分類される。①製品の製造にかかったコスト（製品が売れたときに費用化）を【　　　　　　　　】という。②販売活動・管理活動にかかったコスト（発生時に費用化）を【　　　　　　　　　　　　　　　　　】という。',
+    q_en:'(Fill in) Costs are classified as "product costs" or "period costs." ①Costs incurred in manufacturing a product (expensed when the product is sold) are called [___]. ②Costs of selling and administrative activities (expensed as incurred) are called [___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>製品原価（製造原価）</td></tr><tr><td class="hl">②</td><td>期間原価（販売費及び一般管理費）</td></tr></tbody></table><div class="formula-box">製品原価：材料費＋労務費＋経費→製品に集積→売れるまで在庫（資産）<br>期間原価：販管費→発生した期に費用計上（P/L）</div>`,
+    exp:'製品原価は「製品に宿ったコスト」で、製品が売れるまでは資産（製品・仕掛品）として貸借対照表に載ります。売れて初めて費用（売上原価）になります。一方、期間原価（販管費）は「作ることと関係ないコスト」で、発生した期の費用として即座に損益計算書に計上されます。',
+    exp_en:'Product costs are "costs embedded in the product" — they stay as assets (Finished Goods, WIP) on the balance sheet until the product is sold, then become Cost of Goods Sold. Period costs (selling & admin expenses) have no direct connection to production — they\'re expensed immediately in the period incurred.'
+  },
+  {
+    id:272,
+    level:2,
+    cat:'材料費',
+    q:'材料（原材料）500,000円を掛購入した。仕訳を示せ。',
+    q_en:'Purchased raw materials worth ¥500,000 on credit. Record the entry.',
+    e:[{d:[['材料',500000]],c:[['買掛金',500000]]}],
+    exp:'工業簿記では商品の代わりに「材料」勘定を使います。商業簿記の「仕入」に相当しますが、工業簿記では材料を購入してもすぐに費用にはなりません。「材料」として資産計上し、実際に製造に使ったときに費用（仕掛品or製造間接費）に振り替えます。「食材を買ってもすぐに料理代ではなく、使った時点で料理代になる」イメージ。',
+    exp_en:'Industrial bookkeeping uses "Materials" instead of "Merchandise." Unlike commercial bookkeeping where purchases often become expenses quickly, in manufacturing, materials are an asset until actually used in production. "Buying ingredients doesn\'t create the meal cost — using them does."'
+  },
+  {
+    id:273,
+    level:2,
+    cat:'材料費',
+    q:'直接材料費300,000円（製品製造に直接使用した材料）を消費した。仕訳を示せ。',
+    q_en:'Direct materials of ¥300,000 were consumed in production. Record the entry.',
+    e:[{d:[['仕掛品',300000]],c:[['材料',300000]]}],
+    exp:'直接材料費は「どの製品に使ったか特定できる材料」のコストで、「仕掛品」（製造中の製品原価）に直接振り替えます。材料（資産）が減少し、仕掛品（資産）が増加します。「食材を実際に調理に使った→その食材費が料理のコストになる」イメージ。',
+    exp_en:'"Direct" materials are those traceable to a specific product. When consumed, Materials (asset) decreases and WIP (asset) increases. The cost flows into the product being made. "Ingredients used in cooking become part of the dish\'s cost."'
+  },
+  {
+    id:274,
+    level:2,
+    cat:'材料費',
+    q:'間接材料費（補助材料・潤滑油など）50,000円を消費した。仕訳を示せ。',
+    q_en:'Indirect materials (lubricating oil, cleaning supplies, etc.) of ¥50,000 were consumed. Record the entry.',
+    e:[{d:[['製造間接費',50000]],c:[['材料',50000]]}],
+    exp:'間接材料費は「どの製品に使ったか特定できない材料（潤滑油・掃除用品など）」のコストで、「製造間接費」に集計します。製造間接費は後で配賦基準（作業時間など）に基づいて各製品に按分されます。「工場全体で使う消耗品は、直接どの製品のコストかわからない→間接費として後で割り振る」。',
+    exp_en:'"Indirect" materials cannot be traced to a specific product (lubricants, cleaning supplies). They\'re collected in Manufacturing Overhead, which is later allocated to products using a predetermined rate. "Factory-wide supplies benefit all products equally — allocate them proportionally."'
+  },
+  {
+    id:275,
+    level:2,
+    cat:'材料費',
+    q:'月末に材料の棚卸を実施したところ、帳簿残高200,000円に対し実地棚卸高は194,000円だった。棚卸減耗6,000円を製造間接費に計上する仕訳を示せ。',
+    q_en:'Month-end inventory count: book balance ¥200,000, physical count ¥194,000. Record the ¥6,000 inventory shrinkage as manufacturing overhead.',
+    e:[{d:[['製造間接費',6000]],c:[['材料',6000]]}],
+    exp:'材料の棚卸減耗は工場の通常の製造活動に伴う損失として「製造間接費」に計上するのが一般的です（正常な減耗の場合）。商業簿記の「棚卸減耗損」に相当しますが、工業簿記では製造間接費に集めて後で製品に配賦します。異常な減耗の場合は「材料減耗費」（営業外費用）として処理することもあります。',
+    exp_en:'Normal material shrinkage is typically charged to Manufacturing Overhead (treated as a normal production cost), then allocated to products. Abnormal shrinkage may be expensed separately as a non-operating loss. In commercial bookkeeping, this would be "Inventory Shrinkage Loss" — in industrial bookkeeping, it\'s usually absorbed into overhead.'
+  },
+  {
+    id:276,
+    level:2,
+    cat:'材料費',
+    q:'（穴埋め・計算）先入先出法：月初材料在庫100kg@200円（20,000円）、当月購入200kg@220円（44,000円）、当月消費240kg。①消費材料の原価はいくらか。②月末材料残高はいくらか。',
+    q_en:'(Fill in & calculate) FIFO for materials: Opening 100 kg @¥200 (¥20,000), purchased 200 kg @¥220 (¥44,000), consumed 240 kg. ①What is the cost of materials consumed? ②What is the closing materials balance?',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">先入先出法：古いものから先に消費<br>消費：月初100kg×@200＝20,000円<br>　　　追加140kg×@220＝30,800円<br>①合計消費原価：50,800円<br>②月末残高：60kg×@220＝13,200円<br>（検証：20,000＋44,000－50,800＝13,200円）</div>`,
+    exp:'材料費の計算も商業簿記の棚卸資産と同じ方法（先入先出法・移動平均法）を使います。先入先出法では「古い材料から先に使う」と仮定。240kg消費のうち、まず月初在庫100kgを全部使い、残り140kgは当月購入分(@220円)から。月末残=200-140=60kg@220円=13,200円。',
+    exp_en:'Material costing uses the same methods as commercial bookkeeping (FIFO, moving average). FIFO: oldest materials consumed first. Of the 240 kg used: first deplete opening stock (100 kg @ ¥200), then take 140 kg from new purchases (@ ¥220). Closing balance: 60 kg × ¥220 = ¥13,200.',
+    note:'消費=100×200+140×220=20,000+30,800=50,800 / 月末=60×220=13,200'
+  },
+  {
+    id:277,
+    level:2,
+    cat:'材料費',
+    q:'（穴埋め・計算）移動平均法：月初材料在庫100kg（単価@200円、計20,000円）のとき、当月200kgを@220円（計44,000円）で購入。①購入後の移動平均単価はいくらか。②その後240kg消費した場合の消費原価はいくらか。',
+    q_en:'(Fill in & calculate) Moving average for materials: opening 100 kg @¥200 (¥20,000); purchase 200 kg @¥220 (¥44,000). ①New moving average unit cost? ②Cost of consuming 240 kg at this rate?',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">①移動平均単価＝（20,000＋44,000）÷（100＋200）＝64,000÷300＝@213.33円<br>（端数は四捨五入→@213円）<br>②消費原価＝240kg×@213円＝51,120円<br>月末残高＝60kg×@213円＝12,780円</div>`,
+    exp:'移動平均法では仕入のたびに平均単価を計算し直します。（旧在庫金額＋新仕入金額）÷（旧数量＋新数量）＝@213.33円。この単価で消費・月末残高を計算します。先入先出法と比べ、単価の変動が緩やかで安定した原価計算ができます。実務では端数処理のルールに注意。',
+    exp_en:'Moving average recalculates unit cost after each purchase. (¥20,000 + ¥44,000) ÷ (100 + 200) = ¥213.33/kg. Apply this rate to both consumption and closing balance. Compared to FIFO, moving average smooths out price fluctuations — useful when purchase prices vary frequently.',
+    note:'移動平均=(20,000+44,000)÷300=213.33 / 消費=240×213.33=51,200（端数処理による）'
+  },
+  {
+    id:278,
+    level:2,
+    cat:'材料費',
+    q:'材料300,000円を掛購入した。なお、引取運賃（材料副費）6,000円を現金支払。材料副費は材料の取得原価に算入する。仕訳を示せ。',
+    q_en:'Purchased materials ¥300,000 on credit; paid ¥6,000 freight-in (material incidental cost) in cash. Incidental costs are added to material acquisition cost. Record the entry.',
+    e:[{d:[['材料',306000]],c:[['買掛金',300000],['現金',6000]]}],
+    exp:'材料副費（引取運賃・荷役費・保険料など）は材料の取得に直接かかるコストとして「材料」の取得原価に含めます。「商品の仕入諸掛を仕入原価に含める」のと同じ考え方です。材料6,000円を含めて合計306,000円を材料として資産計上します。',
+    exp_en:'Material incidental costs (freight-in, handling, insurance) are included in the acquisition cost of materials — same as adding purchase expenses to merchandise cost in commercial bookkeeping. Total material cost = ¥300,000 + ¥6,000 = ¥306,000 capitalized as Materials asset.'
+  },
+  {
+    id:279,
+    level:2,
+    cat:'材料費',
+    q:'（穴埋め）予定消費単価を使って材料費を計算する場合、「予定消費単価×実際消費量」で計算した予定消費額と「実際単価×実際消費量」の差額を【①　　　　　　　　　　　　　】という。この差異が借方残（実際＞予定）の場合を【②　　　　】差異、貸方残（実際＜予定）を【③　　　　】差異という。',
+    q_en:'(Fill in) When using a predetermined material price, the difference between (predetermined price × actual qty) and (actual price × actual qty) is called [①___]. If actual > predetermined (debit balance), it is a [②___] variance; if actual < predetermined (credit balance), it is a [③___] variance.',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>材料消費価格差異</td></tr><tr><td class="hl">②</td><td>不利（借方・超過）</td></tr><tr><td class="hl">③</td><td>有利（貸方・節約）</td></tr></tbody></table><div class="formula-box">材料消費価格差異＝予定消費価格×実際数量－実際消費価格×実際数量<br>＝（予定単価－実際単価）×実際消費量</div>`,
+    exp:'予定単価を使うことで材料費を素早く計算できますが、実際単価との差（材料消費価格差異）が生じます。「予定より高く買ってしまった→不利差異（追加コスト）」「予定より安く買えた→有利差異（コスト節約）」。月末に差異を原価差異勘定（or 売上原価）に振り替えます。',
+    exp_en:'Using a predetermined price speeds up cost calculation, but creates a "material price variance" vs. actual. "Bought at higher price than expected → unfavorable (over budget)." "Got a better deal → favorable (under budget)." Transfer the variance to a variance account (or COGS) at month-end.'
+  },
+  {
+    id:280,
+    level:2,
+    cat:'労務費',
+    q:'賃金・給料の当月総支給額400,000円から所得税30,000円・社会保険料20,000円を控除し、差額を現金支払した。支払時の仕訳を示せ。',
+    q_en:'Monthly gross wages ¥400,000; deduct income tax ¥30,000 and social insurance ¥20,000; pay the remainder in cash. Record the payment entry.',
+    e:[{d:[['賃金・給料',400000]],c:[['所得税預り金',30000],['社会保険料預り金',20000],['現金',350000]]}],
+    exp:'賃金支払時は総支給額で「賃金・給料」を借方計上し、天引き分（所得税・社会保険料）を預り金として負債計上、実際の手取りを現金で支払います。これは商業簿記の給料支払いと同じ構造ですが、工業簿記では次のステップで賃金・給料を消費額として仕掛品・製造間接費に振り替えます。',
+    exp_en:'Record gross wages as a debit; withholdings (income tax, insurance) as liabilities; net pay as cash. Same structure as commercial bookkeeping payroll. In industrial bookkeeping, the next step transfers the wage cost to WIP (direct labor) and Manufacturing Overhead (indirect labor).'
+  },
+  {
+    id:281,
+    level:2,
+    cat:'労務費',
+    q:'当月の直接工の賃金消費高：直接作業時間200時間×予定賃率@2,000円＝400,000円（直接労務費）。仕訳を示せ。',
+    q_en:'Direct worker wage consumption: direct labor hours 200 hrs × predetermined rate ¥2,000 = ¥400,000 (direct labor cost). Record the entry.',
+    e:[{d:[['仕掛品',400000]],c:[['賃金・給料',400000]]}],
+    exp:'直接労務費は「特定製品に直接費やした工員の賃金」で「仕掛品」に直接振り替えます。予定賃率（@2,000円/時間）を使うことで、月末を待たずに原価計算ができます。「A製品に200時間かかった→その賃金コスト400,000円はA製品のコスト」という追跡が可能です。',
+    exp_en:'Direct labor is the wage cost for work traceable to a specific product — debit it to WIP. Using a predetermined rate (¥2,000/hr) allows cost calculation before month-end actuals are known. "200 hours on Product A → ¥400,000 is Product A\'s labor cost."',
+    note:'直接労務費=200時間×@2,000=400,000'
+  },
+  {
+    id:282,
+    level:2,
+    cat:'労務費',
+    q:'当月の間接工の賃金消費高100,000円と工場長給与80,000円を処理する仕訳を示せ。',
+    q_en:'Record the consumption of indirect worker wages ¥100,000 and plant manager salary ¥80,000.',
+    e:[{d:[['製造間接費',180000]],c:[['賃金・給料',180000]]}],
+    exp:'間接工の賃金（機械オペレーター・清掃員など）と工場長・管理者の給与は「どの製品に対するコストか特定できない」ため、製造間接費に集計します。後でこの製造間接費を配賦基準（作業時間・機械時間など）に基づいて各製品に配賦します。「工場全体に関わる人件費は後で按分する」。',
+    exp_en:'Indirect workers\' wages (machine operators, cleaners) and plant manager salary can\'t be traced to a specific product → collected in Manufacturing Overhead. Later allocated to products using a base (labor hours, machine hours, etc.). "Factory-wide labor costs get spread across all products."',
+    note:'製造間接費=100,000+80,000=180,000'
+  },
+  {
+    id:283,
+    level:2,
+    cat:'労務費',
+    q:'月末：当月の賃金消費高は430,000円だが、月末未払い賃金が30,000円ある（前月支払済み賃金は420,000円）。当月消費賃金に関する仕訳を示せ（消費仕訳は別途行う）。',
+    q_en:'Month-end: wage consumption is ¥430,000; unpaid wages at month-end ¥30,000 (paid in prior month: ¥420,000). Record the month-end accrual for unpaid wages.',
+    e:[{d:[['賃金・給料',30000]],c:[['未払賃金',30000]]}],
+    exp:'賃金の消費計算：当月消費高＝前月未払賃金＋当月支払賃金－当月未払賃金。月末に未払賃金が残る場合、「発生主義」に基づき当月の費用（賃金・給料）として計上し、「未払賃金」（負債）を計上します。翌月初に再振替（未払賃金/賃金・給料）して処理します。',
+    exp_en:'Wage consumption = prior-month unpaid + current-month paid − current-month unpaid. Under the accrual basis, wages earned but not yet paid must be recognized as this period\'s expense. Accrue: debit Wages, credit Accrued Wages. Reverse at the start of next month.'
+  },
+  {
+    id:284,
+    level:2,
+    cat:'労務費',
+    q:'予定賃率@2,000円/時間で賃金消費高を計算した（実際作業時間200時間、予定消費額400,000円）。月末に実際発生賃金が420,000円と判明。賃率差異を計上する仕訳を示せ。',
+    q_en:'Wages consumed at predetermined rate: 200 hrs × ¥2,000 = ¥400,000. Actual wages: ¥420,000. Record the wage rate variance at month-end.',
+    e:[{d:[['賃率差異',20000]],c:[['賃金・給料',20000]]}],
+    exp:'賃率差異＝予定賃率×実際時間－実際賃金消費額＝400,000－420,000＝△20,000円（不利差異）。「予定より実際の賃金が高かった（残業割増など）」状況。不利差異（実際＞予定）は「賃率差異」として借方計上。有利差異なら貸方計上。月末に売上原価等に振り替えます。',
+    exp_en:'Wage rate variance = predetermined wages − actual wages = ¥400,000 − ¥420,000 = −¥20,000 (unfavorable). "Actual wages exceeded the budget (e.g., overtime)." Unfavorable (debit) variance. Favorable variance = credit. Transfer to COGS at period-end.',
+    note:'賃率差異=400,000-420,000=-20,000（不利）'
+  },
+  {
+    id:285,
+    level:2,
+    cat:'労務費',
+    q:'（穴埋め）労務費の分類を答えよ。①特定製品の製造に直接従事した工員の賃金を【ア　　　　　　　　　　　　　　　　　　　】費という。②工場全体の管理・補助に従事する者の賃金・給料を【イ　　　　　　　　　　　　　　　　　　】費という。①は仕掛品へ、②は【ウ　　　　　　　　】へ計上する。',
+    q_en:'(Fill in) Classify labor costs. ①Wages of workers directly working on a specific product: [ア___] cost. ②Wages/salaries of factory supervisors and support staff: [イ___] cost. ① goes to [WIP]; ② goes to [ウ___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>直接労務（費）→仕掛品</td></tr><tr><td class="hl">イ</td><td>間接労務（費）</td></tr><tr><td class="hl">ウ</td><td>製造間接費</td></tr></tbody></table><div class="formula-box">直接労務費：直接工の賃金（製品別に追跡可能）<br>間接労務費：間接工・工場長・事務員の給与（製品別追跡不可）</div>`,
+    exp:'「直接工」は製品に直接手を加える作業員（溶接工・組立工など）の賃金→直接労務費→仕掛品へ。「間接工」は製品に直接手を加えない補助的な作業員（フォークリフト運転者・清掃員など）の賃金→間接労務費→製造間接費へ。どちらも「工場内の人件費」ですが行き先が違います。',
+    exp_en:'"Direct labor": workers who physically work on the product (welders, assemblers) → traceable → WIP. "Indirect labor": support workers who don\'t work directly on the product (forklift operators, cleaners, supervisors) → not traceable → Manufacturing Overhead. Both are factory payroll, but they flow to different accounts.'
+  },
+  {
+    id:286,
+    level:2,
+    cat:'経費',
+    q:'外注加工費200,000円（直接経費：特定製品の加工を外部に委託した費用）を小切手で支払った。仕訳を示せ。',
+    q_en:'Paid ¥200,000 outside processing fee (direct expense: processing of a specific product outsourced) by check. Record the entry.',
+    e:[{d:[['仕掛品',200000]],c:[['当座預金',200000]]}],
+    exp:'外注加工費は「特定製品の加工を外部業者に委託した費用」で、直接経費（直接費）として「仕掛品」に直接振り替えます。材料費・労務費以外の経費のうち、特定製品に直接追跡できるのは外注加工費が代表的です。「A製品の部品加工をB社に発注→その費用はA製品のコスト」。',
+    exp_en:'Outside processing fees (subcontracting specific product work) are direct expenses — directly traceable to a specific product → debit WIP. Among all expense items, outside processing fees are the most common direct expense. "Subcontracted Part A\'s processing to Company B → that cost belongs to Product A."'
+  },
+  {
+    id:287,
+    level:2,
+    cat:'経費',
+    q:'工場の建物・機械の減価償却費300,000円（間接経費）を計上する仕訳を示せ。',
+    q_en:'Record depreciation on factory buildings and machinery ¥300,000 (indirect expense).',
+    e:[{d:[['製造間接費',300000]],c:[['減価償却累計額',300000]]}],
+    exp:'工場の減価償却費は「どの製品に対するコストか特定できない間接経費」として「製造間接費」に集計します。「工場の機械はA製品もB製品も作るために使うから、特定の製品に割り当てられない→後で配賦（按分）する」という処理です。なお、本社・営業所の減価償却費は販管費です。',
+    exp_en:'Factory depreciation cannot be traced to a specific product (the machines make both Product A and B) → Manufacturing Overhead. Later allocated to products. Note: depreciation on head office or showroom assets is a selling/administrative expense, NOT manufacturing overhead.'
+  },
+  {
+    id:288,
+    level:2,
+    cat:'経費',
+    q:'工場の電力料80,000円（間接経費）を現金で支払った。仕訳を示せ。',
+    q_en:'Paid factory electricity bill ¥80,000 (indirect expense) in cash. Record the entry.',
+    e:[{d:[['製造間接費',80000]],c:[['現金',80000]]}],
+    exp:'工場の電力料・ガス代・水道代などの公共料金は「工場全体で使う間接経費」として製造間接費に計上します。「電気代のうちA製品用にいくら・B製品用にいくら、というのは通常わからない→間接費として後で配賦」。本社の電気代は販管費（経費の分類が重要）。',
+    exp_en:'Factory utilities (electricity, gas, water) benefit all production → indirect expense → Manufacturing Overhead, to be allocated later. "We can\'t split the electric bill by product line." Compare: head-office utilities are selling/admin expenses. The location of the expense matters for classification.'
+  },
+  {
+    id:289,
+    level:2,
+    cat:'経費',
+    q:'（穴埋め）経費の分類を答えよ。直接経費の代表例は【①　　　　　　　　　　　　　　　　　　】費（外部委託加工費）である。間接経費の代表例として【②　　　　　　　　　　　　　　　　　　　】費、電力料・ガス代などの【③　　　　　　　　】費、工場の賃借料などがある。',
+    q_en:'(Fill in) Expense classification. The main direct expense is [①___] (outsourced processing). Major indirect expenses include [②___] (depreciation), [③___] (utilities/electricity), and factory rent.',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>外注加工（費）</td></tr><tr><td class="hl">②</td><td>減価償却（費）</td></tr><tr><td class="hl">③</td><td>電力（料）・公共料金（費）</td></tr></tbody></table><div class="formula-box">直接経費（→仕掛品）：外注加工費のみ（ほぼ）<br>間接経費（→製造間接費）：減価償却費・電力料・賃借料・保険料等</div>`,
+    exp:'経費のうち、直接費として特定製品に追跡できるのは「外注加工費」がほぼ唯一です。その他の減価償却費・電力料・賃借料・保険料などはすべて間接経費として製造間接費に集計します。「工場に関係するコストは、特定製品に追跡できる外注加工費以外はすべて間接費」と覚えましょう。',
+    exp_en:'Among all expense items, outside processing fees are virtually the only direct expense (traceable to a specific product). Everything else — depreciation, utilities, rent, insurance — is indirect → Manufacturing Overhead. "Factory expenses: outside processing is direct; everything else is indirect."'
+  },
+  {
+    id:290,
+    level:2,
+    cat:'製造間接費',
+    q:'製造間接費の予定配賦率は@1,500円/直接作業時間。当月の実際直接作業時間は100時間。製造間接費を予定配賦する仕訳を示せ。',
+    q_en:'Predetermined overhead rate: ¥1,500 per direct labor hour. Actual direct labor hours this month: 100 hours. Record the overhead application entry.',
+    e:[{d:[['仕掛品',150000]],c:[['製造間接費',150000]]}],
+    exp:'製造間接費の予定配賦：予定配賦率（@1,500円）×実際操業度（100時間）＝150,000円を仕掛品（製品原価）に振り替えます。「実際の製造間接費発生額を月末まで待たずに、予定レートで素早く原価に含める」ための方法です。実際発生額との差額（配賦差異）は月末に計算します。',
+    exp_en:'Overhead application: rate (¥1,500/hr) × actual hours (100) = ¥150,000 transferred to WIP. The predetermined rate allows product costing without waiting for actual overhead totals at month-end. The difference between applied and actual overhead (variance) is calculated at period-end.',
+    note:'予定配賦額=@1,500×100時間=150,000'
+  },
+  {
+    id:291,
+    level:2,
+    cat:'製造間接費',
+    q:'当月の製造間接費実際発生額：間接材料費50,000円・間接労務費80,000円・減価償却費70,000円・電力料40,000円。これらをすでに製造間接費勘定に集計済み（合計240,000円）。前問で予定配賦額は150,000円。製造間接費の配賦差異を示せ（穴埋め）。',
+    q_en:'Actual overhead incurred: indirect materials ¥50,000, indirect labor ¥80,000, depreciation ¥70,000, electricity ¥40,000 (total ¥240,000). Applied overhead was ¥150,000 (from prior question). What is the overhead variance? (Fill in)',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">製造間接費配賦差異＝予定配賦額－実際発生額<br>＝150,000－240,000＝△90,000円（不利差異・配賦不足）<br>実際発生額が予定配賦額を90,000円上回った</div><table><tbody><tr><td class="hl">配賦差異</td><td>90,000円の不利差異（実際発生＞予定配賦）</td></tr></tbody></table>`,
+    exp:'予定配賦額（150,000）＜実際発生額（240,000）→差額90,000円が「配賦不足（不利差異）」。仕掛品には予定配賦額150,000円しか入っていないが、実際は240,000円かかっていた。この差額90,000円を「製造間接費配賦差異」として月末に処理（通常は売上原価に加算）します。',
+    exp_en:'Applied ¥150,000 < Actual ¥240,000 → ¥90,000 under-applied (unfavorable). WIP only contains ¥150,000 of overhead, but the actual incurred was ¥240,000. The ¥90,000 gap is the overhead variance — typically charged to COGS at period-end.',
+    note:'配賦差異=150,000-240,000=-90,000（不利）'
+  },
+  {
+    id:292,
+    level:2,
+    cat:'製造間接費',
+    q:'製造間接費実際発生額180,000円・予定配賦額200,000円の場合、配賦差異（有利）を振り替える仕訳を示せ。',
+    q_en:'Actual overhead ¥180,000; applied overhead ¥200,000. Record the entry to close the favorable overhead variance.',
+    e:[{d:[['製造間接費',20000]],c:[['製造間接費配賦差異',20000]]}],
+    exp:'予定配賦額（200,000）＞実際発生額（180,000）→20,000円の「配賦過大（有利差異）」。製造間接費勘定は借方（実際発生）180,000円・貸方（予定配賦）200,000円なので、貸方残20,000円が有利差異。月末に「製造間接費配賦差異（貸方）」に振り替えて製造間接費勘定をゼロにします。',
+    exp_en:'Applied (¥200,000) > Actual (¥180,000) → ¥20,000 over-applied (favorable). The Overhead account has a ¥20,000 credit balance. Transfer it to the Overhead Variance account to zero out the Overhead account. Favorable because we charged more to WIP than was actually incurred.',
+    note:'配賦差異=200,000-180,000=20,000（有利）'
+  },
+  {
+    id:293,
+    level:2,
+    cat:'製造間接費',
+    q:'（穴埋め・計算）予定配賦率の計算：年間製造間接費予算3,600,000円・年間予定直接作業時間2,400時間。①予定配賦率はいくらか。②ある月に実際直接作業時間が180時間だった場合の予定配賦額はいくらか。',
+    q_en:'(Fill in & calculate) Predetermined overhead rate: annual overhead budget ¥3,600,000; annual estimated direct labor hours 2,400. ①Predetermined rate? ②Applied overhead if actual DLH for a month = 180 hours?',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①予定配賦率</td><td>年間予算3,600,000÷年間予定時間2,400＝@1,500円/DLH</td></tr><tr><td class="hl">②予定配賦額</td><td>@1,500×180時間＝270,000円</td></tr></tbody></table><div class="formula-box">予定配賦率＝年間製造間接費予算÷年間予定操業度<br>（直接作業時間・機械時間・直接材料費等を配賦基準にする）</div>`,
+    exp:'予定配賦率は「1時間あたりいくらの製造間接費を配賦するか」のレートで、年度初めに決定します。月ごとに実際の作業時間を掛けることで、その月の製造間接費配賦額が計算できます。「年間のすべての間接費を、年間の予定作業時間で割る→1時間あたりの間接費レート」。',
+    exp_en:'The predetermined rate = annual overhead budget ÷ annual estimated activity. Set at the start of the year. Each month, multiply by actual activity to get applied overhead. "Annual indirect costs ÷ annual estimated hours = indirect cost per hour." Using a full-year denominator avoids seasonal distortions.',
+    note:'予定配賦率=3,600,000÷2,400=@1,500 / 配賦額=1,500×180=270,000'
+  },
+  {
+    id:294,
+    level:2,
+    cat:'製造間接費',
+    q:'（穴埋め）製造間接費配賦差異を2つに分解する「2分法」を答えよ。①予算差異＝【　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】②操業度差異＝【　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】',
+    q_en:'(Fill in) Describe the two-variance method for overhead variance analysis. ①Budget variance = [___] ②Volume variance = [___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①予算差異</td><td>実際発生額 vs 予算許容額（変動費率×実際操業度＋固定費予算）の差<br>→ コスト管理の効率性を示す</td></tr><tr><td class="hl">②操業度差異</td><td>固定費率×（実際操業度－基準操業度）<br>→ 生産量の変化による固定費の回収差異</td></tr></tbody></table>`,
+    exp:'2分法は配賦差異を「使い方の無駄（予算差異）」と「稼働率の問題（操業度差異）」に分解します。予算差異：実際のコストが予算通りだったか。操業度差異：生産量が計画通りだったか（固定費の回収度合い）。「原因を特定して改善策を立てる」ための差異分析です。',
+    exp_en:'Two-variance analysis splits the overhead variance into: ①Budget variance: "Did we spend within budget?" (cost management) ②Volume variance: "Did we produce at the planned level?" (fixed cost recovery). Identifying which caused the gap helps management focus improvement efforts.'
+  },
+  {
+    id:295,
+    level:2,
+    cat:'製造間接費',
+    q:'（穴埋め・計算）製造間接費：変動費率@500円/h・固定費予算200,000円/月・基準操業度400時間/月。ある月の実際操業度が380時間、実際発生額は400,000円。①予算許容額②予算差異③操業度差異を計算せよ。',
+    q_en:'(Fill in & calculate) Overhead: variable rate ¥500/hr, fixed budget ¥200,000/month, normal capacity 400 hrs/month. Actual hours 380, actual overhead ¥400,000. Calculate ①budget allowance ②budget variance ③volume variance.',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">①予算許容額＝変動費(@500×380h)＋固定費(200,000)＝190,000＋200,000＝390,000円<br>②予算差異＝予算許容額390,000－実際400,000＝△10,000円（不利）<br>③操業度差異＝固定費率(@500円)×(実際380h－基準400h)＝500×(△20)＝△10,000円（不利）<br>※固定費率＝200,000÷400h＝@500円/h</div>`,
+    exp:'①予算許容額：その操業度（380h）で許容されるコスト総額。②予算差異：「実際コスト400,000が許容額390,000を10,000円超過→無駄があった（不利）」。③操業度差異：「計画400hより20h少なかった→固定費10,000円分が回収できなかった（不利）」。両方不利な月でした。',
+    exp_en:'①Budget allowance: total cost permitted at actual 380 hours. ②Budget variance: actual ¥400,000 − allowance ¥390,000 = −¥10,000 (unfavorable, overspent). ③Volume variance: fixed rate ¥500 × (380 − 400) = −¥10,000 (unfavorable, under-produced). Both unfavorable this month.',
+    note:'固定費率=200,000÷400=@500 / 予算許容額=500×380+200,000=390,000 / 予算差異=-10,000 / 操業度差異=500×(380-400)=-10,000'
+  },
+  {
+    id:296,
+    level:2,
+    cat:'製造間接費',
+    q:'（穴埋め）製造間接費の配賦基準には様々なものがある。組み立て作業が中心の工場では【①　　　　　　　　　　　　　】、機械化が進んだ工場では【②　　　　　　　　　　　　　　　　　】が適切とされる。材料費が原価の大半を占める場合は【③　　　　　　　　】を使うこともある。',
+    q_en:'(Fill in) Various bases can be used for overhead allocation. Assembly-focused factories typically use [①___]; highly automated factories use [②___]; when material cost dominates, [③___] may be used.',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>直接作業時間（DLH）</td></tr><tr><td class="hl">②</td><td>機械運転時間（MH）</td></tr><tr><td class="hl">③</td><td>直接材料費（割合）</td></tr></tbody></table><div class="formula-box">配賦基準の選択基準：「製造間接費の発生と最も因果関係の強いもの」を使う</div>`,
+    exp:'配賦基準は「製造間接費の発生と最も関係の深い要因」を選びます。人手による作業が多い→直接作業時間（人が動くほど間接費がかかる）。機械が主役→機械運転時間（機械を動かすほど電気・消耗品がかかる）。「因果関係の強い基準を使うことで、より正確な原価計算ができる」のが基本原則です。',
+    exp_en:'Choose the allocation base most causally related to overhead incurrence. Labor-intensive work → direct labor hours (more labor = more overhead). Highly automated → machine hours (more machine time = more electricity, wear). The closer the causal link between the base and overhead, the more accurate the cost allocation.'
+  },
+  {
+    id:297,
+    level:2,
+    cat:'製造間接費',
+    q:'（穴埋め）製造間接費配賦差異の月末処理として、通常は当月の【①　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】に加減算して処理する。この処理を【②　　　　　　　　　　　　　　　　　　　】という。差異が重要な場合は【③　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】に配分する。',
+    q_en:'(Fill in) Month-end treatment of overhead variance: normally, it is [①___] to adjust [②___]. When the variance is material, it is allocated to [③___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>売上原価に加減算（不利差異は加算、有利差異は減算）</td></tr><tr><td class="hl">②</td><td>売上原価調整（または原価差異の売上原価への振替）</td></tr><tr><td class="hl">③</td><td>売上原価・期末仕掛品・期末製品（各残高に比例して）に按分配分</td></tr></tbody></table>`,
+    exp:'配賦差異の処理：①差異が軽微な場合→全額を売上原価に加減算（簡便法）。②差異が重要な場合→期末仕掛品・期末製品・売上原価に残高割合で按分配分（より正確）。試験では「指示に従う」のが原則。不利差異は追加コストなので売上原価を増やし、有利差異は売上原価を減らします。',
+    exp_en:'Variance treatment: ①Immaterial → add/subtract entirely from COGS (simplified). ②Material → prorate across closing WIP, closing finished goods, and COGS in proportion to their balances (more accurate). Unfavorable = COGS increases; favorable = COGS decreases. Follow exam instructions.'
+  },
+  {
+    id:298,
+    level:2,
+    cat:'部門別原価計算',
+    q:'（穴埋め）部門別原価計算とは製造間接費を【①　　　　　　　　　　　　　　　　　　　　　】ごとに集計し、製品への配賦をより正確に行う方法である。製造部門は製品を直接製造する部門で、【②　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】部門はそれを補助する部門である。',
+    q_en:'(Fill in) Departmental overhead costing collects manufacturing overhead by [①___] to allocate it to products more accurately. Production departments directly manufacture products; [②___] departments support them.',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>部門（製造部門・補助部門）</td></tr><tr><td class="hl">②</td><td>補助（サービス）</td></tr></tbody></table><div class="formula-box">製造部門（切削・組立・仕上など）：製品を直接製造→製品に配賦<br>補助部門（動力・修繕・工場事務など）：製造部門を支援→製造部門に配賦→製品へ</div>`,
+    exp:'部門別原価計算は「工場内の部署（部門）ごとにコストを把握する」方法です。工場全体で一括配賦するより、部門別に配賦基準を設定する方が正確な原価計算ができます。例：切削部門は機械時間基準、組立部門は作業時間基準、というように部門の特性に合わせた基準を選べます。',
+    exp_en:'Departmental costing tracks overhead by department (cost center) for more accurate product costing. Instead of one plant-wide rate, each department uses its own allocation base. Example: Machining dept. uses machine hours; Assembly dept. uses labor hours — matching the rate to the department\'s cost driver.'
+  },
+  {
+    id:299,
+    level:2,
+    cat:'部門別原価計算',
+    q:'部門費の集計：切削部門の直課費（直接追跡できる費用）は機械減価償却費200,000円・切削部門専用電力料50,000円。切削部門へ直課する仕訳を示せ。',
+    q_en:'Departmental costs: Machining dept. directly traceable costs — machine depreciation ¥200,000 and dedicated power ¥50,000. Record the direct charge to the Machining dept.',
+    e:[{d:[['切削部門費',250000]],c:[['減価償却累計額',200000],['電力料',50000]]}],
+    exp:'部門費は「部門個別費（直課）」と「部門共通費（配賦）」に分けられます。特定部門にだけ発生する費用（その部門専用機械の減価償却費・専用電力など）は「直課」として直接その部門費に計上します。「A部門だけに使う機械のコスト＝A部門費」という追跡可能なコストです。',
+    exp_en:'Department costs split into "department-specific costs" (directly chargeable) and "common costs" (allocated). Costs traceable exclusively to one department (e.g., its dedicated machine\'s depreciation, its own power line) are charged directly. "Cost used only by Department A = Department A\'s cost."'
+  },
+  {
+    id:300,
+    level:2,
+    cat:'部門別原価計算',
+    q:'部門共通費（工場全体の建物減価償却費）100,000円を各部門の占有面積比（切削部門60%・組立部門40%）で配賦する仕訳を示せ。',
+    q_en:'Allocate building depreciation ¥100,000 (common cost) to departments based on floor space: Machining 60%, Assembly 40%. Record the allocation entry.',
+    e:[{d:[['切削部門費',60000],['組立部門費',40000]],c:[['減価償却累計額',100000]]}],
+    exp:'部門共通費（複数部門に共通する費用：建物の減価償却費・工場長給与など）は、適切な配賦基準（面積・人数・電力消費量など）を使って各部門に按分します。建物コストは「各部門が占有する面積に比例する」と考えて面積比で配賦するのが合理的です。',
+    exp_en:'Common costs (shared across departments: building depreciation, plant manager salary) are allocated using an appropriate base (floor area, headcount, power consumption). Building cost → allocated by floor area ratio (Machining 60%, Assembly 40%). The base should reflect how each department actually "uses" the shared resource.',
+    note:'切削=100,000×60%=60,000 / 組立=100,000×40%=40,000'
+  },
+  {
+    id:301,
+    level:2,
+    cat:'部門別原価計算',
+    q:'補助部門（動力部門）の部門費200,000円を製造部門へ直接配賦法で配賦する。配賦基準は電力消費量（切削部門70%・組立部門30%）。仕訳を示せ。',
+    q_en:'Allocate service dept. (Power dept.) costs ¥200,000 to production departments using the direct method. Allocation base: power consumption (Machining 70%, Assembly 30%). Record the entry.',
+    e:[{d:[['切削部門費',140000],['組立部門費',60000]],c:[['動力部門費',200000]]}],
+    exp:'補助部門（動力・修繕・工場事務など）のコストは最終的に製造部門に集約し、製品に配賦します。直接配賦法は「補助部門間のサービスのやり取りを無視して、直接製造部門だけに配賦する」シンプルな方法です。動力部門の費用200,000円を電力消費量（70:30）で切削・組立部門に配賦します。',
+    exp_en:'Service dept. costs must eventually reach production departments so they can be allocated to products. The direct method ignores inter-service-dept. transfers and allocates directly to production departments only — the simplest approach. ¥200,000 split 70%:30% by power consumption → Machining gets ¥140,000, Assembly ¥60,000.',
+    note:'切削=200,000×70%=140,000 / 組立=200,000×30%=60,000'
+  },
+  {
+    id:302,
+    level:2,
+    cat:'部門別原価計算',
+    q:'（穴埋め・計算）切削部門の部門費合計は700,000円（動力部門からの配賦分含む）。配賦基準は機械運転時間で当月の切削部門の実際機械運転時間は500時間。①切削部門の部門別配賦率は？②製品Aに200時間・製品Bに300時間使用した場合の各配賦額は？',
+    q_en:'(Fill in & calculate) Machining dept. total costs: ¥700,000 (including allocated service dept. costs). Allocation base: machine hours; actual machine hours = 500 hrs. ①Dept. rate? ②Allocated to Product A (200 hrs) and Product B (300 hrs)?',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①部門別配賦率</td><td>700,000÷500時間＝@1,400円/機械時間</td></tr><tr><td class="hl">②製品A配賦額</td><td>@1,400×200h＝280,000円</td></tr><tr><td class="hl">②製品B配賦額</td><td>@1,400×300h＝420,000円</td></tr></tbody></table><div class="formula-box">部門別配賦率＝部門費合計÷配賦基準量<br>製品への配賦額＝部門別配賦率×各製品の基準消費量</div>`,
+    exp:'部門別配賦率＝部門費700,000÷機械時間500h＝@1,400円/h。製品A（200h使用）に280,000円、製品B（300h使用）に420,000円を配賦。「機械を多く使った製品ほど多くの間接費を負担する」という因果関係に基づいた配賦です。工場全体一括配賦より正確な原価計算ができます。',
+    exp_en:'Dept. rate = ¥700,000 ÷ 500 hrs = ¥1,400/hr. Product A (200 hrs) → ¥280,000; Product B (300 hrs) → ¥420,000. "More machine time = higher overhead burden." This cause-effect relationship makes departmental rates more accurate than a single plant-wide rate.',
+    note:'配賦率=700,000÷500=@1,400 / A=1,400×200=280,000 / B=1,400×300=420,000'
+  },
+  {
+    id:303,
+    level:2,
+    cat:'部門別原価計算',
+    q:'（穴埋め）補助部門間の配賦方法の違いを答えよ。①【直接配賦法】は補助部門間の【ア　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】を無視して、直接製造部門のみに配賦する。②【相互配賦法】は補助部門が互いに提供するサービスを【イ　　　　　　　　　　　　　　　　　　】して配賦する（より正確）。',
+    q_en:'(Fill in) Explain service dept. allocation methods. ①Direct method: [ア___] and allocates only to production depts. ②Reciprocal method: [イ___] services among service depts. (more accurate).',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア（直接配賦法）</td><td>補助部門間のサービスのやり取り（相互サービス）</td></tr><tr><td class="hl">イ（相互配賦法）</td><td>相互に認識・反映</td></tr></tbody></table><div class="formula-box">直接配賦法：簡単・計算が楽（補助部門間サービスを無視）<br>相互配賦法：正確・計算が複雑（補助部門間サービスも考慮）<br>→2級では直接配賦法が主に出題</div>`,
+    exp:'動力部門は修繕部門に電力を提供し、修繕部門は動力部門の機械を修理する、というように補助部門同士でもサービスのやり取りがあります。直接配賦法はこれを無視（計算簡単）、相互配賦法はこれを考慮（正確だが複雑）。日商2級では主に直接配賦法が出題されます。',
+    exp_en:'Service departments often serve each other (Power dept. supplies electricity to Maintenance; Maintenance repairs Power\'s equipment). The direct method ignores this (simple). The reciprocal method accounts for it (accurate but complex). The direct method is the primary focus of Level 2 exams.'
+  },
+  {
+    id:304,
+    level:2,
+    cat:'部門別原価計算',
+    q:'（穴埋め）部門費の集計において、特定部門にのみ発生する費用を【①　　　　　　　　　　　　　】費、複数の部門に共通して発生する費用を【②　　　　　　　　　　　　　　　】費という。②は適切な配賦基準（面積・人数・電力消費量など）を用いて各部門に【③　　　　　　　　　　　】する。',
+    q_en:'(Fill in) Department costs include [①___] costs (incurred only in a specific dept.) and [②___] costs (shared among departments). ②is [③___] to departments using an appropriate base (floor area, headcount, power consumption, etc.).',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>部門個別（費）→直課</td></tr><tr><td class="hl">②</td><td>部門共通（費）</td></tr><tr><td class="hl">③</td><td>配賦（按分）</td></tr></tbody></table><div class="formula-box">部門個別費（直課）：その部門専用の機械費・専用設備費など<br>部門共通費（配賦）：工場長給与・建物減価償却費・工場光熱費など</div>`,
+    exp:'部門費の集計は「追跡できるか→直課、できないか→配賦」という原則で行います。特定部門専用の機械の減価償却費は直課。工場全体の建物減価償却費や工場長給与は部門共通費として各部門に配賦。「直課できるものは直課、できないものは適切な基準で按分」が原則。',
+    exp_en:'Department cost accumulation follows: "Can it be traced? → direct charge. Can\'t be traced? → allocate." Depreciation on a department\'s dedicated machine → direct charge. Building depreciation, plant manager salary → common costs → allocate by an appropriate base. "Trace what you can; allocate the rest proportionally."'
+  },
+  {
+    id:305,
+    level:2,
+    cat:'部門別原価計算',
+    q:'（穴埋め）部門別原価計算の手順を順番に答えよ。第1段階：製造間接費を【①　　　　　　　　　　　　】と【②　　　　　　　　　　　　　】に集計する。第2段階：補助部門費を【③　　　　　　　　　　　　　　　　　　　】に配賦する。第3段階：製造部門費を【④　　　　　　　　　　　　　　】に配賦する。',
+    q_en:'(Fill in) Steps in departmental overhead costing. Step 1: Collect overhead in [①___] and [②___] depts. Step 2: Allocate service dept. costs to [③___]. Step 3: Allocate production dept. costs to [④___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①②</td><td>製造部門・補助部門（どちらでも可）</td></tr><tr><td class="hl">③</td><td>製造部門</td></tr><tr><td class="hl">④</td><td>製品（仕掛品）</td></tr></tbody></table><div class="formula-box">製造間接費 →[第1段階]→ 各部門費 →[第2段階]→ 製造部門費のみ →[第3段階]→ 製品原価</div>`,
+    exp:'部門別原価計算の3ステップ：①全間接費を各部門に集計（直課＋配賦）②補助部門費を製造部門へ配賦（直接配賦法等）③製造部門費を製品へ配賦（機械時間・作業時間等の基準で）。最終的に製品原価には直接費＋各製造部門からの間接費配賦分が含まれます。',
+    exp_en:'Three steps: ①Collect all indirect costs in each dept. (direct charge + allocation) ②Transfer service dept. costs to production depts. ③Allocate production dept. costs to products using dept.-specific rates (machine hrs, labor hrs, etc.). Final product cost = direct costs + allocated overhead from each production department.'
+  },
+  {
+    id:306,
+    level:2,
+    cat:'個別原価計算',
+    q:'（穴埋め）個別原価計算とは【①　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】ごとに原価を集計する方法である。原価の集計には【②　　　　　　　　　　　　　　　　　】が使われ、各指図書に直接費・間接費配賦額を記入していく。完成したら仕掛品から【③　　　】へ振り替える。',
+    q_en:'(Fill in) Job-order costing accumulates costs by [①___]. A [②___] is used for each job; direct costs and applied overhead are recorded on it. Upon completion, transfer from WIP to [③___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>製造指図書（製品ロット・受注品）</td></tr><tr><td class="hl">②</td><td>製造指図書（原価計算表）</td></tr><tr><td class="hl">③</td><td>製品</td></tr></tbody></table><div class="formula-box">個別原価計算：受注生産・多品種少量生産に向く<br>総合原価計算：見込生産・少品種大量生産に向く</div>`,
+    exp:'個別原価計算は「オーダーメイド型の原価計算」。例えば建設業・造船業・特注機械製造など、製品ごとに仕様が異なる場合に使います。製造指図書（job order）を発行し、その指図書番号ごとに材料費・労務費・間接費配賦額を集計します。指図書が完成品の「原価計算書」になります。',
+    exp_en:'Job-order costing = "custom-order costing." Used when each unit or batch is unique (construction, shipbuilding, custom machinery). A job order (manufacturing order) is issued for each job; direct materials, direct labor, and applied overhead are accumulated on it. The job order becomes the product\'s cost record.'
+  },
+  {
+    id:307,
+    level:2,
+    cat:'個別原価計算',
+    q:'製造指図書#101（製品A）への直接材料費80,000円・直接労務費50,000円の振替仕訳（仕掛品計上）を示せ。',
+    q_en:'Record direct material cost ¥80,000 and direct labor cost ¥50,000 charged to Job #101 (Product A) on the WIP account.',
+    e:[{d:[['仕掛品',130000]],c:[['材料',80000],['賃金・給料',50000]]}],
+    exp:'個別原価計算では直接費（直接材料費・直接労務費）を「仕掛品」勘定へ直接振り替えます。製造指図書番号（#101）ごとに「原価計算表」を作り、各指図書への材料消費・労務費消費・間接費配賦を記録します。仕掛品勘定は指図書番号別の補助帳（製品ごとの積算票）で管理します。',
+    exp_en:'In job-order costing, direct costs (materials, labor) flow directly to WIP. A job cost sheet tracks materials, labor, and applied overhead for each job number. The WIP account is supported by individual job cost sheets — one per active job.'
+  },
+  {
+    id:308,
+    level:2,
+    cat:'個別原価計算',
+    q:'製造間接費配賦率@600円/直接労務費1円、製品A（#101）の当月直接労務費は50,000円。間接費配賦仕訳を示せ。',
+    q_en:'Overhead rate: ¥600 per ¥1 of direct labor cost. Product A (#101) direct labor this month: ¥50,000. Record overhead application.',
+    e:[{d:[['仕掛品',30000]],c:[['製造間接費',30000]]}],
+    exp:'製造間接費配賦額＝配賦率60%×直接労務費50,000円＝30,000円（注：率は@600円/1,000円DLC＝60%）。個別原価計算でも製造間接費は予定配賦率を使って各指図書（製品）に配賦します。これで製品A（#101）の完成原価は直接材料費80,000＋直接労務費50,000＋間接費30,000＝160,000円になります。',
+    exp_en:'Applied overhead = rate 60% × direct labor ¥50,000 = ¥30,000. In job-order costing, overhead is applied to each job using the predetermined rate. Product A (#101) total cost = DM ¥80,000 + DL ¥50,000 + OH ¥30,000 = ¥160,000.',
+    note:'配賦額=50,000×60%=30,000 / 製品A合計=80,000+50,000+30,000=160,000'
+  },
+  {
+    id:309,
+    level:2,
+    cat:'個別原価計算',
+    q:'製造指図書#101（製品A）が完成した。原価計算表の合計は160,000円。仕掛品から製品への振替仕訳を示せ。',
+    q_en:'Job #101 (Product A) is complete. Total on job cost sheet: ¥160,000. Record the transfer from WIP to Finished Goods.',
+    e:[{d:[['製品',160000]],c:[['仕掛品',160000]]}],
+    exp:'製造指図書が完成したら「仕掛品（製造中）」から「製品（完成品）」へ振り替えます。金額は原価計算表の集計額（材料費＋労務費＋間接費配賦額）です。「料理が完成した→調理中コストを完成品コストとして棚に移す」イメージ。その後販売時に「製品」から「売上原価」へ振り替えます。',
+    exp_en:'When a job is finished, transfer its total cost from WIP to Finished Goods. The amount comes from the job cost sheet total (DM + DL + applied OH). "Cooking complete → move in-progress cost to the finished product shelf." On sale, transfer from Finished Goods to COGS.'
+  },
+  {
+    id:310,
+    level:2,
+    cat:'個別原価計算',
+    q:'（穴埋め）仕損とは製造中に発生した不合格品をいう。①合格品に追加加工（補修）できる場合の仕損費は【ア　　　　　　　　　　　　　　　　　　　　　　　　　　】で処理する。②補修できず代品を製造する場合は、仕損指図書（#200）を発行し、その原価を【イ　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】で処理する。',
+    q_en:'(Fill in) Spoilage refers to defective units in production. ①If the defective units can be reworked, rework cost is treated as [ア___]. ②If irreparable, a spoilage job order (#200) is issued, and its cost is treated as [イ___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>元の指図書（正常仕損なら製造間接費、異常なら非原価項目）への追加計上</td></tr><tr><td class="hl">イ</td><td>元の指図書（正常仕損）への賦課、または製造間接費（複数指図書に共通）への配賦</td></tr></tbody></table><div class="formula-box">正常仕損：製品原価の一部として吸収<br>異常仕損：非原価項目（営業外費用・特別損失）として処理</div>`,
+    exp:'仕損の処理は「正常か異常か」「補修可能か不可能か」で変わります。正常仕損（通常範囲内の不合格品）は製品原価の一部として吸収。異常仕損（災害・ミスなど特別原因）は原価外（非原価項目）として処理。「通常の失敗は製品に乗せる、異常な失敗は別途損失計上」という考え方。',
+    exp_en:'Spoilage treatment depends on: normal vs. abnormal, and reworkable vs. irreparable. Normal spoilage (expected defect rate) → absorbed into product cost. Abnormal spoilage (accident, major error) → non-product cost (special loss). "Expected failures are part of the product\'s cost; unexpected disasters are expensed separately."'
+  },
+  {
+    id:311,
+    level:2,
+    cat:'個別原価計算',
+    q:'（穴埋め）作業くず（scrap）とは製造過程で発生する端材・廃材をいう。作業くずを売却して収入を得た場合、その収入は【①　　　　　　　　　　　　　　　　　　　　　　　　】として処理するか、元の製造指図書の原価から【②　　　　　　　　　　　　　】することが多い。',
+    q_en:'(Fill in) Scrap is leftover material from the manufacturing process. Revenue from selling scrap is typically recognized as [①___] or deducted from [②___] of the original job.',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>雑収入（作業くず売却収益）または製造間接費の控除</td></tr><tr><td class="hl">②</td><td>材料費（製造コスト）</td></tr></tbody></table><div class="formula-box">作業くず売却→現金 ／ 作業くず（雑収入 or 材料費控除）<br>金額が少ない場合：発生時に無視して売却時に雑収入計上が実務では一般的</div>`,
+    exp:'作業くず（切りくず・端材）は製品原価を正確にするために処理が必要です。処理方法：①売却益を製造間接費から控除→間接費配賦率が下がる②製品の材料費から控除→個別製品の原価が減る③雑収入として認識。金額的重要性が低い場合は実務上省略されることも多いです。',
+    exp_en:'Scrap requires accounting treatment for accurate product costing. Options: ①Reduce Manufacturing Overhead (lowers overhead rate) ②Reduce material cost of the specific job ③Recognize as miscellaneous income. When the amount is immaterial, many companies simply record scrap sale proceeds as miscellaneous income when sold.'
+  },
+  {
+    id:312,
+    level:2,
+    cat:'個別原価計算',
+    q:'（穴埋め・計算）指図書#102の原価計算表：直接材料費120,000円・直接労務費80,000円・製造間接費配賦額（直接労務費の75%）。①製造間接費配賦額②完成品原価③製品A（1,000個）の1個あたり原価を求めよ。',
+    q_en:'(Fill in & calculate) Job #102 cost sheet: DM ¥120,000, DL ¥80,000, overhead (75% of DL). ①Applied overhead? ②Total job cost? ③Unit cost for 1,000 units of Product A?',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①製造間接費配賦額</td><td>直接労務費80,000×75%＝60,000円</td></tr><tr><td class="hl">②完成品原価</td><td>120,000＋80,000＋60,000＝260,000円</td></tr><tr><td class="hl">③1個あたり原価</td><td>260,000÷1,000個＝@260円/個</td></tr></table>`,
+    exp:'個別原価計算では製造指図書ごとに直接費＋間接費配賦額を集計し、完成品原価を求めます。①配賦額＝80,000×75%＝60,000円②合計＝120,000＋80,000＋60,000＝260,000円③単位原価＝260,000÷1,000個＝@260円。この@260円が販売価格・在庫評価の基礎になります。',
+    exp_en:'Job-order costing: accumulate direct costs + applied overhead per job. ①OH = ¥80,000 × 75% = ¥60,000 ②Total = ¥120,000 + ¥80,000 + ¥60,000 = ¥260,000 ③Unit cost = ¥260,000 ÷ 1,000 = ¥260/unit. This unit cost is the basis for pricing and inventory valuation.',
+    note:'配賦額=80,000×75%=60,000 / 合計=260,000 / 単価=260,000÷1,000=@260'
+  },
+  {
+    id:313,
+    level:2,
+    cat:'総合原価計算',
+    q:'（穴埋め）総合原価計算とは【①　　　　　　　　　　　　　　　　　　　　　　】生産に用いられる方法で、一定期間の製造費用を【②　　　　　　　　　　　　　　　　　　　】で割って単位原価を計算する。個別原価計算との最大の違いは製造【③　　　　　　　　　　　　　】の有無である。',
+    q_en:'(Fill in) Process costing is used in [①___] production; it divides total manufacturing costs for a period by [②___] to find unit cost. The biggest difference from job-order costing is the [③___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>同種製品の連続大量（見込み）</td></tr><tr><td class="hl">②</td><td>完成品換算量（総生産量）</td></tr><tr><td class="hl">③</td><td>指図書（製造指図書）</td></tr></tbody></table><div class="formula-box">総合原価計算：同じ製品を大量生産（化学品・飲料・食品等）<br>個別原価計算：注文ごとに異なる製品（建設・造船・特注品等）</div>`,
+    exp:'総合原価計算は「コンベアで大量生産する工場の原価計算」です。個別の製造指図書はなく、一定期間（1ヶ月）に発生した全製造コストを完成品換算量で割って単位原価を計算します。例：飲料工場で1ヶ月に1,000万円のコストで100,000本生産→1本@100円。',
+    exp_en:'Process costing is for mass-production factories (conveyor-style). No individual job orders — divide total monthly manufacturing costs by equivalent units to get unit cost. Example: beverage factory spends ¥10M/month producing 100,000 bottles → ¥100/bottle. Industries: chemicals, food, beverages, paper.'
+  },
+  {
+    id:314,
+    level:2,
+    cat:'総合原価計算',
+    q:'（穴埋め）総合原価計算で月末仕掛品（加工途中の製品）がある場合、加工費の月末仕掛品は「完成品換算量」で計算する。加工進捗度50%の仕掛品100個は、加工費では完成品【①　　　　　　　　　　　　】個相当とみなす。直接材料費が工程の【②　　　　　　　　】で全量投入される場合、月末仕掛品の材料費は100個分（100%）で計算する。',
+    q_en:'(Fill in) In process costing, closing WIP is measured in "equivalent units." 100 units of WIP at 50% completion = [①___] equivalent units for conversion costs. If direct materials are added at [②___] of the process, closing WIP gets 100% of its materials (100 units).',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>50個（100個×50%）</td></tr><tr><td class="hl">②</td><td>始点（工程の最初）</td></tr></tbody></table><div class="formula-box">完成品換算量（加工費）＝仕掛品数量×加工進捗度<br>直接材料費：始点投入→仕掛品は100%換算<br>直接材料費：終点投入→仕掛品は0%換算</div>`,
+    exp:'総合原価計算の核心は「月末の作りかけ（仕掛品）をどう評価するか」。加工費（労務費・間接費）は進捗度に応じて消費されるため、50%完成の仕掛品は「完成品0.5個分」と換算。一方、直接材料費は通常「始点投入（工程開始時に全量投入）」なので、進捗度に関係なく100%で計算します。',
+    exp_en:'Process costing\'s core challenge: how to value closing WIP. Conversion costs (labor + overhead) are incurred continuously → WIP at 50% completion = 0.5 equivalent completed unit. Direct materials are usually added all at the start → WIP gets 100% of materials regardless of completion percentage.'
+  },
+  {
+    id:315,
+    level:2,
+    cat:'総合原価計算',
+    q:'（穴埋め・計算）平均法での総合原価計算：月初仕掛品100個（完成度50%）・当月投入900個・完成品850個・月末仕掛品150個（完成度60%）。材料費は始点投入。①材料費の完成品換算量（月末仕掛品含む）②加工費の完成品換算量（月末仕掛品含む）を求めよ。',
+    q_en:'(Fill in & calculate) Average method: opening WIP 100 units (50% complete), added 900, completed 850, closing WIP 150 units (60% complete). Materials added at start. ①Equivalent units for materials? ②Equivalent units for conversion costs?',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">平均法：月初仕掛品と当月投入を混合して計算<br>①材料費（始点投入）の換算量<br>　完成品850個＋月末仕掛品150個×100%＝1,000個<br>②加工費の換算量<br>　完成品850個＋月末仕掛品150個×60%＝850＋90＝940個</div>`,
+    exp:'平均法では「月初仕掛品と当月投入を全部混ぜて計算する」方法。換算量の計算：①材料費（始点投入）＝完成品＋月末仕掛品×100%＝850＋150＝1,000個。②加工費＝完成品＋月末仕掛品×進捗度＝850＋150×60%＝940個。この換算量で原価を割って単位原価を求めます。',
+    exp_en:'Average method: mix opening WIP and current-period costs together. Equivalent units: ①Materials (start-of-process) = completed 850 + closing WIP 150 × 100% = 1,000 units. ②Conversion = completed 850 + closing WIP 150 × 60% = 850 + 90 = 940 units. Divide total costs by these to get cost per equivalent unit.',
+    note:'材料換算量=850+150×100%=1,000 / 加工費換算量=850+150×60%=940'
+  },
+  {
+    id:316,
+    level:2,
+    cat:'総合原価計算',
+    q:'（穴埋め・計算）平均法での完成品原価計算：月初仕掛品原価（材料費20,000円・加工費10,000円）、当月製造費用（材料費80,000円・加工費65,000円）。前問の換算量を使用。①材料費単位原価②加工費単位原価③完成品850個の完成品原価を求めよ。',
+    q_en:'(Fill in & calculate, continuing previous problem) Opening WIP costs: materials ¥20,000, conversion ¥10,000. Current costs: materials ¥80,000, conversion ¥65,000. ①Unit cost for materials? ②Unit cost for conversion? ③Total cost for 850 completed units?',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">①材料費単位原価＝（20,000＋80,000）÷1,000個＝@100円<br>②加工費単位原価＝（10,000＋65,000）÷940個＝@79.79…≒@80円<br>③完成品原価＝850個×（@100＋@80）＝850×@180＝153,000円<br>月末仕掛品：150×@100＋90×@80＝15,000＋7,200＝22,200円</div>`,
+    exp:'平均法の計算手順：①材料費単位原価＝（月初材料費＋当月材料費）÷材料換算量＝100,000÷1,000＝@100円②加工費単位原価＝75,000÷940≒@80円③完成品原価＝850×（100＋80）＝153,000円。月末仕掛品は材料費100×150＋加工費80×90＝22,200円（検証：153,000＋22,200＝175,000円＝月初原価30,000＋当月費用145,000）。',
+    exp_en:'Average method steps: ①Material unit cost = (¥20,000 + ¥80,000) ÷ 1,000 = ¥100 ②Conversion unit cost = ¥75,000 ÷ 940 ≈ ¥80 ③Completed goods = 850 × ¥180 = ¥153,000. Closing WIP = 150 × ¥100 + 90 × ¥80 = ¥22,200. Check: ¥153,000 + ¥22,200 = ¥175,000 = opening ¥30,000 + current ¥145,000. ✓',
+    note:'材料単価=100,000÷1,000=@100 / 加工単価=75,000÷940≈@80 / 完成品=850×180=153,000'
+  },
+  {
+    id:317,
+    level:2,
+    cat:'総合原価計算',
+    q:'（穴埋め・計算）先入先出法での換算量計算：月初仕掛品200個（完成度40%）・当月投入800個・完成品900個・月末仕掛品100個（完成度50%）。材料は始点投入。先入先出法での①材料費換算量②加工費換算量を求めよ。',
+    q_en:'(Fill in & calculate) FIFO process costing: opening WIP 200 units (40% complete), added 800, completed 900, closing WIP 100 units (50% complete). Materials added at start. FIFO ①material equivalent units? ②conversion equivalent units?',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">先入先出法：当月投入分のみで換算量を計算（月初分を除く）<br>①材料費（始点投入）換算量<br>　当月完成分900個のうち月初200個はすでに材料投入済み<br>　→当月新規完成700個＋月末100個×100%＝800個<br>②加工費換算量<br>　月初残り分：200個×(1-40%)＝120個<br>　当月新規完成：700個<br>　月末仕掛品：100個×50%＝50個<br>　合計：120＋700＋50＝870個</div>`,
+    exp:'先入先出法（FIFO）では「月初仕掛品の当月作業分」と「当月新規投入分」を区別して換算量を計算します。月初仕掛品200個は材料はすでに投入済みなので材料換算量に含めません。加工費は月初の残り（200×60%=120個）＋当月新規完成700個＋月末100×50%=50個＝870個。',
+    exp_en:'FIFO: separate "work done on opening WIP this period" from "new units started this period." Opening WIP already has materials → don\'t count them in material equivalent units this period. Conversion: opening WIP remaining work (200×60%=120) + new completions (700) + closing WIP (100×50%=50) = 870 units.',
+    note:'FIFO材料換算=(900-200)+100×100%=700+100=800 / 加工換算=200×60%+700+100×50%=120+700+50=870'
+  },
+  {
+    id:318,
+    level:2,
+    cat:'総合原価計算',
+    q:'（穴埋め）正常仕損と異常仕損の処理の違いを答えよ。①正常仕損（通常の製造活動で避けられない不合格品）の仕損費は【ア　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】として処理する（度外視法）。②異常仕損の仕損費は【イ　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】として処理する。',
+    q_en:'(Fill in) ①Normal spoilage (unavoidable in normal production) costs are treated as [ア___] (using the neglect method). ②Abnormal spoilage costs are treated as [イ___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア（正常仕損）</td><td>完成品（と月末仕掛品）の製造原価の一部として吸収（度外視法：仕損品を計算から除外して自動的に良品に負担させる）</td></tr><tr><td class="hl">イ（異常仕損）</td><td>非原価項目（異常仕損費）として損失計上（製品原価に含めない）</td></tr></tbody></table>`,
+    exp:'度外視法は「仕損品を存在しないものとして計算する」シンプルな方法。正常仕損を度外視すると、完成品と月末仕掛品でその分のコストを自然に負担します。異常仕損（地震・機械故障など特別原因）は「正常な製造活動のコストではない」ため製品原価から除外し、「異常仕損費」として営業外費用・特別損失に計上。',
+    exp_en:'The neglect method ignores normal spoilage in calculations — its cost is automatically absorbed by good output and closing WIP. Simple but less precise. Abnormal spoilage (caused by accidents, machine breakdowns) is NOT a product cost → separate as "Abnormal Spoilage Loss" (non-operating/special loss). "Normal waste is the cost of doing business; abnormal waste is a separate mishap."'
+  },
+  {
+    id:319,
+    level:2,
+    cat:'総合原価計算',
+    q:'（穴埋め・計算）仕損品に処分価値がある場合の処理：正常仕損品100個の処分価値（売却見込額）が1個@50円（計5,000円）。当月の仕損費（仕損品を除外しない場合の計算上の損失）が50,000円のとき、正味仕損費はいくらか。また仕損品の処分価値の仕訳を示せ。',
+    q_en:'(Fill in & calculate) Spoilage with salvage value: 100 normal spoiled units at ¥50 salvage each (¥5,000 total). Gross spoilage cost ¥50,000. What is the net spoilage cost? Record the salvage value entry.',
+    e:[{d:[['仕損品',5000]],c:[['仕掛品',5000]]}],
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">正味仕損費＝仕損費50,000－仕損品処分価値5,000＝45,000円</div>`,
+    exp:'仕損品（不合格品）に売れる見込みがある場合（スクラップ売却等）、その処分価値を仕損費から控除します。「45,000円分だけが本当の損失で、5,000円分は仕損品として資産計上できる」。仕損品は「仕損品」勘定（資産）として計上し、後日売却時に「現金/仕損品」と「雑収入/現金の差」として処理。',
+    exp_en:'When spoilage has salvage value, deduct it from gross spoilage cost. Net spoilage cost = ¥50,000 − ¥5,000 = ¥45,000. The ¥5,000 is a recoverable asset (Spoilage Inventory). On sale: Dr. Cash / Cr. Spoilage Inventory (+ gain if higher, or loss if lower).',
+    note:'正味仕損費=50,000-5,000=45,000'
+  },
+  {
+    id:320,
+    level:2,
+    cat:'総合原価計算',
+    q:'（穴埋め）工程別総合原価計算：第1工程の完成品は第2工程に引き渡される。第2工程では第1工程の完成品原価を【①　　　　　　　　　　　　　　　　　　　】として受け入れ、さらに第2工程で発生する材料費・加工費を加算して最終完成品原価を計算する。第1工程完成品が第2工程に引き渡される時の仕訳：借方【②　　　　　　　　】・貸方【③　　　　　　　　　　　　　　】',
+    q_en:'(Fill in) Process-by-process costing: finished output from Process 1 is transferred to Process 2 as [①___]. Process 2 adds its own materials and conversion costs to calculate final product cost. Transfer entry: Dr. [②___] / Cr. [③___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>前工程費（前工程からの振替材料費）</td></tr><tr><td class="hl">②（借方）</td><td>第2工程仕掛品</td></tr><tr><td class="hl">③（貸方）</td><td>第1工程仕掛品（or 半製品）</td></tr></tbody></table><div class="formula-box">第1工程→（半製品 or 直接移転）→第2工程→完成品</div>`,
+    exp:'工程別原価計算では、複数の工程を経て製品が完成します。第1工程の完成品が第2工程に移ると、第2工程での計算では「前工程費（前の工程のコスト）」として受け入れます。「第1工程で作ったものを原材料として第2工程がさらに加工する」イメージで、前工程費は材料費の一種として扱います。',
+    exp_en:'Multi-process costing tracks costs across sequential production stages. Output from Process 1 becomes input to Process 2, recognized as "prior process cost" — treated as a type of material cost in Process 2. "Process 1\'s output is the raw material that Process 2 works on."'
+  },
+  {
+    id:321,
+    level:2,
+    cat:'総合原価計算',
+    q:'（穴埋め）組別総合原価計算と等級別総合原価計算の違いを答えよ。①組別総合原価計算は【ア　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】の場合に用いる。②等級別総合原価計算は【イ　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】の場合に用いる。',
+    q_en:'(Fill in) ①Process costing by group (組別) is used when [ア___]. ②Process costing by grade (等級別) is used when [イ___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア（組別）</td><td>製品の種類が異なる複数の製品を同一工程で生産する場合（例：A型・B型・C型の製品を混合生産）</td></tr><tr><td class="hl">イ（等級別）</td><td>同一工程から品質・サイズ等が異なる等級品が生産される場合（例：特上・上・並の米、L・M・Sサイズの製品）</td></tr></tbody></table>`,
+    exp:'総合原価計算の応用形態：組別＝「同じ工程でA型・B型・C型を作る」→組ごとに原価を集計。等級別＝「同じ工程でL・M・Sサイズが出てくる」→等価係数（重みづけ）で原価を按分。等価係数の例：L=1.5、M=1.0、S=0.7として各等級への原価配分比率を決めます。',
+    exp_en:'Process costing variants: Group (組別) = same process produces distinct product types (A, B, C) → accumulate costs by product group. Grade (等級別) = same process produces same-type products of different sizes/quality → use equivalence ratios (L=1.5, M=1.0, S=0.7) to allocate joint costs proportionally.'
+  },
+  {
+    id:322,
+    level:2,
+    cat:'総合原価計算',
+    q:'（穴埋め・計算）完成品原価と月末仕掛品原価の計算（平均法）：材料費の合計（月初＋当月）＝200,000円、換算量1,000個。加工費の合計（月初＋当月）＝150,000円、換算量（加工費）750個。完成品500個の場合、①材料費単価②加工費単価③完成品原価を求めよ。',
+    q_en:'(Fill in & calculate) Average method: total material costs ¥200,000 (1,000 equiv. units); total conversion costs ¥150,000 (750 equiv. units); 500 completed units. ①Material unit cost? ②Conversion unit cost? ③Total completed goods cost?',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①材料費単価</td><td>200,000÷1,000個＝@200円</td></tr><tr><td class="hl">②加工費単価</td><td>150,000÷750個＝@200円</td></tr><tr><td class="hl">③完成品原価</td><td>500個×（@200＋@200）＝500×@400＝200,000円</td></tr></tbody></table>`,
+    exp:'平均法の完成品原価計算：①材料費単価＝総材料費÷材料換算量＝200,000÷1,000＝@200円②加工費単価＝150,000÷750＝@200円③完成品原価＝完成数量×（材料単価＋加工単価）＝500×400＝200,000円。月末仕掛品原価＝（200,000＋150,000）－200,000＝150,000円（検証）。',
+    exp_en:'Average method: ①Material unit cost = ¥200,000 ÷ 1,000 = ¥200 ②Conversion unit cost = ¥150,000 ÷ 750 = ¥200 ③Completed goods = 500 × (¥200 + ¥200) = ¥200,000. Closing WIP = (¥200,000 + ¥150,000) − ¥200,000 = ¥150,000 (verification check).',
+    note:'材料単価=200,000÷1,000=@200 / 加工単価=150,000÷750=@200 / 完成品=500×400=200,000'
+  },
+  {
+    id:323,
+    level:2,
+    cat:'総合原価計算',
+    q:'完成品を製品勘定へ振り替える仕訳を示せ。完成品原価200,000円（前問の結果）。',
+    q_en:'Transfer completed goods (¥200,000 from prior problem) from WIP to Finished Goods. Record the entry.',
+    e:[{d:[['製品',200000]],c:[['仕掛品',200000]]}],
+    exp:'総合原価計算でも個別原価計算でも、製品が完成したら仕掛品から製品へ振り替えます。「製造中（仕掛品）から完成品（製品）へ原価を移す」仕訳です。製品が顧客に売れたときは「売上原価/製品」の仕訳で製品原価を費用化します。これが工業簿記の最終ゴール：製造原価を売上原価へつなげることです。',
+    exp_en:'Whether job-order or process costing, completed goods move from WIP to Finished Goods — same journal entry. "Transfer manufacturing cost from in-progress to complete." On sale: Dr. COGS / Cr. Finished Goods. This completes the industrial cost flow: raw materials → WIP → finished goods → COGS.'
+  },
+  {
+    id:324,
+    level:2,
+    cat:'標準原価計算',
+    q:'（穴埋め）標準原価計算とは、製品1単位あたりの【①　　　　　　　　　　　　　　　　　　　　　　】を事前に設定し、それを基準にして原価管理・原価計算を行う方法である。標準原価と実際原価の差額を【②　　　　　　　　　　　】といい、これを分析することで【③　　　　　　　　　　　　　　　　　　　　　　】ができる。',
+    q_en:'(Fill in) Standard costing pre-sets [①___] per unit and uses it as a basis for cost control and accounting. The difference between standard and actual cost is called [②___]. Analyzing it enables [③___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>あるべき（標準）原価</td></tr><tr><td class="hl">②</td><td>原価差異（標準原価差異）</td></tr><tr><td class="hl">③</td><td>原因究明・業績評価・コスト改善</td></tr></tbody></table><div class="formula-box">原価差異＝標準原価－実際原価<br>正（有利差異）：実際が標準以下（コスト節約）<br>負（不利差異）：実際が標準超過（コスト超過）</div>`,
+    exp:'標準原価計算は「目標コスト（標準）」と「実績コスト（実際）」の差を分析するマネジメントツールです。「この製品は1個あたり材料費200円・労務費150円・間接費100円の計450円で作れるはずだ」と標準を設定し、実績がそれより良かったか悪かったかを差異として把握します。',
+    exp_en:'Standard costing is a management tool: set target costs (standards), then compare to actual costs (variances). "This product should cost ¥450/unit (materials ¥200 + labor ¥150 + overhead ¥100)." Variances reveal whether actual performance was better or worse than plan, guiding improvement.'
+  },
+  {
+    id:325,
+    level:2,
+    cat:'標準原価計算',
+    q:'（穴埋め・計算）標準原価の設定：製品1個あたりの標準原価を次のとおり設定した。①直接材料費：標準消費量5kg×標準単価@40円＝【ア　　　　　】円②直接労務費：標準作業時間2時間×標準賃率@300円＝【イ　　　　　】円③製造間接費配賦額：標準時間2時間×標準配賦率@200円＝【ウ　　　　　　】円。④製品1個の標準原価合計は【エ　　　　】円。',
+    q_en:'(Fill in & calculate) Standard cost setup per unit: ①DM: standard qty 5 kg × standard price ¥40/kg = [ア] ②DL: standard hours 2 hrs × standard rate ¥300/hr = [イ] ③OH: standard hours 2 hrs × standard rate ¥200/hr = [ウ]. ④Total standard cost per unit = [エ].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>200円（5kg×@40）</td></tr><tr><td class="hl">イ</td><td>600円（2時間×@300）</td></tr><tr><td class="hl">ウ</td><td>400円（2時間×@200）</td></tr><tr><td class="hl">エ</td><td>1,200円（200＋600＋400）</td></tr></tbody></table>`,
+    exp:'標準原価カード（standard cost card）：製品1個あたりの「あるべきコスト」をまとめたもの。①材料費＝標準消費量×標準単価②労務費＝標準作業時間×標準賃率③間接費＝標準時間×標準配賦率。実際生産量×標準原価で「当月の標準原価総額」を計算し、実際コストと比較します。',
+    exp_en:'The standard cost card sets the "should-cost" per unit. ①Materials = standard qty × standard price ②Labor = standard hours × standard rate ③Overhead = standard hours × standard rate. Multiply by actual production volume → total standard cost. Compare to actual costs → variances.',
+    note:'ア=5×40=200 / イ=2×300=600 / ウ=2×200=400 / エ=200+600+400=1,200'
+  },
+  {
+    id:326,
+    level:2,
+    cat:'標準原価計算',
+    q:'（穴埋め・計算）直接材料費差異の分析：標準（5kg×@40×100個＝20,000円）、実際（480kg×@42＝20,160円）。①価格差異②数量差異③合計差異を求めよ。',
+    q_en:'(Fill in & calculate) Direct material variance analysis: Standard (5kg×¥40×100 units=¥20,000), Actual (480kg×¥42=¥20,160). ①Price variance? ②Quantity variance? ③Total variance?',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">①価格差異＝（標準単価40－実際単価42）×実際消費量480kg<br>　　　　＝△2×480＝△960円（不利：実際単価が標準より高い）<br>②数量差異＝（標準消費量500kg－実際消費量480kg）×標準単価@40<br>　　　　＝20×40＝800円（有利：実際が標準より少ない）<br>③合計差異＝△960＋800＝△160円（不利）<br>　　　（検証：標準20,000－実際20,160＝△160円）</div>`,
+    exp:'直接材料費差異の分解：①価格差異＝（標準単価－実際単価）×実際消費量「単価が高かった→不利」②数量差異＝（標準消費量－実際消費量）×標準単価「使用量が少なかった→有利」。「高く買ったが、少なく使えた」という状況で、合計は160円の不利差異です。',
+    exp_en:'DM variance breakdown: ①Price variance = (std price − actual price) × actual qty = (¥40−¥42)×480 = −¥960 (unfav: bought at higher price) ②Quantity variance = (std qty − actual qty) × std price = (500−480)×¥40 = +¥800 (fav: used less material) ③Total = −¥160 (unfav). "Paid more per kg, but used fewer kg."',
+    note:'価格差異=(40-42)×480=-960 / 数量差異=(500-480)×40=800 / 合計=-160'
+  },
+  {
+    id:327,
+    level:2,
+    cat:'標準原価計算',
+    q:'（穴埋め・計算）直接労務費差異の分析：標準（2時間×@300×100個＝60,000円）、実際（190時間×@310＝58,900円）。①賃率差異②時間差異③合計差異を求めよ。',
+    q_en:'(Fill in & calculate) Direct labor variance: Standard (2 hrs×¥300×100 units=¥60,000), Actual (190 hrs×¥310=¥58,900). ①Rate variance? ②Efficiency variance? ③Total variance?',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">①賃率差異＝（標準賃率300－実際賃率310）×実際時間190h<br>　　　　＝△10×190＝△1,900円（不利：賃率が予定より高い）<br>②時間差異＝（標準時間200h－実際時間190h）×標準賃率@300<br>　　　　＝10×300＝3,000円（有利：短時間で完成）<br>③合計＝△1,900＋3,000＝1,100円（有利）<br>　　　（検証：標準60,000－実際58,900＝1,100円）</div>`,
+    exp:'直接労務費差異の分解：①賃率差異＝（標準賃率－実際賃率）×実際時間「賃率が高かった→不利」②時間差異＝（標準時間－実際時間）×標準賃率「短時間で完成→有利」。合計1,100円の有利差異。「賃金が少し高かったが、効率的に短時間で作業できた」ケースです。',
+    exp_en:'DL variance: ①Rate variance = (std rate − actual rate) × actual hours = (¥300−¥310)×190 = −¥1,900 (unfav: higher wage rate) ②Efficiency variance = (std hours − actual hours) × std rate = (200−190)×¥300 = +¥3,000 (fav: finished faster). Total = +¥1,100 (fav). "Paid slightly higher wages, but worked more efficiently."',
+    note:'賃率差異=(300-310)×190=-1,900 / 時間差異=(200-190)×300=3,000 / 合計=1,100'
+  },
+  {
+    id:328,
+    level:2,
+    cat:'標準原価計算',
+    q:'標準原価計算において、実際原価が標準原価を下回った場合（有利差異1,100円）の仕掛品と原価差異の仕訳を示せ。（仕掛品は標準原価で計上済みで、実際原価との差額を原価差異勘定で処理）',
+    q_en:'In standard costing, actual cost came in ¥1,100 below standard (favorable variance). Record the variance entry. (WIP is already recorded at standard; now adjust for the difference.)',
+    e:[{d:[['賃金・給料',58900]],c:[['仕掛品',60000],['賃率差異',1900]]},{d:[['仕掛品',3000]],c:[['時間差異',3000]]}],
+    exp:'標準原価計算の仕訳処理：仕掛品は標準原価（60,000）で計上し、実際賃金（58,900）の差額を差異勘定に振り替えます。実際には不利差異・有利差異を個別に処理することが多く、月末に各差異勘定残高を原価差異（or 売上原価）に振り替えます。試験では仕訳の書き方が問われます。',
+    exp_en:'Standard costing journal treatment: WIP is recorded at standard cost (¥60,000); actual wages (¥58,900) plus variance accounts balance out. Variance accounts accumulate during the month and are closed to COGS (or a variance account) at period-end. Exam questions often ask you to record these entries.'
+  },
+  {
+    id:329,
+    level:2,
+    cat:'標準原価計算',
+    q:'（穴埋め）製造間接費差異の2分法を答えよ（変動予算使用）。製造間接費予算：変動費率@300円/h・固定費予算120,000円/月・基準操業度400h/月。当月実績：実際時間380h・標準時間（完成品ベース）370h・実際発生額234,000円。①予算差異②操業度差異を求めよ。',
+    q_en:'(Fill in) Two-variance overhead analysis (flexible budget). Overhead budget: variable rate ¥300/hr, fixed budget ¥120,000/month, normal capacity 400 hrs/month. Actual: 380 actual hrs, 370 standard hrs (based on output), actual overhead ¥234,000. ①Budget variance? ②Volume variance?',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">予算許容額（実際操業度基準）＝変動費@300×380h＋固定費120,000<br>　　　　　　　　　　　＝114,000＋120,000＝234,000円<br>①予算差異＝予算許容額234,000－実際234,000＝0円<br>固定費率＝120,000÷400h＝@300円/h<br>②操業度差異＝固定費率@300×(実際380h－基準400h)<br>　　　　　　＝300×(△20)＝△6,000円（不利）</div>`,
+    exp:'①予算差異：実際発生額が予算許容額と等しい→0（予算通りのコスト管理）②操業度差異：実際操業度（380h）が基準（400h）を20h下回ったため、固定費6,000円分が回収できなかった（不利差異）。「予算通りに使ったが、生産量が少なくて固定費を十分回収できなかった」状況。',
+    exp_en:'①Budget variance = actual ¥234,000 − budget allowance ¥234,000 = ¥0 (exactly on budget) ②Volume variance = fixed rate ¥300 × (380 − 400) = −¥6,000 (unfav). "Spent exactly what was budgeted, but produced less than planned, so fixed costs were under-recovered." Under-production always creates an unfavorable volume variance.',
+    note:'固定費率=120,000÷400=@300 / 予算許容額=300×380+120,000=234,000 / 予算差異=0 / 操業度差異=300×(380-400)=-6,000'
+  },
+  {
+    id:330,
+    level:2,
+    cat:'標準原価計算',
+    q:'（穴埋め）原価差異の月末処理を答えよ。差異が小さい場合（重要性が低い）は【①　　　　　　　　　　　　　　　　　　】に加減算して処理する。差異が大きい場合（重要性が高い）は【②　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】に配分する。不利差異は売上原価を【③　　　　　　】し、有利差異は【④　　　　　　】する。',
+    q_en:'(Fill in) Month-end treatment of cost variances. Immaterial variances → [①___]. Material variances → [②___]. Unfavorable variances [③___] COGS; favorable variances [④___] COGS.',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>売上原価（全額加減算）</td></tr><tr><td class="hl">②</td><td>売上原価・期末仕掛品・期末製品の残高比率で按分配分</td></tr><tr><td class="hl">③</td><td>増加（加算）</td></tr><tr><td class="hl">④</td><td>減少（減算）</td></tr></tbody></table>`,
+    exp:'差異の処理は商業簿記の棚卸減耗損と同様の考え方。重要性の低い差異は「売上原価一括調整（簡便法）」、重要性の高い差異は「各在庫・売上原価に按分（より正確）」で処理します。不利差異（コスト超過）は売上原価を増やし、有利差異（コスト節約）は売上原価を減らします。',
+    exp_en:'Variance disposition: immaterial → adjust COGS directly (all at once, simple). Material → prorate across COGS, closing WIP, and closing finished goods (more precise). Unfavorable = COGS increases (we spent more than standard). Favorable = COGS decreases (we spent less than standard).'
+  },
+  {
+    id:331,
+    level:2,
+    cat:'直接原価計算',
+    q:'（穴埋め）直接原価計算（変動原価計算）とは、製品原価に【①　　　　　　　　　　　　　　　　　】のみを含め、【②　　　　　　　　　　　】は製品原価とせず発生した期間の費用とする方法である。全部原価計算との最大の違いは【③　　　　　　　　　　　　　　　　　　　　　　　】の扱いである。',
+    q_en:'(Fill in) Direct (variable) costing includes only [①___] in product cost; [②___] is treated as a period cost, not a product cost. The key difference from absorption costing is the treatment of [③___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>変動製造原価（変動費）</td></tr><tr><td class="hl">②</td><td>固定製造原価（固定費）</td></tr><tr><td class="hl">③</td><td>固定製造間接費</td></tr></tbody></table><div class="formula-box">全部原価計算：製品原価＝変動費＋固定費<br>直接原価計算：製品原価＝変動費のみ、固定費は期間費用</div>`,
+    exp:'直接原価計算は「固定費は製品を作っても作らなくても発生する→製品原価に含めない」という考え方。工場の機械の減価償却費（固定費）は0個作っても1,000個作っても同額かかる→期間費用として発生時に損益計算書へ。変動費（材料・直接労務費）のみを製品原価に含めます。',
+    exp_en:'Direct costing: "Fixed costs occur whether you produce or not → don\'t include in product cost." Factory depreciation (fixed) is the same whether you make 0 or 1,000 units → period expense. Only variable costs flow to product cost. This separates "costs that change with volume" from "costs that don\'t."'
+  },
+  {
+    id:332,
+    level:2,
+    cat:'直接原価計算',
+    q:'（穴埋め・計算）直接原価計算による損益計算書：売上高1,000,000円・変動売上原価400,000円・変動販管費100,000円・固定製造原価300,000円・固定販管費100,000円。①変動費合計②限界利益③固定費合計④営業利益を求めよ。',
+    q_en:'(Fill in & calculate) Direct costing income statement: sales ¥1,000,000, variable COGS ¥400,000, variable SGA ¥100,000, fixed manufacturing cost ¥300,000, fixed SGA ¥100,000. ①Total variable costs? ②Contribution margin? ③Total fixed costs? ④Operating income?',
+    ans_html:`<div class="tbl-sec">答え（直接原価計算P/L）</div><div class="formula-box">売上高　　　　　　　　　　1,000,000<br>変動費（変動売上原価＋変動販管費）△500,000<br>限界利益　　　　　　　　　　500,000<br>固定費（固定製造原価＋固定販管費）△400,000<br>営業利益　　　　　　　　　　100,000</div><table><tbody><tr><td class="hl">①変動費</td><td>400,000＋100,000＝500,000円</td></tr><tr><td class="hl">②限界利益</td><td>1,000,000－500,000＝500,000円</td></tr><tr><td class="hl">③固定費</td><td>300,000＋100,000＝400,000円</td></tr><tr><td class="hl">④営業利益</td><td>500,000－400,000＝100,000円</td></tr></tbody></table>`,
+    exp:'直接原価計算のP/Lは「売上高－変動費＝限界利益、限界利益－固定費＝営業利益」という構造。通常のP/Lと違い、費用を変動費と固定費で分けて表示します。「限界利益」（貢献利益）は固定費を回収するための利益で、限界利益率が高いほど固定費を効率的に回収できます。',
+    exp_en:'Direct costing P&L: Sales − Variable costs = Contribution margin (CM); CM − Fixed costs = Operating income. Costs are split by behavior (variable vs. fixed), not by function. The contribution margin is "what\'s left to cover fixed costs and profit." Higher CM ratio = more efficient fixed cost coverage.',
+    note:'限界利益=1,000,000-500,000=500,000 / 営業利益=500,000-400,000=100,000'
+  },
+  {
+    id:333,
+    level:2,
+    cat:'直接原価計算',
+    q:'（穴埋め・計算）限界利益率と損益分岐点：売上高1,000,000円・変動費500,000円・固定費400,000円（前問のデータ）。①限界利益率②損益分岐点売上高③安全余裕率を求めよ。',
+    q_en:'(Fill in & calculate, using prior problem data) Sales ¥1,000,000, variable costs ¥500,000, fixed costs ¥400,000. ①Contribution margin ratio? ②Break-even sales? ③Margin of safety ratio?',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①限界利益率</td><td>500,000÷1,000,000＝50%</td></tr><tr><td class="hl">②損益分岐点</td><td>固定費400,000÷限界利益率50%＝800,000円</td></tr><tr><td class="hl">③安全余裕率</td><td>(1,000,000－800,000)÷1,000,000×100＝20%</td></tr></tbody></table><div class="formula-box">損益分岐点：売上高×50%＝固定費400,000 → 売上高＝800,000<br>安全余裕率が高い→売上が落ちても赤字になりにくい</div>`,
+    exp:'①限界利益率＝限界利益500,000÷売上高1,000,000＝50%（売上が1円増えると限界利益が0.5円増える）②損益分岐点＝固定費400,000÷50%＝800,000円（この売上高なら利益ゼロ）③安全余裕率＝20%（実際売上が20%減っても黒字が維持できる余裕がある）。',
+    exp_en:'①CM ratio = ¥500,000 ÷ ¥1,000,000 = 50% (each additional ¥1 of sales contributes ¥0.50 to CM) ②Break-even = ¥400,000 ÷ 50% = ¥800,000 (zero profit) ③Safety margin = 20% (sales can fall 20% before a loss occurs). Higher safety margin = more cushion against revenue decline.',
+    note:'CM率=500,000÷1,000,000=50% / BEP=400,000÷50%=800,000 / 安全余裕率=(1,000,000-800,000)÷1,000,000=20%'
+  },
+  {
+    id:334,
+    level:2,
+    cat:'直接原価計算',
+    q:'（穴埋め・計算）目標利益達成のための売上高：固定費400,000円・限界利益率50%・目標営業利益200,000円。目標利益を達成するために必要な売上高はいくらか。',
+    q_en:'(Fill in & calculate) Target profit analysis: fixed costs ¥400,000, CM ratio 50%, target operating income ¥200,000. What sales level achieves the target profit?',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">必要売上高＝（固定費＋目標利益）÷限界利益率<br>＝（400,000＋200,000）÷50%<br>＝600,000÷0.5＝1,200,000円</div>`,
+    exp:'CVP分析（Cost-Volume-Profit）の基本公式：必要売上高＝（固定費＋目標利益）÷限界利益率。「目標利益を出すには固定費＋目標利益を限界利益率で賄う必要がある」。損益分岐点の式（固定費÷CM率）に目標利益を加えるだけで計算できます。マネジメントの意思決定（価格・数量・コスト）に活用されます。',
+    exp_en:'CVP (Cost-Volume-Profit) analysis formula: Required sales = (Fixed costs + Target profit) ÷ CM ratio = (¥400,000 + ¥200,000) ÷ 50% = ¥1,200,000. It\'s the break-even formula with target profit added. Used for management decisions on pricing, volume, and cost structure.',
+    note:'必要売上=(400,000+200,000)÷50%=1,200,000'
+  },
+  {
+    id:335,
+    level:2,
+    cat:'直接原価計算',
+    q:'（穴埋め）全部原価計算と直接原価計算で営業利益が異なる原因は何か。【①　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】から生じる。生産量＞販売量（在庫増加）の場合、全部原価計算の営業利益は直接原価計算より【②　　　】くなる。',
+    q_en:'(Fill in) Why do absorption costing and direct costing produce different operating income? The difference arises from [①___]. When production > sales (inventory builds up), absorption costing income is [②___] than direct costing income.',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>固定製造間接費が期末在庫（製品・仕掛品）に含まれるか否かの違い。全部原価計算では期末在庫に固定費が含まれるため、それが売れるまで費用にならない。直接原価計算では固定費を全額当期費用とする。</td></tr><tr><td class="hl">②</td><td>高（大き）</td></tr></tbody></table><div class="formula-box">全部原価計算利益＝直接原価計算利益＋期末在庫固定費－期首在庫固定費</div>`,
+    exp:'利益の差の原因：全部原価計算では固定製造間接費が製品原価に含まれるため、生産したが売れなかった分の固定費が「製品（在庫）」として資産に留まります。一方、直接原価計算では固定費を全額当期費用にするため、在庫増加期は全部原価計算の利益が高くなります（固定費の一部が在庫に繰り越されるため）。',
+    exp_en:'Income difference cause: absorption costing includes fixed overhead in product cost — unsold units carry fixed costs as inventory assets. Direct costing expenses all fixed costs in the period. When inventory builds (production > sales): absorption income > direct costing income. The ¥ difference = fixed overhead per unit × change in inventory quantity.'
+  },
+  {
+    id:336,
+    level:2,
+    cat:'直接原価計算',
+    q:'（穴埋め・計算）製品の単位変動費は@600円、固定費合計は480,000円/月、販売単価@1,000円。①1個あたり限界利益②月間損益分岐点数量③月間損益分岐点売上高を求めよ。',
+    q_en:'(Fill in & calculate) Unit variable cost ¥600, total fixed costs ¥480,000/month, selling price ¥1,000/unit. ①Contribution margin per unit? ②Monthly break-even quantity? ③Monthly break-even sales?',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①1単位の限界利益</td><td>1,000－600＝@400円</td></tr><tr><td class="hl">②損益分岐点数量</td><td>480,000÷400＝1,200個</td></tr><tr><td class="hl">③損益分岐点売上高</td><td>1,200個×1,000円＝1,200,000円<br>（または：固定費480,000÷限界利益率40%＝1,200,000）</td></tr></tbody></table>`,
+    exp:'1個の限界利益＝売価1,000－変動費600＝@400円。「1個売るたびに400円ずつ固定費を回収できる」。損益分岐点数量＝固定費480,000÷限界利益@400＝1,200個。「1,200個売れば固定費がちょうど回収できる（利益ゼロ）」。1,200個超えると1個@400円ずつ利益が積み上がります。',
+    exp_en:'CM per unit = ¥1,000 − ¥600 = ¥400. "Every unit sold recovers ¥400 of fixed costs." BEP qty = ¥480,000 ÷ ¥400 = 1,200 units. "At 1,200 units, fixed costs are exactly covered (zero profit)." Each unit beyond 1,200 adds ¥400 to profit.',
+    note:'CM=1,000-600=400 / BEP数量=480,000÷400=1,200個 / BEP売上=1,200×1,000=1,200,000'
+  },
+  {
+    id:337,
+    level:2,
+    cat:'直接原価計算',
+    q:'（穴埋め）直接原価計算が有用な意思決定の場面を2つ答えよ。①製品の受注可否判断：追加的に受注できる余裕がある場合、受注単価が【ア　　　　　　　　　　　　　　　　　　　　】を上回っていれば受注すべき。②製品の製造か購買かの意思決定（make or buy）でも固定費の【イ　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】を考慮することが重要。',
+    q_en:'(Fill in) Name two decisions where direct costing is useful. ①Special order acceptance: when spare capacity exists, accept the order if the price exceeds [ア___]. ②Make-or-buy decisions also require careful consideration of [イ___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>単位変動費（変動製造原価）</td></tr><tr><td class="hl">イ</td><td>固定費の可否変動性（回避可能固定費か否か）。製造を外注する場合に固定費が本当に節約できるかどうか。</td></tr></tbody></table><div class="formula-box">特別注文の意思決定：単価＞変動費→受注OK（限界利益がプラスなら受注）<br>固定費は既に発生済みで変わらない（埋没原価）</div>`,
+    exp:'直接原価計算の意思決定への応用：①特別注文（余裕生産能力がある場合）→通常の利益がなくても変動費をカバーできれば受注OK（固定費は変わらないため）。②自製か外注かの判断→外注した場合に本当に固定費が下がるか確認が必要（下がらない固定費は「埋没原価」として意思決定に無関係）。',
+    exp_en:'Direct costing for decisions: ①Special order with spare capacity → accept if price > variable cost (fixed costs won\'t change anyway — they\'re sunk). ②Make-or-buy → consider whether outsourcing actually reduces fixed costs. Fixed costs that don\'t change regardless = "sunk costs" → irrelevant to the decision.'
+  },
+  {
+    id:338,
+    level:2,
+    cat:'直接原価計算',
+    q:'（穴埋め）直接原価計算の損益計算書（contribution margin format）を完成させよ。売上高8,000,000円・変動売上原価4,000,000円・変動販管費800,000円・固定製造費用2,000,000円・固定販管費600,000円。①変動費合計②【限界利益（貢献利益）】③固定費合計④【営業利益】',
+    q_en:'(Fill in) Complete the direct costing P&L: Sales ¥8,000,000; variable COGS ¥4,000,000; variable SGA ¥800,000; fixed manufacturing ¥2,000,000; fixed SGA ¥600,000. ①Total variable costs ②Contribution margin ③Total fixed costs ④Operating income',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">売　上　高　　　　　　　8,000,000円<br>変動費（売上原価＋変動販管費）△4,800,000円<br>─────────────────────<br>限界利益（貢献利益）　　3,200,000円<br>固定費（製造＋販管）　△2,600,000円<br>─────────────────────<br>営 業 利 益　　　　　　　　600,000円</div><table><tbody><tr><td class="hl">①変動費</td><td>4,800,000円</td></tr><tr><td class="hl">②限界利益</td><td>3,200,000円（CM率40%）</td></tr><tr><td class="hl">③固定費</td><td>2,600,000円</td></tr><tr><td class="hl">④営業利益</td><td>600,000円</td></tr></tbody></table>`,
+    exp:'直接原価計算P/Lの見方：限界利益（3,200,000円）は「売上から変動費を引いた、固定費を回収するための金額」。限界利益率＝3,200,000÷8,000,000＝40%。固定費2,600,000÷CM率40%＝6,500,000円が損益分岐点売上高。実際売上8,000,000との差（1,500,000円）×40%＝600,000円が営業利益。',
+    exp_en:'Direct costing P&L: CM (¥3,200,000) = "amount available to cover fixed costs after variable costs." CM ratio = 40%. BEP = ¥2,600,000 ÷ 40% = ¥6,500,000. Gap from BEP = ¥1,500,000 × 40% = ¥600,000 operating income. Every ¥1 of sales above BEP contributes ¥0.40 to profit.',
+    note:'変動費=4,800,000 / 限界利益=3,200,000(40%) / 固定費=2,600,000 / 利益=600,000'
+  },
+  {
+    id:339,
+    level:2,
+    cat:'直接原価計算',
+    q:'（穴埋め）製造業において工業簿記で作成する財務諸表の特徴を答えよ。①損益計算書では売上原価の内訳として【ア　　　　　　　　　　　　　　　　　　】（製造原価明細書）が添付される。②貸借対照表の流動資産に【イ　　　　　　　　　　　　　　　　　　　　　　】・【ウ　　　　　　　　　　　　　　　　】・【エ　　　　　　　　　　　　　　　　】が計上される。',
+    q_en:'(Fill in) Characteristics of industrial financial statements. ①Attached to the income statement is [ア___] (cost of production report). ②The current assets section of the balance sheet includes [イ___], [ウ___], and [エ___].',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>製造原価報告書（製造原価明細書）</td></tr><tr><td class="hl">イ・ウ・エ</td><td>材料・仕掛品・製品（商業簿記の「商品」に相当）</td></tr></tbody></table><div class="formula-box">製造業B/S流動資産（棚卸資産）：<br>材料 → 仕掛品 → 製品　（3段階の在庫）<br>商業簿記は「商品」1種類だけ</div>`,
+    exp:'製造業の財務諸表の特徴：①製造原価報告書が追加（材料費＋労務費＋経費→完成品原価の明細）②B/Sの棚卸資産が「材料」「仕掛品」「製品」の3種類（商業簿記は「商品」だけ）。製造プロセスを追跡するために在庫が3段階に分かれています。これが工業簿記と商業簿記の最大の構造的違いです。',
+    exp_en:'Industrial financial statements: ①Cost of Production Report attached to the income statement (details material, labor, overhead → product cost) ②Balance sheet has THREE inventory types: Materials, WIP, Finished Goods — vs. commercial bookkeeping\'s single "Merchandise" account. These three inventory layers reflect the manufacturing process.'
+  },
+  {
+    id:340,
+    level:2,
+    cat:'直接原価計算',
+    q:'（穴埋め）工業簿記と商業簿記の主な違いをまとめよ。①商品売買業は「仕入」と「売上」だが、製造業は「材料費・労務費・経費」を集計して【ア　　　　　　】を計算する。②棚卸資産の種類：商業簿記【イ　　　　　】vs 工業簿記【ウ　　　　　・仕掛品・製品】。③製造原価計算のための帳票として【エ　　　　　　　　　　　　　　　　　　　】が必要。',
+    q_en:'(Fill in) Compare industrial vs. commercial bookkeeping. ①Commercial: buy-and-sell (purchases & sales). Industrial: accumulates material, labor, overhead to calculate [ア___]. ②Inventory: commercial has [イ___]; industrial has [ウ___], WIP, and Finished Goods. ③Industrial requires [エ___] as a special cost document.',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>製品原価（製造原価）</td></tr><tr><td class="hl">イ</td><td>商品（1種類）</td></tr><tr><td class="hl">ウ</td><td>材料</td></tr><tr><td class="hl">エ</td><td>製造原価報告書（製造指図書 or 原価計算表）</td></tr></tbody></table>`,
+    exp:'工業簿記のエッセンス：①「作る」プロセスのコストを追跡する→材料費・労務費・経費→製品原価②在庫が3段階（材料→仕掛品→製品）③原価管理のための差異分析（標準原価計算）。商業簿記が「仕入→販売」の2ステップなのに対し、工業簿記は「購入→製造（複数工程）→完成→販売」の多段階プロセスを記録します。',
+    exp_en:'Industrial bookkeeping essence: ①Track costs through the production process (materials + labor + overhead = product cost) ②Three inventory stages (Materials → WIP → Finished Goods) ③Variance analysis for cost control (standard costing). Commercial = 2 steps (buy → sell). Industrial = multiple steps (buy → manufacture → complete → sell).'
+  },
+  {
+    id:341,
+    level:2,
+    cat:'工業簿記総まとめ',
+    q:'（穴埋め）製造原価報告書（製造原価明細書）の構造を完成させよ。\n当月製造費用：材料費 [①]、労務費 600,000、経費 200,000。\n月初仕掛品 300,000、月末仕掛品 [②]。\n当期製品製造原価 1,900,000。',
+    q_en:'(Fill-in) Complete the Cost of Goods Manufactured statement.\nCurrent month costs: Materials [①], Labor 600,000, Overhead 200,000.\nBeginning WIP 300,000, Ending WIP [②].\nCost of Goods Manufactured 1,900,000.',
+    ans_html:`<div class="tbl-sec">
+<table><tr><th>項目</th><th>金額</th></tr>
+<tr><td>材料費</td><td>① <b>900,000</b></td></tr>
+<tr><td>労務費</td><td>600,000</td></tr>
+<tr><td>経費</td><td>200,000</td></tr>
+<tr><td>当月製造費用合計</td><td>1,700,000</td></tr>
+<tr><td>月初仕掛品</td><td>300,000</td></tr>
+<tr><td>合計</td><td>2,000,000</td></tr>
+<tr><td>月末仕掛品</td><td>② <b>100,000</b></td></tr>
+<tr><td>当期製品製造原価</td><td>1,900,000</td></tr>
+</table></div>
+<p>①：1,900,000 + 100,000 − 300,000 − 600,000 − 200,000 = 900,000<br>
+②：1,700,000 + 300,000 − 1,900,000 = 100,000</p>`,
+    exp:'製造原価報告書は「モノを作るのにいくらかかったか」をまとめた表です。\n公式は：当期製品製造原価 ＝ 当月製造費用 ＋ 月初仕掛品 − 月末仕掛品。\n逆算：月末仕掛品 ＝ 当月製造費用 ＋ 月初仕掛品 − 当期製品製造原価。\n財務諸表では損益計算書の「売上原価」の内訳として添付されます。',
+    exp_en:'The Cost of Goods Manufactured statement summarizes production costs.\nFormula: Cost Mfg = Current Costs + Beginning WIP − Ending WIP.\nReverse calc: Ending WIP = Current Costs + Beginning WIP − Cost Mfg.\nIt appears as a supporting schedule to the income statement.'
+  },
+  {
+    id:342,
+    level:2,
+    cat:'工業簿記総まとめ',
+    q:'本社から工場へ材料 800,000円を送付した。本社側・工場側それぞれの仕訳を示せ。',
+    q_en:'The head office sent materials worth ¥800,000 to the factory. Show journal entries for both the head office and the factory.',
+    e:[{d:[['工場',800000]],c:[['材料',800000]]},{d:[['材料',800000]],c:[['本社',800000]]}],
+    exp:'工場会計が独立している場合、本社と工場は「本社勘定」「工場勘定」という内部勘定で連絡します。\n本社側：工場勘定（資産）↑、材料勘定↓（工場へ移した）\n工場側：材料勘定↑、本社勘定（負債的な相手勘定）↑\n本社の「工場」と工場の「本社」は対になる勘定で、連結すると相殺されます。',
+    exp_en:'When factory accounting is independent, head office and factory use "Factory" and "Head Office" accounts as internal liaisons.\nHead office: Factory account ↑, Materials ↓\nFactory: Materials ↑, Head Office account ↑\nThese paired accounts cancel out on consolidation.'
+  },
+  {
+    id:343,
+    level:2,
+    cat:'直接原価計算',
+    q:'（穴埋め）高低点法で電力費（混合費）を固定費と変動費に分解する。\n最高操業度：4,000時間 / 費用 320,000円\n最低操業度：1,000時間 / 費用 140,000円\n変動費率 [①] 円/時間、固定費 [②] 円。',
+    q_en:'(Fill-in) Use the high-low method to separate mixed electricity cost.\nHigh: 4,000 hrs / ¥320,000. Low: 1,000 hrs / ¥140,000.\nVariable rate [①] yen/hr, Fixed cost [②] yen.',
+    ans_html:`<div class="tbl-sec">
+<p>① 変動費率 ＝ (320,000 − 140,000) ÷ (4,000 − 1,000) ＝ <b>60円/時間</b><br>
+② 固定費 ＝ 320,000 − 60 × 4,000 ＝ <b>80,000円</b></p>
+<table><tr><th></th><th>計算</th><th>答え</th></tr>
+<tr><td>① 変動費率</td><td>180,000 ÷ 3,000</td><td><b>60円/時間</b></td></tr>
+<tr><td>② 固定費</td><td>320,000 − 240,000</td><td><b>80,000円</b></td></tr>
+</table></div>`,
+    exp:'高低点法は「一番多い月」と「一番少ない月」の2点だけで費用を分解する方法です。\n変動費率 ＝ 費用の差 ÷ 操業度の差（傾き）\n固定費 ＝ どちらかの月の費用 − 変動費率 × その月の操業度（切片）\nグラフでいうと2点を結んだ直線の「傾き」が変動費率、「y切片」が固定費です。',
+    exp_en:'The high-low method uses only the highest and lowest activity months.\nVariable rate = Change in cost ÷ Change in activity (slope)\nFixed cost = Total cost − Variable rate × Activity (y-intercept)\nThink of it as finding the slope and intercept of a line through two points.'
+  },
+  {
+    id:344,
+    level:2,
+    cat:'直接原価計算',
+    q:'（穴埋め）直接原価計算。販売価格1個2,000円、変動費1,200円、固定費480,000円。\n目標営業利益 240,000円を達成するための必要販売量は [①] 個。\n現在の販売量が900個のとき、安全余裕率は [②] ％。',
+    q_en:'(Fill-in) Selling price ¥2,000/unit, variable cost ¥1,200/unit, fixed cost ¥480,000.\nUnits needed for target profit of ¥240,000: [①]. Safety margin ratio at 900 units: [②]%.',
+    ans_html:`<div class="tbl-sec">
+<p>貢献利益率 ＝ (2,000 − 1,200) ÷ 2,000 ＝ 40%</p>
+<p>① 必要販売量 ＝ (480,000 + 240,000) ÷ (2,000 − 1,200) ＝ 720,000 ÷ 800 ＝ <b>900個</b></p>
+<p>② 損益分岐点販売量 ＝ 480,000 ÷ 800 ＝ 600個<br>
+安全余裕率 ＝ (900 − 600) ÷ 900 × 100 ＝ <b>33.3%</b></p>
+</div>`,
+    exp:'目標利益達成の公式：必要販売量 ＝ (固定費 ＋ 目標利益) ÷ 1個あたり貢献利益\n安全余裕率：実際販売量が損益分岐点からどれだけ余裕があるかを示すパーセント。\n　安全余裕率 ＝ (実際販売量 − BEP販売量) ÷ 実際販売量 × 100\n安全余裕率が高いほど「ちょっと売上が落ちても赤字にならない」ということです。',
+    exp_en:'Target profit formula: Required units = (Fixed costs + Target profit) ÷ Unit contribution margin.\nSafety margin ratio shows how far actual sales are above break-even.\nSafety margin = (Actual − BEP) ÷ Actual × 100.\nHigher safety margin = more cushion before losses occur.'
+  },
+  {
+    id:345,
+    level:2,
+    cat:'工業簿記総まとめ',
+    q:'月初製品 200,000円、当期製品製造原価 1,900,000円、月末製品 300,000円のとき、\n売上原価に振り替える仕訳を示せ。',
+    q_en:'Beginning finished goods ¥200,000, Cost of Goods Manufactured ¥1,900,000, Ending finished goods ¥300,000. Show the journal entry to transfer cost of goods sold.',
+    e:[{d:[['売上原価',1800000]],c:[['製品',1800000]]}],
+    exp:'売上原価 ＝ 月初製品 ＋ 当期製品製造原価 − 月末製品\n　　　　 ＝ 200,000 ＋ 1,900,000 − 300,000 ＝ 1,800,000円\n製品勘定（資産）から売上原価（費用）へ振り替えます。\n【流れ】材料→仕掛品→製品→売上原価　という原価の旅が完結します！',
+    exp_en:'COGS = Beginning inventory + Cost Mfg − Ending inventory\n     = 200,000 + 1,900,000 − 300,000 = ¥1,800,000\nTransfer from Finished Goods (asset) to Cost of Goods Sold (expense).\nThe cost flow journey: Materials → WIP → Finished Goods → COGS is complete!'
+  },
+  {
+    id:346,
+    level:2,
+    cat:'工業簿記総まとめ',
+    q:'（穴埋め）工業簿記と商業簿記を比較する。\n商業簿記の「商品」に対応する工業簿記の勘定科目は [①] と [②]。\n商業では「売上原価 ＝ 期首商品 ＋ 仕入 − 期末商品」だが、\n工業では「売上原価 ＝ 期首製品 ＋ [③] − 期末製品」となる。',
+    q_en:'(Fill-in) Compare industrial and commercial bookkeeping.\nIndustrial accounts corresponding to commercial "Merchandise": [①] and [②].\nIndustrial COGS formula uses [③] instead of "Purchases".',
+    ans_html:`<div class="tbl-sec">
+<table><tr><th>比較項目</th><th>商業簿記</th><th>工業簿記</th></tr>
+<tr><td>在庫勘定</td><td>商品</td><td>① <b>仕掛品</b> ・ ② <b>製品</b></td></tr>
+<tr><td>費用取得</td><td>仕入（購入）</td><td>③ <b>当期製品製造原価</b></td></tr>
+<tr><td>原価の流れ</td><td>仕入→商品→売上原価</td><td>材料→仕掛品→製品→売上原価</td></tr>
+</table>
+<p>売上原価（工業）＝ 期首製品 ＋ 当期製品製造原価 − 期末製品</p>
+</div>`,
+    exp:'工業簿記は「商業簿記の応用版」とも言えます。\n商品（買ってきたもの）→ 仕掛品（作りかけ）＋ 製品（作り終わったもの）に分かれる。\n仕入（買ってきた金額）→ 当期製品製造原価（材料費＋労務費＋経費）に置き換わる。\n基本的な流れは同じで「在庫があって、売った分だけ費用」というシンプルな原則です。',
+    exp_en:'Industrial bookkeeping is essentially "commercial bookkeeping for manufacturers."\nMerchandise splits into: WIP (in-process) + Finished Goods (completed).\nPurchases become: Cost of Goods Manufactured (materials + labor + overhead).\nThe core logic is the same: inventory on hand, and only what\'s sold becomes expense.'
+  },
 ];
 
 const GROUPS3 = [[1,20],[21,40],[41,60],[61,80],[81,100],[101,120]];
