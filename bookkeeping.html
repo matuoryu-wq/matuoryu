@@ -489,10 +489,11 @@
 
 
 <div class="controls">
-  <span style="font-size:11px;font-weight:700;color:var(--muted);align-self:center;">級：</span>
-  <button class="ctrl-btn grp-btn active" id="lvl-0" onclick="setLevel(0)">全級</button>
-  <button class="ctrl-btn grp-btn" id="lvl-1" onclick="setLevel(1)">3級</button>
-  <button class="ctrl-btn grp-btn" id="lvl-2" onclick="setLevel(2)">2級</button>
+  <span style="font-size:11px;font-weight:700;color:var(--muted);align-self:center;">分野：</span>
+  <button class="ctrl-btn grp-btn active" id="sec-all" onclick="setSection(null)">全て</button>
+  <button class="ctrl-btn grp-btn" id="sec-s3" onclick="setSection('s3')">3級</button>
+  <button class="ctrl-btn grp-btn" id="sec-s2c" onclick="setSection('s2c')">2級商業</button>
+  <button class="ctrl-btn grp-btn" id="sec-s2i" onclick="setSection('s2i')">2級工業</button>
   <button class="apx-btn" onclick="showApx()">📖 勘定科目一覧</button>
 </div>
 <div class="controls" id="group-row" style="padding-top:6px;border-top:1px solid var(--border);display:none;"></div>
@@ -4977,28 +4978,27 @@ const ALL = [
   },
 ];
 
-const GROUPS3 = [[1,20],[21,40],[41,60],[61,80],[81,100],[101,120]];
-const GROUPS2 = [[1,20],[21,40],[41,9999]];
+const SECS = {
+  s3:  q => (q.level||3)===3,
+  s2c: q => q.level===2 && q.id<=266,
+  s2i: q => q.level===2 && q.id>=267,
+};
 
-function q2Id(q){ if((q.level||3)===2) return q.id-110; if(q.id>156) return q.id-46; return q.id; }
+function getSectionQuestions(sec){ return sec ? ALL.filter(SECS[sec]) : ALL; }
 
 function updateGroupButtons(){
   const row = document.getElementById('group-row');
-  if(levelFilter === 0){
-    row.style.display = 'none';
-    groupFilter = 0;
-    return;
+  if(!sectionFilter){ row.style.display='none'; groupFilter=0; return; }
+  const secQs = getSectionQuestions(sectionFilter);
+  const numGroups = Math.ceil(secQs.length/20);
+  row.style.display='';
+  let html='<span style="font-size:11px;font-weight:700;color:var(--muted);align-self:center;">範囲：</span>';
+  html+=`<button class="ctrl-btn grp-btn${groupFilter===0?' active':''}" onclick="setGroup(0)">全問</button>`;
+  for(let i=0;i<numGroups;i++){
+    const s=i*20+1, e=Math.min((i+1)*20,secQs.length);
+    html+=`<button class="ctrl-btn grp-btn${groupFilter===i+1?' active':''}" onclick="setGroup(${i+1})">Q${s}-${e}</button>`;
   }
-  row.style.display = '';
-  const groups = levelFilter === 2 ? GROUPS2 : GROUPS3;
-  let html = '<span style="font-size:11px;font-weight:700;color:var(--muted);align-self:center;">範囲：</span>';
-  html += `<button class="ctrl-btn grp-btn${groupFilter===0?' active':''}" onclick="setGroup(0)">全問</button>`;
-  groups.forEach((g, i) => {
-    const n = i + 1;
-    const label = g[1] >= 9000 ? `Q${g[0]}-` : `Q${g[0]}-${g[1]}`;
-    html += `<button class="ctrl-btn grp-btn${groupFilter===n?' active':''}" onclick="setGroup(${n})">${label}</button>`;
-  });
-  row.innerHTML = html;
+  row.innerHTML=html;
 }
 
 let deck = [];
@@ -5006,26 +5006,19 @@ let idx  = 0;
 let checked   = JSON.parse(localStorage.getItem('bk_checked')   || '{}');
 let checkOnly = false;
 let groupFilter = 0;
-let levelFilter = 0;
+let sectionFilter = null;
 
 function saveProgress(){
   localStorage.setItem('bk_checked', JSON.stringify(checked));
 }
 
 function buildDeck(){
-  deck = ALL.filter(q => {
-    if(checkOnly && !checked[q.id]) return false;
-    if(groupFilter > 0){
-      const groups = levelFilter === 2 ? GROUPS2 : GROUPS3;
-      const g = groups[groupFilter-1];
-      if(!g) return false;
-      const qnum = q2Id(q);
-      if(qnum < g[0] || qnum > g[1]) return false;
-    }
-    if(levelFilter === 1 && (q.level||3) !== 3) return false;
-    if(levelFilter === 2 && (q.level||3) !== 2) return false;
-    return true;
-  });
+  let base = getSectionQuestions(sectionFilter);
+  if(groupFilter > 0){
+    const s=(groupFilter-1)*20, e=groupFilter*20;
+    base=base.slice(s,e);
+  }
+  deck=base.filter(q=>!checkOnly||checked[q.id]);
 }
 
 function setGroup(n){
@@ -5242,16 +5235,19 @@ function expNextEntry(){
 
 // ===== スクロールモードここまで =====
 
-function setLevel(n){
-  levelFilter = n;
-  groupFilter = 0;
-  for(let i=0; i<=2; i++){
-    const btn = document.getElementById('lvl-'+i);
-    if(btn) btn.classList.toggle('active', i === n);
-  }
+function setSection(sec){
+  sectionFilter=sec;
+  groupFilter=0;
+  ['sec-all','sec-s3','sec-s2c','sec-s2i'].forEach(id=>{
+    const btn=document.getElementById(id);
+    if(btn) btn.classList.toggle('active',
+      (sec===null&&id==='sec-all')||(sec==='s3'&&id==='sec-s3')||
+      (sec==='s2c'&&id==='sec-s2c')||(sec==='s2i'&&id==='sec-s2i')
+    );
+  });
   updateGroupButtons();
   buildDeck();
-  idx = 0;
+  idx=0;
   syncExpFromDeck(0);
   document.getElementById('exp-main').innerHTML='';
   loadExpQ();
@@ -5279,20 +5275,20 @@ function toggleChecked(qId){
 }
 
 function resetAll(){
-  checked = {};
-  checkOnly = false;
+  checked={};
+  checkOnly=false;
   saveProgress();
-  groupFilter = 0;
-  levelFilter = 0;
-  const co = document.getElementById('btn-check-only');
+  groupFilter=0;
+  sectionFilter=null;
+  const co=document.getElementById('btn-check-only');
   if(co){ co.classList.remove('active'); co.textContent='チェックのみ'; }
-  for(let i=0; i<=2; i++){
-    const btn = document.getElementById('lvl-'+i);
-    if(btn) btn.classList.toggle('active', i === 0);
-  }
+  ['sec-all','sec-s3','sec-s2c','sec-s2i'].forEach(id=>{
+    const btn=document.getElementById(id);
+    if(btn) btn.classList.toggle('active',id==='sec-all');
+  });
   updateGroupButtons();
   buildDeck();
-  idx = 0;
+  idx=0;
   syncExpFromDeck(0);
   document.getElementById('exp-main').innerHTML='';
   loadExpQ();
