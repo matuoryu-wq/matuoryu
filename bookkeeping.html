@@ -2398,19 +2398,14 @@ function setGroup(n){
   updateGroupButtons();
   buildDeck();
   idx = 0;
+  if(expActive){ syncExpFromDeck(0); document.getElementById('exp-panel').innerHTML='<div id="exp-main"></div>'; loadExpQ(); return; }
   render();
 }
 
 // ===== スクロールモード =====
-let expActive=false, expScrollPage=0;
+let expActive=false;
 let expQuestions=[], expQIdx=0, expCardIdx=0, expEntryIdx=0;
-let expPlaced={d:[],c:[]}, expScore=0, expHistory=[], expQOk=true;
-
-function getExpFilteredAll(){
-  if(!levelFilter || levelFilter===0) return ALL;
-  if(levelFilter===2) return ALL.filter(q=>q.level===2);
-  return ALL.filter(q=>(q.level||3)===3);
-}
+let expPlaced={d:[],c:[]}, expHistory=[], expQOk=true;
 
 function getExpEntryAccounts(q, ei){
   if(!q.e || !q.e[ei]) return null;
@@ -2421,34 +2416,27 @@ function getExpEntryAccounts(q, ei){
   ];
 }
 
+function syncExpFromDeck(startIdx){
+  expQuestions=[...deck];
+  expQIdx=Math.min(Math.max(0,startIdx),Math.max(0,deck.length-1));
+  expEntryIdx=0; expQOk=true;
+  expPlaced={d:[],c:[]}; expHistory=[]; expCardIdx=0;
+}
+
 function toggleExp(){
   expActive=!expActive;
   document.getElementById('exp-toggle-btn').classList.toggle('active',expActive);
   document.getElementById('exp-panel').style.display=expActive?'block':'none';
   document.querySelector('.stats-bar').style.display=expActive?'none':'flex';
   document.querySelector('.card-area').style.display=expActive?'none':'block';
-  if(expActive){ expScrollPage=0; renderExpPanel(); }
-}
-
-function setExpScrollPage(p){
-  expScrollPage=p; expQIdx=0; expScore=0;
-  renderExpPanel();
-}
-
-function renderExpPanel(){
-  const panel=document.getElementById('exp-panel');
-  const filteredAll=getExpFilteredAll();
-  const totalPages=Math.ceil(filteredAll.length/20)||1;
-  if(expScrollPage>=totalPages) expScrollPage=0;
-  let pageTabs='<div class="exp-scroll-tabs">';
-  for(let p=0;p<totalPages;p++){
-    pageTabs+=`<button class="exp-scroll-tab${expScrollPage===p?' active':''}" onclick="setExpScrollPage(${p})">${p+1}</button>`;
+  if(expActive){
+    syncExpFromDeck(idx);
+    document.getElementById('exp-panel').innerHTML='<div id="exp-main"></div>';
+    loadExpQ();
+  } else {
+    idx=expQIdx;
+    render();
   }
-  pageTabs+='</div>';
-  panel.innerHTML=`${pageTabs}<div id="exp-main"></div>`;
-  expQuestions=filteredAll.slice(expScrollPage*20, expScrollPage*20+20);
-  expQIdx=0; expScore=0; expPlaced={d:[],c:[]}; expHistory=[];
-  loadExpQ();
 }
 
 function expNavBar(){
@@ -2457,14 +2445,13 @@ function expNavBar(){
   return `<div class="exp-nav-row">
     <button class="exp-nav-btn" onclick="expGoTo(${i-1})"${i===0?' disabled':''}>← 前へ</button>
     <span class="exp-nav-info">問${i+1} / ${total}</span>
-    <button class="exp-nav-btn exp-nav-next" onclick="expGoTo(${i+1})">${isLast?'結果を見る →':'次の問題 →'}</button>
+    <button class="exp-nav-btn exp-nav-next" onclick="expGoTo(${i+1})"${isLast?' disabled':''}>次の問題 →</button>
   </div>`;
 }
 
-function expGoTo(idx){
-  if(idx<0) return;
-  if(idx>=expQuestions.length){ expFinish(); return; }
-  expQIdx=idx; loadExpQ();
+function expGoTo(i){
+  if(i<0||i>=expQuestions.length) return;
+  expQIdx=i; loadExpQ();
 }
 
 function loadExpQ(){
@@ -2593,7 +2580,6 @@ function expCheckResult(){
   cards.forEach(acc=>{ if(expPlaced.d.includes(acc)!==(acc.side==='d')) ok=false; });
   if(!ok) expQOk=false;
   const isLastEntry=expEntryIdx>=q.e.length-1;
-  if(isLastEntry && expQOk) expScore++;
   const res=document.getElementById('exp-res');
   const undoBtn=document.getElementById('exp-undo');
   if(undoBtn) undoBtn.style.display='none';
@@ -2625,19 +2611,6 @@ function expNextEntry(){
   loadExpEntry();
 }
 
-function expFinish(){
-  const pct=Math.round(expScore/expQuestions.length*100);
-  document.getElementById('exp-main').innerHTML=`
-    <div class="exp-fin">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">スクロールモード 結果</div>
-      <div class="exp-fin-score">${expScore}<span style="font-size:24px;color:var(--muted);"> / ${expQuestions.length}</span></div>
-      <div class="exp-fin-label">${pct}% 正解　${pct>=80?'🎉 素晴らしい！':pct>=50?'💪 もう一息！':'📚 復習しよう！'}</div>
-      <div class="exp-fin-btns">
-        <button class="exp-fin-btn exp-fin-btn-retry" onclick="expQIdx=0;expScore=0;loadExpQ()">🔁 もう一度</button>
-        <button class="exp-fin-btn exp-fin-btn-back" onclick="toggleExp()">← 戻る</button>
-      </div>
-    </div>`;
-}
 // ===== スクロールモードここまで =====
 
 function setLevel(n){
@@ -2647,10 +2620,10 @@ function setLevel(n){
     const btn = document.getElementById('lvl-'+i);
     if(btn) btn.classList.toggle('active', i === n);
   }
-  if(expActive){ expScrollPage=0; renderExpPanel(); return; }
   updateGroupButtons();
   buildDeck();
   idx = 0;
+  if(expActive){ syncExpFromDeck(0); document.getElementById('exp-panel').innerHTML='<div id="exp-main"></div>'; loadExpQ(); return; }
   render();
 }
 
