@@ -414,6 +414,90 @@
     #apx-content.en-hidden .gloss-def .gloss-def-ja { color:#444; font-size:12px; margin-top:0; padding-top:0; border-top:none; }
     #apx-content.en-hidden .gloss-def-en { display:none; }
 
+    /* ===== 一問一答モード ===== */
+    .qa-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:200; padding:0; }
+    .qa-overlay.show { display:flex; }
+    .qa-modal { background:#fff; width:100%; max-width:none; border-radius:0; display:flex; flex-direction:column; height:100vh; max-height:100vh; overflow:hidden; margin:0; }
+    .qa-sticky-hd { flex-shrink:0; padding:12px 16px 10px; background:#fff; border-bottom:1px solid var(--border); }
+    .qa-hd-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+    .qa-title { font-size:16px; font-weight:800; color:var(--primary); }
+    .qa-prog-text { font-size:13px; font-weight:700; color:var(--muted); }
+    .qa-close { background:none; border:none; font-size:22px; cursor:pointer; color:var(--muted); line-height:1; padding:2px 6px; }
+    .qa-tabs { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:6px; }
+    .qa-tab { padding:5px 12px; border:1.5px solid var(--border); border-radius:20px; background:#fff; font-size:12px; cursor:pointer; color:var(--muted); font-weight:600; transition:background 0.15s,color 0.15s,border-color 0.15s; }
+    .qa-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .qa-prog-bar-wrap { height:5px; background:#E0E0E0; border-radius:3px; overflow:hidden; }
+    .qa-prog-bar-fill { height:100%; background:var(--primary); border-radius:3px; transition:width 0.3s; }
+    .qa-body { overflow-y:auto; flex:1; padding:14px 14px 24px; -webkit-overflow-scrolling:touch; display:flex; flex-direction:column; gap:14px; }
+
+    /* 全体像カード */
+    .qa-overview-card { background:linear-gradient(135deg,#E3F2FD 0%,#F3E5F5 100%); border-radius:14px; padding:16px; border:1.5px solid #B3C9E8; }
+    .qa-overview-title { font-size:15px; font-weight:800; color:#1A237E; margin-bottom:10px; }
+    .qa-bs-table { width:100%; border-collapse:collapse; margin-bottom:8px; font-size:12px; }
+    .qa-bs-table td { padding:5px 8px; border:1.5px solid #B3C9E8; text-align:center; font-weight:700; }
+    .qa-bs-table .bs-asset { background:#FFF9C4; color:#5D4037; }
+    .qa-bs-table .bs-liab  { background:#FCE4EC; color:#880E4F; }
+    .qa-bs-table .bs-eq    { background:#F3E5F5; color:#4A148C; }
+    .qa-formula-row { font-size:12px; font-weight:700; color:#1A237E; margin:4px 0; text-align:center; }
+    .qa-5elem { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+    .qa-elem-tag { flex:1; min-width:80px; padding:6px 4px; border-radius:8px; text-align:center; font-size:11px; font-weight:700; }
+    .qa-elem-tag.asset    { background:#FFF9C4; color:#5D4037; border:1.5px solid #F9C400; }
+    .qa-elem-tag.liability{ background:#FCE4EC; color:#880E4F; border:1.5px solid #C2185B; }
+    .qa-elem-tag.equity   { background:#F3E5F5; color:#4A148C; border:1.5px solid #CE93D8; }
+    .qa-elem-tag.revenue  { background:#E1F5FE; color:#01579B; border:1.5px solid #0288D1; }
+    .qa-elem-tag.expense  { background:#E8F5E9; color:#1B5E20; border:1.5px solid #388E3C; }
+    .qa-debit-credit { margin-top:10px; font-size:11px; background:#fff; border-radius:8px; overflow:hidden; border:1px solid var(--border); }
+    .qa-dc-hd { display:grid; grid-template-columns:1fr 1fr; text-align:center; font-weight:800; font-size:11px; }
+    .qa-dc-hd .dbt { padding:5px; background:#E8F5E9; color:#1B5E20; }
+    .qa-dc-hd .crd { padding:5px; background:#E1F5FE; color:#01579B; }
+    .qa-dc-body { display:grid; grid-template-columns:1fr 1fr; font-size:11px; }
+    .qa-dc-body .dbt { padding:4px 6px; color:#1B5E20; border-top:1px solid var(--border); line-height:1.5; }
+    .qa-dc-body .crd { padding:4px 6px; color:#01579B; border-top:1px solid var(--border); border-left:1px solid var(--border); line-height:1.5; }
+
+    /* フラッシュカード */
+    .qa-card-wrap { background:#fff; border-radius:14px; border:1.5px solid var(--border); overflow:hidden; cursor:pointer; transition:box-shadow 0.2s; user-select:none; }
+    .qa-card-wrap:active { box-shadow:0 0 0 3px rgba(0,84,175,0.2); }
+    .qa-face-front { padding:20px 18px 16px; min-height:160px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
+    .qa-face-back { padding:16px 18px; display:none; }
+    .qa-card-wrap.flipped .qa-face-front { display:none; }
+    .qa-card-wrap.flipped .qa-face-back { display:block; }
+    .qa-src-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; background:#E3F2FD; color:#01579B; margin-bottom:2px; align-self:flex-start; }
+    .qa-term-big { font-size:26px; font-weight:800; color:var(--primary); text-align:center; }
+    .qa-term-en { font-size:12px; color:var(--muted); text-align:center; }
+    .qa-tap-hint { margin-top:8px; font-size:12px; color:var(--muted); border:1px dashed var(--border); border-radius:20px; padding:4px 14px; }
+    .qa-back-badge { display:inline-block; font-size:11px; font-weight:700; padding:2px 10px; border-radius:10px; margin-bottom:10px; }
+    .qa-back-badge.asset     { background:#FFF9C4; color:#5D4037; border:1.5px solid #F9C400; }
+    .qa-back-badge.liability { background:#FCE4EC; color:#880E4F; border:1.5px solid #C2185B; }
+    .qa-back-badge.revenue   { background:#E1F5FE; color:#01579B; border:1.5px solid #0288D1; }
+    .qa-back-badge.expense   { background:#E8F5E9; color:#1B5E20; border:1.5px solid #388E3C; }
+    .qa-back-badge.equity    { background:#F3E5F5; color:#4A148C; border:1.5px solid #CE93D8; }
+    .qa-back-badge.gloss     { background:#FFF3E0; color:#BF360C; border:1.5px solid #FF8F00; }
+    .qa-back-badge.industrial{ background:#FFF3E0; color:#BF360C; border:1.5px solid #FF8F00; }
+    .qa-back-def { font-size:13px; color:#333; line-height:1.7; }
+    .qa-back-def-en { font-size:11px; color:var(--muted); line-height:1.6; margin-top:8px; padding-top:8px; border-top:1px dashed var(--border); }
+
+    /* 判定ボタン */
+    .qa-judge-row { display:flex; gap:10px; }
+    .qa-judge-row.hidden { display:none; }
+    .qa-judge-btn { flex:1; padding:12px 10px; border-radius:12px; border:2px solid; font-size:14px; font-weight:700; cursor:pointer; transition:background 0.15s; }
+    .qa-again-btn { background:#fff; border-color:#E57373; color:#C62828; }
+    .qa-again-btn:active { background:#FFEBEE; }
+    .qa-known-btn { background:#fff; border-color:#66BB6A; color:#1B5E20; }
+    .qa-known-btn:active { background:#E8F5E9; }
+
+    /* ナビ */
+    .qa-nav-row { display:flex; align-items:center; gap:10px; }
+    .qa-nav-btn { padding:8px 14px; border:1.5px solid var(--border); border-radius:10px; background:#fff; font-size:13px; font-weight:700; cursor:pointer; color:var(--text); }
+    .qa-nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+    .qa-known-count { font-size:12px; color:var(--muted); font-weight:600; flex:1; text-align:center; }
+
+    /* 完了画面 */
+    .qa-done-card { background:linear-gradient(135deg,#E8F5E9,#E3F2FD); border-radius:14px; padding:24px 18px; text-align:center; border:1.5px solid var(--border); }
+    .qa-done-emoji { font-size:48px; margin-bottom:8px; }
+    .qa-done-title { font-size:18px; font-weight:800; color:var(--primary); margin-bottom:6px; }
+    .qa-done-sub { font-size:13px; color:#555; margin-bottom:16px; }
+    .qa-restart-btn { padding:10px 24px; background:var(--primary); color:#fff; border:none; border-radius:20px; font-size:14px; font-weight:700; cursor:pointer; }
+
     /* ===== スクロールモード ===== */
     .exp-panel { display:block; max-width:640px; margin:0 auto; padding:14px 14px; }
     .exp-q-card { background:#fff; border-radius:12px; padding:14px 16px; margin-bottom:14px; border:1.5px solid var(--border); font-size:14px; line-height:2.0; font-weight:500; }
@@ -498,6 +582,7 @@
   <button class="ctrl-btn grp-btn" id="sec-s2c" onclick="setSection('s2c')">2級商業</button>
   <button class="ctrl-btn grp-btn" id="sec-s2i" onclick="setSection('s2i')">2級工業</button>
   <button class="apx-btn" onclick="showApx()">📖 勘定科目一覧</button>
+  <button class="apx-btn" style="background:#E65100;" onclick="showQA()">📝 一問一答</button>
 </div>
 <div class="controls" id="group-row" style="padding-top:6px;border-top:1px solid var(--border);display:none;"></div>
 
@@ -508,6 +593,26 @@
 </div>
 
 <div class="exp-panel" id="exp-panel"><div id="exp-main"></div></div>
+
+<div class="qa-overlay" id="qa-overlay" onclick="if(event.target===this)closeQA()">
+  <div class="qa-modal">
+    <div class="qa-sticky-hd">
+      <div class="qa-hd-row">
+        <div class="qa-title">📝 一問一答</div>
+        <span class="qa-prog-text" id="qa-prog-text">0 / 0</span>
+        <button class="qa-close" onclick="closeQA()">✕</button>
+      </div>
+      <div class="qa-tabs" id="qa-tabs">
+        <button class="qa-tab active" data-f="all" onclick="setQAFilter('all')">全て</button>
+        <button class="qa-tab" data-f="acct" onclick="setQAFilter('acct')">勘定科目</button>
+        <button class="qa-tab" data-f="industrial" onclick="setQAFilter('industrial')">工業簿記</button>
+        <button class="qa-tab" data-f="gloss" onclick="setQAFilter('gloss')">用語集</button>
+      </div>
+      <div class="qa-prog-bar-wrap"><div class="qa-prog-bar-fill" id="qa-prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="qa-body" id="qa-body"></div>
+  </div>
+</div>
 
 <div class="apx-overlay" id="apx-overlay" onclick="if(event.target===this)hideApx()">
   <div class="apx-modal">
@@ -1620,6 +1725,187 @@ function showApx(){
   applyApxFilter('all');
 }
 function hideApx(){ document.getElementById('apx-overlay').classList.remove('show'); }
+
+// ===================== 一問一答モード =====================
+let qaAllItems = null;
+let qaActive   = [];
+let qaIdx      = 0;
+let qaFlipped  = false;
+let qaKnown    = new Set();
+let qaFilter   = 'all';
+
+const QA_TYPE_LABEL = {asset:'資産',liability:'負債',expense:'費用',revenue:'収益',equity:'純資産',other:'その他'};
+
+function buildQAAllItems(){
+  const items = [];
+  // 商業簿記 勘定科目
+  ACCT_DATA.forEach(([name, en, note, lv, note_en]) => {
+    const type = T[name]||'other';
+    items.push({ src:'acct', type, q:name, en, def:note, def_en:note_en||'', lv:lv||3 });
+  });
+  // 工業簿記 勘定科目
+  INDUSTRIAL_DATA.forEach(([name, en, note, subcat, note_en]) => {
+    const type = T[name]||'industrial';
+    items.push({ src:'industrial', type:'industrial', subcat, q:name, en, def:note, def_en:note_en||'' });
+  });
+  // 用語集
+  GLOSSARY_DATA.forEach(({category, items:gi}) => {
+    gi.forEach(({term, en, def, def_en}) => {
+      items.push({ src:'gloss', type:'gloss', cat:category, q:term, en, def, def_en:def_en||'' });
+    });
+  });
+  return items;
+}
+
+function getQAFiltered(){
+  if(!qaAllItems) qaAllItems = buildQAAllItems();
+  if(qaFilter==='all') return [...qaAllItems];
+  if(qaFilter==='acct') return qaAllItems.filter(i=>i.src==='acct');
+  if(qaFilter==='industrial') return qaAllItems.filter(i=>i.src==='industrial');
+  if(qaFilter==='gloss') return qaAllItems.filter(i=>i.src==='gloss');
+  return [...qaAllItems];
+}
+
+function showQA(){
+  if(!qaAllItems) qaAllItems = buildQAAllItems();
+  qaFilter='all'; qaIdx=0; qaFlipped=false; qaKnown=new Set();
+  qaActive=getQAFiltered();
+  document.querySelectorAll('#qa-tabs .qa-tab').forEach(t=>t.classList.toggle('active',t.dataset.f==='all'));
+  document.getElementById('qa-overlay').classList.add('show');
+  renderQABody();
+}
+
+function closeQA(){ document.getElementById('qa-overlay').classList.remove('show'); }
+
+function setQAFilter(f){
+  qaFilter=f; qaIdx=0; qaFlipped=false; qaKnown=new Set();
+  qaActive=getQAFiltered();
+  document.querySelectorAll('#qa-tabs .qa-tab').forEach(t=>t.classList.toggle('active',t.dataset.f===f));
+  renderQABody();
+}
+
+function renderQABody(){
+  const body = document.getElementById('qa-body');
+  const total = qaActive.length;
+  const prog = total ? Math.round((qaIdx+1)/total*100) : 0;
+  document.getElementById('qa-prog-text').textContent = total ? `${qaIdx+1} / ${total}` : '0 / 0';
+  document.getElementById('qa-prog-fill').style.width = prog+'%';
+
+  if(!total){ body.innerHTML='<p style="text-align:center;color:var(--muted);padding:40px">問題がありません</p>'; return; }
+
+  const overviewHtml = qaIdx===0 ? buildQAOverview() : '';
+
+  if(qaIdx >= total){
+    body.innerHTML = overviewHtml + buildQADone(total);
+    return;
+  }
+
+  const item = qaActive[qaIdx];
+  const knownCount = qaKnown.size;
+  const srcLabel = item.src==='acct' ? '勘定科目 3級' : item.src==='industrial' ? '工業簿記 勘定科目' : (item.cat||'用語集');
+  const typeCls = item.type;
+  const badgeLabel = item.src==='acct'||item.src==='industrial' ? (QA_TYPE_LABEL[item.type]||'その他') : (item.cat||'用語');
+  const badgeCls = item.src==='gloss' ? 'gloss' : typeCls;
+
+  const frontHtml = `
+    <div class="qa-face-front">
+      <span class="qa-src-badge">${srcLabel}</span>
+      <div class="qa-term-big">${item.q}</div>
+      <div class="qa-term-en">${item.en}</div>
+      <div class="qa-tap-hint">▼ タップして答えを確認</div>
+    </div>`;
+
+  const backHtml = `
+    <div class="qa-face-back">
+      <span class="qa-back-badge ${badgeCls}">${badgeLabel}</span>
+      <div class="qa-back-def">${item.def}</div>
+      ${item.def_en ? `<div class="qa-back-def-en">${item.def_en}</div>` : ''}
+    </div>`;
+
+  body.innerHTML = `
+    ${overviewHtml}
+    <div class="qa-card-wrap${qaFlipped?' flipped':''}" id="qa-card" onclick="flipQACard()">
+      ${frontHtml}${backHtml}
+    </div>
+    <div class="qa-judge-row${qaFlipped?'':' hidden'}" id="qa-judge">
+      <button class="qa-judge-btn qa-again-btn" onclick="qaJudge(false)">↩ もう一度</button>
+      <button class="qa-judge-btn qa-known-btn" onclick="qaJudge(true)">✓ 知ってた!</button>
+    </div>
+    <div class="qa-nav-row">
+      <button class="qa-nav-btn" onclick="qaPrev()" ${qaIdx===0?'disabled':''}>← 前</button>
+      <span class="qa-known-count">✓ 済み ${knownCount}問</span>
+      <button class="qa-nav-btn" onclick="qaNext()">次 →</button>
+    </div>`;
+}
+
+function buildQAOverview(){
+  return `<div class="qa-overview-card">
+    <div class="qa-overview-title">📊 簿記の全体像をまず押さえよう！</div>
+    <table class="qa-bs-table">
+      <tr><td colspan="1" rowspan="2" class="bs-asset">🟡 資産<br><small>現金・建物・<br>売掛金など</small></td>
+          <td class="bs-liab">🔴 負債<br><small>借入金・<br>買掛金など</small></td></tr>
+      <tr><td class="bs-eq">⚪ 純資産<br><small>資本金・<br>利益剰余金</small></td></tr>
+    </table>
+    <div class="qa-formula-row">資産 ＝ 負債 ＋ 純資産（貸借対照表 B/S）</div>
+    <div class="qa-formula-row">収益 − 費用 ＝ 利益 → 純資産が増える（損益計算書 P/L）</div>
+    <div class="qa-5elem">
+      <div class="qa-elem-tag asset">🟡 資産<br><small>増→借方↑</small></div>
+      <div class="qa-elem-tag liability">🔴 負債<br><small>増→貸方↑</small></div>
+      <div class="qa-elem-tag equity">⚪ 純資産<br><small>増→貸方↑</small></div>
+      <div class="qa-elem-tag revenue">🔵 収益<br><small>増→貸方↑</small></div>
+      <div class="qa-elem-tag expense">🟢 費用<br><small>増→借方↑</small></div>
+    </div>
+    <div class="qa-debit-credit">
+      <div class="qa-dc-hd"><span class="dbt">借方（左）に来るもの</span><span class="crd">貸方（右）に来るもの</span></div>
+      <div class="qa-dc-body">
+        <span class="dbt">資産の増加<br>費用の発生<br>負債の減少<br>純資産の減少</span>
+        <span class="crd">負債の増加<br>収益の発生<br>資産の減少<br>純資産の増加</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildQADone(total){
+  const k = qaKnown.size;
+  const pct = Math.round(k/total*100);
+  return `<div class="qa-done-card">
+    <div class="qa-done-emoji">${pct>=80?'🎉':pct>=50?'😊':'📚'}</div>
+    <div class="qa-done-title">${pct>=80?'素晴らしい！':pct>=50?'いい調子！':'もう一度挑戦！'}</div>
+    <div class="qa-done-sub">${total}問中 ${k}問 知ってた！（${pct}%）</div>
+    <button class="qa-restart-btn" onclick="qaRestart()">もう一度最初から</button>
+  </div>`;
+}
+
+function flipQACard(){
+  qaFlipped=!qaFlipped;
+  const card=document.getElementById('qa-card');
+  if(card) card.classList.toggle('flipped',qaFlipped);
+  const judge=document.getElementById('qa-judge');
+  if(judge) judge.classList.toggle('hidden',!qaFlipped);
+}
+
+function qaJudge(known){
+  if(known) qaKnown.add(qaIdx);
+  qaNext();
+}
+
+function qaNext(){
+  if(qaIdx < qaActive.length){
+    qaIdx++; qaFlipped=false;
+    renderQABody();
+    document.getElementById('qa-body').scrollTop=0;
+  }
+}
+
+function qaPrev(){
+  if(qaIdx>0){ qaIdx--; qaFlipped=false; renderQABody(); document.getElementById('qa-body').scrollTop=0; }
+}
+
+function qaRestart(){
+  qaIdx=0; qaFlipped=false; qaKnown=new Set();
+  renderQABody();
+  document.getElementById('qa-body').scrollTop=0;
+}
 
 function setApxTab(type){
   apxCurrentTab = type;
