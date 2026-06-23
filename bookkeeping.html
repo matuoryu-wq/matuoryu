@@ -472,16 +472,11 @@
 
 
 <div class="controls">
-  <button class="ctrl-btn" onclick="shuffle()">🔀 シャッフル</button>
-  <button class="ctrl-btn" id="btn-hide-mem" onclick="toggleHideMem()">習得済みを除く</button>
-  <button class="ctrl-btn" onclick="resetAll()">🔄 リセット</button>
-  <button class="exp-btn" id="exp-toggle-btn" onclick="toggleExp()">スクロール</button>
-</div>
-<div class="controls" style="padding-top:6px;border-top:1px solid var(--border);">
   <span style="font-size:11px;font-weight:700;color:var(--muted);align-self:center;">級：</span>
   <button class="ctrl-btn grp-btn active" id="lvl-0" onclick="setLevel(0)">全級</button>
   <button class="ctrl-btn grp-btn" id="lvl-1" onclick="setLevel(1)">3級</button>
   <button class="ctrl-btn grp-btn" id="lvl-2" onclick="setLevel(2)">2級</button>
+  <button class="exp-btn" id="exp-toggle-btn" onclick="toggleExp()">スクロール</button>
   <button class="apx-btn" onclick="showApx()">📖 勘定科目一覧</button>
 </div>
 <div class="controls" id="group-row" style="padding-top:6px;border-top:1px solid var(--border);display:none;"></div>
@@ -2408,12 +2403,18 @@ function setGroup(n){
 
 // ===== スクロールモード =====
 let expActive=false, expScrollPage=0;
-let expQuestions=[], expQIdx=0, expCardIdx=0;
-let expPlaced={d:[],c:[]}, expScore=0, expHistory=[];
+let expQuestions=[], expQIdx=0, expCardIdx=0, expEntryIdx=0;
+let expPlaced={d:[],c:[]}, expScore=0, expHistory=[], expQOk=true;
 
-function getExpAccounts(q){
-  if(!q.e) return null;
-  const entry=q.e[0];
+function getExpFilteredAll(){
+  if(!levelFilter || levelFilter===0) return ALL;
+  if(levelFilter===2) return ALL.filter(q=>q.level===2);
+  return ALL.filter(q=>(q.level||3)===3);
+}
+
+function getExpEntryAccounts(q, ei){
+  if(!q.e || !q.e[ei]) return null;
+  const entry=q.e[ei];
   return [
     ...entry.d.map(([name,amt])=>({name,amt,side:'d'})),
     ...entry.c.map(([name,amt])=>({name,amt,side:'c'}))
@@ -2436,14 +2437,16 @@ function setExpScrollPage(p){
 
 function renderExpPanel(){
   const panel=document.getElementById('exp-panel');
-  const totalPages=Math.ceil(ALL.length/20);
+  const filteredAll=getExpFilteredAll();
+  const totalPages=Math.ceil(filteredAll.length/20)||1;
+  if(expScrollPage>=totalPages) expScrollPage=0;
   let pageTabs='<div class="exp-scroll-tabs">';
   for(let p=0;p<totalPages;p++){
     pageTabs+=`<button class="exp-scroll-tab${expScrollPage===p?' active':''}" onclick="setExpScrollPage(${p})">${p+1}</button>`;
   }
   pageTabs+='</div>';
   panel.innerHTML=`${pageTabs}<div id="exp-main"></div>`;
-  expQuestions=ALL.slice(expScrollPage*20, expScrollPage*20+20);
+  expQuestions=filteredAll.slice(expScrollPage*20, expScrollPage*20+20);
   expQIdx=0; expScore=0; expPlaced={d:[],c:[]}; expHistory=[];
   loadExpQ();
 }
@@ -2465,35 +2468,45 @@ function expGoTo(idx){
 }
 
 function loadExpQ(){
-  const main=document.getElementById('exp-main');
   const q=expQuestions[expQIdx];
-  expPlaced={d:[],c:[]}; expHistory=[];
-  expCardIdx=0;
-  const accounts=getExpAccounts(q);
+  expEntryIdx=0; expQOk=true;
+  const main=document.getElementById('exp-main');
 
-  if(!accounts){
+  if(!q.e){
     main.innerHTML=`
       ${expNavBar()}
-      <div class="exp-q-card">${q.q}</div>
+      <div class="exp-q-card">${q.q_html||q.q}</div>
       <button class="exp-reveal-btn" onclick="expRevealAns(this)">答えを見る ▼</button>
       <div class="exp-readonly-ans" id="exp-ro-ans">${q.ans_html||''}</div>`;
   } else {
-    window._expCards=[...accounts];
     main.innerHTML=`
       ${expNavBar()}
       <div class="exp-q-card">${q.q}</div>
-      <div class="exp-swipe-wrap" id="exp-sw">
-        <div class="exp-hint" style="left:8px;color:#0288D1;">← 借方</div>
-        <div class="exp-hint" style="right:8px;color:#388E3C;">貸方 →</div>
-      </div>
-      <div class="exp-zones">
-        <div class="exp-zone exp-zone-d"><div class="exp-zone-label">借　方</div><div id="exp-pd" class="exp-placed"></div></div>
-        <div class="exp-zone exp-zone-c"><div class="exp-zone-label">貸　方</div><div id="exp-pc" class="exp-placed"></div></div>
-      </div>
-      <button class="exp-undo-btn" id="exp-undo" onclick="expUndo()" style="display:none;">↩ 取り消す</button>
-      <div class="exp-result" id="exp-res"></div>`;
-    renderExpCard();
+      <div id="exp-entry-area"></div>`;
+    loadExpEntry();
   }
+}
+
+function loadExpEntry(){
+  const q=expQuestions[expQIdx];
+  const multi=q.e.length>1;
+  const label=multi?`<div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px;">【仕訳 ${expEntryIdx+1}／${q.e.length}】</div>`:'';
+  const accounts=getExpEntryAccounts(q, expEntryIdx);
+  window._expCards=[...accounts];
+  expPlaced={d:[],c:[]}; expHistory=[]; expCardIdx=0;
+  document.getElementById('exp-entry-area').innerHTML=`
+    ${label}
+    <div class="exp-swipe-wrap" id="exp-sw">
+      <div class="exp-hint" style="left:8px;color:#0288D1;">← 借方</div>
+      <div class="exp-hint" style="right:8px;color:#388E3C;">貸方 →</div>
+    </div>
+    <div class="exp-zones">
+      <div class="exp-zone exp-zone-d"><div class="exp-zone-label">借　方</div><div id="exp-pd" class="exp-placed"></div></div>
+      <div class="exp-zone exp-zone-c"><div class="exp-zone-label">貸　方</div><div id="exp-pc" class="exp-placed"></div></div>
+    </div>
+    <button class="exp-undo-btn" id="exp-undo" onclick="expUndo()" style="display:none;">↩ 取り消す</button>
+    <div class="exp-result" id="exp-res"></div>`;
+  renderExpCard();
 }
 
 function expRevealAns(btn){
@@ -2578,27 +2591,38 @@ function expCheckResult(){
   const cards=window._expCards||[];
   let ok=true;
   cards.forEach(acc=>{ if(expPlaced.d.includes(acc)!==(acc.side==='d')) ok=false; });
-  if(ok) expScore++;
+  if(!ok) expQOk=false;
+  const isLastEntry=expEntryIdx>=q.e.length-1;
+  if(isLastEntry && expQOk) expScore++;
   const res=document.getElementById('exp-res');
   const undoBtn=document.getElementById('exp-undo');
   if(undoBtn) undoBtn.style.display='none';
-  const accounts=getExpAccounts(q);
-  const debit=(accounts||[]).filter(a=>a.side==='d');
-  const credit=(accounts||[]).filter(a=>a.side==='c');
+  const entryAccounts=getExpEntryAccounts(q, expEntryIdx);
+  const debit=entryAccounts.filter(a=>a.side==='d');
+  const credit=entryAccounts.filter(a=>a.side==='c');
   const tagHtml=arr=>arr.map(a=>`<span class="tag ${T[a.name]||'other'}">${a.name}<span class="tag-amt"> ${a.amt.toLocaleString()}円</span></span>`).join('');
+  const multiLabel=q.e.length>1?` (${expEntryIdx+1}／${q.e.length})`:'';
+  const nextEntryBtn=isLastEntry?'':`<button class="exp-nav-btn exp-nav-next" style="width:100%;margin-top:10px;" onclick="expNextEntry()">次の仕訳へ →</button>`;
   res.className=`exp-result ${ok?'ok':'ng'}`;
   res.style.display='block';
   res.innerHTML=`
     <div class="exp-res-hd">${ok?'⭕ 正解！':'❌ 不正解'}</div>
     <div class="exp-res-ans">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">正解の仕訳</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">正解の仕訳${multiLabel}</div>
       <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:start;">
         <div style="display:flex;flex-wrap:wrap;gap:4px;">${tagHtml(debit)}</div>
         <div style="color:var(--muted);font-weight:700;padding:3px 4px;align-self:center;">｜</div>
         <div style="display:flex;flex-wrap:wrap;gap:4px;">${tagHtml(credit)}</div>
       </div>
     </div>
-    <div class="exp-res-exp">${q.exp||''}</div>`;
+    ${isLastEntry?`<div class="exp-res-exp">${q.exp||''}</div>`:''}
+    ${nextEntryBtn}`;
+}
+
+function expNextEntry(){
+  expEntryIdx++;
+  document.getElementById('exp-entry-area').scrollIntoView({behavior:'smooth',block:'start'});
+  loadExpEntry();
 }
 
 function expFinish(){
@@ -2623,6 +2647,7 @@ function setLevel(n){
     const btn = document.getElementById('lvl-'+i);
     if(btn) btn.classList.toggle('active', i === n);
   }
+  if(expActive){ expScrollPage=0; renderExpPanel(); return; }
   updateGroupButtons();
   buildDeck();
   idx = 0;
