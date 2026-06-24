@@ -355,64 +355,7 @@
       font-size: 16px;
       font-weight: 700;
     }
-    /* ===== Appendix modal ===== */
     .apx-btn { background:var(--primary); color:#fff; border:none; border-radius:20px; padding:6px 14px; font-size:13px; font-weight:600; cursor:pointer; }
-    .apx-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:200; padding:0; }
-    .apx-overlay.show { display:flex; }
-    .apx-modal { background:#fff; width:100%; max-width:none; border-radius:0; display:flex; flex-direction:column; height:100vh; max-height:100vh; overflow:hidden; margin:0; }
-    .apx-sticky-header { flex-shrink:0; padding:16px 18px 10px; background:#fff; border-bottom:1px solid var(--border); }
-    .apx-modal-body { overflow-y:auto; flex:1; padding:10px 18px 20px; -webkit-overflow-scrolling:touch; }
-    .apx-hd { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
-    .apx-title { font-size:17px; font-weight:800; color:var(--primary); }
-    .apx-subtitle { font-size:11px; color:var(--muted); margin-top:2px; }
-    .apx-close { background:none; border:none; font-size:22px; cursor:pointer; color:var(--muted); line-height:1; }
-    .apx-section { margin-bottom:22px; }
-    .apx-section-hd { font-size:13px; font-weight:800; padding:7px 12px; border-radius:8px; margin-bottom:5px; display:flex; align-items:center; gap:8px; }
-    .apx-section-hd.asset      { background:#FFF9C4; color:#5D4037; border:1.5px solid #F9C400; }
-    .apx-section-hd.liability  { background:#FCE4EC; color:#880E4F; border:1.5px solid #C2185B; }
-    .apx-section-hd.expense    { background:#E8F5E9; color:#1B5E20; border:1.5px solid #388E3C; }
-    .apx-section-hd.revenue    { background:#E1F5FE; color:#01579B; border:1.5px solid #0288D1; }
-    .apx-section-hd.equity     { background:#F5F5F5; color:#333; border:1.5px solid #9E9E9E; }
-    .apx-section-hd.other      { background:#F3E5F5; color:#4A148C; border:1.5px solid #CE93D8; }
-    .apx-section-hd.industrial { background:#FFF3E0; color:#BF360C; border:1.5px solid #FF8F00; }
-    .apx-section-sub { font-size:11px; color:var(--muted); margin-bottom:6px; padding-left:4px; }
-    .apx-row { padding:8px 4px; border-bottom:1px solid var(--border); }
-    .apx-row.hidden { display:none; }
-    .apx-row-top { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px; }
-    .apx-en { font-size:11px; color:var(--muted); }
-    .apx-note { font-size:12px; color:#444; line-height:1.6; }
-    .apx-note strong, .gloss-def-en strong { color:#1A2B3C; font-weight:700; }
-    .apx-note mark, .gloss-def-en mark { background:#FFF9C4; padding:0 2px; border-radius:2px; }
-    .apx-lv { display:inline-block; font-size:9px; font-weight:700; background:var(--primary); color:#fff; border-radius:4px; padding:1px 5px; }
-    .apx-lv.ind { background:#FF8F00; }
-    .apx-tabs { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
-    .apx-tab { padding:5px 11px; border:1.5px solid var(--border); border-radius:20px; background:#fff; font-size:12px; cursor:pointer; color:var(--muted); font-weight:600; transition:background 0.15s,color 0.15s,border-color 0.15s; }
-    .apx-tab:hover { background:#f5f5f5; }
-    .apx-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
-    .apx-hide-btns { display:flex; gap:8px; margin-bottom:0; }
-    .apx-hide-btn { flex:1; padding:7px 10px; border:1.5px solid var(--border); border-radius:10px; background:#fff; font-size:12px; cursor:pointer; color:var(--text); font-weight:600; text-align:center; transition:background 0.15s; }
-    .apx-hide-btn.active { background:#eee; border-color:#999; }
-    #apx-content.names-hidden .tag { color:transparent !important; background:#e0e0e0 !important; border-color:#bbb !important; user-select:none; min-width:50px; display:inline-block; }
-    #apx-content.names-hidden .gloss-term-text { color:transparent !important; background:#e0e0e0 !important; border-radius:3px; user-select:none; }
-    #apx-content.en-hidden .apx-en, #apx-content.en-hidden .gloss-en { display:none; }
-    /* ===== Glossary ===== */
-    .gloss-section { margin-bottom:10px; }
-    .gloss-hd { font-size:14px; font-weight:800; color:var(--primary); padding:8px 12px; background:var(--primary-light); border-radius:8px; margin:14px 0 6px; }
-    .gloss-row { padding:9px 4px; border-bottom:1px solid var(--border); }
-    .gloss-term { font-size:13px; font-weight:800; margin-bottom:3px; }
-    .gloss-en { font-size:11px; color:var(--muted); }
-    .gloss-def { font-size:12px; color:#444; line-height:1.6; }
-    .gloss-def strong { color:#1A2B3C; }
-    .gloss-def mark { background:#FFF9C4; padding:0 2px; border-radius:2px; }
-    /* English shown first — primary color, no top border */
-    .gloss-def-en { font-size:12px; color:var(--text); line-height:1.6; }
-    /* Japanese shown second — muted with separator */
-    .apx-note .apx-note-ja { font-size:11px; color:var(--muted); line-height:1.55; margin-top:5px; padding-top:5px; border-top:1px dashed var(--border); }
-    .gloss-def .gloss-def-ja { font-size:11px; color:var(--muted); line-height:1.55; margin-top:5px; padding-top:5px; border-top:1px dashed var(--border); }
-    /* When English hidden: restore Japanese to primary style */
-    #apx-content.en-hidden .apx-note .apx-note-ja,
-    #apx-content.en-hidden .gloss-def .gloss-def-ja { color:#444; font-size:12px; margin-top:0; padding-top:0; border-top:none; }
-    #apx-content.en-hidden .gloss-def-en { display:none; }
 
     /* ===== 一問一答モード ===== */
     .qa-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:200; padding:0; }
@@ -453,7 +396,10 @@
     .qa-ans-area.hidden { display:none; }
     .qa-ans-label { font-size:11px; color:var(--muted); font-weight:700; margin-bottom:6px; }
     .qa-ans-text { font-size:28px; font-weight:800; color:var(--primary); margin-bottom:4px; }
-    .qa-ans-en { font-size:12px; color:var(--muted); }
+    .qa-ans-en { font-size:15px; color:#1565C0; font-weight:700; margin-bottom:4px; }
+    .qa-q-en { font-size:11px; color:var(--muted); line-height:1.65; margin-top:8px; padding-top:8px; border-top:1px dashed var(--border); }
+    .qa-q-en mark { background:#E3F2FD; padding:0 2px; border-radius:2px; }
+    .qa-q-en strong { color:#37474F; }
     .qa-ans-type { margin-top:8px; font-size:12px; color:#BF360C; background:#FFF3E0; border:1px solid #FF8F00; border-radius:6px; padding:4px 8px; display:inline-block; font-weight:700; }
 
     /* 答えを見るボタン */
@@ -565,7 +511,6 @@
   <button class="ctrl-btn grp-btn active" id="sec-s3" onclick="setSection('s3')">3級</button>
   <button class="ctrl-btn grp-btn" id="sec-s2c" onclick="setSection('s2c')">2級商業</button>
   <button class="ctrl-btn grp-btn" id="sec-s2i" onclick="setSection('s2i')">2級工業</button>
-  <button class="apx-btn" onclick="showApx()">📖 勘定科目一覧</button>
   <button class="apx-btn" style="background:#E65100;" onclick="showQA()">📝 一問一答</button>
 </div>
 <div class="controls" id="group-row" style="padding-top:6px;border-top:1px solid var(--border);display:none;"></div>
@@ -607,36 +552,6 @@
   </div>
 </div>
 
-<div class="apx-overlay" id="apx-overlay" onclick="if(event.target===this)hideApx()">
-  <div class="apx-modal">
-    <div class="apx-sticky-header">
-      <div class="apx-hd">
-        <div><div class="apx-title">📚 勘定科目一覧</div><div class="apx-subtitle">3級・2級対応 ／ 色で分類（2級のみ「2級」バッジ）</div></div>
-        <button class="apx-close" onclick="hideApx()">✕</button>
-      </div>
-      <div class="apx-tabs" id="apx-tabs">
-        <button class="apx-tab active" data-type="all" onclick="setApxTab('all')">全て</button>
-        <button class="apx-tab" data-type="level3" onclick="setApxTab('level3')">3級</button>
-        <button class="apx-tab" data-type="level2" onclick="setApxTab('level2')">2級</button>
-        <button class="apx-tab" data-type="asset" onclick="setApxTab('asset')">資産</button>
-        <button class="apx-tab" data-type="liability" onclick="setApxTab('liability')">負債</button>
-        <button class="apx-tab" data-type="expense" onclick="setApxTab('expense')">費用</button>
-        <button class="apx-tab" data-type="revenue" onclick="setApxTab('revenue')">収益</button>
-        <button class="apx-tab" data-type="equity" onclick="setApxTab('equity')">純資産</button>
-        <button class="apx-tab" data-type="other" onclick="setApxTab('other')">その他</button>
-        <button class="apx-tab" data-type="industrial" onclick="setApxTab('industrial')">🏭 工業簿記</button>
-        <button class="apx-tab" data-type="glossary" onclick="setApxTab('glossary')">📖 用語集</button>
-      </div>
-      <div class="apx-hide-btns">
-        <button class="apx-hide-btn" id="apx-hide-btn" onclick="toggleHideNames()">👁 科目名を隠す</button>
-        <button class="apx-hide-btn" id="apx-hide-en-btn" onclick="toggleHideEnglish()">🔤 英語を隠す</button>
-      </div>
-    </div>
-    <div class="apx-modal-body">
-      <div id="apx-content"></div>
-    </div>
-  </div>
-</div>
 
 <script>
 const T = {
@@ -1629,107 +1544,6 @@ const GLOSSARY_DATA = [
   ]},
 ];
 
-const APX_TYPE_INFO = {
-  asset:      { name:'資産 (Assets)',              sub:'会社が持っているもの・もらえる権利' },
-  liability:  { name:'負債 (Liabilities)',          sub:'将来払わなければならない義務・借金' },
-  expense:    { name:'費用 (Expenses)',             sub:'お金を使ったとき・価値が減ったとき' },
-  revenue:    { name:'収益 (Revenue)',              sub:'お金が増えたとき・稼いだとき' },
-  equity:     { name:'純資産 (Equity)',             sub:'本当に自分のものの総額（資産－負債）' },
-  other:      { name:'評価勘定・その他 (Other)',    sub:'固定資産・売掛金のマイナス調整など' },
-  industrial: { name:'工業簿記 (Industrial)',       sub:'製造業の原価計算で使う勘定科目' },
-};
-
-function buildApxContent(){
-  // Count how many questions each account appears in across all questions
-  const freq = {};
-  ALL.forEach(q => {
-    if(!q.e) return;
-    const seen = new Set();
-    q.e.forEach(entry => {
-      [...(entry.d||[]), ...(entry.c||[])].forEach(([name]) => seen.add(name));
-    });
-    seen.forEach(name => { freq[name] = (freq[name]||0) + 1; });
-  });
-
-  const order = ['asset','liability','expense','revenue','equity','other'];
-  const byType = {};
-  order.forEach(t => byType[t] = []);
-  ACCT_DATA.forEach(([name, en, note, lv, note_en]) => {
-    const type = T[name] || 'other';
-    byType[type].push({ name, en, note, lv, note_en });
-  });
-  // Sort each type by question frequency (descending) so most-tested accounts appear first
-  order.forEach(type => byType[type].sort((a, b) => (freq[b.name]||0) - (freq[a.name]||0)));
-
-  const commercialHtml = order.map(type => {
-    const { name, sub } = APX_TYPE_INFO[type];
-    const rows = byType[type].map(({ name, en, note, lv, note_en }) =>
-      `<div class="apx-row" data-name="${name}" data-en="${en}" data-level="${lv}">
-        <div class="apx-row-top">
-          <span class="apx-en">${en}</span>
-          <span class="tag ${type}">(${name})</span>
-          ${lv === 2 ? '<span class="apx-lv">2級</span>' : ''}
-        </div>
-        <div class="apx-note">${note_en?`<div class="gloss-def-en">${note_en}</div>`:''}<div class="apx-note-ja">${note}</div></div>
-      </div>`
-    ).join('');
-    return `<div class="apx-section" data-type="${type}" data-category="commercial">
-      <div class="apx-section-hd ${type}"><span class="dot ${type}"></span>${name}</div>
-      <div class="apx-section-sub">${sub}</div>
-      ${rows}
-    </div>`;
-  }).join('');
-
-  // 工業簿記
-  const subCats = [...new Set(INDUSTRIAL_DATA.map(([,,, sc]) => sc))];
-  const indHtml = subCats.map(sc => {
-    const items = INDUSTRIAL_DATA.filter(([,,, s]) => s === sc);
-    const rows = items.map(([name, en, note, , note_en]) => {
-      const type = T[name] || 'other';
-      return `<div class="apx-row" data-name="${name}" data-en="${en}">
-        <div class="apx-row-top">
-          <span class="apx-en">${en}</span>
-          <span class="tag ${type}">(${name})</span>
-          <span class="apx-lv ind">工業</span>
-        </div>
-        <div class="apx-note">${note_en?`<div class="gloss-def-en">${note_en}</div>`:''}<div class="apx-note-ja">${note}</div></div>
-      </div>`;
-    }).join('');
-    return `<div class="apx-section" data-type="industrial" data-category="industrial">
-      <div class="apx-section-hd industrial">🏭 ${sc}</div>
-      ${rows}
-    </div>`;
-  }).join('');
-
-  // 用語解説集
-  const glossHtml = '<div class="gloss-section" data-type="glossary">' +
-    GLOSSARY_DATA.map(({ category, items }) =>
-      `<div class="gloss-hd">📌 ${category}</div>` +
-      items.map(({ term, en, def, def_en }) =>
-        `<div class="gloss-row" data-name="${term}" data-en="${en}">
-          <div class="gloss-term"><span class="gloss-en">${en}</span> <span class="gloss-term-text">(${term})</span></div>
-          <div class="gloss-def">${def_en?`<div class="gloss-def-en">${def_en}</div>`:''}<div class="gloss-def-ja">${def}</div></div>
-        </div>`
-      ).join('')
-    ).join('') +
-  '</div>';
-
-  return commercialHtml + indHtml + glossHtml;
-}
-
-let apxCurrentTab = 'all';
-
-function showApx(){
-  const el = document.getElementById('apx-overlay');
-  if(!document.getElementById('apx-content').innerHTML)
-    document.getElementById('apx-content').innerHTML = buildApxContent();
-  el.classList.add('show');
-  apxCurrentTab = 'all';
-  document.querySelectorAll('#apx-tabs .apx-tab').forEach(t => t.classList.toggle('active', t.dataset.type === 'all'));
-  applyApxFilter('all');
-}
-function hideApx(){ document.getElementById('apx-overlay').classList.remove('show'); }
-
 // ===================== 一問一答モード =====================
 let qaAllItems = null;
 let qaActive   = [];
@@ -1761,7 +1575,8 @@ function buildQAAllItems(){
       src:'acct', type, lv:lv||3,
       hint: typeLabel[type]+'科目',
       hintCls: type,
-      q: qaMask(note, name),       // 説明文（答えを伏せる）
+      q: qaMask(note, name),
+      q_en: note_en ? qaMask(note_en, en) : '',
       ans: name,
       ans_en: en,
     });
@@ -1782,6 +1597,7 @@ function buildQAAllItems(){
       hintCls: 'industrial',
       acctType: IND_ACCT_TYPE[subcat] || '',
       q: qaMask(note, name),
+      q_en: note_en ? qaMask(note_en, en) : '',
       ans: name,
       ans_en: en,
     });
@@ -1795,6 +1611,7 @@ function buildQAAllItems(){
         hint: category,
         hintCls: 'gloss',
         q: qaMask(def, term),
+        q_en: def_en ? qaMask(def_en, en) : '',
         ans: term,
         ans_en: en,
       });
@@ -1885,6 +1702,7 @@ function renderQABody(){
         ${item.lv===2?'<span class="qa-q-badge cat">2級</span>':''}
       </div>
       <div class="qa-q-text">${item.q}<span class="qa-q-suffix">${suffix}</span></div>
+      ${item.q_en ? `<div class="qa-q-en">${item.q_en}</div>` : ''}
     </div>
     ${ansHtml}
     <div class="qa-nav-row">
@@ -1934,65 +1752,6 @@ function qaRestart(){
   document.getElementById('qa-body').scrollTop=0;
 }
 
-function setApxTab(type){
-  apxCurrentTab = type;
-  document.querySelectorAll('#apx-tabs .apx-tab').forEach(t => t.classList.toggle('active', t.dataset.type === type));
-  applyApxFilter(type);
-}
-
-function toggleHideNames(){
-  const btn = document.getElementById('apx-hide-btn');
-  const content = document.getElementById('apx-content');
-  const nowActive = btn.classList.toggle('active');
-  content.classList.toggle('names-hidden', nowActive);
-  btn.textContent = nowActive ? '👁 科目名を表示' : '👁 科目名を隠す';
-}
-
-function toggleHideEnglish(){
-  const btn = document.getElementById('apx-hide-en-btn');
-  const content = document.getElementById('apx-content');
-  const nowActive = btn.classList.toggle('active');
-  content.classList.toggle('en-hidden', nowActive);
-  btn.textContent = nowActive ? '🔤 英語を表示' : '🔤 英語を隠す';
-}
-
-function applyApxFilter(tab){
-  const content = document.getElementById('apx-content');
-
-  const glossEl = content.querySelector('.gloss-section');
-  if(glossEl){
-    glossEl.style.display = (tab === 'glossary') ? '' : 'none';
-    if(tab === 'glossary')
-      glossEl.querySelectorAll('.gloss-row,.gloss-hd').forEach(el => el.style.display = '');
-  }
-
-  content.querySelectorAll('.apx-section').forEach(sec => {
-    const type = sec.dataset.type;
-    const category = sec.dataset.category;
-    let typeMatch;
-    if(tab === 'all') typeMatch = category !== 'industrial';
-    else if(tab === 'industrial') typeMatch = category === 'industrial';
-    else if(tab === 'glossary') typeMatch = false;
-    else if(tab === 'level3' || tab === 'level2') typeMatch = category !== 'industrial';
-    else typeMatch = (type === tab && category !== 'industrial');
-
-    if(!typeMatch){ sec.style.display = 'none'; return; }
-
-    if(tab === 'level3' || tab === 'level2'){
-      const targetLevel = tab === 'level3' ? '3' : '2';
-      let anyVisible = false;
-      sec.querySelectorAll('.apx-row').forEach(row => {
-        const match = row.dataset.level === targetLevel;
-        row.classList.toggle('hidden', !match);
-        if(match) anyVisible = true;
-      });
-      sec.style.display = anyVisible ? '' : 'none';
-    } else {
-      sec.style.display = '';
-      sec.querySelectorAll('.apx-row').forEach(r => r.classList.remove('hidden'));
-    }
-  });
-}
 
 const ALL = [
   // ===== 商品売買 =====
