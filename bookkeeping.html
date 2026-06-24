@@ -587,7 +587,11 @@
       </div>
       <div class="qa-tabs" id="qa-tabs">
         <button class="qa-tab active" data-f="all" onclick="setQAFilter('all')">全て</button>
-        <button class="qa-tab" data-f="acct" onclick="setQAFilter('acct')">勘定科目</button>
+        <button class="qa-tab" data-f="asset" onclick="setQAFilter('asset')">資産</button>
+        <button class="qa-tab" data-f="liability" onclick="setQAFilter('liability')">負債</button>
+        <button class="qa-tab" data-f="expense" onclick="setQAFilter('expense')">費用</button>
+        <button class="qa-tab" data-f="revenue" onclick="setQAFilter('revenue')">収益</button>
+        <button class="qa-tab" data-f="equity" onclick="setQAFilter('equity')">純資産</button>
         <button class="qa-tab" data-f="industrial" onclick="setQAFilter('industrial')">工業簿記</button>
         <button class="qa-tab" data-f="gloss" onclick="setQAFilter('gloss')">用語集</button>
       </div>
@@ -1778,7 +1782,11 @@ function buildQAAllItems(){
 function getQAFiltered(){
   if(!qaAllItems) qaAllItems = buildQAAllItems();
   if(qaFilter==='all')        return [...qaAllItems];
-  if(qaFilter==='acct')       return qaAllItems.filter(i=>i.src==='acct');
+  if(qaFilter==='asset')      return qaAllItems.filter(i=>i.src==='acct' && i.type==='asset');
+  if(qaFilter==='liability')  return qaAllItems.filter(i=>i.src==='acct' && i.type==='liability');
+  if(qaFilter==='expense')    return qaAllItems.filter(i=>i.src==='acct' && i.type==='expense');
+  if(qaFilter==='revenue')    return qaAllItems.filter(i=>i.src==='acct' && i.type==='revenue');
+  if(qaFilter==='equity')     return qaAllItems.filter(i=>i.src==='acct' && i.type==='equity');
   if(qaFilter==='industrial') return qaAllItems.filter(i=>i.src==='industrial');
   if(qaFilter==='gloss')      return qaAllItems.filter(i=>i.src==='gloss');
   return [...qaAllItems];
