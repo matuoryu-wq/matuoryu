@@ -443,6 +443,7 @@
     .qa-q-text { font-size:13px; color:#333; line-height:1.8; }
     .qa-q-text mark { background:#FFF9C4; padding:0 2px; border-radius:2px; }
     .qa-q-text strong { color:#1A2B3C; }
+    .q-paren { color: #a0b5c8; font-size: 0.88em; }
     .qa-mask { display:inline-block; background:#333; color:transparent; border-radius:3px; padding:0 4px; min-width:3em; user-select:none; }
     .qa-q-suffix { display:block; margin-top:10px; font-size:13px; font-weight:700; color:var(--primary); }
 
@@ -1805,6 +1806,11 @@ function qaMask(html, term){
   return html.replace(new RegExp(esc,'g'),'<span class="qa-mask">▓▓▓</span>');
 }
 
+// （...）を薄くする
+function styleParens(html){
+  return html.replace(/（([^（）]*)）/g,'<span class="q-paren">（$1）</span>');
+}
+
 // HTMLタグを除いた表示用テキストを抽出（問題文のプレビュー用）
 function qaStripTags(html){ return html.replace(/<[^>]+>/g,''); }
 
@@ -1945,7 +1951,7 @@ function renderQABody(){
         <span class="qa-q-badge ${item.hintCls}">${item.hint}</span>
         ${item.lv===2?'<span class="qa-q-badge cat">2級</span>':''}
       </div>
-      <div class="qa-q-text">${item.q}<span class="qa-q-suffix">${suffix}</span></div>
+      <div class="qa-q-text">${styleParens(item.q)}<span class="qa-q-suffix">${suffix}</span></div>
       ${item.q_en ? `<div class="qa-q-en">${item.q_en}</div>` : ''}
     </div>
     ${ansHtml}
@@ -5938,7 +5944,8 @@ function expGoTo(i){
 function fmtQ(q){
   let txt=q.q_html||q.q||'';
   txt=txt.replace(/^（穴埋め[^）]*）[\s　]*/u,'');
-  return txt.replace(/\n/g,'<br>');
+  txt=txt.replace(/\n/g,'<br>');
+  return styleParens(txt);
 }
 function fmtQen(q){
   let txt=q.q_en||'';
