@@ -454,6 +454,7 @@
     .qa-ans-label { font-size:11px; color:var(--muted); font-weight:700; margin-bottom:6px; }
     .qa-ans-text { font-size:28px; font-weight:800; color:var(--primary); margin-bottom:4px; }
     .qa-ans-en { font-size:12px; color:var(--muted); }
+    .qa-ans-type { margin-top:8px; font-size:12px; color:#BF360C; background:#FFF3E0; border:1px solid #FF8F00; border-radius:6px; padding:4px 8px; display:inline-block; font-weight:700; }
 
     /* 答えを見るボタン */
     .qa-reveal-btn { width:100%; padding:12px; border:2px dashed var(--border); border-radius:12px; background:#fff; font-size:14px; font-weight:700; color:var(--muted); cursor:pointer; transition:background 0.15s,border-color 0.15s; }
@@ -587,13 +588,18 @@
       </div>
       <div class="qa-tabs" id="qa-tabs">
         <button class="qa-tab active" data-f="all" onclick="setQAFilter('all')">全て</button>
-        <button class="qa-tab" data-f="asset" onclick="setQAFilter('asset')">資産</button>
+        <button class="qa-tab" data-f="asset3" onclick="setQAFilter('asset3')">資産(3級)</button>
+        <button class="qa-tab" data-f="asset2" onclick="setQAFilter('asset2')">資産(2級)</button>
         <button class="qa-tab" data-f="liability" onclick="setQAFilter('liability')">負債</button>
-        <button class="qa-tab" data-f="expense" onclick="setQAFilter('expense')">費用</button>
+        <button class="qa-tab" data-f="expense3" onclick="setQAFilter('expense3')">費用(3級)</button>
+        <button class="qa-tab" data-f="expense2" onclick="setQAFilter('expense2')">費用(2級)</button>
         <button class="qa-tab" data-f="revenue" onclick="setQAFilter('revenue')">収益</button>
         <button class="qa-tab" data-f="equity" onclick="setQAFilter('equity')">純資産</button>
-        <button class="qa-tab" data-f="industrial" onclick="setQAFilter('industrial')">工業簿記</button>
-        <button class="qa-tab" data-f="gloss" onclick="setQAFilter('gloss')">用語集</button>
+        <button class="qa-tab" data-f="industrial" onclick="setQAFilter('industrial')">工業科目</button>
+        <button class="qa-tab" data-f="gloss-basic" onclick="setQAFilter('gloss-basic')">基礎用語</button>
+        <button class="qa-tab" data-f="gloss-comm" onclick="setQAFilter('gloss-comm')">商業用語</button>
+        <button class="qa-tab" data-f="gloss-ind" onclick="setQAFilter('gloss-ind')">工業用語</button>
+        <button class="qa-tab" data-f="gloss-adv" onclick="setQAFilter('gloss-adv')">上級用語</button>
       </div>
       <div class="qa-prog-bar-wrap"><div class="qa-prog-bar-fill" id="qa-prog-fill" style="width:0%"></div></div>
     </div>
@@ -1751,11 +1757,19 @@ function buildQAAllItems(){
   });
 
   // 工業簿記 勘定科目
+  const IND_ACCT_TYPE = {
+    '材料・在庫':   '資産科目（流動資産）',
+    '労務費':       '費用（製造直接費 / 間接費）',
+    '製造間接費':   '費用（製造間接費）',
+    '原価差異':     '差異勘定　不利差異→借方 / 有利差異→貸方',
+    '本社・工場':   '内部取引勘定（合算時に消去）',
+  };
   INDUSTRIAL_DATA.forEach(([name, en, note, subcat, note_en]) => {
     items.push({
       src:'industrial', type:'industrial', subcat,
       hint: subcat,
       hintCls: 'industrial',
+      acctType: IND_ACCT_TYPE[subcat] || '',
       q: qaMask(note, name),
       ans: name,
       ans_en: en,
@@ -1763,10 +1777,10 @@ function buildQAAllItems(){
   });
 
   // 用語集：定義が問い、用語名が答え
-  GLOSSARY_DATA.forEach(({category, items:gi}) => {
+  GLOSSARY_DATA.forEach(({category, items:gi}, catIdx) => {
     gi.forEach(({term, en, def, def_en}) => {
       items.push({
-        src:'gloss', type:'gloss', cat:category,
+        src:'gloss', type:'gloss', cat:category, catIdx,
         hint: category,
         hintCls: 'gloss',
         q: qaMask(def, term),
@@ -1781,14 +1795,19 @@ function buildQAAllItems(){
 
 function getQAFiltered(){
   if(!qaAllItems) qaAllItems = buildQAAllItems();
-  if(qaFilter==='all')        return [...qaAllItems];
-  if(qaFilter==='asset')      return qaAllItems.filter(i=>i.src==='acct' && i.type==='asset');
-  if(qaFilter==='liability')  return qaAllItems.filter(i=>i.src==='acct' && i.type==='liability');
-  if(qaFilter==='expense')    return qaAllItems.filter(i=>i.src==='acct' && i.type==='expense');
-  if(qaFilter==='revenue')    return qaAllItems.filter(i=>i.src==='acct' && i.type==='revenue');
-  if(qaFilter==='equity')     return qaAllItems.filter(i=>i.src==='acct' && i.type==='equity');
-  if(qaFilter==='industrial') return qaAllItems.filter(i=>i.src==='industrial');
-  if(qaFilter==='gloss')      return qaAllItems.filter(i=>i.src==='gloss');
+  if(qaFilter==='all')         return [...qaAllItems];
+  if(qaFilter==='asset3')      return qaAllItems.filter(i=>i.src==='acct' && i.type==='asset'    && i.lv===3);
+  if(qaFilter==='asset2')      return qaAllItems.filter(i=>i.src==='acct' && i.type==='asset'    && i.lv===2);
+  if(qaFilter==='liability')   return qaAllItems.filter(i=>i.src==='acct' && i.type==='liability');
+  if(qaFilter==='expense3')    return qaAllItems.filter(i=>i.src==='acct' && i.type==='expense'  && i.lv===3);
+  if(qaFilter==='expense2')    return qaAllItems.filter(i=>i.src==='acct' && i.type==='expense'  && i.lv===2);
+  if(qaFilter==='revenue')     return qaAllItems.filter(i=>i.src==='acct' && i.type==='revenue');
+  if(qaFilter==='equity')      return qaAllItems.filter(i=>i.src==='acct' && i.type==='equity');
+  if(qaFilter==='industrial')  return qaAllItems.filter(i=>i.src==='industrial');
+  if(qaFilter==='gloss-basic') return qaAllItems.filter(i=>i.src==='gloss' && i.catIdx<=3);
+  if(qaFilter==='gloss-comm')  return qaAllItems.filter(i=>i.src==='gloss' && i.catIdx>=4 && i.catIdx<=13);
+  if(qaFilter==='gloss-ind')   return qaAllItems.filter(i=>i.src==='gloss' && i.catIdx===14);
+  if(qaFilter==='gloss-adv')   return qaAllItems.filter(i=>i.src==='gloss' && i.catIdx>=15);
   return [...qaAllItems];
 }
 
@@ -1832,11 +1851,15 @@ function renderQABody(){
                : item.src==='industrial' ? 'この<b>工業簿記の科目</b>は何？'
                :                           'この<b>簿記用語</b>は何？';
 
+  const acctTypeLine = (item.src==='industrial' && item.acctType)
+    ? `<div class="qa-ans-type">${item.acctType}</div>` : '';
+
   const ansHtml = qaRevealed ? `
     <div class="qa-ans-area">
       <div class="qa-ans-label">答え</div>
       <div class="qa-ans-text">${item.ans}</div>
       <div class="qa-ans-en">${item.ans_en}</div>
+      ${acctTypeLine}
     </div>
     <div class="qa-judge-row">
       <button class="qa-judge-btn qa-again-btn" onclick="qaJudge(false)">↩ もう一度</button>
