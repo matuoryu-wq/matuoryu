@@ -544,6 +544,25 @@
     .exp-res-exp-en { font-size:11px; color:var(--muted); line-height:1.6; padding:6px 10px; background:rgba(0,0,0,0.02); border-radius:6px; margin-top:4px; border-top:1px dashed var(--border); }
 
     .exp-reveal-btn { width:100%; padding:10px; border:none; border-radius:8px; background:#546E7A; color:#fff; font-size:13px; font-weight:700; cursor:pointer; margin-bottom:8px; }
+    /* === 段階的計算ステップUI === */
+    .exp-step-area { background:#fff; border-radius:12px; padding:14px; margin-top:8px; border:1.5px solid var(--border); }
+    .exp-step-header { display:flex; align-items:center; justify-content:space-between; margin:0 0 8px; }
+    .exp-step-progress { display:flex; gap:6px; align-items:center; }
+    .exp-step-dot { width:10px; height:10px; border-radius:50%; background:#E0E0E0; display:inline-block; flex-shrink:0; }
+    .exp-step-dot.done { background:#2E7D32; }
+    .exp-step-dot.active { background:var(--primary); }
+    .exp-step-label { font-size:12px; font-weight:700; color:var(--muted); }
+    .exp-step-hint { font-size:12px; color:var(--muted); background:#F8F9FF; border-radius:8px; padding:8px 12px; margin-bottom:10px; }
+    .exp-step-input-row { display:flex; gap:8px; align-items:center; margin:10px 0; }
+    .exp-step-input { flex:1; padding:10px 14px; border:2px solid var(--border); border-radius:10px; font-size:18px; font-weight:700; text-align:right; outline:none; transition:border-color 0.15s; min-width:0; }
+    .exp-step-input:focus { border-color:var(--primary); }
+    .exp-step-unit { font-size:14px; font-weight:700; color:var(--text); white-space:nowrap; }
+    .exp-step-check-btn { padding:10px 18px; background:var(--primary); color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; white-space:nowrap; }
+    .exp-step-check-btn:disabled { opacity:0.5; cursor:default; }
+    .exp-step-feedback { border-radius:10px; padding:10px 14px; font-size:13px; font-weight:700; margin-top:8px; display:none; }
+    .exp-step-feedback.ok { background:#F1FBF4; color:#2E7D32; border:1.5px solid #81C784; display:block; }
+    .exp-step-feedback.ng { background:#FFF3F3; color:#C62828; border:1.5px solid #EF9A9A; display:block; }
+    .exp-steps-done { text-align:center; padding:10px 10px 6px; font-size:15px; font-weight:800; color:#2E7D32; }
   </style>
 </head>
 <body>
@@ -4771,7 +4790,13 @@ const ALL = [
     ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">①予算許容額＝変動費(@500×380h)＋固定費(200,000)＝190,000＋200,000＝390,000円<br>②予算差異＝予算許容額390,000－実際400,000＝△10,000円（不利）<br>③操業度差異＝固定費率(@500円)×(実際380h－基準400h)＝500×(△20)＝△10,000円（不利）<br>※固定費率＝200,000÷400h＝@500円/h</div>`,
     exp:'①予算許容額：その操業度（380h）で許容されるコスト総額。②予算差異：「実際コスト400,000が許容額390,000を10,000円超過→無駄があった（不利）」。③操業度差異：「計画400hより20h少なかった→固定費10,000円分が回収できなかった（不利）」。両方不利な月でした。',
     exp_en:'①Budget allowance: total cost permitted at actual 380 hours. ②Budget variance: actual ¥400,000 − allowance ¥390,000 = −¥10,000 (unfavorable, overspent). ③Volume variance: fixed rate ¥500 × (380 − 400) = −¥10,000 (unfavorable, under-produced). Both unfavorable this month.',
-    note:'固定費率=200,000÷400=@500 / 予算許容額=500×380+200,000=390,000 / 予算差異=-10,000 / 操業度差異=500×(380-400)=-10,000'
+    note:'固定費率=200,000÷400=@500 / 予算許容額=500×380+200,000=390,000 / 予算差異=-10,000 / 操業度差異=500×(380-400)=-10,000',
+    steps:[
+      {label:'固定費率', hint:'固定費予算 ÷ 基準操業度 ＝ 200,000 ÷ 400', ans:500, unit:'円/h'},
+      {label:'予算許容額', hint:'変動費率×実際操業度 ＋ 固定費予算 ＝ 500×380 ＋ 200,000', ans:390000, unit:'円'},
+      {label:'予算差異', hint:'予算許容額 − 実際発生額 ＝ 390,000 − 400,000', ans:-10000, unit:'円'},
+      {label:'操業度差異', hint:'固定費率×(実際操業度 − 基準操業度) ＝ 500×(380−400)', ans:-10000, unit:'円'},
+    ]
   },
   {
     id:296,
@@ -5130,7 +5155,13 @@ const ALL = [
     ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">予算許容額（実際操業度基準）＝変動費@300×380h＋固定費120,000<br>　　　　　　　　　　　＝114,000＋120,000＝234,000円<br>①予算差異＝予算許容額234,000－実際234,000＝0円<br>固定費率＝120,000÷400h＝@300円/h<br>②操業度差異＝固定費率@300×(実際380h－基準400h)<br>　　　　　　＝300×(△20)＝△6,000円（不利）</div>`,
     exp:'①予算差異：実際発生額が予算許容額と等しい→0（予算通りのコスト管理）②操業度差異：実際操業度（380h）が基準（400h）を20h下回ったため、固定費6,000円分が回収できなかった（不利差異）。「予算通りに使ったが、生産量が少なくて固定費を十分回収できなかった」状況。',
     exp_en:'①Budget variance = actual ¥234,000 − budget allowance ¥234,000 = ¥0 (exactly on budget) ②Volume variance = fixed rate ¥300 × (380 − 400) = −¥6,000 (unfav). "Spent exactly what was budgeted, but produced less than planned, so fixed costs were under-recovered." Under-production always creates an unfavorable volume variance.',
-    note:'固定費率=120,000÷400=@300 / 予算許容額=300×380+120,000=234,000 / 予算差異=0 / 操業度差異=300×(380-400)=-6,000'
+    note:'固定費率=120,000÷400=@300 / 予算許容額=300×380+120,000=234,000 / 予算差異=0 / 操業度差異=300×(380-400)=-6,000',
+    steps:[
+      {label:'固定費率', hint:'固定費予算 ÷ 基準操業度 ＝ 120,000 ÷ 400', ans:300, unit:'円/h'},
+      {label:'予算許容額', hint:'変動費率×実際時間 ＋ 固定費予算 ＝ 300×380 ＋ 120,000', ans:234000, unit:'円'},
+      {label:'予算差異', hint:'予算許容額 − 実際発生額 ＝ 234,000 − 234,000', ans:0, unit:'円'},
+      {label:'操業度差異', hint:'固定費率×(実際操業度 − 基準操業度) ＝ 300×(380−400)', ans:-6000, unit:'円'},
+    ]
   },
   {
     id:330,
@@ -5161,7 +5192,13 @@ const ALL = [
     ans_html:`<div class="tbl-sec">答え（直接原価計算P/L）</div><div class="formula-box">売上高　　　　　　　　　　1,000,000<br>変動費（変動売上原価＋変動販管費）△500,000<br>限界利益　　　　　　　　　　500,000<br>固定費（固定製造原価＋固定販管費）△400,000<br>営業利益　　　　　　　　　　100,000</div><table><tbody><tr><td class="hl">①変動費</td><td>400,000＋100,000＝500,000円</td></tr><tr><td class="hl">②限界利益</td><td>1,000,000－500,000＝500,000円</td></tr><tr><td class="hl">③固定費</td><td>300,000＋100,000＝400,000円</td></tr><tr><td class="hl">④営業利益</td><td>500,000－400,000＝100,000円</td></tr></tbody></table>`,
     exp:'直接原価計算のP/Lは「売上高－変動費＝限界利益、限界利益－固定費＝営業利益」という構造。通常のP/Lと違い、費用を変動費と固定費で分けて表示します。「限界利益」（貢献利益）は固定費を回収するための利益で、限界利益率が高いほど固定費を効率的に回収できます。',
     exp_en:'Direct costing P&L: Sales − Variable costs = Contribution margin (CM); CM − Fixed costs = Operating income. Costs are split by behavior (variable vs. fixed), not by function. The contribution margin is "what\'s left to cover fixed costs and profit." Higher CM ratio = more efficient fixed cost coverage.',
-    note:'限界利益=1,000,000-500,000=500,000 / 営業利益=500,000-400,000=100,000'
+    note:'限界利益=1,000,000-500,000=500,000 / 営業利益=500,000-400,000=100,000',
+    steps:[
+      {label:'変動費合計', hint:'変動売上原価 ＋ 変動販管費 ＝ 400,000 ＋ 100,000', ans:500000, unit:'円'},
+      {label:'限界利益', hint:'売上高 − 変動費合計 ＝ 1,000,000 − 500,000', ans:500000, unit:'円'},
+      {label:'固定費合計', hint:'固定製造原価 ＋ 固定販管費 ＝ 300,000 ＋ 100,000', ans:400000, unit:'円'},
+      {label:'営業利益', hint:'限界利益 − 固定費合計 ＝ 500,000 − 400,000', ans:100000, unit:'円'},
+    ]
   },
   {
     id:333,
@@ -5172,7 +5209,12 @@ const ALL = [
     ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①限界利益率</td><td>500,000÷1,000,000＝50%</td></tr><tr><td class="hl">②損益分岐点</td><td>固定費400,000÷限界利益率50%＝800,000円</td></tr><tr><td class="hl">③安全余裕率</td><td>(1,000,000－800,000)÷1,000,000×100＝20%</td></tr></tbody></table><div class="formula-box">損益分岐点：売上高×50%＝固定費400,000 → 売上高＝800,000<br>安全余裕率が高い→売上が落ちても赤字になりにくい</div>`,
     exp:'①限界利益率＝限界利益500,000÷売上高1,000,000＝50%（売上が1円増えると限界利益が0.5円増える）②損益分岐点＝固定費400,000÷50%＝800,000円（この売上高なら利益ゼロ）③安全余裕率＝20%（実際売上が20%減っても黒字が維持できる余裕がある）。',
     exp_en:'①CM ratio = ¥500,000 ÷ ¥1,000,000 = 50% (each additional ¥1 of sales contributes ¥0.50 to CM) ②Break-even = ¥400,000 ÷ 50% = ¥800,000 (zero profit) ③Safety margin = 20% (sales can fall 20% before a loss occurs). Higher safety margin = more cushion against revenue decline.',
-    note:'CM率=500,000÷1,000,000=50% / BEP=400,000÷50%=800,000 / 安全余裕率=(1,000,000-800,000)÷1,000,000=20%'
+    note:'CM率=500,000÷1,000,000=50% / BEP=400,000÷50%=800,000 / 安全余裕率=(1,000,000-800,000)÷1,000,000=20%',
+    steps:[
+      {label:'限界利益率', hint:'限界利益 ÷ 売上高 × 100 ＝ 500,000 ÷ 1,000,000 × 100', ans:50, unit:'%'},
+      {label:'損益分岐点売上高', hint:'固定費 ÷ 限界利益率 ＝ 400,000 ÷ 0.5', ans:800000, unit:'円'},
+      {label:'安全余裕率', hint:'(売上高 − 損益分岐点) ÷ 売上高 × 100 ＝ (1,000,000 − 800,000) ÷ 1,000,000 × 100', ans:20, unit:'%'},
+    ]
   },
   {
     id:334,
@@ -5354,7 +5396,13 @@ const ALL = [
 </div>`,
     exp:'製造間接費差異の2分法は「使いすぎ」と「稼働不足」の2種類に分けます。\n\n【予算差異】実際にかかった費用と「その操業度なら予算でいくら？」の差。\n　予算差異＝予算許容額 − 実際発生額。プラスなら有利（節約できた！）。\n\n【操業度差異】固定費を「どれだけ活用できたか」を示す差異。\n　操業度差異＝標準配賦額 − 予算許容額。\n　機械が動かなければ固定費は無駄になる → 不利差異になりやすい。\n\n【イメージ】工場の電気代が固定で月6万円かかる。フル稼働なら6万円÷500時間＝120円/時間で吸収できる。でも480時間しか使わなかったら→ (500-480)×120＝2,400円分吸収できなかった！',
     exp_en:'2-way overhead variance splits into "budget" and "volume" parts.\nBudget variance: Did we spend within the flexible budget for actual activity?\nVolume variance: Did we use capacity fully enough to absorb fixed overhead?\nUnfavorable volume variance means fixed costs were underabsorbed due to low activity.',
-    note:'公式まとめ：\n予算差異 ＝ 予算許容額 − 実際発生額\n操業度差異 ＝ 標準配賦額 − 予算許容額\n予算許容額 ＝ 固定費予算 ＋ 変動費率×実際操業度\n標準配賦額 ＝ 標準配賦率×標準操業度'
+    note:'公式まとめ：\n予算差異 ＝ 予算許容額 − 実際発生額\n操業度差異 ＝ 標準配賦額 − 予算許容額\n予算許容額 ＝ 固定費予算 ＋ 変動費率×実際操業度\n標準配賦額 ＝ 標準配賦率×標準操業度',
+    steps:[
+      {label:'予算許容額', hint:'固定費予算 ＋ 変動費率×実際操業度 ＝ 60,000 ＋ 120×480', ans:117600, unit:'円'},
+      {label:'予算差異', hint:'予算許容額 − 実際発生額 ＝ 117,600 − 108,000', ans:9600, unit:'円'},
+      {label:'標準配賦額', hint:'標準配賦率 × 標準操業度 ＝ 200 × 500', ans:100000, unit:'円'},
+      {label:'操業度差異', hint:'標準配賦額 − 予算許容額 ＝ 100,000 − 117,600', ans:-17600, unit:'円'},
+    ]
   },
   {
     id:348,
@@ -5544,7 +5592,12 @@ const ALL = [
 </div>`,
     exp:'直接材料費差異は「高い値段で買ったのか」「使いすぎたのか」を分けて分析します。\n\n【価格差異】「買い値の差」\n　（標準単価 − 実際単価）× 実際消費量\n　→ 実際に買った分全部に対して、単価の差がどれだけ影響したか\n\n【数量差異】「使いすぎの差」\n　（標準消費量 − 実際消費量）× 標準単価\n　→ 標準通りに使えば1,200kgのはずが1,280kg使った → 80kg余計に使った\n\n【コツ】どちらも「差 × もう一方の数値」という形。符号は標準−実際なのでプラスが有利！\n\n実際＞標準 → 不利差異（損した）\n実際＜標準 → 有利差異（得した）',
     exp_en:'Direct material variance = price variance + quantity variance.\nPrice variance: (Standard price - Actual price) × Actual qty.\nQuantity variance: (Standard qty - Actual qty) × Standard price.\nPositive = favorable (saved money), Negative = unfavorable (overspent).',
-    note:'価格差異 ＝ (標準単価 − 実際単価) × 実際消費量\n数量差異 ＝ (標準消費量 − 実際消費量) × 標準単価\n両方の合計 ＝ 直接材料費差異（全体）'
+    note:'価格差異 ＝ (標準単価 − 実際単価) × 実際消費量\n数量差異 ＝ (標準消費量 − 実際消費量) × 標準単価\n両方の合計 ＝ 直接材料費差異（全体）',
+    steps:[
+      {label:'標準消費量', hint:'標準消費量/個 × 生産数量 ＝ 3kg × 400個', ans:1200, unit:'kg'},
+      {label:'価格差異', hint:'(標準単価 − 実際単価) × 実際消費量 ＝ (500 − 520) × 1,280', ans:-25600, unit:'円'},
+      {label:'数量差異', hint:'(標準消費量 − 実際消費量) × 標準単価 ＝ (1,200 − 1,280) × 500', ans:-40000, unit:'円'},
+    ]
   },
   {
     id:358,
@@ -5565,7 +5618,12 @@ const ALL = [
 </div>`,
     exp:'直接労務費差異は材料費差異と同じ考え方です。「時給が高かったのか」「時間がかかりすぎたのか」を分けます。\n\n【賃率差異】「時給の差」\n　（標準賃率 − 実際賃率）× 実際作業時間\n　→ 残業手当や特別手当で時給が上がると不利差異になる\n\n【時間差異】「作業時間の差」\n　（標準作業時間 − 実際作業時間）× 標準賃率\n　→ 標準800時間のはずが780時間で済んだ → 20時間節約 → 有利差異！\n\n【まとめ】賃率差異（管理部門の責任）、時間差異（製造現場の責任）という分析ができます。',
     exp_en:'Direct labor variance = rate variance + efficiency variance.\nRate variance: (Standard rate - Actual rate) × Actual hours.\nEfficiency variance: (Standard hours - Actual hours) × Standard rate.\nFavorable efficiency means workers finished faster than expected.',
-    note:'賃率差異 ＝ (標準賃率 − 実際賃率) × 実際作業時間\n時間差異 ＝ (標準作業時間 − 実際作業時間) × 標準賃率\n材料費と同じパターン（価格→賃率、数量→時間）'
+    note:'賃率差異 ＝ (標準賃率 − 実際賃率) × 実際作業時間\n時間差異 ＝ (標準作業時間 − 実際作業時間) × 標準賃率\n材料費と同じパターン（価格→賃率、数量→時間）',
+    steps:[
+      {label:'標準作業時間', hint:'標準時間/個 × 生産数量 ＝ 2時間 × 400個', ans:800, unit:'時間'},
+      {label:'賃率差異', hint:'(標準賃率 − 実際賃率) × 実際作業時間 ＝ (1,000 − 1,050) × 780', ans:-39000, unit:'円'},
+      {label:'時間差異', hint:'(標準作業時間 − 実際作業時間) × 標準賃率 ＝ (800 − 780) × 1,000', ans:20000, unit:'円'},
+    ]
   },
   {
     id:359,
@@ -5956,6 +6014,7 @@ function fmtQen(q){
 function loadExpQ(){
   const q=expQuestions[expQIdx];
   expEntryIdx=0; expQOk=true;
+  if(q.steps){ loadExpSteps(); return; }
   const main=document.getElementById('exp-main');
 
   const qEnHtml=q.q_en?`<div class="exp-q-en">${fmtQen(q)}</div>`:'';
@@ -5995,6 +6054,78 @@ function loadExpEntry(){
     </div>
     <button class="exp-undo-btn" id="exp-undo" onclick="expUndo()" style="display:none;">↩ 取り消す</button>`;
   renderExpCard();
+}
+
+let expStepIdx=0;
+
+function loadExpSteps(){
+  const q=expQuestions[expQIdx];
+  expStepIdx=0;
+  const main=document.getElementById('exp-main');
+  const qEnHtml=q.q_en?`<div class="exp-q-en">${fmtQen(q)}</div>`:'';
+  const noteHtml=q.note?`<div class="note-box">💡 ${q.note.replace(/\n/g,'<br>')}</div>`:'';
+  main.innerHTML=`
+    ${expNavBar()}
+    <div class="exp-q-card">${fmtQ(q)}${qEnHtml}</div>
+    ${noteHtml}
+    <div id="exp-step-area" class="exp-step-area"></div>`;
+  renderExpStep();
+}
+
+function renderExpStep(){
+  const q=expQuestions[expQIdx];
+  const steps=q.steps;
+  const area=document.getElementById('exp-step-area');
+  if(!area) return;
+  if(expStepIdx>=steps.length){
+    area.innerHTML=`<div class="exp-steps-done">✅ 全ステップ完了！</div>
+      <button class="exp-reveal-btn" onclick="expRevealAns(this)">答えを見る ▼</button>
+      <div class="exp-readonly-ans" id="exp-ro-ans">${q.ans_html||''}</div>`;
+    return;
+  }
+  const step=steps[expStepIdx];
+  const dots=steps.map((_,i)=>{
+    const cls=i<expStepIdx?'done':(i===expStepIdx?'active':'');
+    return `<span class="exp-step-dot ${cls}"></span>`;
+  }).join('');
+  area.innerHTML=`
+    <div class="exp-step-header">
+      <span class="exp-step-label">ステップ ${expStepIdx+1}/${steps.length}：${step.label}</span>
+      <div class="exp-step-progress">${dots}</div>
+    </div>
+    <div class="exp-step-hint">${step.hint}</div>
+    <div class="exp-step-input-row">
+      <input class="exp-step-input" id="exp-step-inp" type="number" inputmode="decimal" placeholder="数値を入力" onkeydown="if(event.key==='Enter')checkExpStep()">
+      <span class="exp-step-unit">${step.unit}</span>
+      <button class="exp-step-check-btn" onclick="checkExpStep()">確認</button>
+    </div>
+    <div class="exp-step-feedback" id="exp-step-fb"></div>`;
+  setTimeout(()=>{const inp=document.getElementById('exp-step-inp');if(inp)inp.focus();},50);
+}
+
+function checkExpStep(){
+  const q=expQuestions[expQIdx];
+  const step=q.steps[expStepIdx];
+  const inp=document.getElementById('exp-step-inp');
+  const fb=document.getElementById('exp-step-fb');
+  if(!inp||!fb) return;
+  const val=parseFloat(inp.value);
+  if(isNaN(val)){fb.className='exp-step-feedback ng';fb.textContent='数値を入力してください';return;}
+  const correct=step.ans;
+  const ok=(val===correct)||(correct<0&&val===-correct);
+  fb.className='exp-step-feedback '+(ok?'ok':'ng');
+  if(ok){
+    const isVariance=step.label.includes('差異');
+    const sign=isVariance?(correct<0?'（不利差異）':(correct>0?'（有利差異）':'（差異ゼロ）')):'';
+    fb.textContent=`✅ 正解！ ${correct.toLocaleString()} ${step.unit} ${sign}`;
+    inp.disabled=true;
+    const area=document.getElementById('exp-step-area');
+    const checkBtn=area?area.querySelector('.exp-step-check-btn'):null;
+    if(checkBtn) checkBtn.disabled=true;
+    setTimeout(()=>{expStepIdx++;renderExpStep();},1000);
+  } else {
+    fb.textContent='❌ 不正解。ヒントを確認してもう一度';
+  }
 }
 
 function expRevealAns(btn){
