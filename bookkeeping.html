@@ -5907,10 +5907,8 @@ let expPlaced={d:[],c:[]}, expHistory=[], expQOk=true;
 function getExpEntryAccounts(q, ei){
   if(!q.e || !q.e[ei]) return null;
   const entry=q.e[ei];
-  return [
-    ...entry.d.map(([name,amt])=>({name,amt,side:'d'})),
-    ...entry.c.map(([name,amt])=>({name,amt,side:'c'}))
-  ];
+  const parse=(item,s)=>Array.isArray(item)?{name:item[0],amt:item[1],side:s}:{name:item,amt:null,side:s};
+  return [...entry.d.map(item=>parse(item,'d')),...entry.c.map(item=>parse(item,'c'))];
 }
 
 function syncExpFromDeck(startIdx){
@@ -6019,7 +6017,7 @@ function renderExpCard(){
   card.className='exp-swipe-card';
   const len=acc.name.length;
   const fs=len<=5?15:len<=7?13:len<=9?11:10;
-  card.innerHTML=`<span class="tag ${T[acc.name]||'other'}" style="font-size:${fs}px;white-space:nowrap;">${acc.name}</span><div style="font-size:12px;color:var(--muted);margin-top:5px;font-weight:600;">${acc.amt.toLocaleString()}円</div>`;
+  card.innerHTML=`<span class="tag ${T[acc.name]||'other'}" style="font-size:${fs}px;white-space:nowrap;">${acc.name}</span>${acc.amt!=null?`<div style="font-size:12px;color:var(--muted);margin-top:5px;font-weight:600;">${acc.amt.toLocaleString()}円</div>`:''}`;
   wrap.appendChild(card);
   initExpSwipe(card);
 }
@@ -6045,7 +6043,7 @@ function initExpSwipe(card){
 function updateExpZones(){
   ['d','c'].forEach(s=>{
     const el=document.getElementById('exp-p'+s);
-    if(el) el.innerHTML=expPlaced[s].map(a=>`<span class="tag ${T[a.name]||'other'}">${a.name}<span class="tag-amt"> ${a.amt.toLocaleString()}円</span></span>`).join('');
+    if(el) el.innerHTML=expPlaced[s].map(a=>`<span class="tag ${T[a.name]||'other'}">${a.name}${a.amt!=null?`<span class="tag-amt"> ${a.amt.toLocaleString()}円</span>`:''}</span>`).join('');
   });
 }
 
@@ -6094,7 +6092,7 @@ function expCheckResult(){
   const entryAccounts=getExpEntryAccounts(q, expEntryIdx);
   const debit=entryAccounts.filter(a=>a.side==='d');
   const credit=entryAccounts.filter(a=>a.side==='c');
-  const tagHtml=arr=>arr.map(a=>`<span class="tag ${T[a.name]||'other'}">${a.name}<span class="tag-amt"> ${a.amt.toLocaleString()}円</span></span>`).join('');
+  const tagHtml=arr=>arr.map(a=>`<span class="tag ${T[a.name]||'other'}">${a.name}${a.amt!=null?`<span class="tag-amt"> ${a.amt.toLocaleString()}円</span>`:''}</span>`).join('');
   const multiLabel=q.e.length>1?` (${expEntryIdx+1}／${q.e.length})`:'';
   const nextEntryBtn=isLastEntry?'':`<button class="exp-nav-btn exp-nav-next" style="width:100%;margin-top:10px;" onclick="expNextEntry()">次の仕訳へ →</button>`;
   res.className=`exp-result ${ok?'ok':'ng'}`;
