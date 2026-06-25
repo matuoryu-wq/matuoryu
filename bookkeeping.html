@@ -2836,7 +2836,7 @@ const ALL = [
     exp_en:'FIFO (first-in, first-out) assumes the oldest inventory is sold first. 20 units sold: 10 @¥100 + 10 @¥130 = ¥2,300 COGS. Remaining 10 units are valued at the latest purchase price @¥130, giving ending balance ¥1,300.',
     steps:[
       {label:'払出金額（売上原価）', hint:'先入先出：古い仕入分から順に払い出す', ans:2300, unit:'円', choices:[2300,2600,2000,1300]},
-      {label:'期末残高', hint:'残10個 × @130（最新仕入単価）', ans:1300, unit:'円', choices:[1300,2600,1000,1500]}
+      {label:'期末残高', hint:'残数 × 最終仕入単価（FIFO：最後に仕入れた単価）', ans:1300, unit:'円', choices:[1300,2600,1000,1500]}
     ]
   },
 
@@ -2848,8 +2848,8 @@ const ALL = [
     exp_en:'The moving average method recalculates average cost per unit each time goods are purchased. New average: (¥1,000 + ¥2,600) ÷ 30 = @¥120. 20 units sold: @¥120 × 20 = ¥2,400. Ending balance: @¥120 × 10 = ¥1,200. Compare with FIFO (¥1,300) — same goods, different valuations.',
     steps:[
       {label:'移動平均単価', hint:'移動平均：(在庫金額 ＋ 仕入金額) ÷ (在庫数量 ＋ 仕入数量)', ans:120, unit:'円/個', choices:[120,100,130,110]},
-      {label:'払出金額', hint:'20個 × @120円', ans:2400, unit:'円', choices:[2400,2300,2600,2000]},
-      {label:'期末残高', hint:'10個 × @120円', ans:1200, unit:'円', choices:[1200,1300,1000,1500]}
+      {label:'払出金額', hint:'払出数量 × 移動平均単価', ans:2400, unit:'円', choices:[2400,2300,2600,2000]},
+      {label:'期末残高', hint:'残数 × 移動平均単価', ans:1200, unit:'円', choices:[1200,1300,1000,1500]}
     ]
   },
 
@@ -3648,7 +3648,7 @@ const ALL = [
     exp_en:'FIFO assumes oldest stock sells first. Like a supermarket shelf where older goods are placed at the front. Closing inventory consists of the most recently purchased goods (¥110). In an inflationary environment, FIFO tends to result in higher inventory values.',
     note:'期末在庫=最後に仕入れた単価×残数',
     steps:[
-      {label:'期末在庫金額', hint:'最終仕入単価110円 × 残数80個', ans:8800, unit:'円', choices:[8800,8000,9600,11000]}
+      {label:'期末在庫金額', hint:'残数 × 最終仕入単価（FIFO：最後に仕入れた単価）', ans:8800, unit:'円', choices:[8800,8000,9600,11000]}
     ]
   },
   {
@@ -4926,7 +4926,7 @@ const ALL = [
     note:'先入先出法：古い仕入から順に払出 / 期末残高 = 最新仕入単価 × 残数量',
     steps:[
       {label:'消費材料の原価', hint:'先入先出：月初100kg×@200 ＋ 追加140kg×@220', ans:50800, unit:'円', choices:[50800,51200,44000,20000]},
-      {label:'月末材料残高', hint:'残60kg × @220円（最新仕入単価）', ans:13200, unit:'円', choices:[13200,12000,14400,13300]}
+      {label:'月末材料残高', hint:'残数量 × 最終仕入単価（FIFO：最後に仕入れた単価）', ans:13200, unit:'円', choices:[13200,12000,14400,13300]}
     ]
   },
   {
@@ -4941,7 +4941,7 @@ const ALL = [
     note:'移動平均法：払出単価 = (在庫残高 ＋ 当回仕入額) ÷ (在庫残高数量 ＋ 仕入数量)',
     steps:[
       {label:'移動平均単価', hint:'移動平均：(在庫金額 ＋ 仕入金額) ÷ (在庫数量 ＋ 仕入数量)', ans:213, unit:'円/kg', choices:[213,220,200,210]},
-      {label:'消費原価', hint:'240kg × @213円', ans:51120, unit:'円', choices:[51120,51200,50800,48000]}
+      {label:'消費原価', hint:'払出数量 × 移動平均単価', ans:51120, unit:'円', choices:[51120,51200,50800,48000]}
     ]
   },
   {
@@ -5421,7 +5421,7 @@ const ALL = [
     exp:'総合原価計算の核心は「月末の作りかけ（仕掛品）をどう評価するか」。加工費（労務費・間接費）は進捗度に応じて消費されるため、50%完成の仕掛品は「完成品0.5個分」と換算。一方、直接材料費は通常「始点投入（工程開始時に全量投入）」なので、進捗度に関係なく100%で計算します。',
     exp_en:'Process costing\'s core challenge: how to value closing WIP. Conversion costs (labor + overhead) are incurred continuously → WIP at 50% completion = 0.5 equivalent completed unit. Direct materials are usually added all at the start → WIP gets 100% of materials regardless of completion percentage.',
     steps:[
-      {label:'月末仕掛品の加工費換算量', hint:'月末仕掛品100個 × 加工進捗度50%', ans:50, unit:'個', choices:[50,100,80,60]},
+      {label:'月末仕掛品の加工費換算量', hint:'月末仕掛品加工換算量 = 月末仕掛品数量 × 加工進捗度', ans:50, unit:'個', choices:[50,100,80,60]},
       {label:'②材料の投入タイミング', hint:'直接材料費：始点投入の場合の仕掛品換算', ans:'始点投入（100%）', choices:['始点投入（100%）','終点投入（0%）','均等投入','進捗度に応じ']}
     ]
   },
@@ -5436,8 +5436,8 @@ const ALL = [
     exp_en:'Average method: mix opening WIP and current-period costs together. Equivalent units: ①Materials (start-of-process) = completed 850 + closing WIP 150 × 100% = 1,000 units. ②Conversion = completed 850 + closing WIP 150 × 60% = 850 + 90 = 940 units. Divide total costs by these to get cost per equivalent unit.',
     note:'換算量 = 完成品数量 ＋ 期末仕掛品数量 × 加工進捗度 / 材料費は期末仕掛品に100%投入',
     steps:[
-      {label:'材料費換算量', hint:'完成品850 ＋ 月末仕掛品150×100%（始点投入）', ans:1000, unit:'個', choices:[1000,940,850,900]},
-      {label:'加工費換算量', hint:'完成品850 ＋ 月末仕掛品150×60%', ans:940, unit:'個', choices:[940,1000,850,900]}
+      {label:'材料費換算量', hint:'材料費換算量 = 完成品数量 ＋ 月末仕掛品数量（始点投入は100%）', ans:1000, unit:'個', choices:[1000,940,850,900]},
+      {label:'加工費換算量', hint:'加工費換算量 = 完成品数量 ＋ 月末仕掛品数量 × 加工進捗度', ans:940, unit:'個', choices:[940,1000,850,900]}
     ]
   },
   {
@@ -5453,7 +5453,7 @@ const ALL = [
     steps:[
       {label:'材料費単価', hint:'材料費単価 = 材料費合計 ÷ 換算量', ans:100, unit:'円/個', choices:[100,110,90,80]},
       {label:'加工費単価', hint:'加工費単価 = 加工費合計 ÷ 換算量（完成品 ＋ 期末仕掛品の加工換算量）', ans:80, unit:'円/個（概算）', choices:[80,100,90,75]},
-      {label:'完成品原価', hint:'850個 × (材料単価100 ＋ 加工単価80) × 完成品', ans:153000, unit:'円', choices:[153000,160000,145000,148000]}
+      {label:'完成品原価', hint:'完成品原価 = 完成品数量 × (材料費単価 ＋ 加工費単価)', ans:153000, unit:'円', choices:[153000,160000,145000,148000]}
     ]
   },
   {
@@ -5467,8 +5467,8 @@ const ALL = [
     exp_en:'FIFO: separate "work done on opening WIP this period" from "new units started this period." Opening WIP already has materials → don\'t count them in material equivalent units this period. Conversion: opening WIP remaining work (200×60%=120) + new completions (700) + closing WIP (100×50%=50) = 870 units.',
     note:'先入先出法：当期投入換算量 = 完成品 − 期首仕掛品 ＋ 期末仕掛品 × 進捗度',
     steps:[
-      {label:'材料費換算量（先入先出）', hint:'FIFO：(900−200×100% ＋ 100×100%)＝700＋100', ans:800, unit:'個', choices:[800,870,900,750]},
-      {label:'加工費換算量（先入先出）', hint:'FIFO：200×60% ＋ 700 ＋ 100×50% ＝ 120＋700＋50', ans:870, unit:'個', choices:[870,800,900,940]}
+      {label:'材料費換算量（先入先出）', hint:'FIFO材料換算量 = (完成品 − 期首仕掛品) ＋ 期末仕掛品×100%', ans:800, unit:'個', choices:[800,870,900,750]},
+      {label:'加工費換算量（先入先出）', hint:'FIFO加工費換算量 = 期首仕掛品×残進捗度 ＋ 当期正味投入 ＋ 期末仕掛品×進捗度', ans:870, unit:'個', choices:[870,800,900,940]}
     ]
   },
   {
@@ -5541,7 +5541,7 @@ const ALL = [
     steps:[
       {label:'材料費単価', hint:'材料費単価 = 材料費合計 ÷ 換算量', ans:200, unit:'円/個', choices:[200,150,250,180]},
       {label:'加工費単価', hint:'加工費単価 = 加工費合計 ÷ 換算量', ans:200, unit:'円/個', choices:[200,150,250,180]},
-      {label:'完成品原価', hint:'500個 × (200＋200)', ans:200000, unit:'円', choices:[200000,180000,220000,160000]}
+      {label:'完成品原価', hint:'完成品原価 = 完成品数量 × (材料費単価 ＋ 加工費単価)', ans:200000, unit:'円', choices:[200000,180000,220000,160000]}
     ]
   },
   {
@@ -5580,9 +5580,9 @@ const ALL = [
     exp_en:'The standard cost card sets the "should-cost" per unit. ①Materials = standard qty × standard price ②Labor = standard hours × standard rate ③Overhead = standard hours × standard rate. Multiply by actual production volume → total standard cost. Compare to actual costs → variances.',
     note:'標準原価 = 標準消費量 × 標準単価 / 製品1単位の標準原価 = 各費目の標準原価の合計',
     steps:[
-      {label:'ア（直接材料費）', hint:'標準消費量/個×標準単価 ＝ 5kg×@40円', ans:200, unit:'円', choices:[200,300,400,100]},
-      {label:'イ（直接労務費）', hint:'標準作業時間/個×標準賃率 ＝ 2時間×@300円', ans:600, unit:'円', choices:[600,200,400,800]},
-      {label:'ウ（製造間接費）', hint:'標準作業時間/個×標準配賦率 ＝ 2時間×@200円', ans:400, unit:'円', choices:[400,200,600,300]},
+      {label:'ア（直接材料費）', hint:'標準材料費/個 = 標準消費量/個 × 標準単価', ans:200, unit:'円', choices:[200,300,400,100]},
+      {label:'イ（直接労務費）', hint:'標準労務費/個 = 標準作業時間/個 × 標準賃率', ans:600, unit:'円', choices:[600,200,400,800]},
+      {label:'ウ（製造間接費）', hint:'標準間接費/個 = 標準作業時間/個 × 標準配賦率', ans:400, unit:'円', choices:[400,200,600,300]},
       {label:'エ（標準製造原価/個）', hint:'ア＋イ＋ウ ＝ 200＋600＋400', ans:1200, unit:'円', choices:[1200,1000,1400,1100]}
     ]
   },
@@ -5613,7 +5613,7 @@ const ALL = [
     exp_en:'DL variance: ①Rate variance = (std rate − actual rate) × actual hours = (¥300−¥310)×190 = −¥1,900 (unfav: higher wage rate) ②Efficiency variance = (std hours − actual hours) × std rate = (200−190)×¥300 = +¥3,000 (fav: finished faster). Total = +¥1,100 (fav). "Paid slightly higher wages, but worked more efficiently."',
     note:'賃率差異 = (標準賃率 − 実際賃率) × 実際時間 / 時間差異 = (標準時間 − 実際時間) × 標準賃率',
     steps:[
-      {label:'賃率差異', hint:'(標準賃率300 − 実際賃率310) × 実際作業時間190時間', ans:-1900, unit:'円', choices:[-1900,1900,3000,-3000]},
+      {label:'賃率差異', hint:'賃率差異 = (標準賃率 − 実際賃率) × 実際作業時間', ans:-1900, unit:'円', choices:[-1900,1900,3000,-3000]},
       {label:'時間差異', hint:'(標準作業時間200 − 実際作業時間190) × 標準賃率300', ans:3000, unit:'円', choices:[3000,-3000,-1900,1900]},
       {label:'労務費差異合計', hint:'合計差異 = 賃率差異 ＋ 時間差異', ans:1100, unit:'円', choices:[1100,-1100,3000,-3000]}
     ]
@@ -5887,7 +5887,7 @@ const ALL = [
     steps:[
       {label:'必要販売量', hint:'目標利益達成数量 = (固定費 ＋ 目標利益) ÷ 単位当たり限界利益', ans:900, unit:'個', choices:[900,600,1200,800]},
       {label:'損益分岐点販売量', hint:'損益分岐点数量 = 固定費 ÷ 単位当たり限界利益', ans:600, unit:'個', choices:[600,900,800,400]},
-      {label:'安全余裕率', hint:'(900−600) ÷ 900 × 100', ans:33, unit:'%（約）', choices:[33,25,40,50]}
+      {label:'安全余裕率', hint:'安全余裕率 = (売上高 − 損益分岐点) ÷ 売上高 × 100', ans:33, unit:'%（約）', choices:[33,25,40,50]}
     ]
   },
   {
@@ -5943,7 +5943,7 @@ const ALL = [
     steps:[
       {label:'予算許容額', hint:'予算許容額 = 固定費予算 ＋ 変動費率 × 実際操業度', ans:117600, unit:'円', choices:[117600,108000,120000,100000]},
       {label:'予算差異', hint:'予算差異 = 予算許容額(実際操業度) − 実際発生額', ans:9600, unit:'円', choices:[9600,-9600,17600,0]},
-      {label:'標準配賦額', hint:'標準配賦率 × 標準操業度 ＝ 200 × 500', ans:100000, unit:'円', choices:[100000,117600,96000,120000]},
+      {label:'標準配賦額', hint:'標準配賦額 = 標準配賦率 × 標準操業度（標準DLH）', ans:100000, unit:'円', choices:[100000,117600,96000,120000]},
       {label:'操業度差異', hint:'能率差異 = 標準配賦額 − 予算許容額(実際操業度)', ans:-17600, unit:'円', choices:[-17600,17600,-9600,0]},
     ]
   },
@@ -6085,8 +6085,8 @@ const ALL = [
     exp_en:'Degree-of-completion-ignored (degree-of-completion method): simply exclude spoiled units from the denominator.\nEnd-of-process spoilage: only completed units bear the spoilage cost.\nWIP units have not yet passed the spoilage point, so they bear no spoilage cost.',
     note:'度外視法のコツ：\n・仕損品を分母から除くだけ\n・終点発生 → 仕掛品は仕損コスト負担なし\n・途中発生 → 進捗度によっては仕掛品も負担あり',
     steps:[
-      {label:'材料費換算量', hint:'完成品800 ＋ 月末仕掛品200×100%（仕損は度外視）', ans:1000, unit:'個', choices:[1000,900,800,700]},
-      {label:'加工費換算量', hint:'完成品800 ＋ 月末仕掛品200×50%（仕損は度外視）', ans:900, unit:'個', choices:[900,800,1000,700]}
+      {label:'材料費換算量', hint:'材料費換算量 = 完成品数量 ＋ 月末仕掛品数量×投入割合（仕損は度外視）', ans:1000, unit:'個', choices:[1000,900,800,700]},
+      {label:'加工費換算量', hint:'加工費換算量 = 完成品数量 ＋ 月末仕掛品数量×進捗度（仕損は度外視）', ans:900, unit:'個', choices:[900,800,1000,700]}
     ]
   },
   {
@@ -6116,7 +6116,7 @@ const ALL = [
     note:'仕損発生点 vs 仕掛品進捗度\n仕掛品進捗 > 発生点 → 両者で負担（分母に両方入れる）\n仕掛品進捗 < 発生点 → 完成品のみ負担（仕掛品を分母に入れる）',
     steps:[
       {label:'月末仕掛品は仕損コストを負担するか', hint:'月末進捗50% > 仕損発生点40% なので', ans:'負担する', choices:['負担する','負担しない','一部のみ','判断不可']},
-      {label:'加工費換算量', hint:'完成品800 ＋ 月末仕掛品200×50%（仕損は度外視）', ans:900, unit:'個', choices:[900,800,1000,700]}
+      {label:'加工費換算量', hint:'加工費換算量 = 完成品数量 ＋ 月末仕掛品数量 × 加工進捗度（仕損は度外視）', ans:900, unit:'個', choices:[900,800,1000,700]}
     ]
   },
   {
@@ -6171,7 +6171,7 @@ const ALL = [
     exp_en:'Direct material variance = price variance + quantity variance.\nPrice variance: (Standard price - Actual price) × Actual qty.\nQuantity variance: (Standard qty - Actual qty) × Standard price.\nPositive = favorable (saved money), Negative = unfavorable (overspent).',
     note:'価格差異 ＝ (標準単価 − 実際単価) × 実際消費量\n数量差異 ＝ (標準消費量 − 実際消費量) × 標準単価\n両方の合計 ＝ 直接材料費差異（全体）',
     steps:[
-      {label:'標準消費量', hint:'標準消費量/個 × 生産数量 ＝ 3kg × 400個', ans:1200, unit:'kg', choices:[1200,1280,1000,1500]},
+      {label:'標準消費量', hint:'標準消費量合計 = 標準消費量/個 × 実際生産数量', ans:1200, unit:'kg', choices:[1200,1280,1000,1500]},
       {label:'価格差異', hint:'価格差異 = (標準単価 − 実際単価) × 実際消費量', ans:-25600, unit:'円', choices:[-25600,25600,-40000,0]},
       {label:'数量差異', hint:'数量差異 = (標準消費量 − 実際消費量) × 標準単価', ans:-40000, unit:'円', choices:[-40000,40000,-25600,0]},
     ]
@@ -6197,7 +6197,7 @@ const ALL = [
     exp_en:'Direct labor variance = rate variance + efficiency variance.\nRate variance: (Standard rate - Actual rate) × Actual hours.\nEfficiency variance: (Standard hours - Actual hours) × Standard rate.\nFavorable efficiency means workers finished faster than expected.',
     note:'賃率差異 ＝ (標準賃率 − 実際賃率) × 実際作業時間\n時間差異 ＝ (標準作業時間 − 実際作業時間) × 標準賃率\n材料費と同じパターン（価格→賃率、数量→時間）',
     steps:[
-      {label:'標準作業時間', hint:'標準時間/個 × 生産数量 ＝ 2時間 × 400個', ans:800, unit:'時間', choices:[800,780,880,750]},
+      {label:'標準作業時間', hint:'標準作業時間合計 = 標準作業時間/個 × 実際生産数量', ans:800, unit:'時間', choices:[800,780,880,750]},
       {label:'賃率差異', hint:'賃率差異 = (標準賃率 − 実際賃率) × 実際作業時間', ans:-39000, unit:'円', choices:[-39000,39000,20000,0]},
       {label:'時間差異', hint:'時間差異 = (標準作業時間 − 実際作業時間) × 標準賃率', ans:20000, unit:'円', choices:[20000,-39000,-20000,0]},
     ]
@@ -6224,8 +6224,8 @@ const ALL = [
     exp_en:'Process costing tracks costs through sequential departments.\nDept 2 receives "transferred-in costs" (前工程費) from Dept 1.\nTransferred-in costs are treated as 100% complete at the start of Dept 2.\nDept 2 adds its own conversion costs separately.',
     note:'前工程費は「始点投入100%」→ WIPも100%で計算\n前工程費単価 ＝ 前工程費合計 ÷ (完成品 ＋ WIP×100%)\n加工費単価 ＝ 加工費合計 ÷ (完成品 ＋ WIP×加工進捗度)',
     steps:[
-      {label:'前工程費換算量', hint:'前工程費は始点100%投入 → 完成品500 ＋ WIP100×100%', ans:600, unit:'個', choices:[600,550,500,650]},
-      {label:'加工費換算量', hint:'完成品500 ＋ WIP100×50%', ans:550, unit:'個', choices:[550,600,500,450]}
+      {label:'前工程費換算量', hint:'前工程費換算量 = 完成品数量 ＋ 期末仕掛品数量（始点100%投入）', ans:600, unit:'個', choices:[600,550,500,650]},
+      {label:'加工費換算量', hint:'加工費換算量 = 完成品数量 ＋ 期末仕掛品数量 × 加工進捗度', ans:550, unit:'個', choices:[550,600,500,450]}
     ]
   },
   {
