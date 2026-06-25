@@ -3454,11 +3454,11 @@ const ALL = [
 ,
     note:'費用の仕訳：\n費用発生 → 借方に費用科目\n費用の支払 → 貸方に現金/当座預金',
     steps:[
-      {label:'①現金が増えたとき', hint:'現金は資産 → 増加は借方（左）', ans:'借方', choices:['借方','貸方','どちらでも','記入しない']},
-      {label:'②買掛金が増えたとき', hint:'買掛金は負債 → 増加は貸方（右）', ans:'貸方', choices:['貸方','借方','どちらでも','記入しない']},
-      {label:'③仕入が発生したとき', hint:'仕入は費用 → 発生は借方（左）', ans:'借方', choices:['借方','貸方','どちらでも','記入しない']},
-      {label:'④売上が発生したとき', hint:'売上は収益 → 発生は貸方（右）', ans:'貸方', choices:['貸方','借方','どちらでも','記入しない']},
-      {label:'⑤費用が増えたとき', hint:'費用増加は借方（左）に記入', ans:'借方', choices:['借方','貸方','どちらでも','記入しない']}
+      {label:'①現金が増えたとき', hint:'現金は資産グループ。資産が増えたときの記入側は？', ans:'借方', choices:['借方','貸方','どちらでも','記入しない']},
+      {label:'②買掛金が増えたとき', hint:'買掛金は負債グループ。負債が増えたときの記入側は？', ans:'貸方', choices:['貸方','借方','どちらでも','記入しない']},
+      {label:'③仕入が発生したとき', hint:'仕入は費用グループ。費用が発生したときの記入側は？', ans:'借方', choices:['借方','貸方','どちらでも','記入しない']},
+      {label:'④売上が発生したとき', hint:'売上は収益グループ。収益が発生したときの記入側は？', ans:'貸方', choices:['貸方','借方','どちらでも','記入しない']},
+      {label:'⑤費用が増えたとき', hint:'費用が発生した時、どちら側に記入するか？', ans:'借方', choices:['借方','貸方','どちらでも','記入しない']}
     ]
   },
 
@@ -3469,11 +3469,11 @@ const ALL = [
     exp:'「借方・貸方」は単なる「左・右」の名前です。資産と費用は増えたら左、負債・純資産・収益は増えたら右。逆向きなら反対側です。' ,
     exp_en:'"Debit" and "credit" are simply names for "left" and "right" in accounting. Assets and expenses increase on the left (debit); liabilities, equity, and revenues increase on the right (credit).',
     steps:[
-      {label:'①仕訳の左側', hint:'借方と貸方のどちらが左？', ans:'借方', choices:['借方','貸方','元帳','仕訳']},
-      {label:'②仕訳の右側', hint:'借方と貸方のどちらが右？', ans:'貸方', choices:['貸方','借方','収益','費用']},
+      {label:'①仕訳の左側', hint:'仕訳は左と右に分かれる。左側の呼び名は？', ans:'借方', choices:['借方','貸方','元帳','仕訳']},
+      {label:'②仕訳の右側', hint:'仕訳は左と右に分かれる。右側の呼び名は？', ans:'貸方', choices:['貸方','借方','収益','費用']},
       {label:'③資産が増えた→', hint:'資産増加を記入する側', ans:'左（借方）', choices:['左（借方）','右（貸方）','どちらでも','上']},
       {label:'④負債が増えた→', hint:'負債増加を記入する側', ans:'右（貸方）', choices:['右（貸方）','左（借方）','どちらでも','上']},
-      {label:'⑤費用が増えた→', hint:'費用は増えたら借方に記入', ans:'左（借方）', choices:['左（借方）','右（貸方）','どちらでも','上']}
+      {label:'⑤費用が増えた→', hint:'費用グループの増加方向（左か右か）', ans:'左（借方）', choices:['左（借方）','右（貸方）','どちらでも','上']}
     ]
   },
 
@@ -3675,7 +3675,7 @@ const ALL = [
     exp:'棚卸減耗損の表示は「その損失が正常な営業活動のコストか否か」で変わります。例えば倉庫内での通常の蒸発・乾燥による減耗は原価性ありで売上原価。一方、洪水や火災・盗難による異常な減耗は原価性なしで特別損失に計上します。',
     exp_en:'Shrinkage classification depends on whether the loss is a normal cost of operations. Normal evaporation or drying in a warehouse = cost nature → Cost of Goods Sold. Flood, fire, or theft = no cost nature → Special Loss. Follow exam instructions.',
     steps:[
-      {label:'②原価性あり（通常）の表示', hint:'通常発生する棚卸減耗は売上原価に含める', ans:'売上原価', choices:['売上原価','特別損失','販管費','営業外費用']},
+      {label:'②原価性あり（通常）の表示', hint:'通常の棚卸減耗費は原価性あり。どの費用区分に表示するか？', ans:'売上原価', choices:['売上原価','特別損失','販管費','営業外費用']},
       {label:'④原価性なし（異常）の表示', hint:'盗難・災害など異常な減耗の表示先', ans:'販管費（特別損失）', choices:['販管費（特別損失）','売上原価','営業外費用','当期純損失']}
     ]
   },
@@ -4013,7 +4013,7 @@ const ALL = [
 ,
     note:'現金・預金の仕訳：\n受け取った → 借方に「現金/当座預金」\n支払った → 貸方に「現金/当座預金」',
     steps:[
-      {label:'ア　引当金の要件①', hint:'将来の費用または何に起因するか', ans:'費用', choices:['費用','収益','資産','損失']},
+      {label:'ア　引当金の要件①', hint:'引当金は将来の〇〇または損失を見込んで設定する', ans:'費用', choices:['費用','収益','資産','損失']},
       {label:'イ　引当金の要件②（いつ）', hint:'当期以前かそれ以降かの事象', ans:'当（現在）期以前', choices:['当（現在）期以前','翌期以降','設定時','損失確定後']},
       {label:'ウ　引当金の要件③（可能性）', hint:'発生の可能性がどの程度か', ans:'高い', choices:['高い','低い','確定している','ゼロ']},
       {label:'エ　引当金の要件④（金額）', hint:'金額がどうなっていること', ans:'合理的に見積れる', choices:['合理的に見積れる','確定している','概算でよい','不要']}
@@ -4821,7 +4821,7 @@ const ALL = [
     steps:[
       {label:'①原価計算の流れ1番目', hint:'材料費・労務費・経費が最初に集まる', ans:'材料', choices:['材料','仕掛品','製品','売上原価']},
       {label:'②原価計算の流れ2番目', hint:'製造工程での未完成品', ans:'仕掛品', choices:['仕掛品','材料','製品','売上原価']},
-      {label:'③原価計算の流れ3番目', hint:'完成した製品の在庫', ans:'製品', choices:['製品','仕掛品','材料','売上原価']},
+      {label:'③原価計算の流れ3番目', hint:'製造が完了し、出荷待ちの在庫勘定は？', ans:'製品', choices:['製品','仕掛品','材料','売上原価']},
       {label:'④製品が販売されたときの費用', hint:'製品を販売したときに計上する費用', ans:'売上原価', choices:['売上原価','製品','仕掛品','製造原価']}
     ]
   },
@@ -4965,8 +4965,8 @@ const ALL = [
     exp_en:'Using a predetermined price speeds up cost calculation, but creates a "material price variance" vs. actual. "Bought at higher price than expected → unfavorable (over budget)." "Got a better deal → favorable (under budget)." Transfer the variance to a variance account (or COGS) at month-end.',
     steps:[
       {label:'①材料消費の差異勘定名', hint:'材料費の価格差異を記録する勘定', ans:'材料消費価格差異', choices:['材料消費価格差異','材料費差異','価格差異','消費数量差異']},
-      {label:'②実際が予定より高い場合の差異', hint:'不利差異（コスト超過）の表現', ans:'不利差異', choices:['不利差異','有利差異','超過差異','標準差異']},
-      {label:'③実際が予定より低い場合の差異', hint:'有利差異（コスト節約）の表現', ans:'有利差異', choices:['有利差異','不利差異','節約差異','標準差異']}
+      {label:'②実際が予定より高い場合の差異', hint:'実際コストが予定を上回った場合の差異名称は？', ans:'不利差異', choices:['不利差異','有利差異','超過差異','標準差異']},
+      {label:'③実際が予定より低い場合の差異', hint:'実際コストが予定を下回った場合の差異名称は？', ans:'有利差異', choices:['有利差異','不利差異','節約差異','標準差異']}
     ]
   },
   {
@@ -5300,7 +5300,7 @@ const ALL = [
     exp_en:'Three steps: ①Collect all indirect costs in each dept. (direct charge + allocation) ②Transfer service dept. costs to production depts. ③Allocate production dept. costs to products using dept.-specific rates (machine hrs, labor hrs, etc.). Final product cost = direct costs + allocated overhead from each production department.',
     steps:[
       {label:'①第1段階の配分先', hint:'全間接費を製造・補助部門に集計', ans:'製造部門・補助部門', choices:['製造部門・補助部門','製品のみ','売上原価','仕掛品']},
-      {label:'②第2段階の処理', hint:'補助部門費を製造部門に配賦する', ans:'製造部門に配賦', choices:['製造部門に配賦','製品へ直接配賦','売上原価へ','仕掛品へ']},
+      {label:'②第2段階の処理', hint:'補助部門に集計された費用を次にどこへ、どうするか？', ans:'製造部門に配賦', choices:['製造部門に配賦','製品へ直接配賦','売上原価へ','仕掛品へ']},
       {label:'③第3段階の配分先', hint:'製造部門費を最終的に配分する先', ans:'製品（仕掛品）', choices:['製品（仕掛品）','補助部門','売上原価','製造間接費']}
     ]
   },
@@ -5809,7 +5809,7 @@ const ALL = [
     exp_en:'Industrial bookkeeping essence: ①Track costs through the production process (materials + labor + overhead = product cost) ②Three inventory stages (Materials → WIP → Finished Goods) ③Variance analysis for cost control (standard costing). Commercial = 2 steps (buy → sell). Industrial = multiple steps (buy → manufacture → complete → sell).',
     steps:[
       {label:'ア　工業簿記の費用の種類', hint:'製品を製造したことで生じる原価', ans:'製造原価', choices:['製造原価','商品原価','仕入原価','販管費']},
-      {label:'イ　商業簿記の在庫勘定（1種類）', hint:'商品売買業の在庫は何勘定', ans:'商品', choices:['商品','製品','材料','仕掛品']},
+      {label:'イ　商業簿記の在庫勘定（1種類）', hint:'商業では在庫をひとまとめにして記録する勘定科目は？', ans:'商品', choices:['商品','製品','材料','仕掛品']},
       {label:'ウ　工業簿記の在庫起点', hint:'製造原価の流れの最初の在庫', ans:'材料', choices:['材料','仕掛品','製品','商品']},
       {label:'エ　製造原価の一覧表', hint:'製品の製造にかかった費用をまとめた書類', ans:'製造原価報告書', choices:['製造原価報告書','損益計算書','製造指図書','精算表']}
     ]
@@ -5918,7 +5918,7 @@ const ALL = [
     exp_en:'Industrial bookkeeping is essentially "commercial bookkeeping for manufacturers."\nMerchandise splits into: WIP (in-process) + Finished Goods (completed).\nPurchases become: Cost of Goods Manufactured (materials + labor + overhead).\nThe core logic is the same: inventory on hand, and only what\'s sold becomes expense.',
     steps:[
       {label:'①工業簿記にある在庫（商品に相当）①', hint:'製造工程で未完成の在庫', ans:'仕掛品', choices:['仕掛品','製品','材料','商品']},
-      {label:'②工業簿記にある在庫（商品に相当）②', hint:'完成した製品の在庫', ans:'製品', choices:['製品','仕掛品','材料','商品']},
+      {label:'②工業簿記にある在庫（商品に相当）②', hint:'製造が完了し、出荷待ちの在庫勘定は？', ans:'製品', choices:['製品','仕掛品','材料','商品']},
       {label:'③工業簿記の費用の発生元', hint:'仕入高に相当する工業簿記の費用', ans:'当期製品製造原価', choices:['当期製品製造原価','売上原価','材料費','製造間接費']}
     ]
   },
@@ -6668,7 +6668,7 @@ const ALL = [
     steps:[
       {label:'①直接材料費の振替先', hint:'製品に直接追跡できる材料費はどこへ？', ans:'仕掛品', choices:['仕掛品','製造間接費','材料','製品']},
       {label:'②間接材料費の振替先', hint:'製品に直接追跡できない材料費はどこへ？', ans:'製造間接費', choices:['製造間接費','仕掛品','製品','売上原価']},
-      {label:'③仕掛品が完成したときの振替先', hint:'製造が完了した製品はどの勘定へ？', ans:'製品', choices:['製品','仕掛品','売上原価','材料']},
+      {label:'③仕掛品が完成したときの振替先', hint:'仕掛品の製造完了後、振替先の在庫勘定は？', ans:'製品', choices:['製品','仕掛品','売上原価','材料']},
       {label:'④製品が売れたときの振替先', hint:'販売時に費用（P/L）に計上される勘定は？', ans:'売上原価', choices:['売上原価','製品','仕掛品','製造間接費']}
     ]
   },
