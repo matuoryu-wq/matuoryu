@@ -1827,6 +1827,13 @@ function styleParens(html){
   return html.replace(/（([^（）]*)）/g,'<span class="q-paren">（$1）</span>');
 }
 
+function addQBreaks(txt){
+  return txt
+    .replace(/\n/g,'<br>')
+    .replace(/。([①②③④⑤⑥⑦⑧⑨⑩])/g,'。<br>$1')
+    .replace(/([。！？])(\s*)([ア-ン][　\s]|[A-Z]社|次[のに]|なお|ただし|また、|また。|さらに)/g,'$1$2<br>$3');
+}
+
 // HTMLタグを除いた表示用テキストを抽出（問題文のプレビュー用）
 function qaStripTags(html){ return html.replace(/<[^>]+>/g,''); }
 
@@ -1967,7 +1974,7 @@ function renderQABody(){
         <span class="qa-q-badge ${item.hintCls}">${item.hint}</span>
         ${item.lv===2?'<span class="qa-q-badge cat">2級</span>':''}
       </div>
-      <div class="qa-q-text">${styleParens(item.q)}<span class="qa-q-suffix">${suffix}</span></div>
+      <div class="qa-q-text">${styleParens(addQBreaks(item.q))}<span class="qa-q-suffix">${suffix}</span></div>
       ${item.q_en ? `<div class="qa-q-en">${item.q_en}</div>` : ''}
     </div>
     ${ansHtml}
@@ -6758,13 +6765,13 @@ function expGoTo(i){
 function fmtQ(q){
   let txt=q.q_html||q.q||'';
   txt=txt.replace(/^（穴埋め[^）]*）[\s　]*/u,'');
-  txt=txt.replace(/\n/g,'<br>');
+  txt=addQBreaks(txt);
   return styleParens(txt);
 }
 function fmtQen(q){
   let txt=q.q_en||'';
   txt=txt.replace(/^\([Ff]ill[^)]*\)[\s]*/,'');
-  return txt.replace(/\n/g,'<br>');
+  return addQBreaks(txt);
 }
 
 function loadExpQ(){
