@@ -6540,6 +6540,131 @@ const ALL = [
       {label:'③財務活動CF', hint:'借入500,000 − 返済880,000', ans:-380000, unit:'円', choices:[-380000,-300000,-400000,-500000]}
     ]
   },
+
+  {
+    id:373,
+    level:2,
+    cat:'経費',
+    q:'当月の経費消費額を計算せよ。当月現金支払額350,000円、月末未払経費40,000円、月初未払経費30,000円。',
+    q_en:'Calculate current-month expense consumption. Cash paid this month: ¥350,000; accrued at month-end: ¥40,000; accrued at prior month-end: ¥30,000.',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">当月消費経費＝当月支払額＋月末未払額－月初未払額<br>＝350,000＋40,000－30,000＝360,000円</div>`,
+    exp:'経費の消費額計算は労務費と同じく「支払ベース」ではなく「発生ベース」で行います。当月に発生した（消費した）経費＝当月支払額＋当月末の未払（翌月支払分）－前月末の未払（当月に支払った前月分）。未払経費の増加分は当月の費用になります。',
+    exp_en:'Expense consumption uses the accrual basis. Current-month consumption = cash paid + ending accrued expense − beginning accrued expense. Accrued at month-end = expense incurred this period but not yet paid. Prior accrual = paid this period but recorded last period.',
+    steps:[
+      {label:'当月消費経費', hint:'当月支払350,000 ＋ 月末未払40,000 − 月初未払30,000', ans:360000, unit:'円', choices:[360000,350000,380000,390000]}
+    ]
+  },
+
+  {
+    id:374,
+    level:2,
+    cat:'経費',
+    q:'外注加工費150,000円を小切手で支払い、直接経費として仕掛品に振り替えた。一連の仕訳を示せ（①外注加工費支払 ②仕掛品への振替）。',
+    q_en:'Paid ¥150,000 by check for outsourced processing (direct expense). Record (①) the payment and (②) the transfer to WIP.',
+    e:[{d:[['外注加工費',150000]],c:[['当座預金',150000]]},{d:[['仕掛品',150000]],c:[['外注加工費',150000]]}],
+    exp:'外注加工費は「直接経費」の代表例。支払時はまず「外注加工費」勘定（経費）に記録し、月末に仕掛品へ振り替えます（直接費なので製造間接費を経由せず直接仕掛品へ）。他の間接経費（減価償却費・電力料など）は「製造間接費」に集計してから配賦されますが、外注加工費だけは直接仕掛品に行きます。',
+    exp_en:'Outsourced processing fees are a "direct expense." First record in the Outsourcing Fees account, then transfer directly to WIP (bypassing Manufacturing Overhead, because it\'s a direct cost traceable to a specific job). All other indirect expenses (depreciation, utilities) flow through Manufacturing Overhead first.'
+  },
+
+  {
+    id:375,
+    level:2,
+    cat:'工業簿記総まとめ',
+    q:'（一気通貫①）材料500,000円を掛購入し、直接材料費400,000円・間接材料費100,000円を消費した。①材料購入 ②材料費消費の仕訳を示せ。',
+    q_en:'(Full flow ①) Purchased materials ¥500,000 on credit; consumed ¥400,000 direct and ¥100,000 indirect. Record ① purchase and ② consumption.',
+    e:[{d:[['材料',500000]],c:[['買掛金',500000]]},{d:[['仕掛品',400000],['製造間接費',100000]],c:[['材料',500000]]}],
+    exp:'材料の消費は「直接材料費→仕掛品」「間接材料費→製造間接費」に振り分けます。仕掛品に直接載るのは製品に直接追跡できる分だけ。間接分はいったん製造間接費に集め、後で配賦基準にしたがって仕掛品に配賦されます。この2ステップが材料費の基本フローです。',
+    exp_en:'Material consumption: direct materials → WIP; indirect materials → Manufacturing Overhead. Only directly traceable costs go straight to WIP. Indirect materials are first pooled in Manufacturing Overhead, then allocated to WIP using an allocation base (e.g., labor hours).'
+  },
+
+  {
+    id:376,
+    level:2,
+    cat:'工業簿記総まとめ',
+    q:'（一気通貫②）当月賃金消費高：直接労務費600,000円・間接労務費200,000円。製造間接費配賦額（配賦率1,500円/h×実際500h）を仕掛品へ配賦した。①賃金消費振替 ②製造間接費配賦の仕訳を示せ。',
+    q_en:'(Full flow ②) Wages: ¥600,000 direct, ¥200,000 indirect. MO allocated at ¥1,500/h × 500h. Record ① wage consumption and ② overhead application.',
+    e:[{d:[['仕掛品',600000],['製造間接費',200000]],c:[['賃金・給料',800000]]},{d:[['仕掛品',750000]],c:[['製造間接費',750000]]}],
+    exp:'賃金消費も材料費と同じ分岐：直接労務費→仕掛品、間接労務費→製造間接費。その後、製造間接費勘定に集まった間接費（材料・労務・経費）をまとめて、予定配賦率×実際操業度で仕掛品へ配賦します。「間接費をいったんプールしてから配る」これが製造間接費配賦のイメージです。',
+    exp_en:'Same split as materials: direct labor → WIP, indirect labor → Manufacturing Overhead. Then all collected overhead (indirect materials + labor + expenses) is applied to WIP using a predetermined rate × actual activity. "Pool first, allocate second" — that\'s the overhead flow.'
+  },
+
+  {
+    id:377,
+    level:2,
+    cat:'工業簿記総まとめ',
+    q:'（一気通貫③）当月仕掛品勘定：月初残高200,000円、当月製造費用（直材400,000＋直労600,000＋配賦750,000）＝1,750,000円。月末仕掛品150,000円。完成品を製品へ振り替える仕訳を示せ。',
+    q_en:'(Full flow ③) WIP: opening balance ¥200,000; current costs ¥1,750,000; closing WIP ¥150,000. Transfer finished goods to Finished Goods inventory.',
+    e:[{d:[['製品',1800000]],c:[['仕掛品',1800000]]}],
+    exp:'完成品製造原価＝月初仕掛品＋当月製造費用－月末仕掛品＝200,000＋1,750,000－150,000＝1,800,000円。完成した瞬間に「仕掛品→製品」へ振り替えます。まだ売れていないので損益には影響しません（資産のままです）。',
+    exp_en:'Finished goods cost = opening WIP + current-period costs − closing WIP = ¥200,000 + ¥1,750,000 − ¥150,000 = ¥1,800,000. Transfer to Finished Goods when production is complete. This does not affect the income statement — it\'s still an asset until sold.',
+    note:'完成品製造原価=200,000+1,750,000-150,000=1,800,000',
+    steps:[
+      {label:'完成品製造原価', hint:'月初仕掛品200,000 ＋ 当月費用1,750,000 − 月末仕掛品150,000', ans:1800000, unit:'円', choices:[1800000,1750000,1850000,1950000]}
+    ]
+  },
+
+  {
+    id:378,
+    level:2,
+    cat:'工業簿記総まとめ',
+    q:'（一気通貫④）月初製品100,000円、当月完成品製造原価1,800,000円、月末製品250,000円。製品が売れたときの売上原価振替仕訳を示せ。',
+    q_en:'(Full flow ④) Opening FG ¥100,000; current-period production ¥1,800,000; closing FG ¥250,000. Record the transfer of COGS when goods are sold.',
+    e:[{d:[['売上原価',1650000]],c:[['製品',1650000]]}],
+    exp:'売上原価＝月初製品＋当月製品製造原価－月末製品＝100,000＋1,800,000－250,000＝1,650,000円。ここで初めてP/L（損益計算書）に費用として計上されます。「作っただけでは費用にならず、売れた瞬間に費用になる」のが発生主義の基本です。',
+    exp_en:'COGS = opening FG + current production − closing FG = ¥100,000 + ¥1,800,000 − ¥250,000 = ¥1,650,000. This is the moment costs hit the income statement. "Not an expense until sold" — the matching principle in action.',
+    note:'売上原価=100,000+1,800,000-250,000=1,650,000',
+    steps:[
+      {label:'売上原価', hint:'月初製品100,000 ＋ 完成品1,800,000 − 月末製品250,000', ans:1650000, unit:'円', choices:[1650000,1800000,1700000,1750000]}
+    ]
+  },
+
+  {
+    id:379,
+    level:2,
+    cat:'工業簿記総まとめ',
+    q:'（製造原価報告書）以下のデータから①当期製造費用・②当期製品製造原価を計算せよ。\n直接材料費600,000、直接労務費400,000、製造間接費300,000。\n月初仕掛品250,000、月末仕掛品180,000。',
+    q_en:'(Cost of Production Report) From the data, calculate ①current-period manufacturing cost and ②cost of goods manufactured.\nDM ¥600,000 / DL ¥400,000 / MO ¥300,000 / Opening WIP ¥250,000 / Closing WIP ¥180,000.',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">①当期製造費用＝600,000＋400,000＋300,000＝1,300,000円<br>②当期製品製造原価＝月初仕掛品250,000＋当期製造費用1,300,000－月末仕掛品180,000＝1,370,000円</div>`,
+    exp:'製造原価報告書の2大計算：①当期製造費用（その期の製造コスト合計）と②当期製品製造原価（完成品のコスト）。②は①に月初仕掛品を加え月末仕掛品を引くことで求まります。試験では「製造原価報告書を埋める」形式で頻出。この2ステップを暗記しましょう。',
+    exp_en:'Two key calculations in the cost-of-production report: ①Total manufacturing cost = DM + DL + MO; ②Cost of goods manufactured = opening WIP + total manufacturing cost − closing WIP. Step 2 adjusts for partially finished goods that span periods.',
+    steps:[
+      {label:'①当期製造費用', hint:'直材600,000＋直労400,000＋製造間接費300,000', ans:1300000, unit:'円', choices:[1300000,1250000,1350000,1200000]},
+      {label:'②当期製品製造原価', hint:'月初仕掛品250,000＋当期製造費用1,300,000−月末仕掛品180,000', ans:1370000, unit:'円', choices:[1370000,1300000,1550000,1430000]}
+    ]
+  },
+
+  {
+    id:380,
+    level:2,
+    cat:'工業簿記総まとめ',
+    q:'（総合計算）次のデータから工業簿記の完全なフローを計算せよ。\n材料費800,000、労務費500,000、経費200,000、月初仕掛品100,000、月末仕掛品150,000、月初製品200,000、月末製品120,000。\n①当期製品製造原価 ②売上原価',
+    q_en:'(Comprehensive) Calculate the full manufacturing flow: DM+DL+Expenses = total MFC; ①COGM and ②COGS.\nMaterials ¥800,000 / Labor ¥500,000 / Expenses ¥200,000 / Opening WIP ¥100,000 / Closing WIP ¥150,000 / Opening FG ¥200,000 / Closing FG ¥120,000.',
+    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">当期製造費用＝800,000＋500,000＋200,000＝1,500,000円<br>①当期製品製造原価＝100,000＋1,500,000－150,000＝1,450,000円<br>②売上原価＝200,000＋1,450,000－120,000＝1,530,000円</div>`,
+    exp:'工業簿記の最重要計算フロー：製造費用合計→当期製品製造原価→売上原価。この3ステップが「製造原価報告書＋損益計算書上部」の流れです。材料費・労務費・経費を合算し、仕掛品の増減で完成品原価を出し、製品在庫の増減で売上原価を出す。試験の大問では毎回このフローが問われます。',
+    exp_en:'The master manufacturing cost flow: total manufacturing costs → COGM → COGS. This maps to the cost-of-production report + top of P/L. Add up DM+DL+MO, adjust for WIP changes to get COGM, then adjust for finished goods changes to get COGS. Appears in every major exam question.',
+    steps:[
+      {label:'当期製造費用合計', hint:'材料800,000＋労務500,000＋経費200,000', ans:1500000, unit:'円', choices:[1500000,1400000,1600000,1300000]},
+      {label:'①当期製品製造原価', hint:'月初仕掛品100,000＋製造費用1,500,000−月末仕掛品150,000', ans:1450000, unit:'円', choices:[1450000,1500000,1350000,1600000]},
+      {label:'②売上原価', hint:'月初製品200,000＋完成品1,450,000−月末製品120,000', ans:1530000, unit:'円', choices:[1530000,1450000,1650000,1480000]}
+    ]
+  },
+
+  {
+    id:381,
+    level:2,
+    cat:'工業簿記総まとめ',
+    q:'（穴埋め）工業簿記の勘定連絡図を完成させよ。\n材料勘定→【①】勘定（直接材料費）・【②】勘定（間接材料費）\n仕掛品勘定→【③】勘定（完成時）\n製品勘定→【④】勘定（販売時）',
+    q_en:'(Fill in) Complete the manufacturing account flow diagram.\nMaterials → [①] (direct) and [②] (indirect)\nWIP → [③] (on completion)\nFinished Goods → [④] (on sale)',
+    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>仕掛品</td></tr><tr><td class="hl">②</td><td>製造間接費</td></tr><tr><td class="hl">③</td><td>製品</td></tr><tr><td class="hl">④</td><td>売上原価</td></tr></tbody></table><div class="formula-box">材料→[仕掛品(直接) / 製造間接費(間接)]→仕掛品→製品→売上原価</div>`,
+    exp:'工業簿記の勘定連絡図は試験で必ず問われる核心知識。「直接費→仕掛品直行」「間接費→製造間接費→配賦→仕掛品」「完成→製品」「販売→売上原価」この4つの矢印の流れを図で頭に入れましょう。この図を理解していれば仕訳問題の8割は解けます。',
+    exp_en:'The manufacturing account flow diagram is the backbone of industrial bookkeeping. Direct costs → WIP directly. Indirect costs → Manufacturing Overhead → allocated to WIP. Completion → Finished Goods. Sale → COGS. Master this diagram and you can solve 80% of journal entry problems.',
+    steps:[
+      {label:'①直接材料費の振替先', hint:'製品に直接追跡できる材料費はどこへ？', ans:'仕掛品', choices:['仕掛品','製造間接費','材料','製品']},
+      {label:'②間接材料費の振替先', hint:'製品に直接追跡できない材料費はどこへ？', ans:'製造間接費', choices:['製造間接費','仕掛品','製品','売上原価']},
+      {label:'③仕掛品が完成したときの振替先', hint:'製造が完了した製品はどの勘定へ？', ans:'製品', choices:['製品','仕掛品','売上原価','材料']},
+      {label:'④製品が売れたときの振替先', hint:'販売時に費用（P/L）に計上される勘定は？', ans:'売上原価', choices:['売上原価','製品','仕掛品','製造間接費']}
+    ]
+  },
 ];
 
 const SECS = {
