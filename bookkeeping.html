@@ -3549,7 +3549,7 @@ const ALL = [
     steps:[
       {label:'①売上高から引く主要費用', hint:'商品の仕入れ原価相当額', ans:'売上原価', choices:['売上原価','販管費','営業外費用','製造原価']},
       {label:'②売上高 − 売上原価', hint:'商品を売った最初の利益', ans:'売上総利益', choices:['売上総利益','営業利益','経常利益','当期純利益']},
-      {label:'③売上総利益 − 販管費', hint:'本業の稼ぎを示す利益', ans:'営業利益', choices:['営業利益','経常利益','売上総利益','当期純利益']},
+      {label:'③販管費を引いた最終利益', hint:'3級P/L：売上総利益から販管費を引いた最終的な利益', ans:'当期純利益', choices:['当期純利益','営業利益','経常利益','売上総利益']},
       {label:'④商品の購入代金', hint:'損益計算書の売上原価を構成する主要項目', ans:'仕入高', choices:['仕入高','売上原価','購入費','商品代金']}
     ]
   },
@@ -3578,8 +3578,8 @@ const ALL = [
       {label:'①会計の1年間の期間', hint:'財務諸表を作成する期間のこと', ans:'会計期間', choices:['会計期間','営業年度','決算期間','事業期間']},
       {label:'②取引発生時点で費用・収益を認識', hint:'現金の収支に関わらず認識する基準', ans:'発生主義', choices:['発生主義','現金主義','実現主義','取得原価主義']},
       {label:'③現金収支があったとき認識', hint:'現金が動いたときだけ認識する基準', ans:'現金主義', choices:['現金主義','発生主義','実現主義','時価主義']},
-      {label:'④期末時点の財産状態の報告書', hint:'資産・負債・純資産を示す計算書', ans:'貸借対照表', choices:['貸借対照表','損益計算書','CF計算書','精算表']},
-      {label:'⑤一期間の経営成績の報告書', hint:'収益・費用・利益を示す計算書', ans:'損益計算書', choices:['損益計算書','貸借対照表','CF計算書','精算表']}
+      {label:'④B/Sが表す特定時点', hint:'貸借対照表はある一日（期末）の財産状態を表す', ans:'決算日', choices:['決算日','会計期間','期首日','事業年度']},
+      {label:'⑤P/Lが表す期間', hint:'損益計算書は1年間の収益・費用・利益の成績を表す', ans:'会計期間', choices:['会計期間','決算日','営業日','期末日']}
     ]
   },
   {
@@ -4751,7 +4751,7 @@ const ALL = [
     exp_en:'Break-even point (BEP) = no profit, no loss. Fixed costs ¥2,400,000 ÷ contribution margin ratio 40% = ¥6,000,000. In this example, actual sales = BEP → safety margin = 0% (razor-thin!). Margin of safety = how far actual sales exceed BEP. Higher = safer cushion against a sales decline.',
     note:'BEP=2,400,000÷(1-0.6)=6,000,000 / 安全余裕率=(6,000,000-6,000,000)÷6,000,000=0%',
     steps:[
-      {label:'損益分岐点売上高', hint:'固定費6,000,000 ÷ 限界利益率（1−変動費率）', ans:6000000, unit:'円', choices:[6000000,5000000,7000000,8000000]},
+      {label:'損益分岐点売上高', hint:'固定費2,400,000 ÷ 限界利益率（1−変動費率0.6）＝2,400,000÷0.4', ans:6000000, unit:'円', choices:[6000000,5000000,7000000,8000000]},
       {label:'安全余裕率', hint:'(実際売上6,000,000 − BEP6,000,000) ÷ 6,000,000 × 100', ans:0, unit:'%', choices:[0,10,20,5]}
     ]
   },
@@ -4830,7 +4830,7 @@ const ALL = [
     steps:[
       {label:'①特定製品に直接跡付けられる費用', hint:'製品への直接帰属が可能な費用', ans:'直接費', choices:['直接費','間接費','固定費','変動費']},
       {label:'②複数製品に共通で発生する費用', hint:'特定製品に帰属できず按分が必要な費用', ans:'間接費', choices:['間接費','直接費','固定費','変動費']},
-      {label:'③加工賃・機械修繕費などの経費', hint:'外注加工費以外の費用の製造費用区分', ans:'間接経費', choices:['間接経費','直接経費','直接材料費','直接労務費']}
+      {label:'③直接材料費・直接労務費に続く直接費', hint:'外注加工費が代表例の直接追跡できる経費', ans:'直接経費', choices:['直接経費','間接経費','製造間接費','直接材料費']}
     ]
   },
   {
@@ -5307,8 +5307,9 @@ const ALL = [
     exp:'個別原価計算は「オーダーメイド型の原価計算」。例えば建設業・造船業・特注機械製造など、製品ごとに仕様が異なる場合に使います。製造指図書（job order）を発行し、その指図書番号ごとに材料費・労務費・間接費配賦額を集計します。指図書が完成品の「原価計算書」になります。',
     exp_en:'Job-order costing = "custom-order costing." Used when each unit or batch is unique (construction, shipbuilding, custom machinery). A job order (manufacturing order) is issued for each job; direct materials, direct labor, and applied overhead are accumulated on it. The job order becomes the product\'s cost record.',
     steps:[
-      {label:'間接費の配賦額', hint:'製造間接費50,000 × 製品A直材費比率60%', ans:30000, unit:'円', choices:[30000,25000,35000,40000]},
-      {label:'製品A原価合計', hint:'直接材料費80,000 ＋ 直接労務費50,000 ＋ 間接費30,000', ans:160000, unit:'円', choices:[160000,150000,170000,180000]}
+      {label:'①原価を集計する単位', hint:'「〇〇ごとに原価を集計する」の〇〇にあたるもの', ans:'製造指図書', choices:['製造指図書','製品の種類','工程','部門']},
+      {label:'②原価集計に用いる帳票', hint:'各製品の材料費・労務費・配賦額を記録する帳票', ans:'製造指図書（原価計算表）', choices:['製造指図書（原価計算表）','原価計算表','仕掛品元帳','部門費振替表']},
+      {label:'③完成時に仕掛品から振り替える先', hint:'製造指図書が完成すると仕掛品から何に振り替えるか', ans:'製品', choices:['製品','仕掛品','材料','売上原価']}
     ]
   },
   {
@@ -5473,7 +5474,8 @@ const ALL = [
     exp:'度外視法は「仕損品を存在しないものとして計算する」シンプルな方法。正常仕損を度外視すると、完成品と月末仕掛品でその分のコストを自然に負担します。異常仕損（地震・機械故障など特別原因）は「正常な製造活動のコストではない」ため製品原価から除外し、「異常仕損費」として営業外費用・特別損失に計上。',
     exp_en:'The neglect method ignores normal spoilage in calculations — its cost is automatically absorbed by good output and closing WIP. Simple but less precise. Abnormal spoilage (caused by accidents, machine breakdowns) is NOT a product cost → separate as "Abnormal Spoilage Loss" (non-operating/special loss). "Normal waste is the cost of doing business; abnormal waste is a separate mishap."',
     steps:[
-      {label:'正味仕損費（製品負担額）', hint:'正常仕損費50,000 − 仕損品評価額5,000', ans:45000, unit:'円', choices:[45000,50000,55000,40000]}
+      {label:'ア　正常仕損費の処理方法', hint:'通常避けられない不合格品のコストは製品原価のどこへ？', ans:'製品原価に算入', choices:['製品原価に算入','非原価項目に計上','原価差異として処理','損益勘定に振替']},
+      {label:'イ　異常仕損費の処理方法', hint:'事故・機械故障など特別原因による仕損は製品原価に含めるか？', ans:'非原価項目に計上', choices:['非原価項目に計上','製品原価に算入','製造間接費として配賦','仕掛品に計上']}
     ]
   },
   {
