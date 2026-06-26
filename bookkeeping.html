@@ -2860,7 +2860,7 @@ const ALL = [
     exp:'帳簿には2種類あります。①主要簿：全ての取引を日記みたいに書く「仕訳帳」と、科目ごとに集計する「総勘定元帳」です（どの会社も必ず作ります）。②補助簿：現金だけの帳簿や、お客さんごとの明細帳など、特定のことを詳しく記録する帳簿です（必要な分だけ作ります）。' ,
     exp_en:'There are two types of accounting books. ① Main books (mandatory): the journal (records all transactions chronologically) and the general ledger (classifies by account). ② Subsidiary books (as needed): specific records like the cash book or customer receivables ledger.',
     steps:[
-      {label:'①どの会社も必ず作る帳簿', hint:'仕訳帳＋総勘定元帳からなる帳簿', ans:'主要簿', choices:['主要簿','補助簿','仕訳帳','精算表']},
+      {label:'①どの会社も必ず作る帳簿', hint:'仕訳帳（取引を日付順に記録）と総勘定元帳（科目別に転記）の2冊セット。すべての会社が義務として備える帳簿。補助簿（現金出納帳・得意先元帳など）は任意', ans:'主要簿', choices:['主要簿','補助簿','仕訳帳','精算表']},
       {label:'②特定の内容を詳しく記録する帳簿', hint:'現金出納帳・得意先元帳など', ans:'補助簿', choices:['補助簿','主要簿','補助記入帳','総勘定元帳']}
     ]
   },
@@ -2874,7 +2874,7 @@ const ALL = [
 ,
     note:'仕訳の基本：\n借方（左）＝ 資産増・費用・負債減・資本減\n貸方（右）＝ 負債増・資本増・資産減・収益\n借方合計＝貸方合計（必ず一致）',
     steps:[
-      {label:'ア　借方・貸方合計を書く試算表', hint:'各勘定の借方・貸方の合計額を記載', ans:'合計試算表', choices:['合計試算表','残高試算表','合計残高試算表','精算表']},
+      {label:'ア　借方・貸方合計を書く試算表', hint:'現金勘定なら「借方合計500/貸方合計200」のように合計のみ記載。残高は自分で計算する必要あり。全科目の借方合計＝貸方合計で転記ミスを検証できる', ans:'合計試算表', choices:['合計試算表','残高試算表','合計残高試算表','精算表']},
       {label:'イ　残高だけ書く試算表', hint:'差し引いた後の残高のみ記載', ans:'残高試算表', choices:['残高試算表','合計試算表','合計残高試算表','精算表']},
       {label:'ウ　両方を記入する試算表', hint:'合計と残高の両方を記載', ans:'合計残高試算表', choices:['合計残高試算表','合計試算表','残高試算表','精算表']},
       {label:'現金の残高', hint:'借方合計500 − 貸方合計200（現金）', ans:300, unit:'円', choices:[300,200,500,700]}
@@ -2890,7 +2890,7 @@ const ALL = [
 ,
     note:'有価証券の分類：\n売買目的 → 有価証券（流動資産）\n満期保有 → 満期保有目的債券（固定資産）\nその他 → 投資有価証券（固定資産）',
     steps:[
-      {label:'ア　費用・収益をまとめる勘定', hint:'決算で費用・収益をゼロにするための振替先', ans:'損益', choices:['損益','繰越利益剰余金','資本金','売上']},
+      {label:'ア　費用・収益をまとめる勘定', hint:'期末に売上・仕入などをこの勘定へ振り替えて差額（純利益）を計算する一時勘定。「ゴミ箱」イメージで費用・収益を集めて最後に繰越利益剰余金へ振替。翌期に残高ゼロにリセット', ans:'損益', choices:['損益','繰越利益剰余金','資本金','売上']},
       {label:'イ　純利益の振替先', hint:'損益勘定の差額（純利益）はここへ振り替え', ans:'繰越利益剰余金', choices:['繰越利益剰余金','損益','資本金','利益準備金']},
       {label:'ウ　資産・負債・純資産の引継ぎ', hint:'翌期に繰り越すための一覧', ans:'繰越試算表', choices:['繰越試算表','残高試算表','精算表','合計試算表']}
     ]
@@ -2916,7 +2916,7 @@ const ALL = [
     exp:'伝票は「仕訳を書く専用のメモ用紙」です。3伝票制では：現金が入ったとき→入金伝票、現金が出たとき→出金伝票、現金を使わない取引→振替伝票、の3種類に分けます。5伝票制はさらに掛け売上・掛け仕入専用の伝票が加わります。代金の一部だけ現金で払った場合は「現金の伝票」と「残りの伝票」の2枚に分けて起票します。' ,
     exp_en:'Vouchers are specialized memo pads for recording transactions. Under the three-voucher system: cash in → receipt voucher, cash out → payment voucher, no cash → journal voucher. A mixed-payment purchase (partly cash, partly on credit) requires two vouchers.',
     steps:[
-      {label:'ア　現金入金の伝票', hint:'現金を受け取る取引に使う伝票', ans:'入金伝票', choices:['入金伝票','出金伝票','振替伝票','受取伝票']},
+      {label:'ア　現金入金の伝票', hint:'現金が流入する取引（売掛金回収・現金売上など）に起票。借方が必ず「現金」になるため現金の記入を省略する慣行がある。3伝票制の1つ', ans:'入金伝票', choices:['入金伝票','出金伝票','振替伝票','受取伝票']},
       {label:'イ　現金出金の伝票', hint:'現金を支払う取引に使う伝票', ans:'出金伝票', choices:['出金伝票','入金伝票','振替伝票','支払伝票']},
       {label:'ウ　現金以外の取引伝票', hint:'現金が動かない取引に使う伝票', ans:'振替伝票', choices:['振替伝票','入金伝票','出金伝票','仕訳伝票']},
       {label:'エ　5伝票制で追加（売上）', hint:'3伝票制に加わる売上専用伝票', ans:'売上伝票', choices:['売上伝票','入金伝票','振替伝票','受取伝票']},
@@ -3469,8 +3469,8 @@ const ALL = [
     exp:'「借方・貸方」は単なる「左・右」の名前です。資産と費用は増えたら左、負債・純資産・収益は増えたら右。逆向きなら反対側です。' ,
     exp_en:'"Debit" and "credit" are simply names for "left" and "right" in accounting. Assets and expenses increase on the left (debit); liabilities, equity, and revenues increase on the right (credit).',
     steps:[
-      {label:'①仕訳の左側', hint:'仕訳は左と右に分かれる。左側の呼び名は？', ans:'借方', choices:['借方','貸方','元帳','仕訳']},
-      {label:'②仕訳の右側', hint:'仕訳は左と右に分かれる。右側の呼び名は？', ans:'貸方', choices:['貸方','借方','収益','費用']},
+      {label:'①仕訳の左側', hint:'英語のDebit（デビット）に対応。資産の増加・費用の発生は左（借方）に記入する。「借りた記録→借方」という語源。左＝資産・費用、右＝負債・純資産・収益と覚える', ans:'借方', choices:['借方','貸方','元帳','仕訳']},
+      {label:'②仕訳の右側', hint:'英語のCredit（クレジット）に対応。負債の増加・収益の発生・純資産の増加は右（貸方）に記入する。「貸した記録→貸方」という語源。左右で金額が必ず一致する（貸借平均の原理）', ans:'貸方', choices:['貸方','借方','収益','費用']},
       {label:'③資産が増えた→', hint:'資産増加を記入する側', ans:'左（借方）', choices:['左（借方）','右（貸方）','どちらでも','上']},
       {label:'④負債が増えた→', hint:'負債増加を記入する側', ans:'右（貸方）', choices:['右（貸方）','左（借方）','どちらでも','上']},
       {label:'⑤費用が増えた→', hint:'費用グループの増加方向（左か右か）', ans:'左（借方）', choices:['左（借方）','右（貸方）','どちらでも','上']}
@@ -3484,7 +3484,7 @@ const ALL = [
     exp:'税抜経理では消費税を本体と分けて記録します。仕入時の消費税は「仮払消費税（資産）」、売上時は「仮受消費税（負債）」。決算で差し引きした差額だけ「未払消費税（負債）」として国に納めます。' ,
     exp_en:'Under the tax-exclusive method, consumption tax is recorded separately from the base price. Tax paid on purchases = "Prepaid Consumption Tax" (asset). Tax collected on sales = "Accrued Consumption Tax" (liability). At year-end, the net difference (collected minus paid) becomes "Consumption Tax Payable."',
     steps:[
-      {label:'①仕入時の本体科目', hint:'税込1,100円のうち本体1,000円の仕訳科目', ans:'仕入', choices:['仕入','仮払消費税','買掛金','消耗品費']},
+      {label:'①仕入時の本体科目', hint:'税込1,100円を支払うと「仕入1,000円＋仮払消費税100円」の2科目で記帳（税抜方式）。「仮払」は一時的な資産で後で仮受消費税と相殺して納税額を確定する', ans:'仕入', choices:['仕入','仮払消費税','買掛金','消耗品費']},
       {label:'②仕入時の消費税科目', hint:'仕入時の消費税100円の仕訳科目', ans:'仮払消費税', choices:['仮払消費税','仮受消費税','消費税','未払消費税']},
       {label:'③売上時の本体科目', hint:'税込2,200円のうち本体2,000円の仕訳科目', ans:'売上', choices:['売上','仮受消費税','売掛金','受取利息']},
       {label:'④売上時の消費税科目', hint:'売上時の消費税200円の仕訳科目', ans:'仮受消費税', choices:['仮受消費税','仮払消費税','消費税','未払消費税']}
@@ -3498,7 +3498,7 @@ const ALL = [
     exp:'「現金」には実際のお金だけでなく、すぐに換金できる証書類も含みます。他店の小切手は受け取った時点で現金扱いです。' ,
     exp_en:'In bookkeeping, "cash" includes not just coins and bills but also instruments convertible to cash immediately — called "currency equivalents." A check drawn by another company is treated as cash from the moment it is received.',
     steps:[
-      {label:'①簿記上の現金に含まれる証書', hint:'他店振出しのこれは通貨代用証券', ans:'小切手', choices:['小切手','紙幣','手形','商品券']},
+      {label:'①簿記上の現金に含まれる証書', hint:'他社が振り出した小切手は銀行で即座に現金化できるため「現金」に含める（通貨代用証券）。自社が振り出した小切手は当座預金の減少。手形は現金ではなく受取手形（資産）として別処理', ans:'小切手', choices:['小切手','紙幣','手形','商品券']},
       {label:'②通貨と同様に使える証書の総称', hint:'現金以外で即座に換金できる証書類', ans:'通貨代用証券', choices:['通貨代用証券','有価証券','手形','電子マネー']},
       {label:'③小切手で引き出せる預金口座', hint:'銀行と契約する専用口座の種類', ans:'当座', choices:['当座','普通','定期','外貨']}
     ]
@@ -3511,7 +3511,7 @@ const ALL = [
     exp:'経過勘定は「時期のズレ」を記録するための科目です。「未」は「まだしていない」、「前」は「先にやりすぎた」と覚えましょう。費用か収益か×未か前か＝4パターンです。' ,
     exp_en:'Accrual/deferral accounts record "timing differences." "未 (mi, not yet)" = not yet paid or received. "前 (mae, advance)" = already paid in advance or already received in advance. Four combinations: expense × (not yet / advance) and revenue × (not yet / advance).',
     steps:[
-      {label:'①当期分まだ払っていない費用', hint:'費用が発生したが現金未払い（負債）', ans:'未払費用', choices:['未払費用','前払費用','未収収益','前受収益']},
+      {label:'①当期分まだ払っていない費用', hint:'9月30日時点で9月分給料30万円が翌月払い→「未払費用30万円（負債）」を計上。翌期に支払時に負債を消去。発生主義の典型例で、現金支払より先に費用を認識する', ans:'未払費用', choices:['未払費用','前払費用','未収収益','前受収益']},
       {label:'②当期分払いすぎた費用', hint:'翌期分まで先払いした費用（資産）', ans:'前払費用', choices:['前払費用','未払費用','未収収益','前受収益']},
       {label:'③当期分まだ受取っていない収益', hint:'収益が発生したが現金未収（資産）', ans:'未収収益', choices:['未収収益','前受収益','未払費用','前払費用']},
       {label:'④当期分受け取りすぎた収益', hint:'翌期分まで先受けした収益（負債）', ans:'前受収益', choices:['前受収益','未収収益','未払費用','前払費用']}
@@ -3525,7 +3525,7 @@ const ALL = [
     exp:'建物や車は使うほど価値が減ります。その減少分を毎年「費用（減価償却費）」に計上するのが減価償却です。3級では定額法・直接法が中心です。' ,
     exp_en:'Buildings and vehicles lose value over time. Depreciation allocates this cost as an annual expense. The straight-line method charges equal amounts each year; the declining balance method charges larger amounts early. For Level 3, focus on the straight-line method and the direct recording method.',
     steps:[
-      {label:'①固定資産の価値減少費用', hint:'固定資産を毎年費用として取り崩す処理', ans:'減価償却', choices:['減価償却','売上原価','引当金繰入','評価損']},
+      {label:'①固定資産の価値減少費用', hint:'PC200万円・耐用年数5年→毎年40万円を費用化（定額法）。使用期間に費用を配分する考え方。現金は購入時に出ているが費用は毎期に分割計上される非現金費用の代表例', ans:'減価償却', choices:['減価償却','売上原価','引当金繰入','評価損']},
       {label:'②毎期同額を費用にする方法', hint:'取得原価÷耐用年数で毎期同額', ans:'定額法', choices:['定額法','定率法','生産高比例法','最終仕入原価法']},
       {label:'③帳簿価額×率をかける方法', hint:'残存価値に一定率をかけて計算', ans:'定率法', choices:['定率法','定額法','生産高比例法','償却原価法']},
       {label:'④固定資産を直接減額する方法', hint:'減価償却累計額を使わず直接貸方記入', ans:'直接法', choices:['直接法','間接法','総額法','純額法']},
@@ -3540,7 +3540,7 @@ const ALL = [
     exp:'貸倒引当金は「いつか回収できないかも」という不安を前もって費用にしておく仕組みです。実際に貸し倒れたとき、引当金があれば費用にせず引当金を取り崩すだけです。' ,
     exp_en:'An allowance for doubtful accounts is a pre-emptive reserve for expected future losses on receivables. Recording the expense now smooths the P/L impact. When an actual bad debt occurs, the allowance absorbs it — no new expense if within the reserve.',
     steps:[
-      {label:'①期末に設定する引当金勘定', hint:'売掛金の回収不能見込み額に設定', ans:'貸倒引当金', choices:['貸倒引当金','貸倒損失','貸倒引当金繰入','売掛金']},
+      {label:'①期末に設定する引当金勘定', hint:'売掛金1,000万円の2%（20万円）が回収不能と見込んで決算で引当金設定。実際の貸し倒れより前に損失を計上する保守主義の原則。実際に貸し倒れたら引当金と相殺して取り崩す', ans:'貸倒引当金', choices:['貸倒引当金','貸倒損失','貸倒引当金繰入','売掛金']},
       {label:'②引当金を費用計上する科目', hint:'期末に引当金を設定するときの費用科目', ans:'貸倒引当金繰入', choices:['貸倒引当金繰入','貸倒引当金','貸倒損失','営業外費用']},
       {label:'③貸倒発生時に取り崩す勘定', hint:'実際に貸し倒れたとき引当金を充当', ans:'貸倒引当金', choices:['貸倒引当金','貸倒損失','貸倒引当金繰入','売掛金']},
       {label:'④引当金不足時に計上する損失', hint:'引当金で不足する部分を損失として計上', ans:'貸倒損失', choices:['貸倒損失','貸倒引当金','売上原価','雑損失']}
@@ -3554,7 +3554,7 @@ const ALL = [
     exp:'損益計算書は「今期の儲けと出費のまとめ表」です。売上から商品仕入コスト（売上原価）を引いた粗利益、そこから給料・家賃などを引いた最終利益という2段階の計算構造を理解しましょう。精算表では「しくりくりし」という2本の修正記入で売上原価を計算します。' ,
     exp_en:'An income statement has a two-level profit calculation: gross profit (sales − COGS) and net income (gross profit − operating expenses). The "shikuri-kurishiwa" technique in a worksheet computes COGS using two adjusting entries.',
     steps:[
-      {label:'①売上高から引く主要費用', hint:'商品の仕入れ原価相当額', ans:'売上原価', choices:['売上原価','販管費','営業外費用','製造原価']},
+      {label:'①売上高から引く主要費用', hint:'「期首在庫100＋仕入500−期末在庫130＝売上原価470」。売れた分の原価のみを費用化し、売れ残り（期末在庫）は翌期に繰り越す。仕入≠売上原価の点が重要', ans:'売上原価', choices:['売上原価','販管費','営業外費用','製造原価']},
       {label:'②売上高 − 売上原価', hint:'商品を売った最初の利益', ans:'売上総利益', choices:['売上総利益','営業利益','経常利益','当期純利益']},
       {label:'③販管費を引いた最終利益', hint:'3級P/L：売上総利益から販管費を引いた最終的な利益', ans:'当期純利益', choices:['当期純利益','営業利益','経常利益','売上総利益']},
       {label:'④商品の購入代金', hint:'損益計算書の売上原価を構成する主要項目', ans:'仕入高', choices:['仕入高','売上原価','購入費','商品代金']}
@@ -3568,7 +3568,7 @@ const ALL = [
     exp:'手形は「将来の確実な支払約束書」です。振り出せば支払手形（借金）、受け取れば受取手形（資産）になります。受取手形は「裏書き（別の支払いに使う）」か「銀行で割り引いて（期日前に現金化）」かで有効活用できます。' ,
     exp_en:'A promissory note is "a written promise to pay on a specific future date." Issuing one creates Notes Payable (liability); receiving one creates Notes Receivable (asset). Notes receivable can be "recycled" by endorsement (pay another supplier) or "cashed" by discounting (sell to a bank before due date, for a fee).',
     steps:[
-      {label:'①振り出した約束手形', hint:'手形を振り出して支払う側の勘定', ans:'支払手形', choices:['支払手形','受取手形','当座預金','買掛金']},
+      {label:'①振り出した約束手形', hint:'約束手形を振り出した側は満期日に支払う義務（負債）が発生→貸方に「支払手形」。受け取った側は「受取手形（資産）」。手形は信用取引の道具で、不渡り（不払い）は事実上の倒産', ans:'支払手形', choices:['支払手形','受取手形','当座預金','買掛金']},
       {label:'②受け取った約束手形', hint:'手形を受け取って集金待ちの勘定', ans:'受取手形', choices:['受取手形','支払手形','売掛金','約束手形']},
       {label:'③他者への手形譲渡', hint:'受取手形を他の人への支払いに使うこと', ans:'裏書', choices:['裏書','割引','振出','書換']},
       {label:'④銀行での手形現金化', hint:'期日前に銀行で受取手形を現金化', ans:'割引', choices:['割引','裏書','振出','換金']}
@@ -3582,7 +3582,7 @@ const ALL = [
     exp:'簿記では「お金が動いてから記録する（現金主義）」ではなく「取引が起きた時点で記録する（発生主義）」が原則です。貸借対照表はある日の財産の「静止画」、損益計算書は1年間の損益の「動画（記録）」と覚えましょう。' ,
     exp_en:'The accrual basis records economic events when they occur, not when cash moves. This is the foundation of modern accounting. A balance sheet is a "snapshot" of financial position at a specific moment; an income statement is a "recording" of performance over a period of time.',
     steps:[
-      {label:'①会計の1年間の期間', hint:'財務諸表を作成する期間のこと', ans:'会計期間', choices:['会計期間','営業年度','決算期間','事業期間']},
+      {label:'①会計の1年間の期間', hint:'通常1年間（例：4月1日〜3月31日）。この期間の損益をP/Lで、期末1日時点の財産状況をB/Sで示す。複数期間の比較で業績トレンドを分析できる', ans:'会計期間', choices:['会計期間','営業年度','決算期間','事業期間']},
       {label:'②取引発生時点で費用・収益を認識', hint:'現金の収支に関わらず認識する基準', ans:'発生主義', choices:['発生主義','現金主義','実現主義','取得原価主義']},
       {label:'③現金収支があったとき認識', hint:'現金が動いたときだけ認識する基準', ans:'現金主義', choices:['現金主義','発生主義','実現主義','時価主義']},
       {label:'④B/Sが表す特定時点', hint:'貸借対照表はある一日（期末）の財産状態を表す', ans:'決算日', choices:['決算日','会計期間','期首日','事業年度']},
@@ -3714,10 +3714,10 @@ const ALL = [
     exp:'払出単価の計算方法：先入先出法（古いものから先に売れる仮定）・移動平均法（仕入のたびに平均を更新）・売価還元法（売価から逆算）の3つが主要。期末評価には低価法（LCM）を適用し、NRVを下回る場合に評価損を計上します。',
     exp_en:'The three main cost flow methods: FIFO (oldest stock sold first), Moving Average (update average at each purchase), and Retail Inventory Method (back-calculate from selling price). For year-end valuation, the LCM rule applies — write down to NRV when it falls below cost.',
     steps:[
-      {label:'①古い仕入から払い出す方法', hint:'購入順に先に売れたと仮定する方法', ans:'先入先出法', choices:['先入先出法','後入先出法','移動平均法','総平均法']},
-      {label:'②仕入のたびに平均を計算する方法', hint:'購入ごとに平均単価を計算し直す方法', ans:'移動平均法', choices:['移動平均法','総平均法','先入先出法','最終仕入原価法']},
-      {label:'③小売業が使う方法', hint:'売価から原価率で原価を逆算する方法', ans:'売価還元法', choices:['売価還元法','先入先出法','移動平均法','後入先出法']},
-      {label:'④時価が下がったとき使う評価法', hint:'期末商品を原価と時価の低い方で評価', ans:'低価法', choices:['低価法','原価法','時価法','公正価値法']}
+      {label:'①古い仕入から払い出す方法', hint:'スーパーの棚（古い商品が前列）のイメージ。物価上昇期は古い安い原価から払い出すため売上原価が低め→利益が多く見える→税負担増。期末在庫は最新の高い単価で残る', ans:'先入先出法', choices:['先入先出法','後入先出法','移動平均法','総平均法']},
+      {label:'②仕入のたびに平均を計算する方法', hint:'(旧在庫金額＋新仕入金額)÷(旧在庫数量＋仕入数量)で都度単価を更新。価格変動の影響を均一化できる。実務で最もよく使われる方法。総平均法より計算頻度が多い分手間がかかる', ans:'移動平均法', choices:['移動平均法','総平均法','先入先出法','最終仕入原価法']},
+      {label:'③小売業が使う方法', hint:'定価1,000円×原価率70%=原価700円と逆算する方法。大量の商品を個別管理できない百貨店・スーパー向け。原価率の精度が結果に直結するため期中の原価率管理が重要', ans:'売価還元法', choices:['売価還元法','先入先出法','移動平均法','後入先出法']},
+      {label:'④時価が下がったとき使う評価法', hint:'原価400円の商品が市場で300円に値下がり→300円で評価し100円の評価損を計上。損失は早期に認識する保守主義の原則に基づく。値上がりしても評価益は認識しない（保守的）', ans:'低価法', choices:['低価法','原価法','時価法','公正価値法']}
     ]
   },
   {
@@ -4117,7 +4117,7 @@ const ALL = [
     exp:'連結の判定：①50%超の議決権→子会社（原則として連結対象）②20〜50%→関連会社（持分法）③20%未満→原則対象外。ただし「実質支配力基準」により、議決権が50%以下でも取締役会の過半数を占めるなど実質的に支配していれば子会社となります。',
     exp_en:'Consolidation scope: ①Over 50% voting rights → subsidiary (consolidate) ②20–50% → associate (equity method) ③Under 20% → generally excluded. However, the "substance control" standard may require consolidation even below 50% if de facto control exists (e.g., majority of board).',
     steps:[
-      {label:'①連結の範囲に含めるための条件', hint:'子会社を連結する際の要件', ans:'支配', choices:['支配','影響','管理','統括']},
+      {label:'①連結の範囲に含めるための条件', hint:'「支配」＝議決権50%超が原則。支配とは財務・営業方針を決定できる実質的な力。支配を達成すると子会社をグループの一体として連結財務諸表に取り込む義務が生じる', ans:'支配', choices:['支配','影響','管理','統括']},
       {label:'②議決権の必要割合', hint:'親会社として支配するための最低保有比率', ans:'過半数（50%超）', choices:['過半数（50%超）','20%以上','3分の1以上','100%']},
       {label:'③支配される企業の呼び名', hint:'親会社が支配する企業の名称', ans:'子会社', choices:['子会社','関連会社','持分法適用会社','連結会社']}
     ]
@@ -4257,7 +4257,7 @@ const ALL = [
     exp:'持分法は「関連会社の損益を持分比率に応じて投資会社に認識させる」方法です。例えばB社（30%保有）の純利益が100,000円なら、A社は30,000円の「持分法による投資利益」を計上し、「関連会社株式」帳簿価額も30,000円増加します。連結（支配）とは異なり、全資産・全負債は取り込みません。',
     exp_en:'The equity method recognizes the investor\'s proportional share of the investee\'s net income. Example: 30% stake in B Co. with ¥100,000 net income → recognize ¥30,000 investment income and increase the investment\'s carrying value by ¥30,000. Unlike full consolidation, individual assets/liabilities are not taken over.',
     steps:[
-      {label:'①持分法の適用対象', hint:'持分法を適用する企業の種類', ans:'関連会社', choices:['関連会社','子会社','連結子会社','持株会社']},
+      {label:'①持分法の適用対象', hint:'議決権20%〜50%未満を保有する企業。「支配」はないが「重要な影響力」はある。完全連結ではなく投資先の損益に対し持分比率分だけを投資損益として反映する簡便法', ans:'関連会社', choices:['関連会社','子会社','連結子会社','持株会社']},
       {label:'②反映させる割合', hint:'被投資会社の純損益のうち反映させる比率', ans:'持分比率', choices:['持分比率','50%超','過半数','議決権比率']}
     ]
   },
@@ -4348,7 +4348,7 @@ const ALL = [
     exp:'繰延税金資産は「将来の節税権」ですが、将来に課税所得がなければ節税できません（黒字がなければ税金を減らせない）。そこで「回収可能性」の検討が必要：将来の課税所得見込みがなければ繰延税金資産を計上しないか、評価性引当額で減額します。「絵に描いた餅にならないか確認する」作業です。',
     exp_en:'A deferred tax asset is a "future tax savings right" — but only useful if there is future taxable income to offset. With no future profits, the deferred asset cannot be recovered. Hence: assess recoverability. If insufficient future income, reduce or eliminate the deferred tax asset with a valuation allowance. "Verify it\'s not just a paper benefit."',
     steps:[
-      {label:'①回収可能性の意味', hint:'繰延税金資産が実際に使えるかの判断', ans:'将来十分な課税所得が見込める', choices:['将来十分な課税所得が見込める','当期に利益がある','確定申告済み','税務上認められている']},
+      {label:'①回収可能性の意味', hint:'繰延税金資産は将来の税金の前払い。将来に十分な課税所得がなければ使えない（回収不能）。赤字続きの会社は繰延税金資産を計上できず評価性引当額を設定して控除する必要がある', ans:'将来十分な課税所得が見込める', choices:['将来十分な課税所得が見込める','当期に利益がある','確定申告済み','税務上認められている']},
       {label:'②回収可能性がない場合の処理', hint:'回収不能な繰延税金資産の処理', ans:'評価性引当額を設定', choices:['評価性引当額を設定','全額費用計上','繰延税金負債に変換','その他有価証券として処理']}
     ]
   },
@@ -4362,7 +4362,7 @@ const ALL = [
     exp:'ファイナンス・リースは「実質的に資産を購入したのと同じ」と考えます。①解約不能（途中でやめられない）②フルペイアウト（支払総額≒購入価格）の2条件を満たす場合、リース物件を自社資産として計上し、リース債務を負債計上します。形式は賃貸借でも実質は購入なのです。',
     exp_en:'A finance lease is economically equivalent to purchasing an asset. Two conditions: ①Non-cancellable (or cancellation triggers significant penalties) ②Full payout (total lease payments ≈ fair value of the asset, i.e., lessee bears substantially all risks and rewards). If both met: record asset and liability. Even if legally a rental, economically it\'s a purchase.',
     steps:[
-      {label:'①ファイナンスリース要件1', hint:'期間中に解約できない条件', ans:'解約不能', choices:['解約不能','全額支払','残存価値なし','リスク移転']},
+      {label:'①ファイナンスリース要件1', hint:'リース期間中に途中解約できない→会社は全リース料を支払う義務を負う。形式はレンタルでも「解約不能＋フルペイアウト」を満たすと実質「借金で購入」と同じとみなしてB/S計上が必要', ans:'解約不能', choices:['解約不能','全額支払','残存価値なし','リスク移転']},
       {label:'②ファイナンスリース要件2', hint:'リース料総額が経済的価値のほぼ全額', ans:'フルペイアウト', choices:['フルペイアウト','解約不能','リスク移転','全額現金払い']}
     ]
   },
@@ -4669,7 +4669,7 @@ const ALL = [
     exp:'繰延資産は「支出の効果が将来に及ぶため、一時に費用とせず複数期間に配分する項目」です。「会社設立費用（創立費）は何年かに分けて費用化する」イメージ。ただし近年は繰延資産として計上できる項目が限定されており、原則的には支出時に費用処理します。',
     exp_en:'Deferred assets are expenditures whose benefits extend beyond the current period, so they\'re amortized over multiple years rather than expensed immediately. "Company formation costs benefit future years — spread the expense over time." Japanese GAAP limits deferred asset items to these five categories; most expenditures must be expensed as incurred.',
     steps:[
-      {label:'①繰延資産の種類1', hint:'会社設立のための費用', ans:'創立費', choices:['創立費','開業費','開発費','株式交付費']},
+      {label:'①繰延資産の種類1', hint:'定款作成費用・登記費用・発起人報酬など会社設立時のコスト。将来の収益活動に貢献するとして繰延資産に計上し、原則5年以内に均等償却で費用化。開業費（開業準備費用）とは異なる', ans:'創立費', choices:['創立費','開業費','開発費','株式交付費']},
       {label:'②繰延資産の種類2', hint:'開業準備のための費用', ans:'開業費', choices:['開業費','創立費','開発費','社債発行費']},
       {label:'③繰延資産の種類3', hint:'新製品・技術開発のための費用', ans:'開発費', choices:['開発費','創立費','開業費','株式交付費']},
       {label:'④繰延資産の種類4', hint:'株式発行のための費用', ans:'株式交付費', choices:['株式交付費','社債発行費','開業費','創立費']},
@@ -4804,7 +4804,7 @@ const ALL = [
 ,
     note:'製造原価の3要素：\n材料費 ＋ 労務費 ＋ 経費 ＝ 製造原価\n直接費 → 製品に直接追跡可能\n間接費 → 配賦が必要',
     steps:[
-      {label:'ア　製品に直接使われる材料コスト', hint:'木材・鉄板など製品を構成する材料のコスト', ans:'材料費', choices:['材料費','労務費','製造間接費','経費']},
+      {label:'ア　製品に直接使われる材料コスト', hint:'自動車工場なら鉄板・ゴム・ガラス、家具工場なら木材・ネジなど。直接材料費（特定製品に帰属）と間接材料費（工具・潤滑油など共通）に分かれる。製造原価の中で通常最大の割合を占める', ans:'材料費', choices:['材料費','労務費','製造間接費','経費']},
       {label:'イ　工員の給与・賃金コスト', hint:'製品を作る人の人件費', ans:'労務費', choices:['労務費','材料費','製造間接費','経費']},
       {label:'ウ　それ以外の製造コスト', hint:'電力・減価償却費など①②以外の製造コスト', ans:'経費', choices:['経費','材料費','労務費','製造間接費']}
     ]
@@ -4819,7 +4819,7 @@ const ALL = [
     exp:'工業簿記の原価の流れを「料理の比喩」で覚えましょう。①材料（食材を買う）→②仕掛品（調理中）→③製品（料理完成）→④売上原価（お客様に出す）。この流れが工業簿記の骨格です。商業簿記では「商品→売上原価」の1ステップだけでしたが、工業簿記では製造プロセスを細かく追跡します。',
     exp_en:'Visualize the cost flow as a cooking analogy: ①Materials (buying ingredients) → ②WIP (cooking in progress) → ③Finished Goods (dish complete) → ④Cost of Goods Sold (served to customer). Industrial bookkeeping tracks manufacturing step-by-step, unlike commercial bookkeeping which has just Merchandise → COGS.',
     steps:[
-      {label:'①原価計算の流れ1番目', hint:'材料費・労務費・経費が最初に集まる', ans:'材料', choices:['材料','仕掛品','製品','売上原価']},
+      {label:'①原価計算の流れ1番目', hint:'原価の流れ：材料購入→材料勘定、製造投入→仕掛品へ振替、完成→製品、販売→売上原価。材料勘定は購入した原材料の在庫勘定。月末残高が棚卸資産（材料）としてB/Sに計上される', ans:'材料', choices:['材料','仕掛品','製品','売上原価']},
       {label:'②原価計算の流れ2番目', hint:'製造工程での未完成品', ans:'仕掛品', choices:['仕掛品','材料','製品','売上原価']},
       {label:'③原価計算の流れ3番目', hint:'製造が完了し、出荷待ちの在庫勘定は？', ans:'製品', choices:['製品','仕掛品','材料','売上原価']},
       {label:'④製品が販売されたときの費用', hint:'製品を販売したときに計上する費用', ans:'売上原価', choices:['売上原価','製品','仕掛品','製造原価']}
@@ -4835,7 +4835,7 @@ const ALL = [
     exp:'直接費と間接費の違いは「追跡できるかどうか」。直接材料費（A製品には何kg使ったか分かる）、直接労務費（A製品に何時間かけたか分かる）は直接費。電気代や工場長の給与は複数製品共通→間接費→配賦（割り振り）が必要。「どの製品のコストか特定できる＝直接費」と覚えましょう。',
     exp_en:'Direct vs. indirect: "Can we trace it to a specific product?" Direct material (how many kg for Product A?), direct labor (how many hours on Product A?) — traceable. Electricity, plant manager\'s salary — shared across products → indirect → must be allocated. Rule: "traceable to a product = direct cost."',
     steps:[
-      {label:'①特定製品に直接跡付けられる費用', hint:'製品への直接帰属が可能な費用', ans:'直接費', choices:['直接費','間接費','固定費','変動費']},
+      {label:'①特定製品に直接跡付けられる費用', hint:'「製品AにステンレスXkgを使用」と特定できるコスト。直接費は製品別原価に直接算入できる。電力代・工場長給与など複数製品で共有するコストは間接費として配賦（按分）が必要', ans:'直接費', choices:['直接費','間接費','固定費','変動費']},
       {label:'②複数製品に共通で発生する費用', hint:'特定製品に帰属できず按分が必要な費用', ans:'間接費', choices:['間接費','直接費','固定費','変動費']},
       {label:'③直接材料費・直接労務費に続く直接費', hint:'外注加工費が代表例の直接追跡できる経費', ans:'直接経費', choices:['直接経費','間接経費','製造間接費','直接材料費']}
     ]
@@ -4852,7 +4852,7 @@ const ALL = [
 ,
     note:'個別原価計算：\n製品ごとに原価を集計（受注生産向き）\n「原価計算表」で管理\n直接費：直課、間接費：配賦',
     steps:[
-      {label:'①製品の材料コスト', hint:'製造原価の3要素の第1', ans:'材料費', choices:['材料費','労務費','経費','製造間接費']},
+      {label:'①製品の材料コスト', hint:'木材・鉄板・部品など製品を構成する原材料コスト。製造原価の3要素（材料費・労務費・経費）のうち通常最大。直接材料費は仕掛品に直接算入、間接材料費は製造間接費へ集約', ans:'材料費', choices:['材料費','労務費','経費','製造間接費']},
       {label:'②製品の人件費コスト', hint:'製造原価の3要素の第2', ans:'労務費', choices:['労務費','材料費','経費','製造間接費']},
       {label:'③材料費・労務費以外', hint:'製造原価の3要素の第3', ans:'経費', choices:['経費','材料費','労務費','製造間接費']},
       {label:'④製造費用合計から仕掛品を調整した額', hint:'完成した製品の総原価', ans:'当期製品製造原価', choices:['当期製品製造原価','売上原価','期末製品','製造間接費']}
@@ -4868,7 +4868,7 @@ const ALL = [
     exp:'製品原価は「製品に宿ったコスト」で、製品が売れるまでは資産（製品・仕掛品）として貸借対照表に載ります。売れて初めて費用（売上原価）になります。一方、期間原価（販管費）は「作ることと関係ないコスト」で、発生した期の費用として即座に損益計算書に計上されます。',
     exp_en:'Product costs are "costs embedded in the product" — they stay as assets (Finished Goods, WIP) on the balance sheet until the product is sold, then become Cost of Goods Sold. Period costs (selling & admin expenses) have no direct connection to production — they\'re expensed immediately in the period incurred.',
     steps:[
-      {label:'①製造活動で生じる原価', hint:'製品を作ることで生じる費用', ans:'製品原価', choices:['製品原価','期間原価','売上原価','製造間接費']},
+      {label:'①製造活動で生じる原価', hint:'材料費＋労務費＋経費の製造コスト。販管費・受取利息など期間原価（期間コスト）とは区別される。製品が売れるまでは棚卸資産として資産計上→販売時に売上原価として費用化', ans:'製品原価', choices:['製品原価','期間原価','売上原価','製造間接費']},
       {label:'②時間の経過で生じる費用', hint:'販管費・受取利息など製造に関係しない費用', ans:'期間原価', choices:['期間原価','製品原価','製造間接費','変動費']}
     ]
   },
@@ -4964,7 +4964,7 @@ const ALL = [
     exp:'予定単価を使うことで材料費を素早く計算できますが、実際単価との差（材料消費価格差異）が生じます。「予定より高く買ってしまった→不利差異（追加コスト）」「予定より安く買えた→有利差異（コスト節約）」。月末に差異を原価差異勘定（or 売上原価）に振り替えます。',
     exp_en:'Using a predetermined price speeds up cost calculation, but creates a "material price variance" vs. actual. "Bought at higher price than expected → unfavorable (over budget)." "Got a better deal → favorable (under budget)." Transfer the variance to a variance account (or COGS) at month-end.',
     steps:[
-      {label:'①材料消費の差異勘定名', hint:'材料費の価格差異を記録する勘定', ans:'材料消費価格差異', choices:['材料消費価格差異','材料費差異','価格差異','消費数量差異']},
+      {label:'①材料消費の差異勘定名', hint:'予定単価200円で仕訳したが実際220円で購入→1kgあたり20円の不利差異。材料消費価格差異勘定に集約して期末に売上原価へ。標準原価計算で仕入担当の調達価格管理に活用', ans:'材料消費価格差異', choices:['材料消費価格差異','材料費差異','価格差異','消費数量差異']},
       {label:'②実際が予定より高い場合の差異', hint:'実際コストが予定を上回った場合の差異名称は？', ans:'不利差異', choices:['不利差異','有利差異','超過差異','標準差異']},
       {label:'③実際が予定より低い場合の差異', hint:'実際コストが予定を下回った場合の差異名称は？', ans:'有利差異', choices:['有利差異','不利差異','節約差異','標準差異']}
     ]
@@ -5036,7 +5036,7 @@ const ALL = [
 ,
     note:'損益分岐点：\nBEP売上高 ＝ 固定費 ÷ 貢献利益率\nBEP販売量 ＝ 固定費 ÷ (売価 − 変動費)\n安全余裕率 ＝ (実績 − BEP) ÷ 実績 × 100',
     steps:[
-      {label:'①製品に直接帰属する人件費', hint:'直接作業員の賃金・作業時間で計上', ans:'直接労務費', choices:['直接労務費','間接労務費','製造間接費','賃金']},
+      {label:'①製品に直接帰属する人件費', hint:'溶接工・組立工など特定製品を製造する作業員の賃金。実際賃率×実際作業時間で計算し仕掛品へ直接算入。管理職・警備員・清掃員の人件費は間接労務費として製造間接費へ集約', ans:'直接労務費', choices:['直接労務費','間接労務費','製造間接費','賃金']},
       {label:'②特定製品に帰属できない人件費', hint:'管理職給与・間接作業員の賃金など', ans:'間接労務費', choices:['間接労務費','直接労務費','製造間接費','給料']},
       {label:'③間接労務費の最終処理先', hint:'間接労務費は最終的にどの勘定に集まるか', ans:'製造間接費', choices:['製造間接費','間接労務費','仕掛品','直接労務費']}
     ]
@@ -5081,7 +5081,7 @@ const ALL = [
     exp:'経費のうち、直接費として特定製品に追跡できるのは「外注加工費」がほぼ唯一です。その他の減価償却費・電力料・賃借料・保険料などはすべて間接経費として製造間接費に集計します。「工場に関係するコストは、特定製品に追跡できる外注加工費以外はすべて間接費」と覚えましょう。',
     exp_en:'Among all expense items, outside processing fees are virtually the only direct expense (traceable to a specific product). Everything else — depreciation, utilities, rent, insurance — is indirect → Manufacturing Overhead. "Factory expenses: outside processing is direct; everything else is indirect."',
     steps:[
-      {label:'①外部業者に加工委託する費用', hint:'自社で加工せず外部委託した費用', ans:'外注加工費', choices:['外注加工費','減価償却費','動力費','設計費']},
+      {label:'①外部業者に加工委託する費用', hint:'部品の塗装・精密加工・熱処理を専門業者に委託したコスト。外注の方が自社製造より安い・技術がない場合に活用。経費の中の「直接経費」に分類されるため仕掛品へ直接算入できる', ans:'外注加工費', choices:['外注加工費','減価償却費','動力費','設計費']},
       {label:'②固定資産の使用に伴う費用', hint:'毎期計上する非現金の費用', ans:'減価償却費', choices:['減価償却費','外注加工費','動力費','修繕費']},
       {label:'③機械・設備の電力コスト', hint:'ガス・水道・電力などのエネルギー費用', ans:'動力費', choices:['動力費','外注加工費','減価償却費','地代家賃']}
     ]
@@ -5108,7 +5108,7 @@ const ALL = [
     exp_en:'Applied ¥150,000 < Actual ¥240,000 → ¥90,000 under-applied (unfavorable). WIP only contains ¥150,000 of overhead, but the actual incurred was ¥240,000. The ¥90,000 gap is the overhead variance — typically charged to COGS at period-end.',
     note:'配賦差異 = 予定配賦額 − 実際発生額 / マイナスなら配賦不足（不利差異）',
     steps:[
-      {label:'配賦差異', hint:'配賦差異 = 予定配賦額 − 実際発生額', ans:-90000, unit:'円', choices:[-90000,90000,-60000,-30000]}
+      {label:'配賦差異', hint:'予定配賦1,000円/hで計上したが実際は1,100円/h発生→不利差異（過少配賦）。差異が小さければ全額売上原価処理、大きければ売上原価・仕掛品・製品に按分して訂正する', ans:-90000, unit:'円', choices:[-90000,90000,-60000,-30000]}
     ]
   },
   {
@@ -5133,7 +5133,7 @@ const ALL = [
     exp_en:'The predetermined rate = annual overhead budget ÷ annual estimated activity. Set at the start of the year. Each month, multiply by actual activity to get applied overhead. "Annual indirect costs ÷ annual estimated hours = indirect cost per hour." Using a full-year denominator avoids seasonal distortions.',
     note:'予定配賦率 = 年間製造間接費予算 ÷ 年間基準操業度 / 配賦額 = 予定配賦率 × 実際操業度',
     steps:[
-      {label:'予定配賦率', hint:'予定配賦率 = 製造間接費年間予算 ÷ 年間基準操業度', ans:1500, unit:'円/時間', choices:[1500,1400,1600,2000]},
+      {label:'予定配賦率', hint:'例：年間予算1,200万円÷基準12,000時間＝1,000円/時間。毎月の操業度が変わっても一定レートで配賦できる→原価計算が迅速・安定。実際配賦は月末まで待つ必要があり遅い', ans:1500, unit:'円/時間', choices:[1500,1400,1600,2000]},
       {label:'予定配賦額', hint:'予定配賦額 = 予定配賦率 × 実際操業度', ans:270000, unit:'円', choices:[270000,260000,280000,300000]}
     ]
   },
@@ -5162,7 +5162,7 @@ const ALL = [
     exp_en:'①Budget allowance: total cost permitted at actual 380 hours. ②Budget variance: actual ¥400,000 − allowance ¥390,000 = −¥10,000 (unfavorable, overspent). ③Volume variance: fixed rate ¥500 × (380 − 400) = −¥10,000 (unfavorable, under-produced). Both unfavorable this month.',
     note:'予算差異 = 予算許容額 − 実際発生額 / 操業度差異 = 固定費率 × (実際操業度 − 基準操業度)',
     steps:[
-      {label:'固定費率', hint:'固定費率 = 固定費予算 ÷ 基準操業度', ans:500, unit:'円/h', choices:[500,400,600,450]},
+      {label:'固定費率', hint:'固定費300万円÷基準6,000時間＝500円/h。操業度差異の計算に使用。基準より実際操業度が低いほど固定費の回収不足（不利差異）が拡大→設備の遊休（稼働率低下）が損失を生む', ans:500, unit:'円/h', choices:[500,400,600,450]},
       {label:'予算許容額', hint:'予算許容額 = 変動費率 × 実際操業度 ＋ 固定費予算', ans:390000, unit:'円', choices:[390000,400000,380000,410000]},
       {label:'予算差異', hint:'予算差異 = 予算許容額 − 実際発生額', ans:-10000, unit:'円', choices:[-10000,10000,-20000,0]},
       {label:'操業度差異', hint:'固定費率×(実際操業度 − 基準操業度) ＝ 500×(380−400)', ans:-10000, unit:'円', choices:[-10000,10000,-20000,0]},
@@ -5193,7 +5193,7 @@ const ALL = [
     exp:'配賦差異の処理：①差異が軽微な場合→全額を売上原価に加減算（簡便法）。②差異が重要な場合→期末仕掛品・期末製品・売上原価に残高割合で按分配分（より正確）。試験では「指示に従う」のが原則。不利差異は追加コストなので売上原価を増やし、有利差異は売上原価を減らします。',
     exp_en:'Variance treatment: ①Immaterial → add/subtract entirely from COGS (simplified). ②Material → prorate across closing WIP, closing finished goods, and COGS in proportion to their balances (more accurate). Unfavorable = COGS increases; favorable = COGS decreases. Follow exam instructions.',
     steps:[
-      {label:'①全部原価計算の差異処理先①', hint:'差異が小さい場合の処理先', ans:'売上原価', choices:['売上原価','期末仕掛品','期末製品','製造間接費']},
+      {label:'①全部原価計算の差異処理先①', hint:'原価差異が重要性の低い（小さい）場合は全額売上原価へ加減算する簡便処理。重要な場合は売上原価・仕掛品・製品に期末残高比等で按分して正確な原価を示す', ans:'売上原価', choices:['売上原価','期末仕掛品','期末製品','製造間接費']},
       {label:'②差異が大きい場合の処理', hint:'差異が重要な場合の配分先', ans:'売上原価・仕掛品・製品に按分', choices:['売上原価・仕掛品・製品に按分','全額売上原価','全額費用','全額製造間接費']},
       {label:'③配分対象（3科目）', hint:'差異を按分配分する勘定科目', ans:'売上原価・仕掛品・製品', choices:['売上原価・仕掛品・製品','売上原価のみ','製品のみ','製造間接費']}
     ]
@@ -5208,7 +5208,7 @@ const ALL = [
     exp:'部門別原価計算は「工場内の部署（部門）ごとにコストを把握する」方法です。工場全体で一括配賦するより、部門別に配賦基準を設定する方が正確な原価計算ができます。例：切削部門は機械時間基準、組立部門は作業時間基準、というように部門の特性に合わせた基準を選べます。',
     exp_en:'Departmental costing tracks overhead by department (cost center) for more accurate product costing. Instead of one plant-wide rate, each department uses its own allocation base. Example: Machining dept. uses machine hours; Assembly dept. uses labor hours — matching the rate to the department\'s cost driver.',
     steps:[
-      {label:'①費用を部門ごとに集計する計算', hint:'製造間接費を部門ごとに集計', ans:'部門別計算', choices:['部門別計算','補助部門計算','製品別計算','個別計算']},
+      {label:'①費用を部門ごとに集計する計算', hint:'大工場では機械部門・組立部門・動力部門などに分けて間接費を集計。各部門の特性（機械稼働時間・作業時間）に応じた配賦基準を使えるため単一配賦率より正確な製品原価が算出できる', ans:'部門別計算', choices:['部門別計算','補助部門計算','製品別計算','個別計算']},
       {label:'②製品に直接貢献しない部門', hint:'修繕部・動力部など直接製造しない部門', ans:'補助部門', choices:['補助部門','製造部門','加工部門','組立部門']}
     ]
   },
@@ -5270,7 +5270,7 @@ const ALL = [
     exp:'動力部門は修繕部門に電力を提供し、修繕部門は動力部門の機械を修理する、というように補助部門同士でもサービスのやり取りがあります。直接配賦法はこれを無視（計算簡単）、相互配賦法はこれを考慮（正確だが複雑）。日商2級では主に直接配賦法が出題されます。',
     exp_en:'Service departments often serve each other (Power dept. supplies electricity to Maintenance; Maintenance repairs Power\'s equipment). The direct method ignores this (simple). The reciprocal method accounts for it (accurate but complex). The direct method is the primary focus of Level 2 exams.',
     steps:[
-      {label:'ア　補助部門間サービスを無視する方法', hint:'補助部門から補助部門へのサービスを無視', ans:'直接配賦法', choices:['直接配賦法','相互配賦法','階梯式配賦法','一括配賦法']},
+      {label:'ア　補助部門間サービスを無視する方法', hint:'動力部が修繕部にも電力を供給しているが、その逆サービスを考慮せず製造部門だけに配賦する簡便法。計算が単純で試験頻出だが、部門間サービスを無視するため精度は相互配賦法より劣る', ans:'直接配賦法', choices:['直接配賦法','相互配賦法','階梯式配賦法','一括配賦法']},
       {label:'イ　補助部門間サービスも考慮する方法', hint:'補助部門間のやり取りも計算に入れる方法', ans:'相互配賦法', choices:['相互配賦法','直接配賦法','階梯式配賦法','一括配賦法']}
     ]
   },
@@ -5299,7 +5299,7 @@ const ALL = [
     exp:'部門別原価計算の3ステップ：①全間接費を各部門に集計（直課＋配賦）②補助部門費を製造部門へ配賦（直接配賦法等）③製造部門費を製品へ配賦（機械時間・作業時間等の基準で）。最終的に製品原価には直接費＋各製造部門からの間接費配賦分が含まれます。',
     exp_en:'Three steps: ①Collect all indirect costs in each dept. (direct charge + allocation) ②Transfer service dept. costs to production depts. ③Allocate production dept. costs to products using dept.-specific rates (machine hrs, labor hrs, etc.). Final product cost = direct costs + allocated overhead from each production department.',
     steps:[
-      {label:'①第1段階の配分先', hint:'全間接費を製造・補助部門に集計', ans:'製造部門・補助部門', choices:['製造部門・補助部門','製品のみ','売上原価','仕掛品']},
+      {label:'①第1段階の配分先', hint:'部門別計算の第1段階：工場全体の間接費を「製造部門（組立・加工）」と「補助部門（動力・修繕）」に振り分ける。次の第2段階で補助部門費を製造部門へ配賦し、第3段階で製品へ配賦する', ans:'製造部門・補助部門', choices:['製造部門・補助部門','製品のみ','売上原価','仕掛品']},
       {label:'②第2段階の処理', hint:'補助部門に集計された費用を次にどこへ、どうするか？', ans:'製造部門に配賦', choices:['製造部門に配賦','製品へ直接配賦','売上原価へ','仕掛品へ']},
       {label:'③第3段階の配分先', hint:'製造部門費を最終的に配分する先', ans:'製品（仕掛品）', choices:['製品（仕掛品）','補助部門','売上原価','製造間接費']}
     ]
@@ -5639,7 +5639,7 @@ const ALL = [
     exp_en:'①Budget variance = actual ¥234,000 − budget allowance ¥234,000 = ¥0 (exactly on budget) ②Volume variance = fixed rate ¥300 × (380 − 400) = −¥6,000 (unfav). "Spent exactly what was budgeted, but produced less than planned, so fixed costs were under-recovered." Under-production always creates an unfavorable volume variance.',
     note:'固定費率 = 固定費予算 ÷ 基準操業度 / 操業度差異 = 固定費率 × (実際操業度 − 基準操業度)',
     steps:[
-      {label:'固定費率', hint:'固定費率 = 固定費予算 ÷ 基準操業度', ans:300, unit:'円/h', choices:[300,400,200,250]},
+      {label:'固定費率', hint:'固定費300万円÷基準6,000時間＝500円/h。操業度差異の計算に使用。基準より実際操業度が低いほど固定費の回収不足（不利差異）が拡大→設備の遊休（稼働率低下）が損失を生む', ans:300, unit:'円/h', choices:[300,400,200,250]},
       {label:'予算許容額', hint:'予算許容額 = 変動費率 × 実際操業度 ＋ 固定費予算', ans:234000, unit:'円', choices:[234000,240000,228000,246000]},
       {label:'予算差異', hint:'予算差異 = 予算許容額 − 実際発生額', ans:0, unit:'円', choices:[0,-6000,6000,-12000]},
       {label:'操業度差異', hint:'固定費率×(実際操業度 − 基準操業度) ＝ 300×(380−400)', ans:-6000, unit:'円', choices:[-6000,6000,-12000,0]},
@@ -5671,7 +5671,7 @@ const ALL = [
     exp:'直接原価計算は「固定費は製品を作っても作らなくても発生する→製品原価に含めない」という考え方。工場の機械の減価償却費（固定費）は0個作っても1,000個作っても同額かかる→期間費用として発生時に損益計算書へ。変動費（材料・直接労務費）のみを製品原価に含めます。',
     exp_en:'Direct costing: "Fixed costs occur whether you produce or not → don\'t include in product cost." Factory depreciation (fixed) is the same whether you make 0 or 1,000 units → period expense. Only variable costs flow to product cost. This separates "costs that change with volume" from "costs that don\'t."',
     steps:[
-      {label:'①直接原価計算の製品原価', hint:'直接原価計算で製品原価に含めるコスト', ans:'変動製造原価', choices:['変動製造原価','固定製造原価','製造原価全額','売上原価']},
+      {label:'①直接原価計算の製品原価', hint:'変動製造原価（材料費・変動加工費など生産量に比例するコスト）のみを製品原価とする。工場家賃・固定減価償却費などの固定製造原価は期間費用として売上原価に含めない。CVP分析との整合性が高い', ans:'変動製造原価', choices:['変動製造原価','固定製造原価','製造原価全額','売上原価']},
       {label:'②直接原価計算で期間費用にする', hint:'直接原価計算で製品原価に含めないコスト', ans:'固定製造原価', choices:['固定製造原価','変動製造原価','直接材料費','直接労務費']},
       {label:'③全部原価計算との違い', hint:'両方の計算方式で扱いが異なる費用', ans:'固定製造間接費', choices:['固定製造間接費','変動費全額','直接材料費','直接労務費']}
     ]
@@ -5763,7 +5763,7 @@ const ALL = [
     exp:'直接原価計算の意思決定への応用：①特別注文（余裕生産能力がある場合）→通常の利益がなくても変動費をカバーできれば受注OK（固定費は変わらないため）。②自製か外注かの判断→外注した場合に本当に固定費が下がるか確認が必要（下がらない固定費は「埋没原価」として意思決定に無関係）。',
     exp_en:'Direct costing for decisions: ①Special order with spare capacity → accept if price > variable cost (fixed costs won\'t change anyway — they\'re sunk). ②Make-or-buy → consider whether outsourcing actually reduces fixed costs. Fixed costs that don\'t change regardless = "sunk costs" → irrelevant to the decision.',
     steps:[
-      {label:'ア　特別注文受否の判断基準', hint:'特別注文受注の意思決定で見る費用', ans:'単位変動費（変動製造原価）', choices:['単位変動費（変動製造原価）','単位固定費','売上原価全額','販管費']},
+      {label:'ア　特別注文受否の判断基準', hint:'追加変動費だけ見ればよい。固定費は追加注文があってもなくても変わらない（埋没コスト）。追加売価>追加変動費なら限界利益がプラス→受注すべき。この考え方を「差額原価収益分析」という', ans:'単位変動費（変動製造原価）', choices:['単位変動費（変動製造原価）','単位固定費','売上原価全額','販管費']},
       {label:'イ　固定費の意思決定上の扱い', hint:'外注vs自製の判断で固定費が節約できる条件', ans:'固定費の回避可能性', choices:['固定費の回避可能性','変動費の大小','売上の高低','利益の大小']}
     ]
   },
@@ -5794,7 +5794,7 @@ const ALL = [
     exp:'製造業の財務諸表の特徴：①製造原価報告書が追加（材料費＋労務費＋経費→完成品原価の明細）②B/Sの棚卸資産が「材料」「仕掛品」「製品」の3種類（商業簿記は「商品」だけ）。製造プロセスを追跡するために在庫が3段階に分かれています。これが工業簿記と商業簿記の最大の構造的違いです。',
     exp_en:'Industrial financial statements: ①Cost of Production Report attached to the income statement (details material, labor, overhead → product cost) ②Balance sheet has THREE inventory types: Materials, WIP, Finished Goods — vs. commercial bookkeeping\'s single "Merchandise" account. These three inventory layers reflect the manufacturing process.',
     steps:[
-      {label:'ア　工業簿記の製造原価を報告する書類', hint:'製品の製造にかかった費用の明細書', ans:'製造原価報告書', choices:['製造原価報告書','損益計算書','貸借対照表','試算表']},
+      {label:'ア　工業簿記の製造原価を報告する書類', hint:'材料費・労務費・製造間接費の内訳と当期製品製造原価を示す工業簿記特有の書類。P/Lの売上原価の内訳として開示される。商業簿記では不要だが工業簿記では必須', ans:'製造原価報告書', choices:['製造原価報告書','損益計算書','貸借対照表','試算表']},
       {label:'イ・ウ・エ　工業簿記の在庫勘定（3種）', hint:'材料→仕掛品→製品の順で在庫が流れる', ans:'材料・仕掛品・製品', choices:['材料・仕掛品・製品','商品だけ','製品だけ','材料だけ']}
     ]
   },
@@ -5808,7 +5808,7 @@ const ALL = [
     exp:'工業簿記のエッセンス：①「作る」プロセスのコストを追跡する→材料費・労務費・経費→製品原価②在庫が3段階（材料→仕掛品→製品）③原価管理のための差異分析（標準原価計算）。商業簿記が「仕入→販売」の2ステップなのに対し、工業簿記は「購入→製造（複数工程）→完成→販売」の多段階プロセスを記録します。',
     exp_en:'Industrial bookkeeping essence: ①Track costs through the production process (materials + labor + overhead = product cost) ②Three inventory stages (Materials → WIP → Finished Goods) ③Variance analysis for cost control (standard costing). Commercial = 2 steps (buy → sell). Industrial = multiple steps (buy → manufacture → complete → sell).',
     steps:[
-      {label:'ア　工業簿記の費用の種類', hint:'製品を製造したことで生じる原価', ans:'製造原価', choices:['製造原価','商品原価','仕入原価','販管費']},
+      {label:'ア　工業簿記の費用の種類', hint:'材料費＋労務費＋経費の合計製造コスト。商業簿記の「仕入高」に相当するが製造プロセスを経る。完成前は仕掛品（資産）、完成後は製品（資産）、販売後に売上原価（費用）として計上される', ans:'製造原価', choices:['製造原価','商品原価','仕入原価','販管費']},
       {label:'イ　商業簿記の在庫勘定（1種類）', hint:'商業では在庫をひとまとめにして記録する勘定科目は？', ans:'商品', choices:['商品','製品','材料','仕掛品']},
       {label:'ウ　工業簿記の在庫起点', hint:'製造原価の流れの最初の在庫', ans:'材料', choices:['材料','仕掛品','製品','商品']},
       {label:'エ　製造原価の一覧表', hint:'製品の製造にかかった費用をまとめた書類', ans:'製造原価報告書', choices:['製造原価報告書','損益計算書','製造指図書','精算表']}
@@ -6272,7 +6272,7 @@ const ALL = [
     exp_en:'The Cash Flow Statement has 3 sections: Operating, Investing, Financing.\nOperating: cash from core business (positive = company earns cash).\nInvesting: cash for equipment and securities (negative = investing for future).\nFinancing: cash from/to debt and equity (negative = repaying debt = healthy).',
     note:'3区分の覚え方：\n営業 = 本業（売上・費用）\n投資 = 設備・有価証券（将来への投資）\n財務 = 借入・配当（資金調達と返還）',
     steps:[
-      {label:'①CF計算書の第1区分', hint:'本業の売上・費用に関するCF', ans:'営業活動CF', choices:['営業活動CF','投資活動CF','財務活動CF','本業利益']},
+      {label:'①CF計算書の第1区分', hint:'商品販売収入・仕入支払い・人件費支払いなど本業の現金収支。「純利益≠現金増加」のギャップを解消するのがCF計算書の役割。間接法では純利益から出発して非現金費用などを調整して計算する', ans:'営業活動CF', choices:['営業活動CF','投資活動CF','財務活動CF','本業利益']},
       {label:'②CF計算書の第2区分', hint:'設備投資・有価証券売買などのCF', ans:'投資活動CF', choices:['投資活動CF','営業活動CF','財務活動CF','資本活動CF']},
       {label:'③CF計算書の第3区分', hint:'借入・返済・配当・株式発行などのCF', ans:'財務活動CF', choices:['財務活動CF','営業活動CF','投資活動CF','資金調達CF']}
     ]
@@ -6298,7 +6298,7 @@ const ALL = [
     exp_en:'Indirect method: start with net income, adjust to cash basis.\nAdd back: non-cash expenses (depreciation), decreases in assets, increases in liabilities.\nSubtract: increases in assets (cash not yet received), decreases in liabilities (cash paid).\nMemory trick: asset↑ = subtract, liability↑ = add.',
     note:'間接法の調整ルール：\n減価償却費 → ＋（非現金費用）\n売上債権増加 → −（現金未回収）\n棚卸資産増加 → −、減少 → ＋\n仕入債務増加 → ＋（現金未払い）',
     steps:[
-      {label:'①売上債権増加の調整', hint:'売上未回収→営業CFで減算か加算か', ans:'減算（−）', choices:['減算（−）','加算（＋）','そのまま','対象外']},
+      {label:'①売上債権増加の調整', hint:'売上1,000万円だが現金回収800万円→未回収200万円は売上債権増加→営業CFを「−200万円」調整。現金が入っていない分を利益から引く。逆に売上債権が減れば回収が進んでいるのでプラス調整', ans:'減算（−）', choices:['減算（−）','加算（＋）','そのまま','対象外']},
       {label:'②棚卸資産減少の調整', hint:'在庫減少→現金を受取→加算か減算か', ans:'加算（＋）', choices:['加算（＋）','減算（−）','そのまま','対象外']},
       {label:'③仕入債務増加の調整', hint:'仕入未払い→現金不出→加算か減算か', ans:'加算（＋）', choices:['加算（＋）','減算（−）','そのまま','対象外']},
       {label:'営業活動CF', hint:'営業CF(間接法) = 税引前利益 ＋ 非現金費用加減 ＋/− 資産・負債の増減', ans:610000, unit:'円', choices:[610000,590000,630000,580000]}
@@ -6322,7 +6322,7 @@ const ALL = [
     exp_en:'Investing CF: purchase/sale of long-term assets and investments.\n  Purchase = cash outflow (−). Sale = cash inflow (+).\nFinancing CF: transactions with capital providers.\n  Borrowing, stock issuance = inflow (+).\n  Repayment, dividends paid = outflow (−).',
     note:'投資CF：設備/有価証券の売買（購入−、売却+）\n財務CF：借入+、返済−、配当支払−、株式発行+\n利息・配当の受取・支払は企業方針によって営業/投資/財務が変わる',
     steps:[
-      {label:'①建物購入のCF区分', hint:'設備購入は営業・投資・財務のどれ', ans:'投資活動（−）', choices:['投資活動（−）','営業活動（−）','財務活動（−）','投資活動（＋）']},
+      {label:'①建物購入のCF区分', hint:'設備（固定資産）の購入は「投資活動」のCFでマイナス計上。成長中の企業は設備投資が多く投資CFが大きくマイナスになる傾向。「フリーCF＝営業CF＋投資CF」でプラスなら余剰資金あり', ans:'投資活動（−）', choices:['投資活動（−）','営業活動（−）','財務活動（−）','投資活動（＋）']},
       {label:'③借入のCF区分', hint:'借入は営業・投資・財務のどれ', ans:'財務活動（＋）', choices:['財務活動（＋）','営業活動（＋）','投資活動（＋）','財務活動（−）']},
       {label:'⑤配当支払のCF区分', hint:'配当支払は営業・投資・財務のどれ', ans:'財務活動（−）', choices:['財務活動（−）','営業活動（−）','投資活動（−）','財務活動（＋）']}
     ]
@@ -6386,7 +6386,7 @@ const ALL = [
     exp_en:'Free Cash Flow = Operating CF + Investing CF.\nPositive FCF: the business generates more cash than it spends on investments.\nThis cash is "free" to return to shareholders, pay debt, or fund new growth.\nFCF is a key metric in company valuation.',
     note:'FCF ＝ 営業CF ＋ 投資CF\nプラス → 自由資金あり（借金返済・配当・成長投資に使える）\nマイナス → 本業の稼ぎだけでは投資をまかなえない',
     steps:[
-      {label:'フリーキャッシュフロー', hint:'フリーキャッシュフロー = 営業CF ＋ 投資CF', ans:300000, unit:'円', choices:[300000,200000,500000,-300000]}
+      {label:'フリーキャッシュフロー', hint:'企業が債務返済・配当・追加投資に自由に使える現金。営業CF500万＋投資CF−200万＝FCF300万。FCFがマイナス続きなら外部資金調達が必要。企業価値評価の基礎指標', ans:300000, unit:'円', choices:[300000,200000,500000,-300000]}
     ]
   },
   {
@@ -6460,7 +6460,7 @@ const ALL = [
     exp_en:'Two methods exist only for the operating section.\nDirect method: lists major cash receipts and payments by category.\nIndirect method: adjusts net income to cash basis.\nJapanese practice favors indirect method for ease of preparation.\nInvesting and financing sections always use the direct approach (listing individual transactions).',
     note:'直接法：取引を直接列挙（わかりやすい）\n間接法：利益から出発して調整（実務主流）\n投資・財務CF：両方とも直接列挙',
     steps:[
-      {label:'①直接法の特徴', hint:'営業CF計算の方法：収支を直接列挙する方法', ans:'直接法', choices:['直接法','間接法','総額法','純額法']},
+      {label:'①直接法の特徴', hint:'実際の現金収支（売上入金額・仕入支払額・給料支払額など）を直接記載する方法。現金の動きが直感的に分かるが収支データの収集が手間。外部公表には利便性の高い間接法が多く使われる', ans:'直接法', choices:['直接法','間接法','総額法','純額法']},
       {label:'②間接法の特徴', hint:'営業CF計算の方法：利益から出発して調整する方法', ans:'間接法', choices:['間接法','直接法','総額法','純額法']}
     ]
   },
@@ -6481,7 +6481,7 @@ const ALL = [
     exp_en:'CF pattern analysis reveals company health:\nPattern A (healthy): Operating+ Investing- Financing- = profitable, investing, repaying debt.\nPattern B (growth): Operating- Investing- Financing+ = not yet profitable, investing via financing.\nPattern C (distress): Operating- Investing+ Financing+ = selling assets to survive.',
     note:'CFパターン分析：\n理想：営業+ 投資− 財務−（稼いで投資・返済）\n成長：営業− 投資− 財務+（調達して投資中）\n危険：営業− 投資+ 財務+（資産売却で延命）',
     steps:[
-      {label:'①パターンA（優良・成熟）型の評価', hint:'営業+・投資−・財務−のCF構造', ans:'優良・成熟型', choices:['優良・成熟型','成長型','危険型','再建型']},
+      {label:'①パターンA（優良・成熟）型の評価', hint:'本業で稼ぎ（営業＋）、既存設備の維持・更新に投資（投資−）、借入返済・配当支払（財務−）。成熟・優良企業の典型パターン。最も健全なCF構造で投資家・金融機関からの評価が高い', ans:'優良・成熟型', choices:['優良・成熟型','成長型','危険型','再建型']},
       {label:'②パターンB（成長期）型の評価', hint:'営業−・投資−・財務+のCF構造', ans:'成長型', choices:['成長型','優良・成熟型','危険型','再建型']}
     ]
   },
@@ -6621,7 +6621,7 @@ const ALL = [
     exp_en:'COGS = opening FG + current production − closing FG = ¥100,000 + ¥1,800,000 − ¥250,000 = ¥1,650,000. This is the moment costs hit the income statement. "Not an expense until sold" — the matching principle in action.',
     note:'売上原価 = 期首製品 ＋ 当期製品製造原価 − 期末製品',
     steps:[
-      {label:'売上原価', hint:'売上原価 = 月初製品 ＋ 当月完成品 − 月末製品', ans:1650000, unit:'円', choices:[1650000,1800000,1700000,1750000]}
+      {label:'売上原価', hint:'製品在庫の動きを追う計算式：月初在庫100万＋今月完成200万−月末在庫50万＝売上原価250万。商業簿記の「期首商品＋仕入−期末商品＝売上原価」と全く同じ構造。完成品が製品勘定を通る点が異なる', ans:1650000, unit:'円', choices:[1650000,1800000,1700000,1750000]}
     ]
   },
 
@@ -6666,7 +6666,7 @@ const ALL = [
     exp:'工業簿記の勘定連絡図は試験で必ず問われる核心知識。「直接費→仕掛品直行」「間接費→製造間接費→配賦→仕掛品」「完成→製品」「販売→売上原価」この4つの矢印の流れを図で頭に入れましょう。この図を理解していれば仕訳問題の8割は解けます。',
     exp_en:'The manufacturing account flow diagram is the backbone of industrial bookkeeping. Direct costs → WIP directly. Indirect costs → Manufacturing Overhead → allocated to WIP. Completion → Finished Goods. Sale → COGS. Master this diagram and you can solve 80% of journal entry problems.',
     steps:[
-      {label:'①直接材料費の振替先', hint:'製品に直接追跡できる材料費はどこへ？', ans:'仕掛品', choices:['仕掛品','製造間接費','材料','製品']},
+      {label:'①直接材料費の振替先', hint:'製品に直接使われた直接材料費は「仕掛品」勘定へ振替。間接材料費（工具・油など共通資材）は「製造間接費」勘定へ。仕掛品に集積された費用が製造工程を経て最終的に「製品」勘定へ移る', ans:'仕掛品', choices:['仕掛品','製造間接費','材料','製品']},
       {label:'②間接材料費の振替先', hint:'製品に直接追跡できない材料費はどこへ？', ans:'製造間接費', choices:['製造間接費','仕掛品','製品','売上原価']},
       {label:'③仕掛品が完成したときの振替先', hint:'仕掛品の製造完了後、振替先の在庫勘定は？', ans:'製品', choices:['製品','仕掛品','売上原価','材料']},
       {label:'④製品が売れたときの振替先', hint:'販売時に費用（P/L）に計上される勘定は？', ans:'売上原価', choices:['売上原価','製品','仕掛品','製造間接費']}
