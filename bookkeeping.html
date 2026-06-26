@@ -2029,7 +2029,7 @@ function qaRestart(){
 const ALL = [
   // ===== 商品売買 =====
   { id:1, cat:'商品売買',
-    q:'税込1,100円の商品（本体1,000円）を現金で仕入れた。仕訳を示せ。',
+    q:'食料品店A社が りんご10個（@本体100円＝合計1,000円）を税込1,100円で現金仕入した。仕訳を示せ。',
     q_en:'A company purchased goods worth ¥1,000 (¥1,100 tax-included) in cash. Record the journal entry.',
     e:[{d:[['仕入',1000],['仮払消費税',100]], c:[['現金',1100]]}],
     exp:'商品を仕入れると費用（仕入）が増えます。消費税は最終的に国へ納めるお金なので、今払った分は「あとで返ってくる立替金（仮払消費税）」として資産に記録します。売上時に消費税を預かったとき、両者を相殺して差額だけを国に納めます。' ,
@@ -2037,7 +2037,7 @@ const ALL = [
     note:'仕訳の基本：\n借方（左）＝ 資産増・費用・負債減・資本減\n貸方（右）＝ 負債増・資本増・資産減・収益\n借方合計＝貸方合計（必ず一致）'
   },
   { id:2, cat:'商品売買',
-    q:'税込1,100円の商品（本体1,000円）を掛けで仕入れた。仕訳を示せ。',
+    q:'食料品店A社が りんご10個（@本体100円＝合計1,000円）を税込1,100円で掛け仕入した。仕訳を示せ。',
     q_en:'A company purchased goods worth ¥1,000 (¥1,100 tax-included) on credit. Record the journal entry.',
     e:[{d:[['仕入',1000],['仮払消費税',100]], c:[['買掛金',1100]]}],
     exp:'商品が届いた瞬間に費用（仕入）が確定します。代金をまだ払っていないだけで「後で払う約束（買掛金・負債）」という借金が生まれます。現金はまだ出ていませんが費用はもう確定しています。' ,
@@ -2045,21 +2045,21 @@ const ALL = [
     note:'現金・預金の仕訳：\n受け取った → 借方に「現金/当座預金」\n支払った → 貸方に「現金/当座預金」'
   },
   { id:3, cat:'商品売買',
-    q:'税込550円の商品（本体500円）を約束手形を振り出して仕入れた。仕訳を示せ。',
+    q:'食料品店A社が みかん5個（@本体100円＝合計500円）を税込550円で、約束手形を振り出して仕入れた。仕訳を示せ。',
     q_en:'A company purchased goods worth ¥500 (¥550 tax-included) by issuing a promissory note. Record the journal entry.',
     e:[{d:[['仕入',500],['仮払消費税',50]], c:[['支払手形',550]]}],
     exp:'約束手形とは「〇月〇日に必ず払います」という証書です。振り出した（渡した）瞬間に「期日払いの借金（支払手形・負債）」が生まれます。現金よりも支払いの確実性が保証されるため取引先に受け入れられやすい支払方法です。' ,
     exp_en:'Issuing a promissory note creates a payment obligation called "Notes Payable" (liability). A note is an IOU stating a specific payment date, which reassures suppliers about receiving payment.'
   },
   { id:4, cat:'商品売買',
-    q:'税込880円の商品（本体800円）を、自分が振り出した小切手で支払って仕入れた。仕訳を示せ。',
+    q:'食料品店A社が パン8個（@本体100円＝合計800円）を税込880円で、自己振出し小切手で仕入れた。仕訳を示せ。',
     q_en:'A company purchased goods worth ¥800 (¥880 tax-included) by issuing its own check. Record the journal entry.',
     e:[{d:[['仕入',800],['仮払消費税',80]], c:[['当座預金',880]]}],
     exp:'自分が振り出した小切手とは「自分の銀行口座から引き落としてください」という指示書です。相手に渡した瞬間に当座預金（銀行残高）が減ります。現金を直接渡すのと同じ効果です。' ,
     exp_en:'A check drawn by the company against its own account reduces the checking account balance immediately upon delivery. Economically, it is equivalent to handing over cash.'
   },
   { id:5, cat:'商品売買',
-    q:'掛けで仕入れていた商品の代金1,100円を、現金で支払った。仕訳を示せ。',
+    q:'先日掛け仕入れした食料品（りんご10個分）の代金1,100円（税込）を、現金で支払った。仕訳を示せ。',
     q_en:'A company paid ¥1,100 cash to settle a previously credited purchase. Record the journal entry.',
     e:[{d:[['買掛金',1100]], c:[['現金',1100]]}],
     exp:'後払いにしていた商品代金（買掛金）を現金で支払います。借金（買掛金・負債）が消えて、手元の現金（資産）も同額減ります。利益には影響しません。' ,
@@ -2067,35 +2067,35 @@ const ALL = [
     note:'売掛金・買掛金：\n売掛金（資産）= まだもらっていない代金\n買掛金（負債）= まだ払っていない代金'
   },
   { id:6, cat:'商品売買',
-    q:'税込2,200円の商品（本体2,000円）を掛けで売り上げた。仕訳を示せ。',
+    q:'食料品店A社が りんご20個（@本体100円＝合計2,000円）を税込2,200円で掛け売り上げした。仕訳を示せ。',
     q_en:'A company sold goods worth ¥2,000 (¥2,200 tax-included) on credit. Record the journal entry.',
     e:[{d:[['売掛金',2200]], c:[['売上',2000],['仮受消費税',200]]}],
     exp:'簿記では「商品を渡した時点で売上を記録する」というルールがあります。これを「発生主義」といいます。発生主義とは「現金を受け取る前でも、取引が起きた時点で収益や費用を記録する」考え方です。まだもらっていない代金は「後でもらえる権利（売掛金・資産）」に、消費税は「国への預かり物（仮受消費税・負債）」として記録します。' ,
     exp_en:'Revenue is recorded when goods are transferred, not when cash is received (accrual basis). The uncollected price becomes Accounts Receivable (asset); the tax collected becomes a liability to the government.'
   },
   { id:7, cat:'商品売買',
-    q:'税込1,100円の商品（本体1,000円）を売り上げ、他店が振り出した小切手を受け取った（現金として扱う）。仕訳を示せ。',
+    q:'食料品店A社が りんご10個（@本体100円＝合計1,000円）を税込1,100円で売り上げ、他店振出し小切手（現金扱い）を受け取った。仕訳を示せ。',
     q_en:'A company sold goods worth ¥1,000 (¥1,100 tax-included) and received a check drawn by another company (treated as cash). Record the journal entry.',
     e:[{d:[['現金',1100]], c:[['売上',1000],['仮受消費税',100]]}],
     exp:'他社が振り出した小切手は「すぐ銀行で現金化できる引換券」です。そのため現金と同じ扱い（現金勘定に記録）にします。自分が振り出した小切手（当座預金の減少）とは扱いが異なる点に注意です。' ,
     exp_en:'A check drawn by another company can be immediately cashed at a bank, so it is treated as cash. Contrast with a check you draw yourself, which reduces your checking account balance.'
   },
   { id:8, cat:'商品売買',
-    q:'税込1,100円の商品（本体1,000円）を売り上げ、代金を商品券で受け取った。仕訳を示せ。',
+    q:'食料品店A社が りんご10個（@本体100円＝合計1,000円）を税込1,100円で売り上げ、代金を商品券で受け取った。仕訳を示せ。',
     q_en:'A company sold goods worth ¥1,000 (¥1,100 tax-included) and received payment in gift vouchers. Record the journal entry.',
     e:[{d:[['受取商品券',1100]], c:[['売上',1000],['仮受消費税',100]]}],
     exp:'商品券は「後で発行会社に持参すると現金に換えられる引換券」です。商品は渡しましたが現金はまだもらっていないので「換金できる権利（受取商品券・資産）」として記録します。換金先が取引先でなく商品券発行会社な点が売掛金と異なります。' ,
     exp_en:'Gift vouchers are redeemable at the issuing company, not at the customer, so they are recorded as "Gift Vouchers Received" (asset) rather than cash.'
   },
   { id:9, cat:'商品売買',
-    q:'税込2,200円の商品（本体2,000円）を売り上げ、代金として約束手形を受け取った。仕訳を示せ。',
+    q:'食料品店A社が りんご20個（@本体100円＝合計2,000円）を税込2,200円で売り上げ、代金として約束手形を受け取った。仕訳を示せ。',
     q_en:'A company sold goods worth ¥2,000 (¥2,200 tax-included) and received a promissory note. Record the journal entry.',
     e:[{d:[['受取手形',2200]], c:[['売上',2000],['仮受消費税',200]]}],
     exp:'受取手形とは「〇月〇日に必ず銀行口座へ入金されます」という証書です。今すぐ現金化はできませんが、期日には確実に入金されます。将来の確実な権利なので資産（受取手形）として記録し、売上は商品を渡した時点で計上します。' ,
     exp_en:'A promissory note receivable is a documented promise to receive payment on a specific future date. It is recorded as an asset (Notes Receivable) at delivery; revenue is also recognized at this point.'
   },
   { id:10, cat:'商品売買',
-    q:'掛けで売り上げていた商品の代金2,200円が、現金で入金された。仕訳を示せ。',
+    q:'先日掛け売りした食料品（りんご20個分）の代金2,200円（税込）が、現金で入金された。仕訳を示せ。',
     q_en:'Cash of ¥2,200 was received to settle a prior credit sale. Record the journal entry.',
     e:[{d:[['現金',2200]], c:[['売掛金',2200]]}],
     exp:'売掛金（後でもらえる権利）が実際の現金に変わっただけです。売上はすでに商品を渡したときに計上済みなので、ここでは収益は発生しません。損益に影響しない、資産の形の変化だけです。' ,
@@ -2103,7 +2103,7 @@ const ALL = [
     note:'手形の覚え方：\n受取手形（資産）= もらった手形\n支払手形（負債）= 振り出した手形'
   },
   { id:11, cat:'商品売買',
-    q:'商品2,000円をクレジットカードで売り上げた（手数料率5%・100円）。仕訳を示せ。',
+    q:'電器店が スマホケース20個（@100円＝合計2,000円）をクレジットカードで売り上げた（手数料率5%・100円）。仕訳を示せ。',
     q_en:'A company sold goods worth ¥2,000 by credit card (5% fee = ¥100). Record the journal entry.',
     e:[{d:[['支払手数料',100],['クレジット売掛金',1900]], c:[['売上',2000]]}],
     exp:'クレジットカード払いはカード会社が代金を立て替えてくれる仕組みです。その代わりカード会社は手数料を取ります。手数料は売った瞬間に確定するので「支払手数料（費用）」を同時に計上します。代金の回収先はお客様でなくカード会社になります。' ,
@@ -2117,7 +2117,7 @@ const ALL = [
     exp_en:'When the card company remits payment, the receivable from the card company converts to cash in the checking account. No additional expense — the fee was recognized at the time of sale.'
   },
   { id:13, cat:'商品売買',
-    q:'商品1,000円を掛けで売り上げ、送料200円を当社が現金で負担した。仕訳を示せ。',
+    q:'書店が 参考書1冊（1,000円）を掛けで売り上げ、配送料200円を当社（書店）が現金で負担した。仕訳を示せ。',
     q_en:'A company sold goods worth ¥1,000 on credit and paid ¥200 shipping in cash. Record the journal entry.',
     e:[{d:[['発送費',200],['売掛金',1000]], c:[['現金',200],['売上',1000]]}],
     exp:'配送料は当社が負担するので「発送費（費用）」として計上します。商品代金（売掛金）と配送料（発送費）は別々に記録するのが原則です。現金で払う発送費と後払いの売掛金を同時に処理する複合仕訳（複数の勘定を使う仕訳）になります。' ,
@@ -2157,7 +2157,7 @@ const ALL = [
 
   // ===== 手形 =====
   { id:18, cat:'手形',
-    q:'商品1,000円を仕入れ、代金として約束手形を振り出した。仕訳を示せ。',
+    q:'機械部品（ネジ・ボルト類1,000円分）を仕入れ、代金として約束手形を振り出した。仕訳を示せ。',
     q_en:'A company purchased goods worth ¥1,000 by issuing a promissory note. Record the journal entry.',
     e:[{d:[['仕入',1000]], c:[['支払手形',1000]]}],
     exp:'手形を振り出すとは「〇月〇日に払います」という約束書を渡すことです。仕入費用が発生しながら、支払いは期日まで待てます。「支払手形（負債）」として借金が生まれます。' ,
@@ -2214,7 +2214,7 @@ const ALL = [
     exp_en:'A bank overdraft occurs when a check drawn exceeds the checking account balance. The excess creates "Bank Overdraft" (liability) — essentially a short-term bank loan. A reversing entry is made at the start of the next period.'
   },
   { id:25, cat:'伝票',
-    q:'3伝票制を採用している会社で、後払いの商品代金500円を現金で回収した。① 使う伝票の種類と ② 仕訳を示せ。',
+    q:'3伝票制の文具店で、後払いで販売した ノート5冊（@100円＝500円）の代金を現金で回収した。① 使う伝票の種類と ② 仕訳を示せ。',
     q_en:'Under the three-voucher system, a company collected ¥500 cash against an outstanding receivable. (1) Which voucher type? (2) Record the journal entry.',
     e:[{d:[['現金',500]], c:[['売掛金',500]]}],
     note:'入金伝票の貸方に「売掛金 500」と記入。借方の「現金」は入金伝票では省略してよい。',
@@ -2224,21 +2224,21 @@ const ALL = [
 
   // ===== 前払金・前受金 =====
   { id:26, cat:'前払金・前受金',
-    q:'商品1,000円購入の手付金（内金）300円を現金で支払った。仕訳を示せ。',
+    q:'業務用プリンター（1,000円）の購入を契約し、手付金（内金）300円を現金で支払った。仕訳を示せ。',
     q_en:'A company paid ¥300 cash as a deposit for goods worth ¥1,000. Record the journal entry.',
     e:[{d:[['前払金',300]], c:[['現金',300]]}],
     exp:'商品が届く前に払うお金は「費用（仕入）」ではなく「前払金（資産）」として記録します。まだ商品を受け取っていないので費用は確定していないからです。「モノを受け取ったときに費用を記録する」という発生主義のルールによります。商品が届いた時点で初めて仕入費用に振り替えます。' ,
     exp_en:'Money paid before receiving goods is not an expense yet — it is a deposit (asset). The expense is only recorded when goods are received. This reflects the accrual basis.'
   },
   { id:27, cat:'前払金・前受金',
-    q:'商品1,000円売却の手付金200円を現金で受け取った。仕訳を示せ。',
+    q:'業務用プリンター（販売価格1,000円）の販売契約を結び、手付金200円を現金で受け取った。仕訳を示せ。',
     q_en:'A company received ¥200 cash as a deposit for goods worth ¥1,000. Record the journal entry.',
     e:[{d:[['現金',200]], c:[['前受金',200]]}],
     exp:'商品を渡す前にもらったお金は「収益（売上）」ではなく「前受金（負債）」として記録します。まだ商品を渡していないので「お客様への義務がまだ残っている＝負債」の状態だからです。商品を渡したとき初めて収益に振り替えます。' ,
     exp_en:'Money received before delivering goods is not revenue yet — it creates an obligation (liability). Revenue is only recognized when goods are delivered. Advance receipts are liabilities because the company still owes the customer delivery.'
   },
   { id:28, cat:'前払金・前受金',
-    q:'残金800円を受け取り商品1,000円分を引き渡した（前受金200円と相殺）。仕訳を示せ。',
+    q:'業務用プリンター（代金1,000円）を引き渡し、残金800円を受け取った（前受金200円と相殺）。仕訳を示せ。',
     q_en:'The remaining ¥800 was received and goods worth ¥1,000 were delivered (netting the ¥200 advance). Record the journal entry.',
     e:[{d:[['前受金',200],['現金',800]], c:[['売上',1000]]}],
     exp:'商品を引き渡した瞬間に「義務完了＝売上（収益）確定」となります。預かっていた前受金（負債）を売上に振り替え、残金を現金で受け取ります。' ,
@@ -2435,7 +2435,7 @@ const ALL = [
     exp_en:'An unexplained bank deposit is temporarily recorded as "Unearned Revenue — Pending" (liability) because the nature of the income is unknown. Once identified, it is reclassified to the correct account.'
   },
   { id:52, cat:'仮受金',
-    q:'謎の入金50,000円の正体が、注文商品の手付金だと判明した。仕訳を示せ。',
+    q:'謎の入金50,000円の正体が、業務用コピー用紙（大量注文）の手付金と判明した。仕訳を示せ。',
     q_en:'The unexplained deposit of ¥50,000 turned out to be a deposit for ordered goods. Record the journal entry.',
     e:[{d:[['仮受金',50000]], c:[['前受金',50000]]}],
     exp:'「謎の入金」の正体が「商品の前受け」とわかりました。「仮受金」も「前受金」もどちらも負債（義務）なので金額は変わらず、勘定科目名だけを正しい名称に変更します。' ,
@@ -2460,7 +2460,7 @@ const ALL = [
 
   // ===== 貸倒 =====
   { id:55, cat:'貸倒',
-    q:'以前売り上げた商品の掛け代金50,000円が、回収不能になった（前期末に引当金なし）。仕訳を示せ。',
+    q:'以前売り上げた食料品（惣菜・弁当）の掛け代金50,000円が、得意先の倒産により回収不能になった（前期末に引当金なし）。仕訳を示せ。',
     q_en:'Accounts receivable of ¥50,000 became uncollectible this period (no allowance had been set up at prior year-end). Record the journal entry.',
     e:[{d:[['貸倒損失',50000]], c:[['売掛金',50000]]}],
     exp:'売掛金が回収できなくなった（貸し倒れた）場合、「貸倒損失（費用）」として計上し、回収不能の売掛金（資産）を消去します。事前に「貸倒引当金」を積んでいなかった場合は全額が今期の損失になります。' ,
@@ -2475,7 +2475,7 @@ const ALL = [
     exp_en:'An allowance for doubtful accounts is a reserve for expected future losses. Setting it up now (expense + contra-asset) smooths out the P&L impact. This is consistent with the accrual principle.'
   },
   { id:57, cat:'貸倒',
-    q:'以前売り上げた商品の掛け代金10,000円が回収不能になった。事前積立の引当金2,000円を取り崩し、超過分8,000円は損失として計上する。仕訳を示せ。',
+    q:'以前売り上げた食料品（惣菜・弁当）の掛け代金10,000円が回収不能になった。事前に設定した貸倒引当金2,000円を取り崩し、不足分8,000円は貸倒損失として計上する。仕訳を示せ。',
     q_en:'Accounts receivable of ¥10,000 became uncollectible. The existing allowance (¥2,000) is applied first; the excess ¥8,000 is recorded as a loss. Record the journal entry.',
     e:[{d:[['貸倒引当金',2000],['貸倒損失',8000]], c:[['売掛金',10000]]}],
     exp:'貸し倒れが引当金（保険）の金額を超えた場合、まず引当金の範囲で賄い、超えた部分は追加の損失（貸倒損失）として計上します。引当金の範囲内に収まれば追加費用は出ません。' ,
@@ -2513,7 +2513,7 @@ const ALL = [
     exp_en:'Interest for the current period is an expense even though it has not been paid yet. This is the accrual basis. The unpaid interest is carried forward as a liability and reversed at the start of the next period.'
   },
   { id:62, cat:'伝票',
-    q:'3伝票制を採用している会社で、商品1,000円を掛けで仕入れた。① 使う伝票の種類と ② 仕訳を示せ。',
+    q:'3伝票制の文具店で、ノート10冊（@100円＝1,000円）を掛けで仕入れた。① 使う伝票の種類と ② 仕訳を示せ。',
     q_en:'Under the three-voucher system, goods worth ¥1,000 were purchased on credit. (1) Which voucher type? (2) Record the journal entry.',
     e:[{d:[['仕入',1000]], c:[['買掛金',1000]]}],
     note:'振替伝票に「仕入 1,000 ／ 買掛金 1,000」と借方・貸方の両方を記入する。',
@@ -2560,7 +2560,7 @@ const ALL = [
     exp_en:'The same logic as prepaid insurance: the next-period portion of interest already paid is reclassified from expense to a prepaid asset. Reversed at the start of the next period.'
   },
   { id:68, cat:'伝票',
-    q:'3伝票制を採用している会社で、商品2,000円を仕入れ、うち500円を現金で支払い、残り1,500円は掛けにした。何枚の伝票に分けて起票するか。それぞれの内容と合算した仕訳を示せ。',
+    q:'3伝票制の文具店で、ノート20冊（@100円＝2,000円）を仕入れ、うち500円を現金で支払い、残り1,500円は掛けにした。何枚の伝票に分けて起票するか。それぞれの内容と合算した仕訳を示せ。',
     q_en:'Under the three-voucher system, goods worth ¥2,000 were purchased — ¥500 in cash and ¥1,500 on credit. How many vouchers? Show their contents and the combined journal entry.',
     ans_html:`<div class="tbl-sec">起票する伝票（2枚）</div><table><thead><tr><th>伝票の種類</th><th>借方</th><th>貸方</th></tr></thead><tbody><tr><td class="hl">①出金伝票</td><td>仕入　500</td><td>（現金　500）省略</td></tr><tr><td class="hl">②振替伝票</td><td>仕入　1,500</td><td>買掛金　1,500</td></tr></tbody></table><div class="tbl-sec">2枚を合算した仕訳</div><table><tbody><tr><td>（借方）仕入　2,000</td><td>（貸方）現金　500</td></tr><tr><td></td><td>（貸方）買掛金　1,500</td></tr></tbody></table><div class="formula-box">現金払い部分 → 出金伝票　／　掛け部分 → 振替伝票　／　2枚を合算すると元の仕訳に戻る</div>`,
     exp:'現金と掛けが混ざった取引は「現金部分→出金伝票」「掛け部分→振替伝票」の2枚に分けて起票します。なぜ分けるかというと、入金・出金伝票のルールは「相手科目（貸方または借方）が必ず現金」だからです。掛け部分には現金が絡まないので、別の振替伝票にしなければなりません。2枚の伝票を合算すると元の仕訳（仕入2,000 ／ 現金500・買掛金1,500）にちゃんと戻ります。' ,
@@ -2572,7 +2572,7 @@ const ALL = [
     ]
   },
   { id:69, cat:'伝票',
-    q:'3伝票制で次の3枚の伝票が起票された。①入金伝票：売掛金200円 ②出金伝票：消耗品費300円 ③振替伝票：仕入500円／買掛金500円。それぞれ仕訳に直せ。また当日の現金の純増減額はいくらか。',
+    q:'文具店で3枚の伝票が起票された。①入金伝票：売掛金（ノート代）200円の回収 ②出金伝票：消耗品費（コピー用紙）300円の支払い ③振替伝票：文具仕入500円／買掛金500円。それぞれ仕訳に直せ。また当日の現金の純増減額はいくらか。',
     q_en:'Three vouchers were issued: ① cash receipt: AR ¥200; ② cash payment: supplies expense ¥300; ③ journal voucher: purchases ¥500 / AP ¥500. Convert each to a journal entry and determine the net cash change.',
     ans_html:`<div class="tbl-sec">伝票 → 仕訳の変換</div><table><thead><tr><th>伝票</th><th>借方</th><th>貸方</th></tr></thead><tbody><tr><td class="hl">①入金伝票（売掛金200）</td><td>現金　200</td><td>売掛金　200</td></tr><tr><td class="hl">②出金伝票（消耗品費300）</td><td>消耗品費　300</td><td>現金　300</td></tr><tr><td class="hl">③振替伝票</td><td>仕入　500</td><td>買掛金　500</td></tr></tbody></table><div class="formula-box">現金の動き：①入金＋200　②出金△300　③振替伝票は現金に影響なし　→　当日の現金純増減＝200－300＝△100円（純減）</div>`,
     exp:'伝票を仕訳に戻す3つのルール：①入金伝票→「現金（借方）、伝票の科目（貸方）」②出金伝票→「伝票の科目（借方）、現金（貸方）」③振替伝票→「書いてある通りそのまま」。振替伝票は現金を使わない取引なので、現金残高には影響しません。入金・出金伝票だけが現金を動かします。複数の伝票を合算したものが帳簿への転記データになります。' ,
@@ -2620,7 +2620,7 @@ const ALL = [
 
   // ===== 売上原価 =====
   { id:74, cat:'売上原価',
-    q:'決算整理：期首在庫（繰越商品120円）を今期の売上原価に組み入れる仕訳を示せ（売上原価算定の第1ステップ）。',
+    q:'決算整理（食料品店）：期首在庫（売れ残り食料品・繰越商品120円）を今期の売上原価に組み入れる仕訳を示せ（売上原価算定の第1ステップ）。',
     q_en:'Year-end: transfer beginning inventory (¥120) into the cost of purchases account (Step 1 of COGS). Record the journal entry.',
     e:[{d:[['仕入',120]], c:[['繰越商品',120]]}],
     note:'仕入120 | 繰越商品120',
@@ -2628,7 +2628,7 @@ const ALL = [
     exp_en:'Step 1 ("shikuri"): add beginning inventory to Purchases so all goods available for sale during the period are in the Purchases account — the starting point for COGS.'
   },
   { id:75, cat:'売上原価',
-    q:'決算整理：期末在庫（130円）をまだ売れていないとして来期に繰り越す仕訳を示せ（売上原価算定の第2ステップ）。',
+    q:'決算整理（食料品店）：期末在庫（売れ残り食料品130円）をまだ売れていないとして来期に繰り越す仕訳を示せ（売上原価算定の第2ステップ）。',
     q_en:'Year-end: transfer ending inventory (¥130) out of the purchases account and carry it forward (Step 2 of COGS). Record the journal entry.',
     e:[{d:[['繰越商品',130]], c:[['仕入',130]]}],
     note:'繰越商品130 | 仕入130',
@@ -2736,7 +2736,7 @@ const ALL = [
 
   // ===== 商品売買（追加：返品） =====
   { id:88, cat:'商品売買',
-    q:'掛けで仕入れた商品（税込3,300円）に品質不良があり、仕入先に返品した。仕訳を示せ。',
+    q:'掛けで仕入れた お菓子（税込3,300円＝本体3,000円）に品質不良があり、仕入先に返品した。仕訳を示せ。',
     q_en:'Goods purchased on credit (¥3,300 tax-included) were defective and returned to the supplier. Record the journal entry.',
     e:[{d:[['買掛金',3300]], c:[['仕入',3000],['仮払消費税',300]]}],
     note:'税込3,300＝本体3,000＋消費税300（10%）',
@@ -2745,7 +2745,7 @@ const ALL = [
   },
 
   { id:89, cat:'商品売買',
-    q:'掛けで売り上げた商品（税込2,200円）が品質クレームにより返品された。仕訳を示せ。',
+    q:'掛けで売り上げた お菓子（税込2,200円＝本体2,000円）が品質クレームにより返品された。仕訳を示せ。',
     q_en:'Goods sold on credit (¥2,200 tax-included) were returned due to a quality complaint. Record the journal entry.',
     e:[{d:[['売上',2000],['仮受消費税',200]], c:[['売掛金',2200]]}],
     note:'税込2,200＝本体2,000＋消費税200（10%）',
@@ -2790,7 +2790,7 @@ const ALL = [
 
   // ===== 帳簿・精算表（大幅追加） =====
   { id:94, cat:'帳簿・精算表',
-    q:'精算表（8欄）の仕組みを説明せよ。\n次の残高（単位：円）から損益計算書欄と貸借対照表欄の数値を求めよ。\n【損益科目（P/L）】売上：800、仕入：500、期首商品：120（期末に130へ修正）、給料：280\n【貸借科目（B/S）】現金：500、買掛金：200、資本金：300、繰越利益剰余金：100',
+    q:'雑貨小売店（A社）の精算表（8欄）の損益計算書欄・貸借対照表欄を求めよ。\n【損益科目（P/L）】売上（雑貨売上）：800、仕入（雑貨仕入）：500、期首商品（期初の在庫）：120（期末在庫130へ修正）、給料（店員人件費）：280\n【貸借科目（B/S）】現金：500、買掛金（仕入代金未払）：200、資本金：300、繰越利益剰余金：100',
     q_en:'Explain the structure of an 8-column worksheet. With beginning inventory ¥120, ending inventory ¥130, purchases ¥500, salaries ¥280, sales ¥800, cash ¥500, AP ¥200, share capital ¥300, retained earnings ¥100 — calculate P/L and B/S figures.',
     ans_html: `<div class="tbl-sec">精算表（8欄）記入例　単位：円</div><table><thead><tr><th rowspan="2">勘定科目</th><th colspan="2">残高試算表</th><th colspan="2">修正記入</th><th colspan="2">損益計算書</th><th colspan="2">貸借対照表</th></tr><tr><th>借</th><th>貸</th><th>借</th><th>貸</th><th>借</th><th>貸</th><th>借</th><th>貸</th></tr></thead><tbody><tr><td>現金</td><td>500</td><td></td><td></td><td></td><td></td><td></td><td>500</td><td></td></tr><tr><td>繰越商品</td><td>120</td><td></td><td class="hl">130</td><td class="hl">120</td><td></td><td></td><td class="hl">130</td><td></td></tr><tr><td>買掛金</td><td></td><td>200</td><td></td><td></td><td></td><td></td><td></td><td>200</td></tr><tr><td>資本金</td><td></td><td>300</td><td></td><td></td><td></td><td></td><td></td><td>300</td></tr><tr><td>繰越利益剰余金</td><td></td><td>100</td><td></td><td></td><td></td><td></td><td></td><td>100</td></tr><tr><td>売上</td><td></td><td>800</td><td></td><td></td><td></td><td class="hl">800</td><td></td><td></td></tr><tr><td>仕入</td><td>500</td><td></td><td class="hl">120</td><td class="hl">130</td><td class="hl">490</td><td></td><td></td><td></td></tr><tr><td>給料</td><td>280</td><td></td><td></td><td></td><td class="hl">280</td><td></td><td></td><td></td></tr><tr class="total-row"><td>小計</td><td>1,400</td><td>1,400</td><td>250</td><td>250</td><td>770</td><td>800</td><td>630</td><td>600</td></tr><tr class="total-row"><td class="hl">当期純利益</td><td></td><td></td><td></td><td></td><td class="hl">30</td><td></td><td></td><td class="hl">30</td></tr></tbody></table><div class="formula-box">売上原価＝期首120＋仕入500－期末130＝490　　当期純利益＝売上800－費用770＝30</div>`,
     exp:'精算表は「決算の手作業メモ帳」です。帳簿の数字に決算整理の修正を加えて、「今年の費用と収益（P/L欄＝損益計算書）」と「財産と借金（B/S欄＝貸借対照表）」に仕分けします。P/L欄の差額が純利益で、それがB/S欄にも入って左右が釣り合います。' ,
@@ -2804,7 +2804,7 @@ const ALL = [
   },
 
   { id:95, cat:'帳簿・精算表',
-    q:'次の金額（単位：円）から損益計算書（P/L）を作成し、売上総利益と当期純利益を求めよ。\n・売上：800円（収益）\n・期首商品：120円（期初の在庫）\n・当期仕入：500円（今期仕入れた商品の原価）\n・期末商品：130円（売れ残った在庫）\n・給料：280円（費用）',
+    q:'雑貨店（A社）の損益計算書（P/L）を作成し、売上総利益と当期純利益を求めよ。\n・売上（雑貨の売上合計）：800円\n・期首商品（4月1日時点の雑貨在庫）：120円\n・当期仕入（今期仕入れた雑貨の原価）：500円\n・期末商品（3月31日時点の売れ残り雑貨）：130円\n・給料（店員の人件費）：280円',
     q_en:'Given sales ¥800, beginning inventory ¥120, purchases ¥500, ending inventory ¥130, and salaries ¥280, prepare an income statement (P/L) and calculate gross profit and net income.',
     ans_html: `<div class="tbl-sec">損益計算書（P/L）　単位：円</div><table><tbody><tr><td>売上高</td><td></td><td class="hl">800</td></tr><tr><td>　期首商品棚卸高</td><td>120</td><td></td></tr><tr><td>　当期商品仕入高</td><td>500</td><td></td></tr><tr><td>　合計</td><td>620</td><td></td></tr><tr><td>　期末商品棚卸高</td><td>(130)</td><td></td></tr><tr><td>　売上原価</td><td></td><td>(490)</td></tr><tr class="total-row"><td class="hl">売上総利益（粗利益）</td><td></td><td class="hl">310</td></tr><tr><td>　給料</td><td></td><td>(280)</td></tr><tr class="total-row"><td class="hl">当期純利益</td><td></td><td class="hl">30</td></tr></tbody></table><div class="formula-box">売上総利益＝売上高－売上原価　　当期純利益＝売上総利益－販管費合計</div>`,
     exp:'損益計算書は「今年1年の稼ぎと出費のまとめ表」です。売上から商品の仕入れ代（売上原価）を引いた残りが「売上総利益（粗利き）」。そこから給料などを引いた残りが「当期純利益（最終的な利益）」です。売上原価は「しくりくりし（期首商品＋仕入−期末商品）」で計算します。' ,
@@ -2817,7 +2817,7 @@ const ALL = [
   },
 
   { id:96, cat:'帳簿・精算表',
-    q:'次の金額（単位：円）から貸借対照表（B/S）を作成せよ。\n【資産】現金：500円 / 繰越商品（在庫）：130円\n【負債】買掛金：200円\n【純資産】資本金：300円 / 繰越利益剰余金（前期から引き継いだ利益）：100円 / 当期純利益：30円',
+    q:'雑貨店（A社）の貸借対照表（B/S）を作成せよ。\n【資産】現金（手元現金）：500円 / 繰越商品（売れ残り雑貨）：130円\n【負債】買掛金（仕入代金の未払い）：200円\n【純資産】資本金（出資額）：300円 / 繰越利益剰余金（前期からの利益）：100円 / 当期純利益：30円',
     q_en:'Given cash ¥500, merchandise inventory ¥130, accounts payable ¥200, share capital ¥300, retained earnings ¥100, and net income ¥30, prepare a balance sheet (B/S).',
     ans_html: `<div class="tbl-sec">貸借対照表（B/S）　単位：円</div><table><thead><tr><th colspan="2">資産の部（借方）</th><th colspan="2">負債・純資産の部（貸方）</th></tr></thead><tbody><tr><td>現金</td><td>500</td><td>【負債の部】</td><td></td></tr><tr><td>繰越商品</td><td>130</td><td>買掛金</td><td>200</td></tr><tr><td></td><td></td><td>負債合計</td><td>200</td></tr><tr><td></td><td></td><td>【純資産の部】</td><td></td></tr><tr><td></td><td></td><td>資本金</td><td>300</td></tr><tr><td></td><td></td><td>繰越利益剰余金</td><td class="hl">130</td></tr><tr><td></td><td></td><td>純資産合計</td><td>430</td></tr><tr class="total-row"><td class="hl">資産合計</td><td class="hl">630</td><td class="hl">負債・純資産合計</td><td class="hl">630</td></tr></tbody></table><div class="formula-box">繰越利益剰余金（期末）＝前期繰越100＋当期純利益30＝130　　資産合計＝負債合計＋純資産合計</div>`,
     exp:'貸借対照表は「決算日の財産の記念写真」です。左側に「持っているもの（資産）」、右側に「借りているもの（負債）＋本当に自分のもの（純資産）」を書きます。左と右は必ず同じ金額になります。今年の利益（純利益）は「繰越利益剰余金」として純資産に加わります。' ,
@@ -2829,7 +2829,7 @@ const ALL = [
   },
 
   { id:97, cat:'帳簿・精算表',
-    q:'商品有高帳（先入先出法＝古い仕入から順に払い出す方法）：\n4/1 前月繰越：10個（1個あたり100円、計1,000円）\n4/5 仕入：20個（1個あたり130円、計2,600円）\n4/10 売上：20個を販売\n払出金額（売上原価）と期末残高を求めよ。',
+    q:'りんごの商品有高帳（先入先出法・FIFO＝古い仕入れから順に払い出す）：\n4/1 前月繰越：りんご10個（@100円、計1,000円）\n4/5 仕入：りんご20個（@130円、計2,600円）\n4/10 売上：りんご20個を販売\n払出金額（売上原価）と期末残高を求めよ。',
     q_en:'Merchandise inventory ledger (FIFO method): Opening 10 units @¥100 (¥1,000); 4/5 purchase 20 units @¥130 (¥2,600); 4/10 sold 20 units. Calculate cost of goods sold and ending balance.',
     ans_html: `<div class="tbl-sec">商品有高帳（先入先出法・FIFO）　単位：円</div><table><thead><tr><th>日付</th><th>摘要</th><th>受入<br>単価</th><th>受入<br>数量</th><th>受入<br>金額</th><th>払出<br>単価</th><th>払出<br>数量</th><th>払出<br>金額</th><th>残高<br>金額</th></tr></thead><tbody><tr><td>4/1</td><td>前月繰越</td><td>@100</td><td>10</td><td>1,000</td><td></td><td></td><td></td><td>1,000</td></tr><tr><td>4/5</td><td>仕入</td><td>@130</td><td>20</td><td>2,600</td><td></td><td></td><td></td><td>3,600</td></tr><tr><td>4/10</td><td>売上</td><td></td><td></td><td></td><td>@100</td><td>10</td><td>1,000</td><td></td></tr><tr><td></td><td>（続）</td><td></td><td></td><td></td><td>@130</td><td>10</td><td>1,300</td><td class="hl">1,300</td></tr><tr class="total-row"><td colspan="3">払出合計</td><td></td><td></td><td colspan="2">20個</td><td class="hl">2,300</td><td></td></tr></tbody></table><div class="formula-box">先入先出法：古い仕入（@100）から順に払い出す。期末残高は最新仕入単価（@130×10個）で構成される。</div>`,
     exp:'「古い商品から先に売れた」と考える計算方法です。先に仕入れた@100円の10個から売り、足りない分は後から仕入れた@130円から売るとします。20個売れたら（@100×10）＋（@130×10）＝2,300円が売上原価。残る10個は一番新しい@130円で評価されます。' ,
@@ -2841,7 +2841,7 @@ const ALL = [
   },
 
   { id:98, cat:'帳簿・精算表',
-    q:'商品有高帳（移動平均法＝仕入れのたびに平均単価を計算し直す方法）：\n4/1 前月繰越：10個（1個あたり100円、計1,000円）\n4/5 仕入：20個（1個あたり130円、計2,600円）\n4/10 売上：20個を販売\n払出金額（売上原価）と期末残高を求めよ。',
+    q:'りんごの商品有高帳（移動平均法＝仕入れのたびに平均単価を計算し直す）：\n4/1 前月繰越：りんご10個（@100円、計1,000円）\n4/5 仕入：りんご20個（@130円、計2,600円）\n4/10 売上：りんご20個を販売\n払出金額（売上原価）と期末残高を求めよ。',
     q_en:'Merchandise inventory ledger (moving average method): Opening 10 units @¥100 (¥1,000); 4/5 purchase 20 units @¥130 (¥2,600); 4/10 sold 20 units. Calculate cost of goods sold and ending balance.',
     ans_html: `<div class="tbl-sec">商品有高帳（移動平均法）　単位：円</div><table><thead><tr><th>日付</th><th>摘要</th><th>受入<br>単価</th><th>受入<br>数量</th><th>受入<br>金額</th><th>払出<br>単価</th><th>払出<br>数量</th><th>払出<br>金額</th><th>残高<br>金額</th></tr></thead><tbody><tr><td>4/1</td><td>前月繰越</td><td>@100</td><td>10</td><td>1,000</td><td></td><td></td><td></td><td>1,000</td></tr><tr><td>4/5</td><td>仕入</td><td>@130</td><td>20</td><td>2,600</td><td></td><td></td><td></td><td class="hl">3,600</td></tr><tr><td></td><td>→平均単価</td><td class="hl" colspan="3">（1,000＋2,600）÷（10＋20）＝@120</td><td></td><td></td><td></td><td></td></tr><tr><td>4/10</td><td>売上</td><td></td><td></td><td></td><td class="hl">@120</td><td>20</td><td class="hl">2,400</td><td class="hl">1,200</td></tr></tbody></table><div class="formula-box">移動平均法：仕入れのたびに（残高金額＋受入金額）÷（残高数量＋受入数量）で平均単価を再計算する。</div>`,
     exp:'仕入れるたびに「1個あたりの平均値段」を計算し直す方法です。古い在庫と新しい仕入れを混ぜて割り算します。今回は（1,000円＋2,600円）÷30個＝@120円が新しい平均単価。20個売れたら@120×20＝2,400円が売上原価、残り10個は@120×10＝1,200円です。先入先出法（1,300円）と比べると期末在庫の評価が変わります。' ,
@@ -2897,7 +2897,7 @@ const ALL = [
   },
 
   { id:102, cat:'帳簿・精算表',
-    q:'精算表の修正記入：①期首商品100・期末商品150（売上原価算定）②未払給料30の計上 ③前払保険料20の繰延べ — の3件を精算表の修正記入欄に記入せよ',
+    q:'雑貨店（A社）精算表の修正記入3件：①売れ残り雑貨（繰越商品）：期首100→期末150へ修正（売上原価算定）②未払給料30の見越し計上（店員の当期分未払い）③前払保険料20の繰延べ（翌期分を資産に戻す）',
     q_en:'Three year-end worksheet adjustments: ① Beginning inventory ¥100, ending inventory ¥150 (COGS calculation). ② Record accrued unpaid salaries of ¥30. ③ Defer prepaid insurance of ¥20. Record the adjusting entries.',
     ans_html: `<div class="tbl-sec">精算表　修正記入欄の整理</div><table><thead><tr><th>整理内容</th><th>借方（修正）</th><th>貸方（修正）</th></tr></thead><tbody><tr><td>①しくり<br>（期首商品を仕入に加算）</td><td class="hl">仕入　100</td><td>繰越商品　100</td></tr><tr><td>①くりしわ<br>（期末商品を繰越商品に振替）</td><td class="hl">繰越商品　150</td><td>仕入　150</td></tr><tr><td>②未払給料の計上</td><td class="hl">給料　30</td><td>未払費用　30</td></tr><tr><td>③前払保険料の繰延べ</td><td class="hl">前払費用　20</td><td>支払保険料　20</td></tr><tr class="total-row"><td>修正合計</td><td>300</td><td>300</td></tr></tbody></table><div class="formula-box">修正記入欄の借方合計＝貸方合計（必ず均衡する）　　売上原価＝仕入残高＋100（期首）－150（期末）</div>`,
     exp:'精算表に3つの決算整理を書き込む作業です。①しくりくりし（在庫の確認）：期首商品を仕入に足して期末商品を引く。②まだ払っていない給料を費用に計上して「未払費用（負債）」も書く。③来年分の保険料を「前払費用（資産）」に移して今年の費用から除く。3つ書き終えると、修正欄の左合計と右合計が一致します。' ,
@@ -3106,7 +3106,7 @@ const ALL = [
   },
 
   { id:120, level:2, cat:'消費税',
-    q:'税抜経理方式を採用している。①商品（本体100円）を税込110円で現金仕入した。②商品（本体300円）を税込330円で現金売上した（消費税率10%）。仕訳を示せ。',
+    q:'税抜経理方式を採用している食料品店。①りんご1個（本体100円）を税込110円で現金仕入した。②みかん3個（本体300円）を税込330円で現金売上した（消費税率10%）。仕訳を示せ。',
     q_en:'Using the tax-exclusive method: ① Purchased goods at ¥100 net (¥110 cash, 10% tax). ② Sold goods at ¥300 net (¥330 cash). Record the journal entries.',
     e:[{d:[['仕入',100],['仮払消費税',10]], c:[['現金',110]]}, {d:[['現金',330]], c:[['売上',300],['仮受消費税',30]]}],
     note:'①110＝本体100＋消費税10　②330＝本体300＋消費税30',
@@ -3128,7 +3128,7 @@ const ALL = [
 
   // ===== 2級：商品売買 =====
   { id:122, level:2, cat:'商品売買',
-    q:'原価1,500円の商品を2,100円で掛け売りした。売上のつど売上原価を計上する方法（商品勘定使用）を採用している。仕訳を示せ。',
+    q:'衣料品店がTシャツ1枚（原価1,500円）を2,100円で掛け売りした。売上のつど売上原価を計上する方法（商品勘定使用）を採用している。仕訳を示せ。',
     q_en:'Goods with a cost of ¥1,500 were sold on credit for ¥2,100. The company recognizes cost of goods sold at each sale (perpetual method). Record the journal entries.',
     e:[{d:[['売掛金',2100]], c:[['売上',2100]]}, {d:[['売上原価',1500]], c:[['商品',1500]]}],
     note:'①売上2,100を計上　②原価1,500を商品→売上原価へ振替',
@@ -3146,7 +3146,7 @@ const ALL = [
 
   // ===== 2級：手形 =====
   { id:124, level:2, cat:'手形',
-    q:'①所持する約束手形1,000円を仕入代金の支払いとして裏書譲渡した。②商品を2,000円で売り上げ、得意先が振り出した約束手形を受け取った。仕訳を示せ。',
+    q:'①所持する約束手形1,000円を電子部品の仕入代金の支払いとして裏書譲渡した。②電子部品（2,000円分）を売り上げ、得意先振出し約束手形を受け取った。仕訳を示せ。',
     q_en:'① Notes receivable of ¥1,000 were endorsed and transferred to the supplier as payment. ② Goods worth ¥2,000 were sold and a promissory note drawn by the customer was received. Record the journal entries.',
     e:[{d:[['仕入',1000]], c:[['受取手形',1000]]}, {d:[['受取手形',2000]], c:[['売上',2000]]}],
     exp:'受取手形とは「○○日に銀行に入金されます」という約束書です。この約束書を「仕入代金の支払い」に使うことを「裏書き譲渡」といいます。手形の裏に署名して相手に渡せば現金なしで仕入代金が払えます。手形という「券」で別の支払いを連鎖させる仕組みです。現金が足りないときの資金繰りにも使われます。' ,
@@ -3478,7 +3478,7 @@ const ALL = [
   },
 
   { id:159, level:3, cat:'消費税',
-    q:'消費税の処理（税抜経理）について（　）に答えよ。商品を税込1,100円で仕入れたとき、本体1,000円は【①】（費用）、消費税100円は【②】（資産）として記録する。商品を税込2,200円で売り上げたとき、本体2,000円は【③】（収益）、消費税200円は【④】（負債）として記録する。決算で両者を相殺した差額（1,100円）が【⑤】（負債）になる。',
+    q:'消費税の処理（税抜経理）について（　）に答えよ。文具（ノート類）を税込1,100円で仕入れたとき、本体1,000円は【①】（費用）、消費税100円は【②】（資産）として記録する。文具を税込2,200円で売り上げたとき、本体2,000円は【③】（収益）、消費税200円は【④】（負債）として記録する。決算で両者を相殺した差額（1,100円）が【⑤】（負債）になる。',
     q_en:'About tax-exclusive consumption tax: purchased goods at ¥1,100 tax-inclusive; base ¥1,000 is [①___] (expense), tax ¥100 is [②___] (asset). Sold at ¥2,200; base ¥2,000 is [③___] (revenue), tax ¥200 is [④___] (liability). Year-end net difference (¥1,100) becomes [⑤___] (liability).',
     ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>仕入</td></tr><tr><td class="hl">②</td><td>仮払消費税</td></tr><tr><td class="hl">③</td><td>売上</td></tr><tr><td class="hl">④</td><td>仮受消費税</td></tr><tr><td class="hl">⑤</td><td>未払消費税</td></tr></tbody></table><div class="formula-box">仕入時：仕入1,000・仮払消費税100 ／ 現金1,100　　売上時：現金2,200 ／ 売上2,000・仮受消費税200　　決算：仮受消費税1,100 ／ 未払消費税1,100（純額）</div>`,
     exp:'税抜経理では消費税を本体と分けて記録します。仕入時の消費税は「仮払消費税（資産）」、売上時は「仮受消費税（負債）」。決算で差し引きした差額だけ「未払消費税（負債）」として国に納めます。' ,
@@ -3548,7 +3548,7 @@ const ALL = [
   },
 
   { id:164, level:3, cat:'損益計算書',
-    q:'損益計算書（P/L）の構造について（　）に答えよ。売上高から【①】を引いた金額を【②益】という。そこからさらに販売費・一般管理費を引いた最終的な利益を【③益】という。なお売上原価は「期首商品＋【④高】－期末商品」の計算式で求める。この計算を精算表では【⑤】と【⑥】（2本の仕訳）で表す。',
+    q:'損益計算書（P/L）の構造について（　）に答えよ。売上高（例：りんご20個×@100円＝2,000円）から【①】（仕入れた原価）を引いた粗利益を【②益】という。そこから販売費・一般管理費（給料など）を引いた最終利益を【③益】という。売上原価は「期首商品＋【④高】－期末商品」で求める。精算表では【⑤】と【⑥】の2本仕訳で処理する。',
     q_en:'About the income statement (P/L) structure: sales minus [①___] equals [②___ profit]. Deducting selling and admin expenses gives [③ net ___]. COGS = opening inventory + [④ current-period ___] − ending inventory. In a worksheet, this is expressed by two entries called [⑤___] and [⑥___].',
     ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>売上原価</td></tr><tr><td class="hl">②</td><td>売上総利益（粗利益）</td></tr><tr><td class="hl">③</td><td>当期純利益</td></tr><tr><td class="hl">④</td><td>当期商品仕入高</td></tr><tr><td class="hl">⑤</td><td>しくり（仕入 ／ 繰越商品）</td></tr><tr><td class="hl">⑥</td><td>くりしわ（繰越商品 ／ 仕入）</td></tr><tr><td colspan="2">⑤⑥合わせて「しくりくりし」と覚える</td></tr></tbody></table><div class="formula-box">売上総利益＝売上高－売上原価　　当期純利益＝売上総利益－販管費　　売上原価＝期首商品＋当期仕入－期末商品</div>`,
     exp:'損益計算書は「今期の儲けと出費のまとめ表」です。売上から商品仕入コスト（売上原価）を引いた粗利益、そこから給料・家賃などを引いた最終利益という2段階の計算構造を理解しましょう。精算表では「しくりくりし」という2本の修正記入で売上原価を計算します。' ,
@@ -3562,7 +3562,7 @@ const ALL = [
   },
 
   { id:165, level:3, cat:'手形',
-    q:'手形について（　）に答えよ。商品を仕入れて代金に手形を振り出した場合は【①手形】（負債）が発生する。商品を売り上げて手形を受け取った場合は【②手形】（資産）が発生する。保有する受取手形を仕入代金の支払いに充てることを【③渡し】という。受取手形を期日前に銀行で換金することを手形【④き】という。このとき銀行に支払う費用を【⑤損】という。',
+    q:'手形について（　）に答えよ。電子部品を仕入れて代金に手形を振り出した場合は【①手形】（負債）が発生する。商品（Tシャツなど）を売り上げて手形を受け取った場合は【②手形】（資産）が発生する。保有する受取手形を仕入代金の支払いに充てることを【③渡し】という。受取手形を期日前に銀行で換金することを手形【④き】という。このとき銀行に支払う費用を【⑤損】という。',
     q_en:'About promissory notes: issuing a note for purchases creates [①___ note] (liability). Receiving a note for sales creates [②___ note] (asset). Using a held note to pay a supplier is [③___ endorsement transfer]. Converting a note to cash before due date at a bank is [④ note ___]. The fee paid is called [⑤___ loss].',
     ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>支払手形</td></tr><tr><td class="hl">②</td><td>受取手形</td></tr><tr><td class="hl">③</td><td>裏書き譲渡し</td></tr><tr><td class="hl">④</td><td>割引き</td></tr><tr><td class="hl">⑤</td><td>手形売却損</td></tr></tbody></table><div class="formula-box">裏書き譲渡：受取手形 → 仕入代金に充当（現金不要）　　手形割引：受取手形を銀行に売却し手数料（手形売却損）を差し引いた現金を受取</div>`,
     exp:'手形は「将来の確実な支払約束書」です。振り出せば支払手形（借金）、受け取れば受取手形（資産）になります。受取手形は「裏書き（別の支払いに使う）」か「銀行で割り引いて（期日前に現金化）」かで有効活用できます。' ,
@@ -3593,7 +3593,7 @@ const ALL = [
     id:167,
     level:2,
     cat:'棚卸資産',
-    q:'期末棚卸の結果：\n帳簿棚卸数量（帳簿に記録している在庫数）：200個\n実地棚卸数量（実際に倉庫で数えた数）：180個\n帳簿単価（帳簿上の1個あたりの原価）：1,000円\n棚卸減耗損（帳簿より実際の在庫が少ない場合の損失）の仕訳を示せ。',
+    q:'文具店の期末棚卸結果（ノート）：\n帳簿棚卸数量（帳簿に記録しているノートの数）：200冊\n実地棚卸数量（実際に倉庫で数えた数）：180冊（20冊 行方不明）\n帳簿単価（ノート1冊あたりの原価）：1,000円\n棚卸減耗損（在庫不足の損失）の仕訳を示せ。',
     q_en:'Year-end: book qty 200 units, physical count 180 units, book cost @¥1,000. Record inventory shrinkage loss.',
     e:[{d:[['棚卸減耗損',20000]],c:[['繰越商品',20000]]}],
     exp:'棚卸減耗損＝（帳簿数量200－実地数量180）×帳簿単価1,000＝20,000円。「本棚に20冊あるはずが18冊しかない→なくなった2冊分を損失計上」のイメージ。繰越商品（資産）を実際の数量に合わせて減らし、棚卸減耗損（費用）を計上します。',
@@ -3604,7 +3604,7 @@ const ALL = [
     id:168,
     level:2,
     cat:'棚卸資産',
-    q:'期末棚卸の結果：\n実地棚卸数量（実際に倉庫で数えた数）：150個\n帳簿単価（帳簿上の1個あたりの原価）：1,200円\n正味売却価額（実際に売れる見込みの価格）：900円\n商品評価損（時価が原価を下回った場合の損失）の仕訳を示せ。',
+    q:'書店の期末棚卸結果（参考書）：\n実地棚卸数量（倉庫で数えた参考書の数）：150冊\n帳簿単価（参考書1冊の原価）：1,200円\n正味売却価額（今の市場で売れる見込み価格）：900円（値下がり！）\n商品評価損（時価が原価を下回った分の損失）の仕訳を示せ。',
     q_en:'Year-end: physical count 150 units, book cost @¥1,200, NRV @¥900. Record inventory write-down.',
     e:[{d:[['商品評価損',45000]],c:[['繰越商品',45000]]}],
     exp:'商品評価損＝（帳簿単価1,200－正味売却価額900）×実地数量150＝45,000円。「定価1,200円の商品が市場で900円にしか売れない→今のうちに差額300円×150個の損失を先取り計上する」というイメージ。実地数量（手元にある数量）で計算するのがポイントです。',
@@ -3615,7 +3615,7 @@ const ALL = [
     id:169,
     level:2,
     cat:'棚卸資産',
-    q:'期末棚卸の結果：\n帳簿数量（帳簿に記録している在庫数）：200個\n実地数量（実際に倉庫で数えた数）：180個\n帳簿単価（帳簿上の1個あたりの原価）：1,000円\n正味売却価額（実際に売れる見込みの価格）：800円\n棚卸減耗損（在庫不足の損失）と商品評価損（値下がりの損失）を同時に計上する仕訳を示せ。',
+    q:'食料品店の期末棚卸結果（缶詰）：\n帳簿数量（帳簿に記録している缶詰の数）：200缶\n実地数量（実際に倉庫で数えた数）：180缶（20缶 不明）\n帳簿単価（缶詰1缶の原価）：1,000円\n正味売却価額（今の市場で売れる見込み価格）：800円（値下がり！）\n棚卸減耗損（在庫不足）と商品評価損（値下がり）を同時に計上する仕訳を示せ。',
     q_en:'Year-end: book qty 200, physical qty 180, book cost @¥1,000, NRV @¥800. Record shrinkage loss and write-down together.',
     e:[{d:[['棚卸減耗損',20000],['商品評価損',36000]],c:[['繰越商品',56000]]}],
     exp:'①棚卸減耗損＝（200－180）×1,000＝20,000円　②商品評価損＝（1,000－800）×180（実地数量！）＝36,000円　合計56,000円を繰越商品から控除。棚卸減耗損は「数が足りない」、商品評価損は「価値が低い」という2種類の損失。どちらも繰越商品（資産）を減らします。',
@@ -3641,7 +3641,7 @@ const ALL = [
     id:171,
     level:2,
     cat:'棚卸資産',
-    q:'先入先出法（FIFO＝古いものから先に売れると仮定する方法）で次の商品を管理している。\n月初在庫：100個（1個あたり100円）\n当月仕入：200個（1個あたり110円）\n当月販売：220個\n期末在庫の金額はいくらか。',
+    q:'りんごを先入先出法（FIFO）で管理している食料品店。\n月初在庫：りんご100個（@100円）\n当月仕入：りんご200個（@110円）\n当月販売：りんご220個を売却\n期末在庫（売れ残りりんご）の金額はいくらか。',
     q_en:'FIFO: Opening stock 100 units @¥100, purchases 200 units @¥110, sales 220 units. What is the closing inventory value?',
     ans_html:`<div class="tbl-sec">答え：8,800円</div><div class="formula-box">期末数量＝100＋200－220＝80個<br>先入先出法→古いものから先に売れる<br>月初100個@100円が先に全部売れ、さらに120個@110円が売れる<br>残り：80個×@110円＝8,800円</div>`,
     exp:'先入先出法（FIFO）は「先に仕入れたものが先に売れる」と仮定します。スーパーの陳列をイメージ：古い在庫が前に並べられ先に売れる。期末に残るのは最後に仕入れた新しい商品(@110円)です。物価上昇期には期末在庫が高くなる傾向があります。',
@@ -3655,7 +3655,7 @@ const ALL = [
     id:172,
     level:2,
     cat:'棚卸資産',
-    q:'移動平均法（仕入れのたびに平均単価を計算し直す方法）：\n現在の在庫：100個（1個あたり200円、合計20,000円）があるとき、\n新たに100個を1個あたり240円（合計24,000円）で仕入れた。\n仕入れ後の移動平均単価はいくらか。',
+    q:'みかんを移動平均法で管理している食料品店。\n現在の在庫：みかん100個（@200円、合計20,000円）があるとき、\n新たに みかん100個を@240円（合計24,000円）で仕入れた。\n仕入れ後の移動平均単価はいくらか。',
     q_en:'Moving average: Current stock 100 units @¥200 (¥20,000). Purchase 100 more units @¥240 (¥24,000). What is the new moving average unit cost?',
     ans_html:`<div class="tbl-sec">答え：@220円</div><div class="formula-box">移動平均単価＝（旧在庫金額＋新仕入金額）÷（旧数量＋新数量）<br>＝（20,000＋24,000）÷（100＋100）<br>＝44,000÷200＝@220円</div>`,
     exp:'移動平均法は「仕入のたびに平均単価を計算し直す」方法です。200円のジュース100本と240円のジュース100本を混ぜたら1本@220円になるイメージ。仕入るたびに原価が更新されるため、在庫の実態に比較的近い評価が得られます。',
@@ -3683,7 +3683,7 @@ const ALL = [
     id:174,
     level:2,
     cat:'棚卸資産',
-    q:'次の条件で決算整理仕訳（売上原価の算定）を示せ。\n期首繰越商品：30,000円\n期末帳簿数量（帳簿に記録している在庫数）：110個\n実地数量（実際に倉庫で数えた数）：100個\n帳簿単価（帳簿上の1個あたりの原価）：600円\n正味売却価額（実際に売れる見込みの価格）：550円\n（棚卸減耗損・商品評価損は原価性なし＝売上原価に含めない）',
+    q:'文具店（ノート販売）の決算整理仕訳（売上原価の算定）：\n期首繰越商品（ノートの期首在庫）：30,000円\n期末帳簿数量（帳簿に記録しているノートの数）：110冊\n実地数量（実際に倉庫で数えたノートの数）：100冊（10冊 不明）\n帳簿単価（ノート1冊の原価）：600円\n正味売却価額（今の市場でノートが売れる見込み価格）：550円（値下がり！）\n（棚卸減耗損・商品評価損は原価性なし＝売上原価に含めない）',
     q_en:'Record COGS entries: opening merchandise ¥30,000, book qty 110, physical qty 100, book cost @¥600, NRV @¥550. (Shrinkage and write-down have no cost nature.)',
     e:[{d:[['仕入',30000]],c:[['繰越商品',30000]]},{d:[['繰越商品',60000]],c:[['仕入',60000]]},{d:[['棚卸減耗損',6000],['商品評価損',5000]],c:[['繰越商品',11000]]}],
     exp:'①期首商品→仕入へ振替（30,000）②期末原価額→繰越商品（100個×600=60,000）③減耗損＝(110-100)×600=6,000 ④評価損＝(600-550)×100=5,000。原価性なしなので③④は売上原価に含まれず、販管費等に計上。期末繰越商品残高＝60,000-11,000=49,000円。',
@@ -4023,7 +4023,7 @@ const ALL = [
     id:204,
     level:2,
     cat:'本支店会計',
-    q:'本店は原価100,000円の商品を支店に送付した。本店側の仕訳を示せ。（本店は商品送付時に「仕入」勘定を使用）',
+    q:'本店は家電製品（原価100,000円分）を支店に送付した。本店側の仕訳を示せ。（本店は商品送付時に「仕入」勘定を使用）',
     q_en:'Head office shipped merchandise (cost ¥100,000) to a branch. Record the head office entry. (Use Purchases account for the goods.)',
     e:[{d:[['支店',100000]],c:[['仕入',100000]]}],
     exp:'本支店会計は同一企業内の「本店」と「支店」の取引を記録する仕組みです。本店が商品を支店に送ると、本店では「支店（資産）の増加」と「商品の減少（仕入の取消）」を仕訳します。「支店」勘定は支店に対する投資額・取引残高を示す内部勘定です。',
@@ -4033,7 +4033,7 @@ const ALL = [
     id:205,
     level:2,
     cat:'本支店会計',
-    q:'本店から商品100,000円の送付を受けた。支店側の仕訳を示せ。（支店は受取時に「仕入」勘定を使用）',
+    q:'本店から家電製品（100,000円分）の送付を受けた。支店側の仕訳を示せ。（支店は受取時に「仕入」勘定を使用）',
     q_en:'Branch received merchandise worth ¥100,000 from head office. Record the branch entry. (Use Purchases account.)',
     e:[{d:[['仕入',100000]],c:[['本店',100000]]}],
     exp:'支店では、本店から受け取った商品を「仕入（費用）の増加」と「本店（負債的な内部勘定）の増加」として記録します。「本店」勘定は本店に対する債務（本店への支払義務）を表す内部勘定です。本店の「支店」勘定と支店の「本店」勘定は常に一致します。',
@@ -4169,7 +4169,7 @@ const ALL = [
     id:217,
     level:2,
     cat:'連結会計',
-    q:'親会社はS子会社に商品300,000円を売り上げた（原価200,000円）。連結上の内部取引消去仕訳を示せ。',
+    q:'親会社はS子会社に電子部品（300,000円・原価200,000円）を売り上げた。連結上の内部取引消去仕訳を示せ。',
     q_en:'Parent sold goods (cost ¥200,000) to subsidiary S for ¥300,000. Record the intercompany sales elimination entry in consolidation.',
     e:[{d:[['売上高',300000]],c:[['売上原価',300000]]}],
     exp:'連結財務諸表では、親子会社間の取引（内部取引）を消去します。親会社の「売上高300,000円」と子会社の「仕入高（売上原価）300,000円」は同じグループ内の取引なので、外部取引として計上してはなりません。消去により連結の売上高・売上原価が両方300,000円減少します。',
@@ -4189,7 +4189,7 @@ const ALL = [
     id:219,
     level:2,
     cat:'連結会計',
-    q:'親会社がS子会社に販売した商品（原価60,000円、売価100,000円）が子会社在庫にすべて残っている（ダウンストリーム）。連結上の未実現利益消去仕訳を示せ。',
+    q:'親会社がS子会社に販売した電子部品（原価60,000円、売価100,000円）が子会社の在庫にすべて残っている（ダウンストリーム＝親から子への販売）。連結上の未実現利益消去仕訳を示せ。',
     q_en:'Parent sold goods (cost ¥60,000, price ¥100,000) to subsidiary S; all remain unsold in subsidiary\'s inventory (downstream). Record the unrealized profit elimination in consolidation.',
     e:[{d:[['売上原価',40000]],c:[['商品',40000]]}],
     exp:'未実現利益＝売価100,000－原価60,000＝40,000円。連結グループ外に売れていない（子会社在庫として残っている）利益は「未実現」なので消去します。「グループ全体で見ると、まだ外に売れていない商品に利益を載せてはいけない」という考え方。ダウンストリームは全額消去（親会社分100%）。',
@@ -4200,7 +4200,7 @@ const ALL = [
     id:220,
     level:2,
     cat:'連結会計',
-    q:'S子会社（60%保有）がT社（グループ外）に販売した商品（原価40,000円、売価80,000円）が親会社在庫にすべて残っている（アップストリーム）。連結上の未実現利益消去仕訳を示せ。',
+    q:'S子会社（60%保有）がT社（グループ外）に販売した部品（原価40,000円、売価80,000円）が親会社の在庫にすべて残っている（アップストリーム＝子から親への販売）。連結上の未実現利益消去仕訳を示せ。',
     q_en:'Subsidiary S (60%-owned) sold goods (cost ¥40,000, price ¥80,000) to parent; all remain unsold in parent\'s inventory (upstream). Record elimination entries including NCI allocation.',
     e:[{d:[['売上原価',40000]],c:[['商品',40000]]},{d:[['非支配株主持分',16000]],c:[['非支配株主に帰属する当期純利益',16000]]}],
     exp:'未実現利益40,000円（=80,000-40,000）を全額消去し、非支配株主持分に帰属する部分（40,000×40%=16,000円）を非支配株主に配分します。アップストリームは子会社→親会社の販売なので、消去した未実現利益を非支配株主にも負担させる（按分する）のがポイントです。',
@@ -4511,7 +4511,7 @@ const ALL = [
     id:245,
     level:2,
     cat:'収益認識',
-    q:'返品権付き販売：商品100個を1個1,000円（原価1個700円）で掛け販売。過去実績から10個の返品が見込まれる。販売時の仕訳を示せ。',
+    q:'返品権付き販売：衣料品（Tシャツ）100枚を1枚1,000円（原価1枚700円）で掛け販売した。過去実績から10枚の返品が見込まれる。販売時の仕訳を示せ。',
     q_en:'Sale with right of return: sold 100 units @¥1,000 (cost @¥700) on credit. Past experience indicates 10 units will be returned. Record the sale entries.',
     e:[{d:[['売掛金',100000]],c:[['売上高',90000],['返金負債',10000]]},{d:[['返品資産',7000]],c:[['売上原価',7000]]}],
     exp:'返品が見込まれる10個分は「まだ履行義務を果たしていない」とみなし、売上ではなく「返金負債」（負債）に計上します。また、返品されると商品が戻ってくるので「返品資産」（資産）として原価7,000円（10個×700円）を認識します。「売れそうな分だけ売上計上、返品見込み分は負債に」という考え方。',
