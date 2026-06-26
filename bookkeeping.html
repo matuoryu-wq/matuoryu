@@ -6672,12 +6672,270 @@ const ALL = [
       {label:'④製品が売れたときの振替先', hint:'販売時に費用（P/L）に計上される勘定は？', ans:'売上原価', choices:['売上原価','製品','仕掛品','製造間接費']}
     ]
   },
+
+  // ===== 為替手形（追加）=====
+  { id:382, level:2, cat:'手形',
+    q:'（穴埋め）為替手形には3者が登場する。\n①手形を作成・発行する者を【　】という。\n②「○○円払え」と命令を受け、支払いを引き受けた者を【　】という。\n③手形を受け取り、満期日に代金を受け取る者を【　】という。',
+    q_en:'(Fill in) A bill of exchange involves three parties. ①The party who creates and issues the bill is called [　]. ②The party ordered to pay and who accepts the bill is called [　]. ③The party who receives the bill and collects on the due date is called [　].',
+    ans_html:`<table><tbody><tr><td>①</td><td class="hl">振出人（Drawer）</td></tr><tr><td>②</td><td class="hl">引受人（Acceptor）</td></tr><tr><td>③</td><td class="hl">受取人（Payee）</td></tr></tbody></table><div class="formula-box">約束手形は2者（振出人・受取人）。為替手形は3者。振出人が引受人に「受取人へ払え」と命令する。</div>`,
+    exp:'為替手形は振出人・引受人・受取人の3者間の手形。振出人はBへの買掛金とCへの売掛金を同時に決済できる。引受人は振出人への買掛金を支払手形に振り替え、受取人は振出人への売掛金を受取手形に振り替える。',
+    steps:[
+      {label:'①手形を発行する者', hint:'手形を作って流通させる人は？', ans:'振出人', choices:['振出人','引受人','受取人','名宛人']},
+      {label:'②支払いを引き受けた者', hint:'「○○円払え」と命令を受けて承諾した人は？', ans:'引受人', choices:['引受人','振出人','受取人','保証人']},
+      {label:'③手形を受け取る者', hint:'満期日に現金を受け取る権利者は？', ans:'受取人', choices:['受取人','振出人','引受人','裏書人']}
+    ]
+  },
+
+  { id:383, level:2, cat:'手形',
+    q:'A社（振出人）はC社への買掛金80,000円の支払いのため、得意先B社（A社への売掛金80,000円あり）に宛てて「C社へ80,000円払え」という為替手形を振り出した。B社が引き受けた。A社（振出人）の仕訳を示せ。',
+    q_en:'A (drawer) drew a ¥80,000 bill of exchange ordering B to pay C (A had AP to C ¥80,000 and AR from B ¥80,000). B accepted. Show A\'s journal entry.',
+    ans_html:`<table><thead><tr><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td class="hl">買掛金</td><td class="hl">80,000</td><td class="hl">売掛金</td><td class="hl">80,000</td></tr></tbody></table><div class="formula-box">振出人：買掛金（仕入先への債務）が消え、売掛金（得意先への債権）も消える</div>`,
+    exp:'為替手形の振出人は「C社への買掛金（支払義務）をB社に手形を引き受けさせることで決済し、同時にB社への売掛金（受け取る権利）をB社に手形を受け取らせることで決済する」。買掛金と売掛金が同時にゼロになるのが特徴。',
+    e:[{d:[['買掛金',80000]],c:[['売掛金',80000]]}]
+  },
+
+  { id:384, level:2, cat:'手形',
+    q:'B社（引受人）はA社（振出人）から「C社へ80,000円払え」という為替手形の引き受けを求められ、承諾した。B社はA社への買掛金80,000円を持っていた。B社（引受人）の仕訳を示せ。',
+    q_en:'B (acceptor) was asked by A (drawer) to accept a ¥80,000 bill payable to C. B had ¥80,000 in accounts payable to A. Show B\'s journal entry.',
+    ans_html:`<table><thead><tr><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td class="hl">買掛金</td><td class="hl">80,000</td><td class="hl">支払手形</td><td class="hl">80,000</td></tr></tbody></table><div class="formula-box">引受人：A社への買掛金（普通の債務）がC社への支払手形に変わる</div>`,
+    exp:'引受人B社は「A社への買掛金」を「C社への支払手形（期日に手形代金を払う義務）」に振り替える。形式上の支払先がA社からC社に変わるが、金額は変わらない。支払手形は満期日に当座預金から決済される。',
+    e:[{d:[['買掛金',80000]],c:[['支払手形',80000]]}]
+  },
+
+  { id:385, level:2, cat:'手形',
+    q:'C社（受取人）はA社（振出人）からB社引受済みの為替手形80,000円を受け取った。C社はA社への売掛金80,000円を持っていた。C社（受取人）の仕訳を示せ。',
+    q_en:'C (payee) received a ¥80,000 bill drawn by A and accepted by B. C had ¥80,000 in accounts receivable from A. Show C\'s journal entry.',
+    ans_html:`<table><thead><tr><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td class="hl">受取手形</td><td class="hl">80,000</td><td class="hl">売掛金</td><td class="hl">80,000</td></tr></tbody></table><div class="formula-box">受取人：A社への売掛金（普通の債権）がB社引受の受取手形に変わる</div>`,
+    exp:'受取人C社は「A社への売掛金」を「B社が引き受けた受取手形（B社が期日に払ってくれる権利）」に振り替える。A社との直接の取引関係がなくなり、B社との手形関係になる。B社は期日に必ず払う義務がある。',
+    e:[{d:[['受取手形',80000]],c:[['売掛金',80000]]}]
+  },
+
+  { id:386, level:2, cat:'手形',
+    q:'為替手形80,000円（B社引受）が期日を迎えた。①引受人B社が当座預金から支払い、②受取人C社が当座預金に受け取った。各社の仕訳を示せ。',
+    q_en:'A ¥80,000 bill (accepted by B) reached maturity. ①B paid from checking; ②C received into checking. Show each company\'s journal entry.',
+    ans_html:`<table><thead><tr><th>会社</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td>①B社（引受人）</td><td class="hl">支払手形</td><td class="hl">80,000</td><td class="hl">当座預金</td><td class="hl">80,000</td></tr><tr><td>②C社（受取人）</td><td class="hl">当座預金</td><td class="hl">80,000</td><td class="hl">受取手形</td><td class="hl">80,000</td></tr></tbody></table>`,
+    exp:'期日決済は約束手形と同じ処理。引受人B社は「支払手形→当座預金」で支払い義務を履行。受取人C社は「当座預金←受取手形」で権利を現金化。為替手形特有の3者構造は手形流通中のみで、期日決済は引受人と受取人の2者間。',
+    e:[{d:[['支払手形',80000]],c:[['当座預金',80000]]},{d:[['当座預金',80000]],c:[['受取手形',80000]]}]
+  },
+
+  { id:387, level:2, cat:'手形',
+    q:'C社は保有する受取手形（B社引受の為替手形60,000円）を、仕入代金60,000円の支払いとしてD社に裏書譲渡した。C社の仕訳を示せ。',
+    q_en:'C endorsed a ¥60,000 bill of exchange (accepted by B) to D as payment for a ¥60,000 purchase. Show C\'s journal entry.',
+    ans_html:`<table><thead><tr><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td class="hl">買掛金</td><td class="hl">60,000</td><td class="hl">受取手形</td><td class="hl">60,000</td></tr></tbody></table><div class="formula-box">約束手形の裏書と同じ処理：受取手形（資産）が減り、買掛金（負債）が消える</div>`,
+    exp:'為替手形も約束手形と同様に裏書譲渡できる。為替手形か約束手形かで仕訳は変わらない。C社は「受取手形（資産）をD社に渡す＝受取手形が減る」、同時にD社への買掛金（負債）が消える。',
+    e:[{d:[['買掛金',60000]],c:[['受取手形',60000]]}]
+  },
+
+  { id:388, level:2, cat:'手形',
+    q:'C社は保有する受取手形（為替手形、額面50,000円）を銀行で割り引き、割引料500円が差し引かれた手取金49,500円が当座預金に入金された。C社の仕訳を示せ。',
+    q_en:'C discounted a ¥50,000 bill of exchange (accepted by B) at the bank; after a ¥500 discount fee, net proceeds of ¥49,500 were credited to checking. Show C\'s journal entry.',
+    ans_html:`<table><thead><tr><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td class="hl">当座預金</td><td class="hl">49,500</td><td class="hl">受取手形</td><td class="hl">50,000</td></tr><tr><td class="hl">手形売却損</td><td class="hl">500</td><td></td><td></td></tr></tbody></table><div class="formula-box">手形割引＝受取手形を銀行に売却。割引料は手形売却損（費用）。</div>`,
+    exp:'為替手形の割引も約束手形と同じ処理。手取金（入金額）は当座預金の借方、額面は受取手形の貸方、差額の割引料は手形売却損（費用）の借方。為替手形か約束手形かで仕訳は変わらない。',
+    e:[{d:[['当座預金',49500],['手形売却損',500]],c:[['受取手形',50000]]}]
+  },
+
+  { id:389, level:2, cat:'手形',
+    q:'（総合）A社はC社への買掛金100,000円の決済のため、得意先B社（A社への売掛金100,000円）に「C社へ100,000円払え」という為替手形を振り出した。B社はA社への買掛金があり引き受け、C社はA社への売掛金があり受け取った。\n①A社（振出人）②B社（引受人）③C社（受取人）の各仕訳で使う勘定科目を選べ。',
+    q_en:'(Comprehensive) A drew a ¥100,000 bill ordering B to pay C. B (AP to A) accepted; C (AR from A) received it. For ①A (drawer) ②B (acceptor) ③C (payee), select the correct accounts.',
+    ans_html:`<table><thead><tr><th>会社</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td>①A社（振出人）</td><td class="hl">買掛金</td><td>100,000</td><td class="hl">売掛金</td><td>100,000</td></tr><tr><td>②B社（引受人）</td><td class="hl">買掛金</td><td>100,000</td><td class="hl">支払手形</td><td>100,000</td></tr><tr><td>③C社（受取人）</td><td class="hl">受取手形</td><td>100,000</td><td class="hl">売掛金</td><td>100,000</td></tr></tbody></table>`,
+    exp:'3者の仕訳まとめ：振出人A「買掛金/売掛金」で2つの帳消し。引受人B「買掛金→支払手形」で債務の形が変わる。受取人C「受取手形/売掛金」で債権の形が変わる。期日にBがCへ払い、BはC社への支払手形を消し、CはB社からの受取手形を消す。',
+    steps:[
+      {label:'①A社（振出人）の借方勘定', hint:'A社はどの債務を決済するか？（C社への支払い義務）', ans:'買掛金', choices:['買掛金','売掛金','受取手形','支払手形']},
+      {label:'①A社（振出人）の貸方勘定', hint:'A社はどの債権が消えるか？（B社からの回収権利）', ans:'売掛金', choices:['売掛金','買掛金','受取手形','支払手形']},
+      {label:'②B社（引受人）の貸方勘定', hint:'B社はA社への買掛金を何に振り替えるか？', ans:'支払手形', choices:['支払手形','受取手形','売掛金','買掛金']},
+      {label:'③C社（受取人）の借方勘定', hint:'C社はA社への売掛金を何に振り替えるか？', ans:'受取手形', choices:['受取手形','支払手形','買掛金','売掛金']}
+    ]
+  },
+
+  // ===== 圧縮記帳（追加）=====
+  { id:390, level:2, cat:'圧縮記帳',
+    q:'国庫補助金2,000,000円を普通預金に受け取り、機械装置4,000,000円を現金で購入した（耐用年数4年・残存価額0円・定額法）。積立金方式で圧縮記帳を行う場合の①補助金受取②機械購入③圧縮積立金設定の仕訳と、④1年目の減価償却費と積立金取崩額を答えよ。',
+    q_en:'Received government grant ¥2,000,000 (bank), bought machinery ¥4,000,000 cash (4yr, S/L, zero salvage). Using the reserve method: show ①grant receipt ②machine purchase ③reserve setup entries, and ④year-1 depreciation and reserve release amounts.',
+    ans_html:`<table><thead><tr><th>取引</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td>①補助金受取</td><td>普通預金</td><td>2,000,000</td><td class="hl">国庫補助金受贈益</td><td>2,000,000</td></tr><tr><td>②機械購入</td><td>機械装置</td><td>4,000,000</td><td>現金</td><td>4,000,000</td></tr><tr><td>③圧縮積立金</td><td class="hl">繰越利益剰余金</td><td>2,000,000</td><td class="hl">圧縮積立金</td><td>2,000,000</td></tr></tbody></table><div class="formula-box">④減価償却費＝4,000,000÷4年＝1,000,000円（帳簿価額は変わらないので全額ベース）<br>積立金取崩額＝2,000,000÷4年＝500,000円（圧縮積立金→繰越利益剰余金）</div>`,
+    exp:'積立金方式は「帳簿価額はそのまま、利益剰余金から圧縮積立金へ積み立てる」方法。固定資産の価額は変わらないので減価償却費は取得原価全額ベースで計算。毎期、補助金相当額÷耐用年数を圧縮積立金から繰越利益剰余金へ取り崩す（課税の繰り延べ効果を均等に享受）。',
+    steps:[
+      {label:'①の貸方（補助金受取時の収益科目）', hint:'国から補助金をもらった時の収益はどう呼ぶ？', ans:'国庫補助金受贈益', choices:['国庫補助金受贈益','受取補助金','補助金収入','固定資産圧縮損']},
+      {label:'③借方（圧縮積立金の設定時借方）', hint:'剰余金の一部を積立金へ振り替えるとき借方は？', ans:'繰越利益剰余金', choices:['繰越利益剰余金','固定資産圧縮損','機械装置','利益準備金']},
+      {label:'④1年目の減価償却費', hint:'積立金方式では帳簿価額は変わらない。4,000,000÷4年＝？', ans:1000000, unit:'円', choices:[1000000,800000,500000,750000]},
+      {label:'④1年目の積立金取崩額', hint:'圧縮積立金2,000,000円を4年で均等取崩し。', ans:500000, unit:'円', choices:[500000,400000,1000000,250000]}
+    ]
+  },
+
+  { id:391, level:2, cat:'圧縮記帳',
+    q:'直接控除方式で圧縮記帳済みの建物：取得原価10,000,000円・固定資産圧縮損3,000,000円（計上済み）・耐用年数20年・残存価額0円・定額法。\n①圧縮後の帳簿価額②毎年の減価償却費③減価償却の仕訳を示せ。',
+    q_en:'A building recorded using direct reduction: cost ¥10,000,000, compression loss ¥3,000,000 (already recorded), 20yr useful life, zero salvage, S/L. ①Compressed book value? ②Annual depreciation? ③Depreciation journal entry.',
+    ans_html:`<div class="formula-box">①圧縮後帳簿価額＝10,000,000－3,000,000＝7,000,000円<br>②年間減価償却費＝7,000,000÷20年＝350,000円<br>③借：減価償却費 350,000　／　貸：減価償却累計額 350,000</div>`,
+    exp:'直接控除方式では固定資産の帳簿価額そのものを補助金分だけ減らすため、減価償却の基礎となる帳簿価額も小さくなる。積立金方式（取得原価全額で償却）と比べ毎期の減価償却費が少なくなる。どちらの方式も補助金受取時の益金を将来に分散して課税する効果がある。',
+    steps:[
+      {label:'①圧縮後帳簿価額', hint:'取得原価10,000,000円から圧縮損3,000,000円を差し引く', ans:7000000, unit:'円', choices:[7000000,10000000,3000000,8000000]},
+      {label:'②年間減価償却費', hint:'圧縮後帳簿価額7,000,000円÷耐用年数20年', ans:350000, unit:'円', choices:[350000,500000,300000,400000]},
+      {label:'③減価償却の借方勘定', hint:'費用として計上する勘定は？', ans:'減価償却費', choices:['減価償却費','固定資産圧縮損','建物','圧縮積立金']}
+    ]
+  },
+
+  { id:392, level:2, cat:'圧縮記帳',
+    q:'（穴埋め）圧縮記帳の2方式の比較。\n圧縮記帳の目的は、補助金受取による【①】の課税を将来に繰り延べることにある。\n直接控除方式：固定資産の帳簿価額を【②】する→毎期の減価償却費が【③】なる\n積立金方式：固定資産の帳簿価額は【④】→毎期【⑤】を取り崩して課税調整する',
+    q_en:'(Fill in) Comparison of two compression methods. The purpose is to defer tax on [①]. Direct reduction: book value is [②] → depreciation becomes [③]. Reserve method: book value is [④] → each period [⑤] is released.',
+    ans_html:`<table><tbody><tr><td>①繰り延べる対象</td><td class="hl">収益（国庫補助金受贈益）への課税</td></tr><tr><td>②直接控除方式</td><td class="hl">減額（圧縮）</td></tr><tr><td>③減価償却費</td><td class="hl">小さくなる</td></tr><tr><td>④積立金方式の帳簿価額</td><td class="hl">変わらない</td></tr><tr><td>⑤毎期取り崩す</td><td class="hl">圧縮積立金</td></tr></tbody></table>`,
+    exp:'圧縮記帳は税務上の特例で、補助金収益をすぐに課税せず分割課税するイメージ。直接控除方式は帳簿価額を下げることで減価償却費（損金）を減らし、毎期少しずつ課税される。積立金方式は帳簿価額を変えず、積立金の取崩しで課税調整する。',
+    steps:[
+      {label:'①繰り延べる課税の対象', hint:'補助金受取時に生じる収益科目は？', ans:'収益（国庫補助金受贈益）', choices:['収益（国庫補助金受贈益）','費用（支出）','損失','資産増加']},
+      {label:'②直接控除方式の帳簿価額', hint:'直接控除＝帳簿価額を補助金額だけどうする？', ans:'減額する', choices:['減額する','増額する','変えない','時価評価する']},
+      {label:'③直接控除方式の減価償却費', hint:'帳簿価額が小さくなれば減価償却費は？', ans:'小さく', choices:['小さく','大きく','変わらない','ゼロに']},
+      {label:'④積立金方式の帳簿価額の変化', hint:'積立金方式では固定資産の帳簿価額はどうなる？', ans:'変わらない', choices:['変わらない','減額される','増額される','ゼロになる']}
+    ]
+  },
+
+  // ===== 繰延資産（追加）=====
+  { id:393, level:2, cat:'繰延資産',
+    q:'会社設立後・営業開始前に広告宣伝費400,000円・従業員研修費100,000円を現金で支払い、開業費（繰延資産）として計上した。①計上時の仕訳と②決算時（5年定額法・当期12ヶ月）の年間償却仕訳を示せ。',
+    q_en:'Before operations began (after incorporation), ¥400,000 advertising and ¥100,000 training were paid in cash and recorded as pre-opening costs. Show ①the entry on payment and ②the annual amortization entry (5yr straight-line, 12 months).',
+    ans_html:`<table><thead><tr><th>取引</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td>①計上時</td><td class="hl">開業費</td><td class="hl">500,000</td><td>現金</td><td>500,000</td></tr><tr><td>②償却時</td><td class="hl">開業費償却</td><td class="hl">100,000</td><td class="hl">開業費</td><td class="hl">100,000</td></tr></tbody></table><div class="formula-box">償却額＝500,000÷5年＝100,000円／年</div>`,
+    exp:'開業費は「会社が完成してから営業開始するまでに使った費用」（広告・研修・賃借料など）。繰延資産として5年以内に定額法で償却。償却の仕訳は「開業費償却（費用）／開業費（繰延資産）」。創立費（会社を作るための費用）とは別物で、発生時期が違う。',
+    e:[{d:[['開業費',500000]],c:[['現金',500000]]},{d:[['開業費償却',100000]],c:[['開業費',100000]]}]
+  },
+
+  { id:394, level:2, cat:'繰延資産',
+    q:'増資（新株発行）にあたり、株式の募集・引受手数料など株式交付費600,000円を現金で支払い、繰延資産として計上した。①計上時の仕訳と②3年定額法（当期12ヶ月）による1年分の償却仕訳を示せ。',
+    q_en:'Share issuance costs of ¥600,000 (underwriting fees etc.) were paid in cash for a capital increase and recorded as a deferred asset. Show ①entry on payment and ②first-year amortization (3yr straight-line, 12 months).',
+    ans_html:`<table><thead><tr><th>取引</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td>①計上時</td><td class="hl">株式交付費</td><td class="hl">600,000</td><td>現金</td><td>600,000</td></tr><tr><td>②償却時</td><td class="hl">株式交付費償却</td><td class="hl">200,000</td><td class="hl">株式交付費</td><td class="hl">200,000</td></tr></tbody></table><div class="formula-box">償却額＝600,000÷3年＝200,000円／年（株式交付費の償却期間は3年以内）</div>`,
+    exp:'株式交付費は「増資や株式発行のために使った費用」（引受手数料・募集費用など）。会社設立時の株式発行費用は「創立費」に含まれるため別扱い。株式交付費は3年以内に均等償却。他の繰延資産（創立費・開業費・開発費）は5年以内なので、3年という点が試験のポイント。',
+    e:[{d:[['株式交付費',600000]],c:[['現金',600000]]},{d:[['株式交付費償却',200000]],c:[['株式交付費',200000]]}]
+  },
+
+  { id:395, level:2, cat:'繰延資産',
+    q:'会社設立のため定款作成費用200,000円・設立登記費用100,000円・発起人報酬80,000円を現金で支払い、創立費（繰延資産）として計上した。仕訳を示せ。また、創立費と開業費の正しい区別を選べ。',
+    q_en:'For company incorporation: ¥200,000 drafting fees, ¥100,000 registration fees, ¥80,000 founder fees were paid in cash and recorded as organization costs. Show the journal entry and select the correct distinction between 創立費 and 開業費.',
+    ans_html:`<table><thead><tr><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td class="hl">創立費</td><td class="hl">380,000</td><td>現金</td><td>380,000</td></tr></tbody></table><div class="formula-box">創立費：会社そのものを作るための費用（定款・登記・発起人費用）→ 5年以内に償却<br>開業費：会社ができた後、営業を開始するまでの費用（広告・研修など）→ 5年以内に償却</div>`,
+    exp:'創立費と開業費はどちらも繰延資産で5年以内定額法償却だが発生時期が違う。創立費は「会社の設立手続き中（法人格がない段階）」の費用、開業費は「会社設立後・営業開始まで」の費用。試験では費用の種類を読んで正しい勘定科目を選ぶ問題が出る。',
+    e:[{d:[['創立費',380000]],c:[['現金',380000]]}]
+  },
+
+  { id:396, level:2, cat:'繰延資産',
+    q:'（穴埋め）繰延資産の種類と最長償却期間を答えよ。\n①創立費：【　】年以内\n②開業費：【　】年以内\n③株式交付費：【　】年以内\n④社債発行費：社債の【　】以内\n⑤開発費：【　】年以内',
+    q_en:'(Fill in) Deferred assets and their maximum amortization periods: ①Organization costs ②Pre-opening costs ③Share issuance costs ④Bond issuance costs ⑤Development costs.',
+    ans_html:`<table><tbody><tr><td>①創立費</td><td class="hl">5年以内</td></tr><tr><td>②開業費</td><td class="hl">5年以内</td></tr><tr><td>③株式交付費</td><td class="hl">3年以内</td></tr><tr><td>④社債発行費</td><td class="hl">社債の償還期限以内</td></tr><tr><td>⑤開発費</td><td class="hl">5年以内</td></tr></tbody></table>`,
+    exp:'繰延資産の償却期間：①創立費5年②開業費5年③株式交付費3年④社債発行費は社債の償還期限以内⑤開発費5年。株式交付費だけが3年で他は5年。社債発行費だけ「社債の期間に合わせる」という特殊ルール。試験で必ず問われる知識。',
+    steps:[
+      {label:'①創立費の最長償却期間', hint:'会社設立費用の繰延資産は何年以内？', ans:'5年', choices:['5年','3年','10年','1年']},
+      {label:'②開業費の最長償却期間', hint:'開業準備費用の繰延資産は何年以内？', ans:'5年', choices:['5年','3年','10年','1年']},
+      {label:'③株式交付費の最長償却期間', hint:'他の繰延資産と異なる年数。何年以内？', ans:'3年', choices:['3年','5年','10年','1年']},
+      {label:'④社債発行費の償却期間', hint:'社債発行費は社債の存続期間に合わせる', ans:'社債の償還期限以内', choices:['社債の償還期限以内','5年以内','3年以内','10年以内']}
+    ]
+  },
+
+  // ===== 研究開発費・ソフトウェア =====
+  { id:397, level:2, cat:'固定資産',
+    q:'新製品の研究開発のため、材料費300,000円・人件費500,000円・外注費200,000円を現金で支払った。研究開発費として処理する仕訳を示せ。また、研究開発費を資産計上できない理由として正しいものを選べ。',
+    q_en:'For new product R&D, ¥300,000 materials, ¥500,000 labor, ¥200,000 outsourcing were paid in cash. Show the journal entry for R&D costs. Select the correct reason why R&D cannot be capitalized.',
+    ans_html:`<table><thead><tr><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td class="hl">研究開発費</td><td class="hl">1,000,000</td><td>現金</td><td>1,000,000</td></tr></tbody></table><div class="formula-box">資産計上できない理由：将来の収益への貢献が不確実なため（保守主義の原則）</div>`,
+    exp:'研究開発費は、新製品・新技術の研究（Research）および開発（Development）に要した費用。将来の収益に貢献するかどうかが不確実なため費用処理が義務付けられており、資産計上は認められない（「研究開発費等に係る会計基準」）。販管費の内訳として損益計算書に表示。',
+    e:[{d:[['研究開発費',1000000]],c:[['現金',1000000]]}]
+  },
+
+  { id:398, level:2, cat:'固定資産',
+    q:'市場販売目的のソフトウェアを開発した。①研究・企画段階での費用600,000円（費用処理）と②製品マスター完成後の追加機能開発費900,000円（資産計上）を、それぞれ現金で支払った場合の仕訳を示せ。また③②のソフトウェアを耐用年数3年・定額法で償却する場合の年間償却仕訳を示せ。',
+    q_en:'A market software product was developed. ①Research/planning phase ¥600,000 (expense) and ②post-master additional dev ¥900,000 (capitalize) were paid in cash. Show entries for ①②. Show ③annual amortization (3yr straight-line).',
+    ans_html:`<table><thead><tr><th>取引</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td>①研究・企画段階</td><td class="hl">研究開発費</td><td>600,000</td><td>現金</td><td>600,000</td></tr><tr><td>②製品マスター以降</td><td class="hl">ソフトウェア</td><td>900,000</td><td>現金</td><td>900,000</td></tr><tr><td>③年間償却</td><td class="hl">ソフトウェア償却</td><td class="hl">300,000</td><td class="hl">ソフトウェア</td><td class="hl">300,000</td></tr></tbody></table><div class="formula-box">年間償却費＝900,000÷3年＝300,000円（無形固定資産は直接法で償却）</div>`,
+    exp:'市場販売目的ソフトウェアは「製品マスター完成まで＝研究開発費（費用）、製品マスター完成後の機能追加・改良＝ソフトウェア（資産）」と区分する。無形固定資産に計上されたソフトウェアは直接法で償却：借）ソフトウェア償却 ／ 貸）ソフトウェア。',
+    e:[{d:[['研究開発費',600000]],c:[['現金',600000]]},{d:[['ソフトウェア',900000]],c:[['現金',900000]]},{d:[['ソフトウェア償却',300000]],c:[['ソフトウェア',300000]]}]
+  },
+
+  { id:399, level:2, cat:'固定資産',
+    q:'自社の受発注管理システムを外部委託で開発し、完成時に代金1,800,000円を小切手で支払った（将来の業務コスト削減が確実）。無形固定資産（ソフトウェア）として計上し、耐用年数5年・定額法で償却する。①取得時の仕訳②年間償却費③償却時の仕訳を示せ。',
+    q_en:'An in-house order system was developed externally for ¥1,800,000 (paid by check; future cost savings confirmed). Record as intangible asset (software), 5yr straight-line. Show ①acquisition entry ②annual amortization amount ③amortization entry.',
+    ans_html:`<table><thead><tr><th>取引</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td>①取得時</td><td class="hl">ソフトウェア</td><td class="hl">1,800,000</td><td>当座預金</td><td>1,800,000</td></tr><tr><td>③償却時</td><td class="hl">ソフトウェア償却</td><td class="hl">360,000</td><td class="hl">ソフトウェア</td><td class="hl">360,000</td></tr></tbody></table><div class="formula-box">②年間償却費＝1,800,000÷5年＝360,000円<br>無形固定資産は直接法（資産残高を直接減額）で償却</div>`,
+    exp:'自社利用目的ソフトウェアは「将来の費用削減や業務効率化が確実な場合」に無形固定資産として計上できる。不確実な場合は費用処理。市場販売目的ソフトウェアとは異なり、利用可能になった時点で資産計上開始。耐用年数は通常5年（最長）。',
+    e:[{d:[['ソフトウェア',1800000]],c:[['当座預金',1800000]]},{d:[['ソフトウェア償却',360000]],c:[['ソフトウェア',360000]]}]
+  },
+
+  // ===== 株式発行・増資（追加）=====
+  { id:400, level:2, cat:'株式発行',
+    q:'増資のため株式200株を1株2,000円で発行し、払込金400,000円が普通預金に振り込まれた。会社法の規定により払込額の1/2を資本金・残りを資本準備金に計上する場合の仕訳を示せ。',
+    q_en:'Issued 200 new shares at ¥2,000 each for a capital increase; ¥400,000 deposited in bank. Per the Companies Act, ½ of proceeds is recorded as capital stock and ½ as capital surplus. Show the journal entry.',
+    ans_html:`<table><thead><tr><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td class="hl">普通預金</td><td class="hl">400,000</td><td class="hl">資本金</td><td class="hl">200,000</td></tr><tr><td></td><td></td><td class="hl">資本準備金</td><td class="hl">200,000</td></tr></tbody></table><div class="formula-box">資本金＝400,000×1/2＝200,000円　資本準備金＝400,000×1/2＝200,000円</div>`,
+    exp:'会社法の原則：払込金額の全額を資本金とする。例外：払込金額の1/2を超えない範囲で資本準備金に計上できる。試験では「払込額の1/2を資本金」と指示があれば資本金200,000・資本準備金200,000に分ける。会社設立時も増資時も同じ処理で、払込先は普通預金（or 当座預金）。',
+    e:[{d:[['普通預金',400000]],c:[['資本金',200000],['資本準備金',200000]]}]
+  },
+
+  { id:401, level:2, cat:'株式発行',
+    q:'保有する自己株式（帳簿価額150,000円）を消却した。その他資本剰余金の残高は十分にあるとする。仕訳を示せ。',
+    q_en:'Treasury shares (book value ¥150,000) were retired. Other capital surplus is sufficient. Show the journal entry.',
+    ans_html:`<table><thead><tr><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td class="hl">その他資本剰余金</td><td class="hl">150,000</td><td class="hl">自己株式</td><td class="hl">150,000</td></tr></tbody></table><div class="formula-box">自己株式の消却：その他資本剰余金（純資産のプラス）を取り崩して自己株式（純資産のマイナス）を消す</div>`,
+    exp:'自己株式の消却は「帳簿上の株式を廃棄する」手続き。その他資本剰余金を借方に計上して自己株式（貸方）を消す。その他資本剰余金が不足する場合は繰越利益剰余金から補填。資本金や資本準備金からは直接消却しない。消却後は発行済株式数が減少する。',
+    e:[{d:[['その他資本剰余金',150000]],c:[['自己株式',150000]]}]
+  },
+
+  { id:402, level:2, cat:'株式発行',
+    q:'株主総会の決議により①資本準備金600,000円を資本金に組み入れ、②繰越利益剰余金400,000円を利益準備金に積み立てた。各仕訳を示せ。',
+    q_en:'By shareholder resolution: ①¥600,000 capital surplus was transferred to capital stock; ②¥400,000 retained earnings was transferred to legal earnings reserve. Show each journal entry.',
+    ans_html:`<table><thead><tr><th>取引</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td>①</td><td class="hl">資本準備金</td><td class="hl">600,000</td><td class="hl">資本金</td><td class="hl">600,000</td></tr><tr><td>②</td><td class="hl">繰越利益剰余金</td><td class="hl">400,000</td><td class="hl">利益準備金</td><td class="hl">400,000</td></tr></tbody></table><div class="formula-box">株主資本の計数変動：純資産の各区分間の振替（純資産合計は変わらない）</div>`,
+    exp:'株主資本の計数変動は「純資産の中で勘定科目が変わるだけで、純資産合計は変わらない」。①は資本準備金→資本金（借方に資本準備金、貸方に資本金）。②は利益を積立金へ（借方に繰越利益剰余金、貸方に利益準備金）。配当時に利益準備金の積立義務がある点も重要。',
+    e:[{d:[['資本準備金',600000]],c:[['資本金',600000]]},{d:[['繰越利益剰余金',400000]],c:[['利益準備金',400000]]}]
+  },
+
+  // ===== 特殊商品売買・収益認識（追加）=====
+  { id:403, level:2, cat:'収益認識',
+    q:'（委託販売・委託者の仕訳）A社（委託者）はB社（受託者）に商品（原価240,000円）を積送した。後日、B社から売上計算書（販売額400,000円・受託手数料20,000円・送金額380,000円）が届き現金が振り込まれた。A社の①積送時②計算書受取・入金時③売上原価振替の仕訳を示せ。',
+    q_en:'(Consignment – consignor) A shipped goods (cost ¥240,000) to B. B reported: sales ¥400,000, commission ¥20,000, remitted ¥380,000. Show A\'s entries: ①shipment ②account sales receipt & cash ③cost transfer.',
+    ans_html:`<table><thead><tr><th>取引</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td>①積送時</td><td class="hl">積送品</td><td>240,000</td><td class="hl">仕入</td><td>240,000</td></tr><tr><td>②入金時</td><td>現金</td><td>380,000</td><td class="hl">売上</td><td>400,000</td></tr><tr><td></td><td class="hl">支払手数料</td><td>20,000</td><td></td><td></td></tr><tr><td>③原価振替</td><td class="hl">売上原価</td><td>240,000</td><td class="hl">積送品</td><td>240,000</td></tr></tbody></table>`,
+    exp:'委託販売の委託者：①積送時に「仕入（商品）→積送品」へ振り替え（まだ売上ではない）。②売上計算書が届いた時点で収益認識。受託者への手数料は費用（支払手数料）として売上から差し引かない（総額表示）。③同時に積送品の原価を売上原価へ振り替え。',
+    e:[{d:[['積送品',240000]],c:[['仕入',240000]]},{d:[['現金',380000],['支払手数料',20000]],c:[['売上',400000]]},{d:[['売上原価',240000]],c:[['積送品',240000]]}]
+  },
+
+  { id:404, level:2, cat:'収益認識',
+    q:'（委託販売・受託者の仕訳）B社（受託者）はA社（委託者）から委託された商品を現金400,000円で全量販売した。手数料20,000円を差し引いた380,000円をA社に現金送金した。B社の①販売時②手数料計上③送金時の仕訳を示せ。',
+    q_en:'(Consignment – agent) B sold all consigned goods for ¥400,000 cash, deducted ¥20,000 commission, and remitted ¥380,000 in cash to A. Show B\'s entries: ①sale ②commission recognition ③remittance.',
+    ans_html:`<table><thead><tr><th>取引</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td>①販売時</td><td>現金</td><td>400,000</td><td class="hl">受託販売</td><td>400,000</td></tr><tr><td>②手数料</td><td class="hl">受託販売</td><td>20,000</td><td class="hl">受取手数料</td><td>20,000</td></tr><tr><td>③送金時</td><td class="hl">受託販売</td><td>380,000</td><td>現金</td><td>380,000</td></tr></tbody></table><div class="formula-box">受託者の収益は手数料のみ（受取手数料）。販売代金は委託者への預り金（受託販売）。</div>`,
+    exp:'受託者B社にとって委託商品はB社の資産ではなく、売上もB社の収益ではない。販売代金は「受託販売（委託者への預り負債）」で処理。手数料だけがB社の収益（受取手数料）。送金でこの負債（受託販売）が消える。委託者と受託者で収益認識がまったく異なる点が重要。',
+    e:[{d:[['現金',400000]],c:[['受託販売',400000]]},{d:[['受託販売',20000]],c:[['受取手数料',20000]]},{d:[['受託販売',380000]],c:[['現金',380000]]}]
+  },
+
+  { id:405, level:2, cat:'収益認識',
+    q:'（試用販売・手許商品区分法）A社は商品（原価150,000円）を得意先に試用のため発送した。後日、得意先から購入の意思表示があり代金250,000円を現金で受け取った。A社の①試送時②意思表示受取・代金受取時③売上原価計上の仕訳を示せ。',
+    q_en:'(Sale on approval – separate account method) A shipped goods (cost ¥150,000) to a customer for trial. The customer later confirmed purchase; ¥250,000 was received in cash. Show A\'s entries: ①shipment ②purchase confirmation/cash ③COGS.',
+    ans_html:`<table><thead><tr><th>取引</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td>①試送時</td><td class="hl">試用品</td><td>150,000</td><td class="hl">仕入（商品）</td><td>150,000</td></tr><tr><td>②意思表示時</td><td>現金</td><td>250,000</td><td class="hl">売上</td><td>250,000</td></tr><tr><td>③原価計上</td><td class="hl">仕入（売上原価）</td><td>150,000</td><td class="hl">試用品</td><td>150,000</td></tr></tbody></table><div class="formula-box">売上認識時点：試用販売は「得意先が購入の意思表示をした時点」（出荷時ではない）</div>`,
+    exp:'試用販売は「試しに使ってみて、気に入ったら買う」形式。手許商品区分法では①試送時に商品→試用品へ振り替え（まだ売上ではない）。②得意先が「買います」と意思表示した時点で売上を計上（履行義務の充足）。③と同時に試用品を売上原価へ。収益認識基準では「顧客が購入選択権を行使した時点」。',
+    e:[{d:[['試用品',150000]],c:[['仕入',150000]]},{d:[['現金',250000]],c:[['売上',250000]]},{d:[['仕入',150000]],c:[['試用品',150000]]}]
+  },
+
+  { id:406, level:2, cat:'収益認識',
+    q:'（割賦販売・収益認識基準）B社は商品（原価200,000円）を割賦で販売した（販売価額450,000円・毎月15,000円×30回払い）。収益認識基準では商品の引渡し時点に全額認識する。①販売（商品引渡）時②初回割賦金受取時の仕訳を示せ。',
+    q_en:'(Installment sale – revenue recognition standard) B sold goods (cost ¥200,000) on installment: total ¥450,000, 30 payments of ¥15,000/month. Revenue recognized at delivery (full amount). Show ①delivery entry ②first installment receipt.',
+    ans_html:`<table><thead><tr><th>取引</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td>①販売時（引渡）</td><td class="hl">割賦売掛金</td><td>450,000</td><td class="hl">売上</td><td>450,000</td></tr><tr><td></td><td class="hl">売上原価</td><td>200,000</td><td class="hl">商品</td><td>200,000</td></tr><tr><td>②初回受取</td><td>現金</td><td>15,000</td><td class="hl">割賦売掛金</td><td>15,000</td></tr></tbody></table><div class="formula-box">収益認識基準：商品の「支配の移転」＝引渡時点で売上全額を認識</div>`,
+    exp:'旧基準の割賦販売では「代金受取時に売上計上（回収基準）」も選択できたが、収益認識基準（2021年強制適用）では「商品の支配が顧客に移転した時点（＝引渡時）」に全額認識する。割賦売掛金（資産）は毎回の回収で減少。未収分が残高として残る。',
+    e:[{d:[['割賦売掛金',450000]],c:[['売上',450000]]},{d:[['売上原価',200000]],c:[['商品',200000]]},{d:[['現金',15000]],c:[['割賦売掛金',15000]]}]
+  },
+
+  // ===== リース会計（追加）=====
+  { id:407, level:2, cat:'リース会計',
+    q:'ファイナンス・リース取引（利子抜き法）：リース物件の現金購入価額1,000,000円・リース料総額1,200,000円・リース期間5年・年間リース料240,000円（1年目の利息：1,000,000円×4%=40,000円）。①リース開始時②1年目リース料支払時（元本と利息を分けて処理）の仕訳を示せ。',
+    q_en:'Finance lease (interest-separation method): cash purchase price ¥1,000,000, total lease ¥1,200,000, 5yr term, annual payment ¥240,000 (yr-1 interest: ¥40,000). Show ①start-of-lease entry ②yr-1 payment entry (split principal and interest).',
+    ans_html:`<table><thead><tr><th>取引</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead><tbody><tr><td>①リース開始</td><td class="hl">リース資産</td><td>1,000,000</td><td class="hl">リース債務</td><td>1,000,000</td></tr><tr><td>②リース料支払</td><td class="hl">リース債務</td><td>200,000</td><td>現金</td><td>240,000</td></tr><tr><td></td><td class="hl">支払利息</td><td>40,000</td><td></td><td></td></tr></tbody></table><div class="formula-box">元本返済額＝240,000－40,000＝200,000円　利息＝1,000,000×4%＝40,000円</div>`,
+    exp:'利子抜き法では①開始時にリース資産・リース債務を現金購入価額（現在価値）で計上（利子込み法はリース料総額）。②支払時は元本返済（リース債務減少）と利息（支払利息）を分けて処理。利子込み法はリース債務だけを借方にしてシンプル。日商2級では両方の理解が必要。',
+    e:[{d:[['リース資産',1000000]],c:[['リース債務',1000000]]},{d:[['リース債務',200000],['支払利息',40000]],c:[['現金',240000]]}]
+  },
+
+  { id:408, level:2, cat:'リース会計',
+    q:'（穴埋め）ファイナンス・リースの利子込み法と利子抜き法を比較せよ。\n①利子込み法：リース開始時のリース債務計上額＝【リース料合計/現金購入価額】\n②利子抜き法：リース開始時のリース債務計上額＝【リース料合計/現金購入価額】\n③利子込み法のリース料支払時の借方勘定＝【リース債務のみ/リース債務＋支払利息の2つ】\n④利子抜き法のリース料支払時に計上する費用＝【支払利息/賃借料/リース料】',
+    q_en:'(Fill in) Compare finance lease accounting methods. ①Interest-inclusive: initial liability = [sum/PV]. ②Interest-separation: initial liability = [sum/PV]. ③Inclusive payment debit = [one account / two accounts]. ④Separation expense = [interest expense/rent/lease payment].',
+    ans_html:`<table><tbody><tr><td>①利子込み法の計上額</td><td class="hl">リース料合計額</td></tr><tr><td>②利子抜き法の計上額</td><td class="hl">現金購入価額（現在価値）</td></tr><tr><td>③利子込み法の支払時借方</td><td class="hl">リース債務のみ（1勘定）</td></tr><tr><td>④利子抜き法の費用科目</td><td class="hl">支払利息</td></tr></tbody></table>`,
+    exp:'利子込み法：シンプル。リース料総額でリース債務を計上し、支払時はリース債務だけを減らす（利息分も含めて一括処理）。利子抜き法：厳密。現在価値でリース債務を計上し、支払時は元本（リース債務）と利息（支払利息）を分ける。日商2級では利子込み法が中心だが利子抜き法の出題も増加中。',
+    steps:[
+      {label:'①利子込み法のリース債務計上額', hint:'「利子込み」＝利息も含めた総額で計上する', ans:'リース料合計額', choices:['リース料合計額','現金購入価額','取得原価','残存価額']},
+      {label:'②利子抜き法のリース債務計上額', hint:'「利子抜き」＝利息を除いた元本部分のみで計上', ans:'現金購入価額（現在価値）', choices:['現金購入価額（現在価値）','リース料合計額','帳簿価額','見積価額']},
+      {label:'③利子込み法の支払時借方勘定', hint:'利子込み法では利息を分けないので借方は一本', ans:'リース債務のみ', choices:['リース債務のみ','リース債務と支払利息の両方','支払利息のみ','賃借料']},
+      {label:'④利子抜き法の費用科目', hint:'元本と分けて計上する費用（利子の支払いに対応）', ans:'支払利息', choices:['支払利息','賃借料','リース料','減価償却費']}
+    ]
+  },
+
 ];
 
+const IKOU_CATS = new Set(['工業簿記基礎','材料費','労務費','経費','個別原価計算','部門別原価計算','製造間接費','総合原価計算','標準原価計算','直接原価計算','工業簿記総まとめ']);
 const SECS = {
   s3:  q => (q.level||3)===3,
-  s2c: q => q.level===2 && q.id<=266,
-  s2i: q => q.level===2 && q.id>=267,
+  s2c: q => q.level===2 && !IKOU_CATS.has(q.cat),
+  s2i: q => q.level===2 && IKOU_CATS.has(q.cat),
 };
 
 function getSectionQuestions(sec){ return sec ? ALL.filter(SECS[sec]) : ALL; }
