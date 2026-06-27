@@ -3626,9 +3626,9 @@ const ALL = [
     id:170,
     level:2,
     cat:'棚卸資産',
-    q:'（穴埋め）低価法：期末商品を「原価 vs 正味売却価額」のうち低い方で評価する（保守主義）。\n例）原価500円のりんごが時価350円に値下がり→350円で評価し150円の評価損を計上（値下がりリスクを早期認識）\n【①　　】と【②　　】のいずれか低い方。②は「見積売価から見積追加原価と見積販売費を【③　　】した額」。\n値上がりしても評価益は計上しない（保守的）',
+    q:'（穴埋め）\n━━ 低価法とは ━━\n期末商品を「原価 vs 正味売却価額」のうち低い方で評価するルール。\n値下がりしたら損失を早めに認識する（保守主義）。値上がりしても評価益は計上しない。\n━━━━━━━━━━\n\n期末商品の評価額は【①　　　　】と【②　　　　】のいずれか低い方とする。\n\n② 正味売却価額 の計算式：\n見積売価 から 見積追加原価と見積販売費を【③　　　　】した額',
     q_en:'(Fill in) Under the lower-of-cost-or-NRV rule, year-end inventory is valued at the lower of [①___] or [②___]. ② equals the estimated selling price [③___] estimated additional costs and selling costs.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>取得原価</td></tr><tr><td class="hl">②</td><td>正味売却価額（NRV）</td></tr><tr><td class="hl">③</td><td>控除（差し引いた）</td></tr></tbody></table><div class="formula-box">低価法：min（取得原価, 正味売却価額）<br>正味売却価額＝見積売価－見積追加原価－見積販売費</div>`,
+    a:'① 取得原価　② 正味売却価額（NRV）　③ 控除（差し引いた）\n\n【計算過程】\n正味売却価額 ＝ 見積売価 − 見積追加原価 − 見積販売費\n低価法評価額 ＝ min（取得原価, 正味売却価額）\n\n▶ ポイント：値下がりは評価損を計上するが、値上がりしても評価益は計上しない（保守主義）',
     exp:'低価法（Lower of Cost or NRV）は「原価と市場価値のうち低い方」で在庫評価する方法です。時価が原価を下回った場合、将来損失が確実なので今期に評価損を計上します（保守主義の原則）。日本基準では2008年改正後、低価法が強制適用されています。',
     exp_en:'The lower-of-cost-or-NRV method values inventory at whichever is lower: original cost or NRV. When market value falls below cost, the future loss is certain, so we recognize it now (conservatism principle). In Japanese GAAP, LCM became mandatory after the 2008 revision.',
     steps:[
@@ -3669,9 +3669,9 @@ const ALL = [
     id:173,
     level:2,
     cat:'棚卸資産',
-    q:'（穴埋め）棚卸減耗損の表示は「原価性の有無」で変わる。\n①原価性あり（通常の範囲内）例：倉庫内での自然蒸発・乾燥による微量の減耗→営業コストの一部→【②　　】に含める\n③原価性なし（異常な減耗・盗難等）例：洪水・火災・盗難による大量消失→通常の営業と無関係→【④　　】に表示\n「なぜなくなったか」がポイント：正常なら原価、異常なら別表示',
+    q:'（穴埋め）\n━━ 棚卸減耗損の表示区分とは ━━\n「なぜ在庫が減ったか」によって、損益計算書上の表示場所が変わる。\n正常な減耗は営業コストの一部（原価性あり）、異常な減耗は別表示（原価性なし）。\n━━━━━━━━━━\n\n① 原価性あり（通常範囲内の減耗）\n   例：倉庫内の自然蒸発・乾燥による微量の減耗\n   → 【②　　　　　　　　】に含める\n\n③ 原価性なし（異常な減耗・盗難等）\n   例：洪水・火災・盗難による大量消失\n   → 【④　　　　　　　　】に表示する',
     q_en:'(Fill in) Inventory shrinkage loss classification depends on cost nature: [①with cost nature (normal range)] → included in [②___]; [③without cost nature (abnormal/theft)] → shown under [④___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">②</td><td>売上原価（売上原価の内訳）</td></tr><tr><td class="hl">④</td><td>販売費及び一般管理費（または特別損失）</td></tr></tbody></table><div class="formula-box">原価性あり → 売上原価<br>原価性なし → 販管費 or 特別損失<br>※試験では問題の指示に従う</div>`,
+    a:'② 売上原価（売上原価の内訳）\n④ 販売費及び一般管理費（または特別損失）\n\n【まとめ】\n原価性あり → 売上原価\n原価性なし → 販管費 or 特別損失\n（試験では問題の指示に従う）\n\n▶ ポイント：「なぜなくなったか」がポイント。正常なら原価に含め、異常（盗難・災害）なら別表示',
     exp:'棚卸減耗損の表示は「その損失が正常な営業活動のコストか否か」で変わります。例えば倉庫内での通常の蒸発・乾燥による減耗は原価性ありで売上原価。一方、洪水や火災・盗難による異常な減耗は原価性なしで特別損失に計上します。',
     exp_en:'Shrinkage classification depends on whether the loss is a normal cost of operations. Normal evaporation or drying in a warehouse = cost nature → Cost of Goods Sold. Flood, fire, or theft = no cost nature → Special Loss. Follow exam instructions.',
     steps:[
@@ -3694,9 +3694,9 @@ const ALL = [
     id:175,
     level:2,
     cat:'棚卸資産',
-    q:'（穴埋め）スーパー・百貨店が何万品種もの商品を管理する方法。\n例）レジデータで売れ残り商品の売価合計が1,000円、原価率70%→期末原価＝1,000×70%＝700円と逆算\n→これを【①　　】という\n原価率【②】は「（期首棚卸原価＋仕入原価）÷（期首棚卸売価＋仕入売価）」で計算（仕入単価ではなく合計額ベース）\n長所：品種が多くても棚卸が楽 / 短所：原価率の精度に依存',
+    q:'（穴埋め）\n━━ 売価還元法とは ━━\nスーパー・百貨店が何万品種もの商品を一括管理する方法。\n「売価合計 × 原価率」で期末在庫の原価を逆算する。\n━━━━━━━━━━\n\n例）レジデータで売れ残り商品の売価合計が1,000円、原価率70%\n　→ 期末原価 ＝ 1,000 × 70% ＝ 700円（逆算できる！）\n\n① この方法を【①　　　　　　】という\n\n② 原価率の計算式：\n   原価率 ＝ （期首棚卸原価 ＋ 仕入原価） ÷ 【②　　　　　　　　　　　　　　　　　　　　　　】',
     q_en:'(Fill in) The method that estimates cost by applying a cost ratio to total selling prices (used to manage many items collectively) is called the [①___ method]. The cost ratio is calculated as [②___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>売価還元（原価）法</td></tr><tr><td class="hl">②</td><td>（期首棚卸原価＋当期仕入原価）÷（期首棚卸売価＋当期仕入売価）</td></tr></tbody></table><div class="formula-box">期末棚卸（原価）＝期末棚卸（売価）× 原価率</div>`,
+    a:'① 売価還元（原価）法\n② （期首棚卸売価 ＋ 仕入売価）\n\n【計算過程】\n原価率 ＝ （期首棚卸原価 ＋ 仕入原価） ÷ （期首棚卸売価 ＋ 仕入売価）\n期末棚卸（原価） ＝ 期末棚卸（売価） × 原価率\n\n▶ ポイント：仕入単価ではなく、合計額（原価合計 ÷ 売価合計）で原価率を計算する',
     exp:'売価還元法はスーパーやデパートで活躍する方法。何万品種もある商品をいちいち原価管理するのは大変なので、売価ベースで管理して原価率を掛けて原価に換算します。「レジのデータだけで在庫原価がわかる」実務的な方法です。',
     exp_en:'The retail inventory method is used by supermarkets and department stores managing thousands of items. Instead of tracking each item\'s cost individually, they manage by selling price and multiply by a cost ratio to estimate cost. "Inventory cost from register data alone."',
     steps:[
@@ -3708,9 +3708,9 @@ const ALL = [
     id:176,
     level:2,
     cat:'棚卸資産',
-    q:'（穴埋め）払出単価の計算方法：\n①【　法】スーパーの棚のように古い仕入から先に出す仮定。物価上昇時→安い旧単価から払出→売上原価↓→利益多→税負担増。期末在庫は新単価で残る\n②【　法】仕入のたびに（残高金額＋仕入金額）÷（残高数量＋仕入数量）で単価更新。価格変動を平均化。実務で最多使用\n③【　法】スーパー・百貨店が売価×原価率で原価を逆算。大量品種管理向け\n④期末に時価＜原価なら【　法】で評価損計上（値下がりリスクを早期認識）',
+    q:'（穴埋め）\n━━ 払出単価の4つの計算方法とは ━━\n在庫から商品が出ていくときの「1個あたりの原価」をどう決めるかのルール。\n方法によって利益や税負担が変わるので、選択は重要。\n━━━━━━━━━━\n\n①【　　　　】法\n   スーパーの棚のように古い仕入から先に出す仮定。\n   物価上昇時 → 安い旧単価から払出 → 売上原価↓ → 利益多 → 税負担増\n\n②【　　　　】法\n   仕入のたびに（残高金額＋仕入金額）÷（残高数量＋仕入数量）で単価更新。\n   価格変動を平均化。実務で最多使用。\n\n③【　　　　】法\n   スーパー・百貨店が売価×原価率で原価を逆算。大量品種管理向け。\n\n④ 期末に時価 ＜ 原価なら【　　　　】法で評価損を計上する',
     q_en:'(Fill in) Name three methods for calculating unit cost of merchandise issued. When year-end market value falls below cost, record a write-down under the [④___ method].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>先入先出法（FIFO）</td></tr><tr><td class="hl">②</td><td>移動平均法</td></tr><tr><td class="hl">③</td><td>売価還元法（小売業）</td></tr><tr><td class="hl">④</td><td>低価（LCM）</td></tr></tbody></table>`,
+    a:'① 先入先出法（FIFO）\n② 移動平均法\n③ 売価還元法（小売業）\n④ 低価（LCM）法\n\n【まとめ】\n先入先出法：古い仕入から先に払出（期末在庫は新しい単価で残る）\n移動平均法：仕入のたびに平均単価を再計算（実務で最多）\n売価還元法：売価合計 × 原価率 で逆算（大量品種管理向け）\n低価法：期末時価 ＜ 原価 なら評価損を計上（保守主義）\n\n▶ ポイント：払出方法の選択で毎期の利益が変わる。物価上昇時は先入先出法で利益が大きくなりやすい',
     exp:'払出単価の計算方法：先入先出法（古いものから先に売れる仮定）・移動平均法（仕入のたびに平均を更新）・売価還元法（売価から逆算）の3つが主要。期末評価には低価法（LCM）を適用し、NRVを下回る場合に評価損を計上します。',
     exp_en:'The three main cost flow methods: FIFO (oldest stock sold first), Moving Average (update average at each purchase), and Retail Inventory Method (back-calculate from selling price). For year-end valuation, the LCM rule applies — write down to NRV when it falls below cost.',
     steps:[
@@ -3825,9 +3825,9 @@ const ALL = [
     id:187,
     level:2,
     cat:'有価証券',
-    q:'（穴埋め）有価証券の分類と期末評価（4種類）:\n①売買目的（株のデイトレード感覚）→【ア　　】評価、差額は【イ　　】へ→含み益も即座に利益計上\n②満期保有目的債券（国債を満期まで持つ）→【ウ　　】法→時価変動は無視、利息収入のみ認識\n③その他有価証券（長期保有の株）→【エ　　】評価、差額は【オ　　】へ→利益でなくB/S純資産に直接反映\n④子会社・関連会社株式→【カ　　】法→時価変動なし、取得原価のまま計上',
+    q:'（穴埋め）\n━━ 有価証券4種類の期末評価とは ━━\n保有目的によって、期末にどう評価するかのルールが異なる。\n差額をP/Lに載せるか、B/S純資産に載せるかが最大のポイント。\n━━━━━━━━━━\n\n① 売買目的有価証券（短期売買目的）\n   期末評価 → 【ア　　　】評価\n   差額の処理 → 【イ　　　　　　】へ計上（損益計算書）\n\n② 満期保有目的債券（国債を満期まで保有）\n   期末評価 → 【ウ　　　　　　】法\n   （時価変動は無視し、利息収入のみ認識）\n\n③ その他有価証券（長期保有目的）\n   期末評価 → 【エ　　　】評価\n   差額の処理 → 【オ　　　　　　　　　　　　　　　　　　　　】へ計上（B/S純資産）\n\n④ 子会社・関連会社株式\n   期末評価 → 【カ　　　】法（取得原価のまま）',
     q_en:'(Fill in) Summarize investment classification and year-end valuation: ①Trading → [ア] valuation, difference to [イ]. ②HTM bonds → [ウ] method. ③Other → [エ] valuation, difference to [オ]. ④Subsidiary/associate → [カ] method.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>時価</td></tr><tr><td class="hl">イ</td><td>損益（P/L）</td></tr><tr><td class="hl">ウ</td><td>償却原価</td></tr><tr><td class="hl">エ</td><td>時価</td></tr><tr><td class="hl">オ</td><td>純資産（その他有価証券評価差額金）</td></tr><tr><td class="hl">カ</td><td>原価</td></tr></tbody></table>`,
+    a:'ア 時価　イ 損益（P/L）　ウ 償却原価　エ 時価　オ 純資産（その他有価証券評価差額金）　カ 原価\n\n【まとめ】\n売買目的 → 時価評価、差額はP/L（含み益も即座に利益）\n満期保有 → 償却原価法（時価変動無視）\nその他有価証券 → 時価評価、差額はB/S純資産\n子会社・関連会社 → 原価法（取得原価のまま）\n\n▶ ポイント：売買目的はP/L、その他有価証券はB/S純資産への差額計上が最大の違い',
     exp:'有価証券の分類は超重要！①売買目的→時価評価・差額はP/L（売れ筋の株と同じ扱い）②満期保有→償却原価法（コツコツ利息収入）③その他→時価評価・差額はB/S純資産（含み損益をB/Sに載せる）④子会社・関連会社→原価法（取得時のまま）。',
     exp_en:'Investment classification is critical! ①Trading → fair value, P&L impact ②HTM → amortized cost (steady interest income) ③Other → fair value, balance sheet equity impact ④Subsidiaries/associates → cost method (no remeasurement).',
     steps:[
@@ -3928,9 +3928,9 @@ const ALL = [
     id:196,
     level:2,
     cat:'社債',
-    q:'（穴埋め）社債の重要用語：\n①額面1,000万円の社債を970万円で発行（投資家に高利回りを提供）→これを【　割引（ディスカウント）】発行という。打歩発行（額面超え）の逆\n②発行差額30万円を3年間で毎年10万円ずつ費用化し帳簿価額を額面に近づける→【　償却原価】法という（定額法または利息法）\n③満期前に市場で自社社債を買い戻して消却→【　買入償還】という。帳簿価額より安く買えれば償還益、高ければ償還損が発生',
+    q:'（穴埋め）\n━━ 社債の3つの重要用語とは ━━\n社債は会社が発行する借金の証書。発行価格・償却方法・早期返済の3つを押さえる。\n━━━━━━━━━━\n\n① 額面1,000万円の社債を970万円で発行\n   → これを【①　　　　　　　　　　　　　　】発行という\n   （打歩発行（額面超え）の逆）\n\n② 発行差額30万円を3年間で毎年10万円ずつ費用化し帳簿価額を額面に近づける\n   → 【②　　　　　　　　　　　　　　　　　】法という\n   （定額法または利息法で配分）\n\n③ 満期前に市場で自社社債を買い戻して消却する\n   → 【③　　　　　　　　　】という\n   帳簿価額より安く買えれば「償還益」、高ければ「償還損」が発生',
     q_en:'(Fill in) ①When issue price is below face value, it is called [___] issuance. ②The method of allocating the difference between issue price and face value as periodic expense is the [___] method. ③Buying back bonds from the market is called [___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>割引（ディスカウント）</td></tr><tr><td class="hl">②</td><td>償却原価（定額法または利息法）</td></tr><tr><td class="hl">③</td><td>買入償還</td></tr></tbody></table><div class="formula-box">定額法：（額面－発行価額）÷残存年数<br>利息法：期首帳簿価額×実効利子率</div>`,
+    a:'① 割引（ディスカウント）\n② 償却原価（定額法または利息法）\n③ 買入償還\n\n【計算過程】\n定額法：年間償却額 ＝ （額面 − 発行価額） ÷ 残存年数\n利息法：実効利息 ＝ 期首帳簿価額 × 実効利子率\n\n▶ ポイント：割引発行の差額は「隠れた利息コスト」。償却原価法で毎期少しずつ費用化していく',
     exp:'社債のキーワード：①割引発行（発行価格＜額面、投資家に有利な利回りを提供）②償却原価法（定額法は毎年均等に、利息法はより正確な利息原価を配分）③買入償還（市場で買い戻して消却）。これら3つは頻出事項です。',
     exp_en:'Key bond terms: ①Discount issuance (issue price < face, offering investors a higher effective yield) ②Amortized cost method (straight-line: equal amounts; effective interest: accurate interest cost) ③Market redemption (buying back and retiring bonds). All three are frequently tested.',
     steps:[
@@ -4005,9 +4005,9 @@ const ALL = [
     id:203,
     level:2,
     cat:'引当金',
-    q:'（穴埋め）引当金の4要件（例：来期の賞与50万円を今期に計上する場合）：\n①将来の【ア　　】または損失→来期に50万円の賞与支払（費用）が生じる\n②【イ　　】期以前の事象が原因→今期の労働の対価として賞与が発生\n③発生の可能性が【ウ　　】→給与規程で賞与は確実に支払われる\n④金額が【エ　　】→給与規程から50万円と計算可能\n※「株価暴落リスク」は③を満たさないため引当不可',
+    q:'（穴埋め）\n━━ 引当金の4要件とは ━━\n将来の費用を今期に先取り計上するためには、4つの条件をすべて満たす必要がある。\n例：来期の賞与50万円を今期に計上する場合\n━━━━━━━━━━\n\n① 将来の【ア　　　】または損失が発生すること\n   → 来期に50万円の賞与支払（費用）が生じる\n\n② 【イ　　　】期以前の事象が原因であること\n   → 今期の労働の対価として賞与が発生している\n\n③ 発生の可能性が【ウ　　　　　　　　　　　　】\n   → 給与規程で賞与は確実に支払われる\n\n④ 金額を【エ　　　　　　　　　　　　　　　　】できること\n   → 給与規程から50万円と計算可能\n\n※「株価暴落リスク」は③を満たさないため引当計上できない',
     q_en:'(Fill in) Four conditions must all be met to recognize a provision: ①Future [ア] or loss ②Caused by events [イ] or prior periods ③Occurrence [ウ] ④Amount [エ].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>費用</td></tr><tr><td class="hl">イ</td><td>当（現在）</td></tr><tr><td class="hl">ウ</td><td>高い（合理的に見積もれる）</td></tr><tr><td class="hl">エ</td><td>合理的に見積もり</td></tr></tbody></table><div class="formula-box">4要件：①将来費用・損失 ②当期以前の原因 ③発生可能性が高い ④金額見積可能</div>`,
+    a:'ア 費用　イ 当（現在）　ウ 高い（合理的に見積もれる）　エ 合理的に見積もり\n\n【4要件まとめ】\n① 将来の費用または損失\n② 当期以前の事象が原因\n③ 発生可能性が高い\n④ 金額を合理的に見積もれる\n\n▶ ポイント：4つの条件をすべて満たして初めて引当金を計上できる。「株価暴落リスク」は③の確実性が不十分で引当不可',
     exp:'引当金の4要件は「将来コストの先取り計上」の正当性を担保します。例えば「来期の賞与」→①費用②当期の労働③かなり確実④給与規定で計算可能。一方「株価暴落リスク」は③発生可能性が不確かなため引当計上できません。',
     exp_en:'The 4 conditions justify recognizing a future cost now. Example — next period\'s bonus: ①future expense ②caused by current work ③highly probable ④calculable from salary rules. By contrast, "risk of stock market crash" fails condition ③ (not probable enough) and cannot be provisioned.'
 ,
@@ -4083,9 +4083,9 @@ const ALL = [
     id:210,
     level:2,
     cat:'本支店会計',
-    q:'（穴埋め）本支店合算B/S作成時の内部取引消去：\n例）本店が支店に現金100万円を送金\n→本店帳簿：「支店（資産）100万円」 ／ 支店帳簿：「本店（負債）100万円」\n→両方合算するとこの100万円が資産にも負債にも二重計上される\n→本店の【①　　】勘定と支店の【②　　】勘定が一致するため【③　　】消去する\n連結財務諸表の内部取引消去と同じ考え方',
+    q:'（穴埋め）\n━━ 本支店合算B/Sの内部消去とは ━━\n本店と支店を合算すると、内部取引が資産にも負債にも二重計上されてしまう。\nそれを消去して「会社全体」の正しいB/Sを作るのが内部消去。\n━━━━━━━━━━\n\n例）本店が支店に現金100万円を送金\n  本店帳簿：「支店（資産）100万円」\n  支店帳簿：「本店（負債的な勘定）100万円」\n  → 両方合算すると100万円が資産にも負債にも二重計上 !\n\n本店の【①　　　】勘定と支店の【②　　　】勘定は同じ取引の裏表\n→ 両者が一致するため【③　　　　　　】消去する',
     q_en:'(Fill in) When preparing the combined balance sheet, the head office\'s [①___] account and the branch\'s [②___] account must be [③___] because they represent the same internal relationship.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>支店</td></tr><tr><td class="hl">②</td><td>本店</td></tr><tr><td class="hl">③</td><td>相殺</td></tr></tbody></table><div class="formula-box">合算B/S作成手順：<br>①本店B/S＋支店B/S<br>②「支店」勘定と「本店」勘定を相殺消去<br>③内部利益を消去</div>`,
+    a:'① 支店　② 本店　③ 相殺\n\n【合算B/S作成手順】\n① 本店B/S ＋ 支店B/S（単純合算）\n② 「支店」勘定と「本店」勘定を相殺消去\n③ 内部利益（本店→支店の値増し分）を消去\n\n▶ ポイント：連結財務諸表の内部取引消去と同じ考え方。内部の取引は外部に見せる財務諸表から消す',
     exp:'本支店の合算財務諸表を作るときは、内部取引（本店↔支店）を消去します。「支店」勘定（本店の資産）と「本店」勘定（支店の負債的勘定）は同じ内部取引の裏表なので、合算すると相殺されてゼロになります。これは連結財務諸表の内部取引消去と同じ考え方です。',
     exp_en:'When combining HQ and branch financial statements, internal transactions must be eliminated. The "Branch" asset (HQ books) and "Head Office" liability-like account (branch books) are two sides of the same internal transaction — they cancel each other. Same logic as intercompany eliminations in consolidated statements.',
     steps:[
@@ -4098,9 +4098,9 @@ const ALL = [
     id:211,
     level:2,
     cat:'本支店会計',
-    q:'（穴埋め）本店が原価100,000円の商品に10%の利益を乗せ110,000円で支店に送付した。期末に支店在庫（送付価格）が55,000円残っている場合、消去すべき内部利益は【①】円。計算式：【②】',
+    q:'（穴埋め）\n━━ 内部利益消去とは ━━\n本店が商品に利益を乗せて支店に送った場合、支店の在庫に「まだ外部には売れていない利益」が含まれる。\nその未実現利益を合算B/Sから消去するのが内部利益消去。\n━━━━━━━━━━\n\n条件：本店が原価100,000円の商品に10%の利益を乗せ110,000円で支店に送付した。\n     期末に支店在庫（送付価格）が55,000円残っている。\n\n① まず内部利益率（利益額÷送付価格）を出す\n   内部利益率 ＝ 10,000 ÷ 110,000 ＝ 【①　　　　　　　　　　　　　　】\n\n② 消去すべき内部利益を計算する\n   消去額 ＝ 支店在庫 × 内部利益率\n   ＝ 55,000 × （　　　） ＝ 【②　　　　】円',
     q_en:'(Fill in) HQ shipped goods (cost ¥100,000) to branch at 10% markup (¥110,000). Branch has ¥55,000 of unsold inventory (at transfer price). Internal profit to eliminate: [①___]. Formula: [②___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>5,000円</td></tr><tr><td class="hl">②</td><td>支店在庫55,000×利益率10/110＝5,000円</td></tr></tbody></table><div class="formula-box">内部利益率：利益額÷送付価格＝10,000÷110,000＝10/110<br>消去額＝支店在庫（送付価格）×内部利益率</div>`,
+    a:'① 10/110（約0.0909）\n② 5,000円\n\n【計算過程】\n内部利益率 ＝ 10,000 ÷ 110,000 ＝ 10/110\n消去額 ＝ 55,000 × 10/110 ＝ 5,000円\n\n▶ ポイント：利益率の分母は「送付価格（110,000）」。取得原価（100,000）ではないことに注意',
     exp:'本支店間で商品を「利益乗せ」で送付すると、支店在庫の中に未実現の内部利益が含まれます。合算財務諸表では「外部に売れるまで利益は計上しない」ため、この内部利益を消去します。消去額＝在庫（送付価格）×利益率。利益率の分母は送付価格（10/110）であることに注意。',
     exp_en:'When goods are transferred at a markup, unsold branch inventory contains unrealized internal profit. In combined statements, profit is recognized only when sold to external customers. Eliminate: inventory (at transfer price) × profit margin. Note: the margin denominator is the transfer price (10/110), not cost.',
     steps:[
@@ -4111,9 +4111,9 @@ const ALL = [
     id:212,
     level:2,
     cat:'連結会計',
-    q:'（穴埋め）連結の範囲（3段階）：\n議決権50%超→他社を【①　　】=意思決定を左右できる→この支配される企業を【③　　】という→連結対象\n議決権20〜50%→「重要な影響力」→関連会社（持分法）\n議決権20%未満→原則対象外\n原則として議決権の【②　　】保有で子会社と判定（実質支配力基準もあり）',
+    q:'（穴埋め）\n━━ 連結の範囲（3段階）とは ━━\n議決権（投票権）の保有割合によって、どの会社を「グループ」として財務諸表に取り込むかが決まる。\n━━━━━━━━━━\n\n① 議決権50%超を保有\n   → 他社を【①　　　　　　　　　　　】できる\n   → この支配される企業を【③　　　　】という\n   → 連結財務諸表に取り込む（連結対象）\n\n② 議決権20〜50%を保有\n   → 「重要な影響力」あり → 関連会社（持分法を適用）\n\n③ 議決権20%未満\n   → 原則として連結対象外\n\n原則として議決権の【②　　　　　　】の保有で子会社と判定（実質支配力基準もあり）',
     q_en:'(Fill in) To [①___] another company for consolidation purposes, a company must generally own [②___] of the voting rights (directly and indirectly). This controlled company is called a [③___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>支配（連結の範囲に含める）</td></tr><tr><td class="hl">②</td><td>過半数（50%超）</td></tr><tr><td class="hl">③</td><td>子会社</td></tr></tbody></table><div class="formula-box">議決権50%超→子会社（原則連結）<br>議決権20%以上50%以下→関連会社（持分法適用）<br>議決権20%未満→通常は連結対象外</div>`,
+    a:'① 支配（連結の範囲に含める）\n② 過半数（50%超）\n③ 子会社\n\n【3段階まとめ】\n議決権50%超 → 子会社（原則連結）\n議決権20%以上50%以下 → 関連会社（持分法適用）\n議決権20%未満 → 通常は連結対象外\n\n▶ ポイント：50%超で子会社、20〜50%で関連会社、という二段階の線引きを覚える',
     exp:'連結の判定：①50%超の議決権→子会社（原則として連結対象）②20〜50%→関連会社（持分法）③20%未満→原則対象外。ただし「実質支配力基準」により、議決権が50%以下でも取締役会の過半数を占めるなど実質的に支配していれば子会社となります。',
     exp_en:'Consolidation scope: ①Over 50% voting rights → subsidiary (consolidate) ②20–50% → associate (equity method) ③Under 20% → generally excluded. However, the "substance control" standard may require consolidation even below 50% if de facto control exists (e.g., majority of board).',
     steps:[
@@ -4222,9 +4222,9 @@ const ALL = [
     id:222,
     level:2,
     cat:'連結会計',
-    q:'（穴埋め）連結純利益の帰属先（例：子会社60%保有、グループ純利益100万円）：\n→60万円は親会社株主のもの、40万円は他の株主のもの\n連結損益計算書では当期純利益を【①　　】と【②　　】に分けて表示\n「親会社の株主だけが全利益をもらえるわけではない」',
+    q:'（穴埋め）\n━━ 連結純利益の帰属先とは ━━\n子会社に「別の株主（非支配株主）」がいる場合、グループの利益は親会社の株主だけのものではない。\n利益を持分比率に応じて2つに分けて表示する。\n━━━━━━━━━━\n\n例：子会社60%保有、グループ純利益100万円\n　→ 60万円は「親会社の株主」のもの\n　→ 40万円は「子会社の別の株主」のもの\n\n連結損益計算書では当期純利益を\n【①　　　　　　　　　　　　　　　　　　　　　　　　　　　　】と\n【②　　　　　　　　　　　　　　　　　　　　　　　　　　　　】に分けて表示する',
     q_en:'(Fill in) In a consolidated income statement, net income is split between [①___] and [②___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>親会社株主に帰属する当期純利益</td></tr><tr><td class="hl">②</td><td>非支配株主に帰属する当期純利益</td></tr></tbody></table><div class="formula-box">連結純利益＝親会社帰属分＋非支配株主帰属分<br>例：連結純利益100,000円、NCI保有40%の場合<br>→親会社帰属60,000円、NCI帰属40,000円</div>`,
+    a:'① 親会社株主に帰属する当期純利益\n② 非支配株主に帰属する当期純利益\n\n【計算過程】\n連結純利益 ＝ 親会社帰属分 ＋ 非支配株主帰属分\n例：連結純利益100,000円、NCI保有40%\n→ 親会社帰属 60,000円、NCI帰属 40,000円\n\n▶ ポイント：親会社の株主だけが全利益をもらえるわけではない。持分比率で按分して表示',
     exp:'連結純利益は「グループ全体の利益」ですが、子会社に非支配株主がいる場合は利益を按分します。例えばA子会社（60%保有）の純利益100,000円のうち、親会社帰属は60,000円、非支配株主帰属は40,000円です。「親会社の株主だけが全額もらえるわけではない」。',
     exp_en:'Consolidated net income represents the entire group\'s earnings. When subsidiaries have NCI, profits are split proportionally. E.g., subsidiary net income ¥100,000 with 60% ownership: parent\'s share = ¥60,000, NCI share = ¥40,000. Parent shareholders don\'t receive 100% of the subsidiary\'s profit.',
     steps:[
@@ -4236,9 +4236,9 @@ const ALL = [
     id:223,
     level:2,
     cat:'連結会計',
-    q:'（穴埋め）のれん（超過払い分）の計算：\n例）純資産600万円のA社を800万円で買収\n→のれん＝800万円（【①　　】）－600万円（【②　　】）＝200万円\n→200万円はブランド・技術・顧客基盤などの「見えない価値」\n→原則として【③　　】年以内に毎期均等償却（IFRSは償却しない＝差異注意）\n純資産より安く買えた場合は「負ののれん」→即時利益計上',
+    q:'（穴埋め）\n━━ のれんとは ━━\n他の会社を買収するとき、純資産より多く払った「超過払い分」。\nブランド力・技術・顧客基盤など帳簿に載らない価値への対価。\n━━━━━━━━━━\n\n例）純資産600万円のA社を800万円で買収\n\n① まず「何に対して何を払ったか」を整理する\n   投資額（払ったお金）  ＝ 【①　　　　　　　　　　　　　　　　　　　　　　　】\n   純資産持分（相当価値）＝ 【②　　　　　　　　　　　　　　　　　　　　　　　】\n\n② のれん ＝ 投資額 − 純資産持分\n   ＝ 800万円 − 600万円 ＝ 200万円\n   → ブランド・技術・顧客基盤などの「見えない価値」\n\n③ のれんの償却\n   原則として【③　　　　】年以内に毎期均等償却\n   （IFRSは償却しない←差異に注意）\n\n純資産より安く買えた場合 → 「負ののれん」 → 即時利益計上',
     q_en:'(Fill in) In consolidated statements, goodwill is the difference between [①___] and [②___], and is amortized over [③___] years or less on a straight-line basis.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>子会社株式の取得原価（投資額）</td></tr><tr><td class="hl">②</td><td>取得時の子会社純資産の持分額（投資企業の持分相当額）</td></tr><tr><td class="hl">③</td><td>20</td></tr></tbody></table><div class="formula-box">のれん＝投資額－（子会社純資産×持分比率）<br>正ののれん→無形固定資産（資産）<br>負ののれん→のれん発生益（利益）</div>`,
+    a:'① 子会社株式の取得原価（投資額）\n② 取得時の子会社純資産の持分額（投資企業の持分相当額）\n③ 20年以内\n\n【計算過程】\nのれん ＝ 投資額 − （子会社純資産 × 持分比率）\n＝ 8,000,000 − 6,000,000 ＝ 2,000,000円\n\n正ののれん → 無形固定資産（資産）として計上 → 20年以内に均等償却\n負ののれん → のれん発生益（利益）として即時計上\n\n▶ ポイント：日本基準は20年以内で償却するが、IFRSは償却なし（減損テストのみ）',
     exp:'のれんは「子会社を買う時に純資産以上に払った超過額」。「なぜ超過額を払うの？」→ブランド力・技術力・顧客基盤・社員など帳簿に載らない価値があるから。正ののれん（超過払い）は資産計上→20年以内に費用化。負ののれん（安く買えた場合）は「のれん発生益」として一時に利益計上。',
     exp_en:'Goodwill = amount paid over and above net assets. "Why pay more than book value?" — for unrecorded value: brand, technology, customer base, workforce. Positive goodwill → amortize over 20 years. Negative goodwill (bargain purchase) → recognize as immediate income ("badwill").',
     steps:[
@@ -4251,9 +4251,9 @@ const ALL = [
     id:224,
     level:2,
     cat:'連結会計',
-    q:'（穴埋め）持分法（議決権20〜50%の関連会社に適用）：\n例）B社（30%保有）の純利益が100万円\n→A社は30万円の「持分法による投資利益」を計上\n→「関連会社株式」帳簿価額も30万円増加\n持分法とは、投資会社が【①　　】に対して適用する方法で、被投資会社の純損益のうち【②　　】に相当する額を投資の帳簿価額と損益に反映させる\n（子会社は連結でまるごと取り込むが、関連会社は持分比率分だけ反映する簡便法）',
+    q:'（穴埋め）\n━━ 持分法とは ━━\n関連会社（20〜50%保有）の損益を、持分比率分だけ自社の損益に反映させる方法。\n子会社（50%超）は「連結」でまるごと取り込むが、関連会社は持分分だけ反映。\n━━━━━━━━━━\n\n持分法とは、投資会社が【①　　　　　　　　　　　　　　　　　】に対して適用する方法で、\n被投資会社の純損益のうち【②　　　　　　　　　　　　　　　　　　　　】に相当する額を\n投資の帳簿価額と損益に反映させる。\n\n例）B社（30%保有）の純利益が100万円\n→ A社は30万円の「持分法による投資利益」を計上\n→ 「関連会社株式」帳簿価額も30万円増加',
     q_en:'(Fill in) The equity method is applied to [①___] companies. It adjusts the investment\'s carrying value and the investor\'s P&L by [②___] of the investee\'s net income.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>関連会社（議決権20〜50%）</td></tr><tr><td class="hl">②</td><td>投資会社の持分比率（保有割合）</td></tr></tbody></table><div class="formula-box">仕訳例（持分法）：<br>関連会社純利益100,000円×30%保有<br>→（借）関連会社株式30,000 ／（貸）持分法による投資利益30,000</div>`,
+    a:'① 関連会社（議決権20〜50%）\n② 投資会社の持分比率（保有割合）\n\n【仕訳例（持分法）】\n関連会社純利益100,000円 × 30%保有\n（借）関連会社株式 30,000 ／ （貸）持分法による投資利益 30,000\n\n▶ ポイント：子会社は連結でまるごと取り込む。関連会社は持分比率分だけ損益に反映（簡便法）',
     exp:'持分法は「関連会社の損益を持分比率に応じて投資会社に認識させる」方法です。例えばB社（30%保有）の純利益が100,000円なら、A社は30,000円の「持分法による投資利益」を計上し、「関連会社株式」帳簿価額も30,000円増加します。連結（支配）とは異なり、全資産・全負債は取り込みません。',
     exp_en:'The equity method recognizes the investor\'s proportional share of the investee\'s net income. Example: 30% stake in B Co. with ¥100,000 net income → recognize ¥30,000 investment income and increase the investment\'s carrying value by ¥30,000. Unlike full consolidation, individual assets/liabilities are not taken over.',
     steps:[
@@ -4287,9 +4287,9 @@ const ALL = [
     id:227,
     level:2,
     cat:'税効果会計',
-    q:'（穴埋め）税効果会計「一時差異」（今はズレているが将来解消する差異）：\n例①：貸倒引当金50万→会計費用OK、税務は今期は損金NG→将来貸倒れで解消→課税所得減少→【③　　】差異→繰延税金資産（将来の節税権）\n例②：その他有価証券評価益→会計収益、税務は今期益金NG→将来売却で解消→課税所得増加→【④　　】差異→繰延税金負債\n一時差異＝【①　　】と【②　　】の差額',
+    q:'（穴埋め）\n━━ 税効果の一時差異とは ━━\n会計と税務のルールの違いにより生じる、「今はズレているが将来解消する」差異のこと。\n将来税金が減るか増えるかで、繰延税金資産か繰延税金負債かが決まる。\n━━━━━━━━━━\n\n一時差異 ＝ 【①　　　　　　　　　　　　　　　　　　　　】と\n           【②　　　　　　　　　　　　　　　　　　　　】の差額\n\n例①：貸倒引当金（将来減算差異）\n   会計上費用→税務は今期損金NG→将来貸倒れで解消→課税所得減少\n   → 【③　　　　　　　】差異 → 繰延税金資産（将来の節税権）\n\n例②：その他有価証券評価益（将来加算差異）\n   会計収益→税務は今期益金NG→将来売却で解消→課税所得増加\n   → 【④　　　　　　　】差異 → 繰延税金負債',
     q_en:'(Fill in) A "temporary difference" in tax effect accounting is the difference between [①___] and [②___]. Differences that reduce taxable income when they reverse are [③___] differences; those that increase it are [④___] differences.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>会計上の資産・負債の帳簿価額</td></tr><tr><td class="hl">②</td><td>税務上の資産・負債の金額（税務基準額）</td></tr><tr><td class="hl">③</td><td>将来減算（繰延税金資産）</td></tr><tr><td class="hl">④</td><td>将来加算（繰延税金負債）</td></tr></tbody></table>`,
+    a:'① 会計上の資産・負債の帳簿価額\n② 税務上の資産・負債の金額（税務基準額）\n③ 将来減算（繰延税金資産）\n④ 将来加算（繰延税金負債）\n\n【まとめ】\n将来減算差異 → 繰延税金資産（将来の節税権）\n将来加算差異 → 繰延税金負債（将来の税金追加払い）\n\n▶ ポイント：「将来に税金が減るか増えるか」で判断。減る→資産、増える→負債',
     exp:'一時差異は「今期は会計と税務でずれているが、将来解消する差異」です。例：①貸倒引当金超過額（今期は費用・非損金→将来解消時に損金）→将来減算差異→繰延税金資産。②その他有価証券評価益（今期は収益・非益金→将来売却時に益金）→将来加算差異→繰延税金負債。',
     exp_en:'A temporary difference exists now between accounting and tax values, but reverses in the future. Example ①: Bad debt allowance excess (expensed now, deductible later) → deductible temporary difference → deferred tax asset. Example ②: Other securities gain (recognized now, taxed when sold) → taxable temporary difference → deferred tax liability.',
     steps:[
@@ -4313,9 +4313,9 @@ const ALL = [
     id:229,
     level:2,
     cat:'税効果会計',
-    q:'（穴埋め）税効果会計「永久差異」（会計と税務の差が永遠に解消しない）：\n例①：接待交際費50万→会計では費用、税務では永遠に損金不算入（将来も解消しない）\n例②：受取配当金（二重課税防止のため益金不算入）→会計では収益、税務では永遠に益金不算入\n永久差異には繰延税金資産・負債を計上【①　　】\n→将来に課税関係が生じないため\n代表例：【②　　】（費用だが永遠に損金NG）、【③　　】（収益だが永遠に益金NG）',
+    q:'（穴埋め）\n━━ 永久差異とは ━━\n会計と税務の差が「永遠に解消しない」差異のこと。\n将来に課税関係が生じないので、繰延税金資産・負債の計上対象外。\n━━━━━━━━━━\n\n例①：接待交際費50万円\n   会計では費用 → 税務では永遠に損金不算入（将来も解消しない）\n\n例②：受取配当金（二重課税防止のため益金不算入）\n   会計では収益 → 税務では永遠に益金不算入\n\n永久差異には繰延税金資産・負債を計上【①　　　　　　　　】\n（将来に課税関係が生じないため）\n\n代表例：\n【②　　　　　　　　　　　　　　　　　　　】（費用だが永遠に損金NG）\n【③　　　　　　　　　　　　　　　　　　　】（収益だが永遠に益金NG）',
     q_en:'(Fill in) Tax effect accounting does [①___] deferred taxes for "permanent differences." Examples include [②___] (recognized as expense but never tax-deductible) and [③___] (recognized as income but never taxable).',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>しない（対象外）</td></tr><tr><td class="hl">②</td><td>交際費の損金不算入額、罰金・課徴金</td></tr><tr><td class="hl">③</td><td>受取配当金の益金不算入額</td></tr></tbody></table><div class="formula-box">永久差異→繰延税金資産・負債なし<br>一時差異→繰延税金資産または負債あり</div>`,
+    a:'① しない（対象外）\n② 交際費の損金不算入額、罰金・課徴金\n③ 受取配当金の益金不算入額\n\n【まとめ】\n永久差異 → 繰延税金資産・負債なし（将来に課税効果がない）\n一時差異 → 繰延税金資産または負債あり（将来に課税効果がある）\n\n▶ ポイント：「将来解消するか？」が判断基準。永久に解消しないなら繰延税金は計上しない',
     exp:'永久差異は「会計と税務の差が永遠に解消しない」差異です。交際費の損金不算入（会計上費用、税務上は永遠に損金不算入）は永久差異。将来課税関係を生じないので繰延税金資産・負債を計上しません。一方、一時差異は「今はずれているが将来解消する」→繰延税金資産・負債の対象。',
     exp_en:'Permanent differences never reverse — they stay as accounting/tax gaps forever. Entertainment expense disallowance (expensed in accounting, permanently non-deductible) is a permanent difference. No deferred tax is recognized because there\'s no future tax impact. Temporary differences (gap reverses later) → recognize deferred taxes.',
     steps:[
@@ -4342,9 +4342,9 @@ const ALL = [
     id:231,
     level:2,
     cat:'税効果会計',
-    q:'（穴埋め）繰延税金資産の回収可能性：\n繰延税金資産＝「将来の節税権」だが、将来に黒字（課税所得）がなければ節税できない\n例）毎期赤字が続く会社→将来の課税所得がないと予測→繰延税金資産は「絵に描いた餅」\n回収可能性とは【①　　】どうかの判断\n回収可能性がないと判断された場合は【②　　】必要がある',
+    q:'（穴埋め）\n━━ 繰延税金資産の回収可能性とは ━━\n繰延税金資産は「将来の節税権」だが、将来に黒字がなければ節税できない「絵に描いた餅」。\n本当に使えるか（回収できるか）を判断しなければならない。\n━━━━━━━━━━\n\n例）毎期赤字が続く会社\n→ 将来の課税所得がないと予測\n→ 繰延税金資産は実際には使えない\n\n① 回収可能性とは\n   【①　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】どうかの判断\n\n② 回収可能性がないと判断された場合\n   【②　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】必要がある',
     q_en:'(Fill in) The recoverability of a deferred tax asset refers to whether [①___]. If not recoverable, it is necessary to [②___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>将来十分な課税所得が発生し、繰延税金資産が実際に使える（税金が減額される）</td></tr><tr><td class="hl">②</td><td>評価性引当額を設定し、繰延税金資産を減額（取り消し）する</td></tr></tbody></table>`,
+    a:'① 将来十分な課税所得が発生し、繰延税金資産が実際に使える（税金が減額される）どうかの判断\n② 評価性引当額を設定し、繰延税金資産を減額（取り消し）する\n\n【まとめ】\n繰延税金資産を計上できる → 将来に課税所得が見込める場合のみ\n回収可能性がない → 評価性引当額を設定して繰延税金資産を減額\n\n▶ ポイント：赤字続きの会社は将来の課税所得がないので、繰延税金資産を減額（または計上しない）必要がある',
     exp:'繰延税金資産は「将来の節税権」ですが、将来に課税所得がなければ節税できません（黒字がなければ税金を減らせない）。そこで「回収可能性」の検討が必要：将来の課税所得見込みがなければ繰延税金資産を計上しないか、評価性引当額で減額します。「絵に描いた餅にならないか確認する」作業です。',
     exp_en:'A deferred tax asset is a "future tax savings right" — but only useful if there is future taxable income to offset. With no future profits, the deferred asset cannot be recovered. Hence: assess recoverability. If insufficient future income, reduce or eliminate the deferred tax asset with a valuation allowance. "Verify it\'s not just a paper benefit."',
     steps:[
@@ -4356,9 +4356,9 @@ const ALL = [
     id:232,
     level:2,
     cat:'リース会計',
-    q:'（穴埋め）ファイナンス・リースの判定要件（「実質的な購入」とみなす2条件）：\n①【　　　】：リース期間中は途中解約できない（または巨額の違約金が生じる）\n　→会社は全リース料を支払う義務あり（ローンと同じ拘束力）\n②【フ　　】：支払リース料の合計≒物件の購入価額（経済的価値のほぼ全額を回収）\n①②両方OK→ファイナンス・リース→リース資産・リース債務をB/S計上（実質購入扱い）\n①②どちらか欠ける→オペレーティング・リース→費用処理のみ（賃貸借）',
+    q:'（穴埋め）\n━━ ファイナンス・リースの判定とは ━━\n形式上は「借りている」でも、実質的に「買ったのと同じ」と判断されると、\nリース資産・リース債務をB/Sに計上しなければならない（ファイナンス・リース）。\n━━━━━━━━━━\n\n判定要件（2つとも満たすとファイナンス・リース）：\n\n①【　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】\n   → リース期間中は途中解約できない（または巨額の違約金が生じる）\n   → 会社は全リース料を支払う義務あり（ローンと同じ拘束力）\n\n②【フ　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】\n   → 支払リース料の合計 ≒ 物件の購入価額（経済的価値のほぼ全額）\n\n①② 両方OK → ファイナンス・リース → B/S計上（実質購入扱い）\n①② どちらか欠ける → オペレーティング・リース → 費用処理のみ（賃貸借）',
     q_en:'(Fill in) State two conditions that classify a lease as a finance lease: ① [___] ② [___]',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>解約不能：リース期間中に解約できない（または中途解約で多大な違約金が生じる）</td></tr><tr><td class="hl">②</td><td>フルペイアウト：リース物件の経済的価値のほぼすべてをリース料として支払う（借手が実質的にリスクと便益を享受）</td></tr></tbody></table><div class="formula-box">①②両方満たす→ファイナンス・リース（資産・負債を計上）<br>どちらかでも満たさない→オペレーティング・リース（費用処理）</div>`,
+    a:'① 解約不能：リース期間中に解約できない（または中途解約で多大な違約金が生じる）\n② フルペイアウト：リース物件の経済的価値のほぼすべてをリース料として支払う\n\n【判断基準まとめ】\n①② 両方満たす → ファイナンス・リース（資産・負債を計上）\nどちらかでも満たさない → オペレーティング・リース（費用処理）\n\n▶ ポイント：形式上は「借りている」でも実質が「購入と同じ」ならB/Sに載せる。実質優先の考え方',
     exp:'ファイナンス・リースは「実質的に資産を購入したのと同じ」と考えます。①解約不能（途中でやめられない）②フルペイアウト（支払総額≒購入価格）の2条件を満たす場合、リース物件を自社資産として計上し、リース債務を負債計上します。形式は賃貸借でも実質は購入なのです。',
     exp_en:'A finance lease is economically equivalent to purchasing an asset. Two conditions: ①Non-cancellable (or cancellation triggers significant penalties) ②Full payout (total lease payments ≈ fair value of the asset, i.e., lessee bears substantially all risks and rewards). If both met: record asset and liability. Even if legally a rental, economically it\'s a purchase.',
     steps:[
@@ -4467,9 +4467,9 @@ const ALL = [
     id:242,
     level:2,
     cat:'外貨換算',
-    q:'（穴埋め）外貨建て項目の換算レート（貨幣性 vs 非貨幣性）：\n①売掛金・買掛金・現金・借入金など「決済額が一定の通貨額で確定する」→【ア　　】性項目→毎期末に【イ　　】で再換算→為替差損益が発生\n　例）$1,000売掛金：期末CR=108円→108,000円に再評価→差額は為替差損益\n②前払費用・棚卸資産・固定資産など「将来に現金でなく財・サービスで回収する」→【ウ　　】性項目→取得時の【エ　　】のまま→期末に再換算しない→為替差損益なし',
+    q:'（穴埋め）\n━━ 外貨建て換算レートの選択とは ━━\n外貨建て項目（ドル建て等）を円に換算するとき、「貨幣性か非貨幣性か」によってどのレートを使うかが異なる。\n━━━━━━━━━━\n\n① 売掛金・買掛金・現金・借入金など\n   「決済額が一定の通貨額で確定する」項目\n   → 【ア　　　】性項目\n   → 毎期末に【イ　　　　　　　　　　　　　　】で再換算\n   → 為替差損益が発生する\n   例）$1,000売掛金：期末CR=108円 → 108,000円に再評価\n\n② 前払費用・棚卸資産・固定資産など\n   「将来に現金でなく財・サービスで回収する」項目\n   → 【ウ　　　】性項目\n   → 取得時の【エ　　　　　　　　　　　　　　】のまま\n   → 期末に再換算しない → 為替差損益なし',
     q_en:'(Fill in) Translation rate rules: ①[ア___] items (receivables, payables, cash) → [イ___ (CR)]. ②[ウ___] items (prepaid expenses, inventory) → [エ___ (HR)].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>貨幣</td></tr><tr><td class="hl">イ</td><td>決算時レート（期末レート）</td></tr><tr><td class="hl">ウ</td><td>非貨幣</td></tr><tr><td class="hl">エ</td><td>取引時レート（歴史的レート）</td></tr></tbody></table><div class="formula-box">貨幣性→CR換算→為替差損益発生あり<br>非貨幣性→HR換算→為替差損益なし</div>`,
+    a:'ア 貨幣\nイ 決算時レート（期末レート）\nウ 非貨幣\nエ 取引時レート（歴史的レート）\n\n【まとめ】\n貨幣性 → CR換算（期末レート）→ 為替差損益発生あり\n非貨幣性 → HR換算（取引時レート）→ 為替差損益なし\n\n▶ ポイント：「現金で決済される項目（貨幣性）」は期末レートで再評価。「モノやサービスで回収（非貨幣性）」は取引時レートのまま',
     exp:'「貨幣性」とは「一定の貨幣額で決済される」性質。売掛金・買掛金・現金・借入金など→毎期末にCRで再評価→為替差損益発生。「非貨幣性」は商品・固定資産・前払費用など→取得時のHRのまま→期末に換算替えしない（評価替えしない）。',
     exp_en:'"Monetary" items settle at a fixed amount of currency (receivables, payables, cash, loans) → revalue at CR each year-end → generate FX gains/losses. "Non-monetary" items (inventory, fixed assets, prepaid expenses) → retain HR from acquisition date → no year-end revaluation → no FX impact.',
     steps:[
@@ -4494,9 +4494,9 @@ const ALL = [
     id:244,
     level:2,
     cat:'収益認識',
-    q:'（穴埋め）収益認識基準の5ステップ（例：ソフトウェア100万＋1年間保守20万のセット販売）：\n①【　　　】の識別：「ソフト＋保守のセット契約」を識別\n②【　　　】の識別：「①ソフト納品」「②1年間の保守サポート」の2つの約束を特定\n③【　　　】の算定：合計120万円\n④取引価格を履行義務へ【　　　】：ソフト100万・保守20万に振り分け\n⑤履行義務を充足したときに【　　　】を認識：ソフト納品時に100万、保守は1年かけて月1.6万ずつ計上',
+    q:'（穴埋め）\n━━ 収益認識5ステップとは ━━\n「いくら・いつ収益を計上するか」を決める国際的なルール（2021年4月から日本でも強制適用）。\n5つのステップをすべて踏んで収益を認識する。\n━━━━━━━━━━\n\n例：ソフトウェア100万 ＋ 1年間保守20万のセット販売\n\n① 【①　　　　　】の識別\n   「ソフト＋保守のセット契約」を識別する\n\n② 【②　　　　　　　　】の識別\n   「①ソフト納品」「②1年間の保守サポート」の2つの約束を特定\n\n③ 【③　　　　　　　　】の算定\n   合計120万円と算定する\n\n④ 取引価格を履行義務へ【④　　　　　】する\n   ソフト100万・保守20万に振り分ける\n\n⑤ 履行義務を充足したときに【⑤　　　　　　　　】を認識\n   ソフト納品時に100万、保守は1年かけて月1.6万ずつ計上',
     q_en:'(Fill in) State the 5-step revenue recognition model: ① Identify the [___] ② Identify the [___] ③ Determine the [___] ④ [___] the transaction price ⑤ Recognize [___] when performance obligations are satisfied.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>契約</td></tr><tr><td class="hl">②</td><td>履行義務</td></tr><tr><td class="hl">③</td><td>取引価格</td></tr><tr><td class="hl">④</td><td>配分する</td></tr><tr><td class="hl">⑤</td><td>収益（売上高）</td></tr></tbody></table><div class="formula-box">Step1：契約識別 → Step2：履行義務識別 → Step3：取引価格算定 → Step4：配分 → Step5：収益認識</div>`,
+    a:'① 契約\n② 履行義務\n③ 取引価格\n④ 配分\n⑤ 収益（売上高）\n\n【5ステップまとめ】\nStep1 契約識別 → Step2 履行義務識別 → Step3 取引価格算定 → Step4 配分 → Step5 収益認識\n\n▶ ポイント：「約束（履行義務）を果たしたとき」に収益を計上する。商品引渡しか役務完了かで計上タイミングが変わる',
     exp:'収益認識の5ステップは2021年4月から強制適用。「①どんな契約？→②何をする約束？→③いくらもらえる？→④各約束にいくら配分？→⑤約束を果たしたら収益計上」という流れ。例：ソフトウェア販売＋保守サービスのセット→2つの履行義務に分解し、それぞれ果たした時点で収益認識。',
     exp_en:'The 5-step model (mandatory in Japan from April 2021): ①What\'s the contract? ②What promises are made? ③How much is the consideration? ④Allocate to each promise ⑤Recognize revenue when each promise is fulfilled. Example: bundled software + maintenance → split into 2 performance obligations, recognize each when delivered.',
     steps:[
@@ -4522,9 +4522,9 @@ const ALL = [
     id:246,
     level:2,
     cat:'収益認識',
-    q:'（穴埋め）契約資産 vs 売掛金（例：2フェーズ開発：フェーズ1完了で500万・フェーズ2完了でさらに500万）：\n・フェーズ1完了直後：請求できるのはフェーズ2完了後→「まだ条件あり」\n　→【①　　】とは「追加履行を条件とする、対価を受け取る権利（条件付き請求権）」\n・フェーズ2も完了：もう条件なし・即時請求可能\n　→【②　　】とは「無条件に対価を請求できる権利（無条件の請求権）」\n条件付き→契約資産、無条件→売掛金と覚える',
+    q:'（穴埋め）\n━━ 契約資産 vs 売掛金とは ━━\nどちらも「お金をもらう権利」だが、「条件があるか・ないか」で区別する。\n条件があればまだ請求できない（契約資産）、条件がなければ即請求できる（売掛金）。\n━━━━━━━━━━\n\n例）2フェーズ開発：フェーズ1完了で500万・フェーズ2完了でさらに500万\n\n・フェーズ1完了直後：請求できるのはフェーズ2完了後\n  → 「まだ追加の履行条件あり」\n  → 【①　　　　　　　　　　　　　　　　　　　　】\n  （追加履行を条件とする、対価を受け取る権利＝条件付き請求権）\n\n・フェーズ2も完了：もう条件なし・即時請求可能\n  → 「無条件に請求できる」\n  → 【②　　　　　　　　　　　　　　　　　　　　】\n  （無条件に対価を請求できる権利＝無条件の請求権）',
     q_en:'(Fill in) Explain the difference between "contract asset" and "trade receivable" under the revenue recognition standard. ①Contract asset: a right to [___]. ②Trade receivable: a right to [___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①契約資産</td><td>企業が顧客に財やサービスを移転したが、顧客の支払いが企業の追加的な履行（他の約束の充足）を条件とする場合の対価を受け取る権利</td></tr><tr><td class="hl">②売掛金</td><td>企業がすでに履行義務を果たしており、対価を受け取る無条件の権利（時の経過のみで対価請求が可能）</td></tr></tbody></table><div class="formula-box">契約資産：まだ条件あり（追加の履行が必要）→資産計上<br>売掛金：無条件の請求権→売掛金計上</div>`,
+    a:'① 契約資産（条件付きの請求権）\n② 売掛金（無条件の請求権）\n\n【まとめ】\n契約資産：まだ追加の履行が必要 → 条件付き請求権 → 資産計上\n売掛金：追加の条件なし → 無条件の請求権 → 売掛金計上\n\n▶ ポイント：「条件付き → 契約資産、無条件 → 売掛金」。フェーズが完了するたびに契約資産から売掛金へ振替',
     exp:'例：ソフトウェア開発（フェーズ1：500万円、フェーズ2：500万円）。フェーズ1完了→フェーズ2まで請求できない→「契約資産」。フェーズ2も完了→無条件に請求可能→「売掛金」に振替。「条件付き権利＝契約資産」「無条件権利＝売掛金」と覚えましょう。',
     exp_en:'Example: software dev (Phase 1: ¥5M, Phase 2: ¥5M). After Phase 1 → can\'t invoice until Phase 2 completes → "Contract Asset." After Phase 2 → unconditional right to payment → reclassify to "Accounts Receivable." Rule: conditional right = contract asset; unconditional right = trade receivable.',
     steps:[
@@ -4547,9 +4547,9 @@ const ALL = [
     id:248,
     level:2,
     cat:'収益認識',
-    q:'（穴埋め）変動対価（もらえる金額が確定していない部分）：\n①【　　　】例：Tシャツ100枚販売、10枚返品見込み→10枚分は収益から除き返金負債として計上\n②【　　　】例：目標売上1億達成で追加100万報酬→達成がほぼ確実な場合のみ収益に含める\n変動対価を含める基準：【③　　】範囲\n→「ほぼ確実に受け取れる分だけ収益計上」が基本姿勢',
+    q:'（穴埋め）\n━━ 変動対価とは ━━\n「もらえる金額が確定していない部分」のこと。\n確実に受け取れる分だけを収益として計上するのが基本姿勢。\n━━━━━━━━━━\n\n① 返品が見込まれる場合の変動対価\n   例：Tシャツ100枚販売、10枚返品見込み\n   → 10枚分は収益から除き【①　　　　　　　　　　　　】として計上\n\n② 目標達成時の追加報酬（業績連動型）\n   例：目標売上1億達成で追加100万報酬\n   → 達成がほぼ確実な場合のみ収益に含める\n   → これを【②　　　　　　　　　　　　　　　】という\n\n変動対価を取引価格に含める基準：\n【③　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】範囲',
     q_en:'(Fill in) Variable consideration is a transaction price component subject to variability. Examples: [①___] (estimated refunds when returns are expected) and [②___] (bonuses triggered by hitting targets). Variable consideration is included in the transaction price to the extent [③___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>返金負債（返品見込み額）</td></tr><tr><td class="hl">②</td><td>業績ボーナス（インセンティブ報酬）</td></tr><tr><td class="hl">③</td><td>重大な収益の戻し入れが生じない可能性が非常に高い（収益の減額リスクが低い）</td></tr></tbody></table>`,
+    a:'① 返金負債（返品見込み額）\n② 業績ボーナス（インセンティブ報酬）\n③ 重大な収益の戻し入れが生じない可能性が非常に高い範囲\n\n【まとめ】\n変動対価 ＝ もらえる金額が確定していない部分\n返品見込みは返金負債で控除し、確実な分だけ収益計上\n業績ボーナスは達成がほぼ確実な場合のみ収益に含める\n\n▶ ポイント：「ほぼ確実に受け取れる分だけ収益計上」。不確実な部分は収益から除いて後で調整',
     exp:'変動対価は「もらえる金額が確定していない部分」です。例えば返品権付き販売では返品されたら代金を返すので、見込み返品額は収益から除きます。業績ボーナスは達成できるかどうかによって変わるので、達成がほぼ確実な場合にのみ取引価格に含めます。「確実に受け取れる部分だけを収益として計上する」のが基本です。',
     exp_en:'Variable consideration is the uncertain part of what you\'ll receive. For sales with return rights, expected refunds are excluded from revenue. Performance bonuses are included only when it\'s highly probable the targets will be met — avoiding a significant revenue reversal later. Core principle: "recognize only what you\'re highly confident you\'ll keep."',
     steps:[
@@ -4646,9 +4646,9 @@ const ALL = [
     id:257,
     level:2,
     cat:'圧縮記帳',
-    q:'（穴埋め）圧縮記帳には①【　】方式（固定資産の帳簿価額を直接減額する）と②【　】方式（固定資産の帳簿価額は減額せず、圧縮積立金を純資産に積み立てる）の2種類がある。②では、毎期減価償却時に積立金の【③】を行う。',
+    q:'（穴埋め）\n━━ 圧縮記帳の2方式とは ━━\n国庫補助金の課税を将来に繰り延べる方法。\n帳簿価額を下げるか・積立金を使うかで2種類ある。\n━━━━━━━━━━\n\n① 【①　　　　　　　　　　　】方式\n   固定資産の帳簿価額を直接減額する\n   → 減価償却費が小さくなる（シンプル）\n\n② 【②　　　　　　　　　　　】方式\n   固定資産の帳簿価額は減額せず、圧縮積立金を純資産に積み立てる\n   → 毎期減価償却時に積立金の【③　　　　　　　　　　　】を行う\n   → 減価償却費はフルで計上（開示が充実）',
     q_en:'(Fill in) Two compression accounting methods: ①[___] method (directly reduces asset book value) and ②[___] method (keeps asset book value intact; creates a Compression Reserve in equity). Under ②, perform [③___] on the reserve each period.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>直接控除（直接減額）</td></tr><tr><td class="hl">②</td><td>積立金（間接控除）</td></tr><tr><td class="hl">③</td><td>取崩し（減価償却費に対応した割合で積立金を取り崩し利益剰余金に振り替える）</td></tr></tbody></table><div class="formula-box">直接控除法：資産↓ → 減価償却費↓（簡単・シンプル）<br>積立金法：資産そのまま → 積立金を毎期取崩し（開示が充実）</div>`,
+    a:'① 直接控除（直接減額）\n② 積立金（間接控除）\n③ 取崩し（減価償却費に対応した割合で積立金を取り崩し利益剰余金に振り替える）\n\n【比較まとめ】\n直接控除法：資産帳簿価額↓ → 減価償却費が少なくなる（シンプル）\n積立金法：資産はそのまま → 積立金を毎期取崩し（開示が充実）\n\n▶ ポイント：どちらの方法も「補助金受取時の益金と損金が相殺され、課税が将来に繰り延べられる」という効果は同じ',
     exp:'直接控除法は「補助金分だけ資産価値を下げる」シンプルな方法。積立金法は資産の帳簿価額を変えずに、純資産に圧縮積立金を積み立て、毎期の減価償却に対応して取り崩す方法です。財務諸表の開示上は積立金法のほうが情報量が多いです。試験ではどちらの方法が問われているか確認しましょう。',
     exp_en:'Direct reduction: simply reduce the asset\'s book value by the grant amount — simple and straightforward. Reserve method: keep the asset at full cost, create a Compression Reserve in equity, and unwind it gradually each period as the asset depreciates — provides richer disclosure. Always check which method the exam requires.'
 ,
@@ -4663,9 +4663,9 @@ const ALL = [
     id:258,
     level:2,
     cat:'繰延資産',
-    q:'（穴埋め）繰延資産として計上できる支出を5種類答えよ。①【　】費②【　】費③【　】費④【　】費⑤【　】費',
+    q:'（穴埋め）\n━━ 繰延資産の5種類とは ━━\n「今払ったお金でも効果が将来に及ぶ」費用は、一時に費用とせず複数期間に分けて費用化できる。\nそれが繰延資産。ただし計上できるのは次の5種類のみ。\n━━━━━━━━━━\n\n繰延資産として計上できる支出を5種類答えよ。\n\n①【①　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】費\n②【②　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】費\n③【③　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】費\n④【④　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】費\n⑤【⑤　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】費',
     q_en:'(Fill in) Name the five types of expenditures that may be classified as deferred assets: ①[___] ②[___] ③[___] ④[___] ⑤[___]',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>創立費（会社設立のための支出）</td></tr><tr><td class="hl">②</td><td>開業費（開業準備のための支出）</td></tr><tr><td class="hl">③</td><td>開発費（新製品・技術開発のための支出）</td></tr><tr><td class="hl">④</td><td>株式交付費（株式発行のための支出）</td></tr><tr><td class="hl">⑤</td><td>社債発行費（社債発行のための支出）</td></tr></tbody></table><div class="formula-box">創立費・開業費・開発費→5年以内均等償却（または一括費用処理も可）<br>株式交付費・社債発行費→3年以内均等償却（または一括費用処理も可）</div>`,
+    a:'① 創立費（会社設立のための支出）\n② 開業費（開業準備のための支出）\n③ 開発費（新製品・技術開発のための支出）\n④ 株式交付費（株式発行のための支出）\n⑤ 社債発行費（社債発行のための支出）\n\n【償却期間】\n創立費・開業費・開発費 → 5年以内に均等償却\n株式交付費 → 3年以内に均等償却\n社債発行費 → 社債の償還期限以内に均等償却\n\n▶ ポイント：株式交付費だけが3年（他は5年）。社債発行費は社債の期間に合わせるという特殊ルール',
     exp:'繰延資産は「支出の効果が将来に及ぶため、一時に費用とせず複数期間に配分する項目」です。「会社設立費用（創立費）は何年かに分けて費用化する」イメージ。ただし近年は繰延資産として計上できる項目が限定されており、原則的には支出時に費用処理します。',
     exp_en:'Deferred assets are expenditures whose benefits extend beyond the current period, so they\'re amortized over multiple years rather than expensed immediately. "Company formation costs benefit future years — spread the expense over time." Japanese GAAP limits deferred asset items to these five categories; most expenditures must be expensed as incurred.',
     steps:[
@@ -4691,9 +4691,9 @@ const ALL = [
     id:260,
     level:2,
     cat:'財務分析',
-    q:'（穴埋め）流動比率と当座比率を答えよ。①流動比率（%）＝【　】。②当座比率（%）＝【　】。流動比率が高いほど【③】が高いとされる。',
+    q:'（穴埋め）\n━━ 流動比率と当座比率とは ━━\n「短期の支払能力（安全性）」を測る財務指標。\n1年以内に返さなければならない借金を、1年以内に現金化できる資産で賄えるかを見る。\n━━━━━━━━━━\n\n① 流動比率（%）\n   ＝ 【①　　　　　　　　　　　　　　　　　　　　　　　　】\n   （目安：200%以上）\n\n② 当座比率（%）\n   ＝ 【②　　　　　　　　　　　　　　　　　　　　　　　　】\n   当座資産 ＝ 現金預金 ＋ 売掛金 ＋ 有価証券（棚卸資産は除く）\n   （目安：100%以上）\n\n③ 流動比率が高いほど【③　　　　　　　　　　　　　　　　　　　　】が高いとされる',
     q_en:'(Fill in) ①Current ratio (%) = [___]. ②Quick ratio (%) = [___]. A higher current ratio indicates [③___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①流動比率</td><td>流動資産÷流動負債×100（%）　目安：200%以上</td></tr><tr><td class="hl">②当座比率</td><td>当座資産（現金・売掛金・有価証券）÷流動負債×100（%）　目安：100%以上</td></tr><tr><td class="hl">③</td><td>短期的な支払能力（安全性）</td></tr></tbody></table><div class="formula-box">当座資産＝現金預金＋売掛金（受取手形）＋有価証券（売買目的）<br>※棚卸資産は当座資産に含めない</div>`,
+    a:'① 流動資産 ÷ 流動負債 × 100（%）\n② 当座資産 ÷ 流動負債 × 100（%）\n③ 短期的な支払能力（安全性）\n\n【計算過程】\n当座資産 ＝ 現金預金 ＋ 売掛金（受取手形）＋ 有価証券（売買目的）\n※ 棚卸資産は当座資産に含めない（換金に時間がかかるため）\n\n▶ ポイント：当座比率は棚卸資産を除くため、より厳格な安全性指標。流動比率200%以上・当座比率100%以上が目安',
     exp:'流動比率は「1年以内に支払う負債を1年以内に現金化できる資産で賄えるか」を示す安全性指標。200%以上が理想とされます。当座比率はより厳格で「すぐに現金化できる資産（当座資産）」のみで計算。棚卸資産は除外（換金に時間がかかるため）。100%以上が目安です。',
     exp_en:'The current ratio shows whether short-term assets can cover short-term liabilities. Target ≥ 200%. The quick ratio is stricter — uses only "quick assets" (cash, receivables, marketable securities) that convert to cash immediately. Inventory excluded (takes time to liquidate). Target ≥ 100%.',
     steps:[
@@ -4766,9 +4766,9 @@ const ALL = [
     id:265,
     level:2,
     cat:'財務分析',
-    q:'（穴埋め）ROE（自己資本利益率）を3つの指標の積で表すデュポン分析では、ROE＝【①】×【②】×【③】となる。',
+    q:'（穴埋め）\n━━ デュポン分析とは ━━\nROE（自己資本利益率）を3つの要因に分解して「どこを改善すればROEが上がるか」を分析する手法。\n「収益性×効率性×レバレッジ」の掛け算で分解できる。\n━━━━━━━━━━\n\nROE ＝ 【①　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】（収益性）\n　　 × 【②　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】（効率性）\n　　 × 【③　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】（レバレッジ）',
     q_en:'(Fill in) In DuPont analysis, ROE is expressed as the product of three ratios: ROE = [①___] × [②___] × [③___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>売上高純利益率（当期純利益÷売上高）</td></tr><tr><td class="hl">②</td><td>総資産回転率（売上高÷総資産）</td></tr><tr><td class="hl">③</td><td>財務レバレッジ（総資産÷自己資本）</td></tr></tbody></table><div class="formula-box">ROE＝純利益÷自己資本<br>＝（純利益÷売上）×（売上÷総資産）×（総資産÷自己資本）<br>収益性×効率性×レバレッジ</div>`,
+    a:'① 売上高純利益率（当期純利益 ÷ 売上高）\n② 総資産回転率（売上高 ÷ 総資産）\n③ 財務レバレッジ（総資産 ÷ 自己資本）\n\n【計算過程】\nROE ＝ 純利益 ÷ 自己資本\n　　 ＝ （純利益 ÷ 売上） × （売上 ÷ 総資産） × （総資産 ÷ 自己資本）\n　　 ＝ 収益性 × 効率性 × レバレッジ\n\n▶ ポイント：ROEを上げるには「①儲かる商品を作る」「②少ない資産で多く売る」「③借入を増やしてレバレッジをかける」の3つのアプローチがある',
     exp:'デュポン分析でROEを3因子に分解：①収益性（どれだけ稼ぐか）×②効率性（資産をどれだけ活用するか）×③レバレッジ（どれだけ借入で増幅するか）。「収益性が低くても、資産効率かレバレッジで補える」→ROEの改善策を特定するのに有用な分析ツールです。',
     exp_en:'DuPont analysis decomposes ROE into: ①Profitability (how much profit per yen of sales) × ②Efficiency (how much sales per yen of assets) × ③Leverage (how much assets per yen of equity). "Even with low margins, you can improve ROE through efficiency or leverage." Useful for identifying which lever to pull.',
     steps:[
@@ -4796,9 +4796,9 @@ const ALL = [
     id:267,
     level:2,
     cat:'工業簿記基礎',
-    q:'（穴埋め）製造原価の3要素「材労経（ざいろうけい）」：\n①製品に直接使われる素材コスト例）自動車の鉄板・タイヤ、家具の木材→【ア　　】費\n②工員の給与・賃金コスト例）溶接工・組立工の賃金→【イ　　】費\n③①②以外の製造コスト例）工場の電気代・機械の減価償却費・工場賃借料→【ウ　　】費\n覚え方：材（ざい）労（ろう）経（けい）の3つで全製造コストをカバー',
+    q:'（穴埋め）\n━━ 製造原価の3要素とは ━━\nモノを作るコスト（製造原価）は必ず次の3種類に分類できる。\n「材労経（ざいろうけい）」と覚えると便利。\n━━━━━━━━━━\n\n① 製品に直接使われる素材コスト\n   例）自動車の鉄板・タイヤ、家具の木材\n   → 【ア　　　　　　　】費\n\n② 工員の給与・賃金コスト\n   例）溶接工・組立工の賃金\n   → 【イ　　　　　　　】費\n\n③ ①②以外の製造コスト\n   例）工場の電気代・機械の減価償却費・工場賃借料\n   → 【ウ　　　　　　　】費',
     q_en:'(Fill in) Name the three elements of manufacturing cost. ①The cost of materials directly used in products is [ア___] cost. ②The cost of worker wages is [イ___] cost. ③Other manufacturing costs (utilities, depreciation, etc.) are [ウ___] cost.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>材料（費）</td></tr><tr><td class="hl">イ</td><td>労務（費）</td></tr><tr><td class="hl">ウ</td><td>経（費）</td></tr></tbody></table><div class="formula-box">製造原価＝材料費＋労務費＋経費<br>さらに「直接費」と「間接費」に分類される</div>`,
+    a:'ア 材料（費）\nイ 労務（費）\nウ 経（費）\n\n【計算過程】\n製造原価 ＝ 材料費 ＋ 労務費 ＋ 経費\nさらに各費目が「直接費（製品に直接追跡可能）」と「間接費（配賦が必要）」に分類される\n\n▶ ポイント：「材労経（ざいろうけい）」で全製造コストをカバー。この3要素を合計すると当期製造費用になる',
     exp:'工業簿記は「モノを作るコストをどう記録するか」を扱います。製造原価の3要素は①材料費（原材料・部品）②労務費（工員の給与・賃金）③経費（それ以外：電気代・機械の減価償却費など）。「材労経（ざいろうけい）」と覚えると便利です。',
     exp_en:'Manufacturing cost has three components: ①Materials (raw materials, parts) ②Labor (wages, salaries of production workers) ③Overhead (everything else: utilities, depreciation). Remember: "Materials + Labor + Overhead" — the fundamental cost classification in industrial bookkeeping.'
 ,
@@ -4813,9 +4813,9 @@ const ALL = [
     id:268,
     level:2,
     cat:'工業簿記基礎',
-    q:'（穴埋め）工業簿記の原価の流れ（カレー屋の比喩）：\n食材購入→【①　　】勘定（食材の在庫）\n調理中→【②　　】勘定（鍋の中のカレー）\n完成・提供待ち→【③　　】勘定（ランプー皿）\n販売時→【④　　】に振り替え（その日の原材料費として計上）\n材料→仕掛品→製品→売上原価の一方通行の流れが工業簿記の骨格',
+    q:'（穴埋め）\n━━ 工業簿記の原価の流れとは ━━\n工業簿記は「材料を買ってから製品を売るまでのコスト」を4段階で追跡する。\nカレー屋を例に考えると分かりやすい。\n━━━━━━━━━━\n\n食材購入（材料を買う）\n　→ 【①　　　　　】勘定（食材の在庫）\n\n調理中（製造中の製品）\n　→ 【②　　　　　】勘定（鍋の中のカレー）\n\n完成・提供待ち（製造完了した製品）\n　→ 【③　　　　　】勘定（ランプー皿のカレー）\n\n販売時（お客様に出す）\n　→ 【④　　　　　】に振り替え\n\n材料 → 仕掛品 → 製品 → 売上原価（一方通行の流れ）',
     q_en:'(Fill in) Trace the cost flow in industrial bookkeeping. Purchased materials → [①___] account; products being made → [②___] account; finished products → [③___] account; on sale → transferred to [④___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>材料</td></tr><tr><td class="hl">②</td><td>仕掛品</td></tr><tr><td class="hl">③</td><td>製品</td></tr><tr><td class="hl">④</td><td>売上原価</td></tr></tbody></table><div class="formula-box">材料 → 仕掛品 → 製品 → 売上原価<br>（購入）  （製造中） （完成）  （販売）</div>`,
+    a:'① 材料\n② 仕掛品\n③ 製品\n④ 売上原価\n\n【流れまとめ】\n材料（購入） → 仕掛品（製造中） → 製品（完成） → 売上原価（販売）\n\n▶ ポイント：工業簿記は「材料→仕掛品→製品→売上原価」の4段階の流れが骨格。商業簿記の「商品→売上原価」より細かくコストを追跡する',
     exp:'工業簿記の原価の流れを「料理の比喩」で覚えましょう。①材料（食材を買う）→②仕掛品（調理中）→③製品（料理完成）→④売上原価（お客様に出す）。この流れが工業簿記の骨格です。商業簿記では「商品→売上原価」の1ステップだけでしたが、工業簿記では製造プロセスを細かく追跡します。',
     exp_en:'Visualize the cost flow as a cooking analogy: ①Materials (buying ingredients) → ②WIP (cooking in progress) → ③Finished Goods (dish complete) → ④Cost of Goods Sold (served to customer). Industrial bookkeeping tracks manufacturing step-by-step, unlike commercial bookkeeping which has just Merchandise → COGS.',
     steps:[
@@ -4829,9 +4829,9 @@ const ALL = [
     id:269,
     level:2,
     cat:'工業簿記基礎',
-    q:'（穴埋め）直接費 vs 間接費（「どの製品のコストか特定できるか？」で区別）：\n→特定製品に追跡可能→【①　　】費（直課）例）A製品に使った鉄板3kg、A製品に費やした溶接3時間\n→複数製品に共通で追跡不可→【②　　】費（配賦が必要）例）工場全体の電気代、工場長の給与\n直接費の代表例：直接材料費・直接労務費・【③　　】\n間接費は「製造間接費」に集めてから配賦基準で各製品に割り振る',
+    q:'（穴埋め）\n━━ 直接費 vs 間接費とは ━━\n「どの製品のコストか特定できるか？」で区別する。\n特定できれば直接費、できなければ間接費（配賦が必要）。\n━━━━━━━━━━\n\n特定製品に追跡可能なコスト\n　例）A製品に使った鉄板3kg、A製品に費やした溶接3時間\n　→ 【①　　　　　　　　　　　　】費（直課）\n\n複数製品に共通で追跡不可のコスト\n　例）工場全体の電気代、工場長の給与\n　→ 【②　　　　　　　　　　　　】費（配賦が必要）\n\n直接費の代表例：直接材料費・直接労務費・【③　　　　　　　　　　　　　　　　　　　】\n間接費は「製造間接費」に集めてから配賦基準で各製品に割り振る',
     q_en:'(Fill in) Manufacturing costs are classified as [①___] costs (traceable directly to a specific product) and [②___] costs (shared across multiple products, requiring allocation). Direct material cost, direct labor cost, and [③___] are the main direct costs.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>直接（費）</td></tr><tr><td class="hl">②</td><td>間接（費）</td></tr><tr><td class="hl">③</td><td>直接経費（外注加工費など）</td></tr></tbody></table><div class="formula-box">直接費→仕掛品へ直接集計<br>間接費→製造間接費に集計→配賦基準で仕掛品へ配賦</div>`,
+    a:'① 直接（費）\n② 間接（費）\n③ 直接経費（外注加工費など）\n\n【まとめ】\n直接費 → 仕掛品へ直接集計\n間接費 → 製造間接費に集計 → 配賦基準で仕掛品へ配賦\n\n▶ ポイント：「A製品に何kg使ったか分かる＝直接費」「工場全体で使ったので分からない＝間接費」という判断基準',
     exp:'直接費と間接費の違いは「追跡できるかどうか」。直接材料費（A製品には何kg使ったか分かる）、直接労務費（A製品に何時間かけたか分かる）は直接費。電気代や工場長の給与は複数製品共通→間接費→配賦（割り振り）が必要。「どの製品のコストか特定できる＝直接費」と覚えましょう。',
     exp_en:'Direct vs. indirect: "Can we trace it to a specific product?" Direct material (how many kg for Product A?), direct labor (how many hours on Product A?) — traceable. Electricity, plant manager\'s salary — shared across products → indirect → must be allocated. Rule: "traceable to a product = direct cost."',
     steps:[
@@ -4844,9 +4844,9 @@ const ALL = [
     id:270,
     level:2,
     cat:'工業簿記基礎',
-    q:'（穴埋め）製造原価報告書の構造：\n当期製造費用＝【①　　】費＋【②　　】費＋【③　　】費\n（今月使った材料・人件費・その他コストの合計）\n当期製品製造原価＝月初仕掛品（作りかけの持越し）＋当期製造費用－月末仕掛品（作りかけの残り）\n＝【④　　】\n商業簿記の「期首商品＋仕入－期末商品＝売上原価」と同じ構造',
+    q:'（穴埋め）\n━━ 製造原価報告書の構造とは ━━\n「今月、製品をいくらのコストで完成させたか」をまとめた報告書。\n商業簿記の「期首商品＋仕入－期末商品＝売上原価」と同じ構造。\n━━━━━━━━━━\n\n当期製造費用 ＝ 【①　　　　　　　】費\n             ＋ 【②　　　　　　　】費\n             ＋ 【③　　　　　　　】費\n（今月使った材料・人件費・その他コストの合計）\n\n当期製品製造原価\n  ＝ 月初仕掛品（作りかけの持越し）\n  ＋ 当期製造費用\n  − 月末仕掛品（作りかけの残り）\n  ＝ 【④　　　　　　　　　　　　　　　　　　　　　　　】',
     q_en:'(Fill in) Structure of the cost of production report. [①___] + [②___] + [③___] = Current period manufacturing cost. Current period cost + Opening WIP − Closing WIP = [④___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①②③</td><td>材料費・労務費・経費（順不同）</td></tr><tr><td class="hl">④</td><td>当期完成品製造原価（当期製品製造原価）</td></tr></tbody></table><div class="formula-box">当期完成品原価＝月初仕掛品＋当期製造費用－月末仕掛品<br>（材料費＋労務費＋経費）</div>`,
+    a:'①② ③ 材料費・労務費・経費（順不同）\n④ 当期製品製造原価（当期完成品製造原価）\n\n【計算過程】\n当期製造費用 ＝ 材料費 ＋ 労務費 ＋ 経費\n当期製品製造原価 ＝ 月初仕掛品 ＋ 当期製造費用 − 月末仕掛品\n\n▶ ポイント：商業簿記の「期首商品＋仕入−期末商品＝売上原価」と同じ構造。仕掛品が「商品」に相当する',
     exp:'製造原価報告書は「今月どのくらいのコストで製品を作ったか」をまとめた報告書です。当期完成品原価＝（月初の作りかけ）＋（今月の材料・人件費・経費）－（月末の作りかけ）。「在庫回転の考え方と同じ：期首在庫＋仕入－期末在庫＝売上原価」の工業版です。',
     exp_en:'The cost of production report summarizes "how much did we spend making products this month?" Cost of goods manufactured = Opening WIP + Current period costs (materials + labor + overhead) − Closing WIP. Same logic as COGS calculation: opening inventory + purchases − closing inventory = COGS, but applied to manufacturing.'
 ,
@@ -4862,9 +4862,9 @@ const ALL = [
     id:271,
     level:2,
     cat:'工業簿記基礎',
-    q:'（穴埋め）製品原価 vs 期間原価：\n①製品に組み込まれるコスト（材料費・労務費・経費）→製品が売れるまでは棚卸資産（B/S）→売れた時点で売上原価（P/L費用）になる→これを【　　　】という\n②製品製造と無関係のコスト（営業マンの給与・本社賃借料・広告費）→発生した期に即費用計上（P/L）→これを【　　　】という\n「在庫に宿るコスト＝製品原価」「時間の経過で生じるコスト＝期間原価」',
+    q:'（穴埋め）\n━━ 製品原価 vs 期間原価とは ━━\n費用を「製品に組み込まれるコスト」と「時間の経過で生じるコスト」に分類する考え方。\nどちらのコストかによって費用計上のタイミングが変わる。\n━━━━━━━━━━\n\n① 製品に組み込まれるコスト\n   材料費・労務費・経費\n   → 製品が売れるまでは棚卸資産（B/S）\n   → 売れた時点で売上原価（P/L費用）になる\n   → これを【①　　　　　　　　　　　　　　　】という\n\n② 製品製造と無関係のコスト\n   営業マンの給与・本社賃借料・広告費\n   → 発生した期に即費用計上（P/L）\n   → これを【②　　　　　　　　　　　　　　　】という',
     q_en:'(Fill in) Costs are classified as "product costs" or "period costs." ①Costs incurred in manufacturing a product (expensed when the product is sold) are called [___]. ②Costs of selling and administrative activities (expensed as incurred) are called [___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>製品原価（製造原価）</td></tr><tr><td class="hl">②</td><td>期間原価（販売費及び一般管理費）</td></tr></tbody></table><div class="formula-box">製品原価：材料費＋労務費＋経費→製品に集積→売れるまで在庫（資産）<br>期間原価：販管費→発生した期に費用計上（P/L）</div>`,
+    a:'① 製品原価（製造原価）\n② 期間原価（販売費及び一般管理費）\n\n【まとめ】\n製品原価：材料費＋労務費＋経費 → 製品に集積 → 売れるまで在庫（資産）→ 売れたら売上原価（費用）\n期間原価：販管費 → 発生した期にそのまま費用計上（P/L）\n\n▶ ポイント：「在庫に宿るコスト＝製品原価」「時間の経過で生じるコスト＝期間原価」と覚える',
     exp:'製品原価は「製品に宿ったコスト」で、製品が売れるまでは資産（製品・仕掛品）として貸借対照表に載ります。売れて初めて費用（売上原価）になります。一方、期間原価（販管費）は「作ることと関係ないコスト」で、発生した期の費用として即座に損益計算書に計上されます。',
     exp_en:'Product costs are "costs embedded in the product" — they stay as assets (Finished Goods, WIP) on the balance sheet until the product is sold, then become Cost of Goods Sold. Period costs (selling & admin expenses) have no direct connection to production — they\'re expensed immediately in the period incurred.',
     steps:[
@@ -4958,9 +4958,9 @@ const ALL = [
     id:279,
     level:2,
     cat:'材料費',
-    q:'（穴埋め）予定消費単価を使って材料費を計算する場合、「予定消費単価×実際消費量」で計算した予定消費額と「実際単価×実際消費量」の差額を【①】という。この差異が借方残（実際＞予定）の場合を【②】差異、貸方残（実際＜予定）を【③】差異という。',
+    q:'（穴埋め）\n━━ 材料消費価格差異とは ━━\n予定消費単価を使って材料費を先に計算すると、後で判明した実際単価との差（誤差）が生じる。\nその差が「材料消費価格差異」。\n━━━━━━━━━━\n\n「予定消費単価 × 実際消費量」で計算した予定消費額と\n「実際単価 × 実際消費量」の差額を\n→ 【①　　　　　　　　　　　　　　　　　　　　　　　　　】という\n\n② 借方残（実際 ＞ 予定）→ 実際コストが予定より高かった\n   → 【②　　　　　　　　　　　　　】差異\n\n③ 貸方残（実際 ＜ 予定）→ 実際コストが予定より低かった\n   → 【③　　　　　　　　　　　　　】差異',
     q_en:'(Fill in) When using a predetermined material price, the difference between (predetermined price × actual qty) and (actual price × actual qty) is called [①___]. If actual > predetermined (debit balance), it is a [②___] variance; if actual < predetermined (credit balance), it is a [③___] variance.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>材料消費価格差異</td></tr><tr><td class="hl">②</td><td>不利（借方・超過）</td></tr><tr><td class="hl">③</td><td>有利（貸方・節約）</td></tr></tbody></table><div class="formula-box">材料消費価格差異＝予定消費価格×実際数量－実際消費価格×実際数量<br>＝（予定単価－実際単価）×実際消費量</div>`,
+    a:'① 材料消費価格差異\n② 不利（借方・超過）\n③ 有利（貸方・節約）\n\n【計算過程】\n材料消費価格差異 ＝ 予定消費価格 × 実際数量 − 実際消費価格 × 実際数量\n　　　　　　　 ＝ （予定単価 − 実際単価） × 実際消費量\n\n▶ ポイント：「予定より高く買った→不利差異（コスト超過）」「予定より安く買えた→有利差異（コスト節約）」',
     exp:'予定単価を使うことで材料費を素早く計算できますが、実際単価との差（材料消費価格差異）が生じます。「予定より高く買ってしまった→不利差異（追加コスト）」「予定より安く買えた→有利差異（コスト節約）」。月末に差異を原価差異勘定（or 売上原価）に振り替えます。',
     exp_en:'Using a predetermined price speeds up cost calculation, but creates a "material price variance" vs. actual. "Bought at higher price than expected → unfavorable (over budget)." "Got a better deal → favorable (under budget)." Transfer the variance to a variance account (or COGS) at month-end.',
     steps:[
@@ -5028,9 +5028,9 @@ const ALL = [
     id:285,
     level:2,
     cat:'労務費',
-    q:'（穴埋め）労務費の分類（「誰が誰のために働いたか」で区別）：\n①製品に直接手を加える作業員（例：溶接工・組立工・機械オペレーター）の賃金→【ア　　】費→仕掛品へ直課\n②製品に直接手を加えない補助・管理スタッフ（例：フォークリフト運転者・清掃員・工場長・守衛）の賃金・給料→【イ　　】費→【ウ　　】へ集計後、配賦\n覚え方：製品に直接触れる→直接労務費、触れない→間接労務費',
+    q:'（穴埋め）\n━━ 労務費の分類とは ━━\n「誰が誰のために働いたか」で直接労務費か間接労務費かが決まる。\n製品に直接手を加えるかどうかがポイント。\n━━━━━━━━━━\n\n① 製品に直接手を加える作業員の賃金\n   例）溶接工・組立工・機械オペレーター\n   → 【ア　　　　　　　　　　　　　　　　　　】費\n   → 仕掛品へ直課\n\n② 製品に直接手を加えない補助・管理スタッフの賃金・給料\n   例）フォークリフト運転者・清掃員・工場長・守衛\n   → 【イ　　　　　　　　　　　　　　　　　　】費\n   → 【ウ　　　　　　　】へ集計後、配賦',
     q_en:'(Fill in) Classify labor costs. ①Wages of workers directly working on a specific product: [ア___] cost. ②Wages/salaries of factory supervisors and support staff: [イ___] cost. ① goes to [WIP]; ② goes to [ウ___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>直接労務（費）→仕掛品</td></tr><tr><td class="hl">イ</td><td>間接労務（費）</td></tr><tr><td class="hl">ウ</td><td>製造間接費</td></tr></tbody></table><div class="formula-box">直接労務費：直接工の賃金（製品別に追跡可能）<br>間接労務費：間接工・工場長・事務員の給与（製品別追跡不可）</div>`,
+    a:'ア 直接労務（費）→ 仕掛品\nイ 間接労務（費）\nウ 製造間接費\n\n【まとめ】\n直接労務費：直接工の賃金（製品別に追跡可能）→ 仕掛品\n間接労務費：間接工・工場長・事務員の給与（製品別追跡不可）→ 製造間接費\n\n▶ ポイント：「製品に直接触れる人の給与＝直接労務費」「触れない人の給与＝間接労務費」',
     exp:'「直接工」は製品に直接手を加える作業員（溶接工・組立工など）の賃金→直接労務費→仕掛品へ。「間接工」は製品に直接手を加えない補助的な作業員（フォークリフト運転者・清掃員など）の賃金→間接労務費→製造間接費へ。どちらも「工場内の人件費」ですが行き先が違います。',
     exp_en:'"Direct labor": workers who physically work on the product (welders, assemblers) → traceable → WIP. "Indirect labor": support workers who don\'t work directly on the product (forklift operators, cleaners, supervisors) → not traceable → Manufacturing Overhead. Both are factory payroll, but they flow to different accounts.'
 ,
@@ -5075,9 +5075,9 @@ const ALL = [
     id:289,
     level:2,
     cat:'経費',
-    q:'（穴埋め）経費の分類（材料費・労務費以外の製造コスト）：\n直接経費（特定製品に追跡可能）：代表例は【①　　】費のみ\n　例）A製品の部品塗装を外部業者に委託→100%A製品のコスト→仕掛品へ直課\n間接経費（複数製品共通→配賦必要）：\n　【②　　】費（工場の機械・建物→全製品に共通）\n　電力料・ガス代などの【③　　】費（どの製品用か不明）\n　工場賃借料・工場保険料なども間接経費→製造間接費へ集計',
+    q:'（穴埋め）\n━━ 経費の分類とは ━━\n材料費・労務費以外の製造コストを「経費」という。\nほとんどが間接費だが、外注加工費だけは直接費として扱える。\n━━━━━━━━━━\n\n直接経費（特定製品に追跡可能）：代表例は\n【①　　　　　　　　　　　　　　　　　　　】費のみ（ほぼ）\n　例）A製品の部品塗装を外部業者に委託 → 100%A製品のコスト → 仕掛品へ直課\n\n間接経費（複数製品共通 → 配賦が必要）：\n・【②　　　　　　　　　　　　　　　　　　　】費（工場の機械・建物 → 全製品に共通）\n・電力料・ガス代などの【③　　　　　　　　　　　　　　　】費（どの製品用か不明）\n・工場賃借料・工場保険料なども間接経費\n→ すべて製造間接費へ集計',
     q_en:'(Fill in) Expense classification. The main direct expense is [①___] (outsourced processing). Major indirect expenses include [②___] (depreciation), [③___] (utilities/electricity), and factory rent.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>外注加工（費）</td></tr><tr><td class="hl">②</td><td>減価償却（費）</td></tr><tr><td class="hl">③</td><td>電力（料）・公共料金（費）</td></tr></tbody></table><div class="formula-box">直接経費（→仕掛品）：外注加工費のみ（ほぼ）<br>間接経費（→製造間接費）：減価償却費・電力料・賃借料・保険料等</div>`,
+    a:'① 外注加工（費）\n② 減価償却（費）\n③ 電力（料）・公共料金（費）\n\n【まとめ】\n直接経費（→仕掛品）：外注加工費のみ（ほぼ）\n間接経費（→製造間接費）：減価償却費・電力料・賃借料・保険料等\n\n▶ ポイント：「外注加工費だけが直接経費」と覚える。工場に関係するコストはそれ以外すべて間接費',
     exp:'経費のうち、直接費として特定製品に追跡できるのは「外注加工費」がほぼ唯一です。その他の減価償却費・電力料・賃借料・保険料などはすべて間接経費として製造間接費に集計します。「工場に関係するコストは、特定製品に追跡できる外注加工費以外はすべて間接費」と覚えましょう。',
     exp_en:'Among all expense items, outside processing fees are virtually the only direct expense (traceable to a specific product). Everything else — depreciation, utilities, rent, insurance — is indirect → Manufacturing Overhead. "Factory expenses: outside processing is direct; everything else is indirect."',
     steps:[
@@ -5141,9 +5141,9 @@ const ALL = [
     id:294,
     level:2,
     cat:'製造間接費',
-    q:'（穴埋め）製造間接費配賦差異の2分法（ズレを2種類に分析）：\n配賦差異＝予定配賦額－実際発生額\n①予算差異（コスト管理のズレ）＝【　　　】\n　→マイナス（実際＞予算）なら浪費（不利差異）、プラスなら節約（有利差異）\n②操業度差異（設備稼働率のズレ）＝【　　　】または【　　　】\n　→設備を目標より少なく動かした→固定費の回収不足→不利差異',
+    q:'（穴埋め）\n━━ 製造間接費配賦差異の2分法とは ━━\n配賦差異（予定配賦額と実際発生額のズレ）を2種類の原因に分解して分析する方法。\n「使い方の問題か」「稼働率の問題か」を切り分ける。\n━━━━━━━━━━\n\n配賦差異 ＝ 予定配賦額 − 実際発生額\n\n① 予算差異（コスト管理のズレ）\n   ＝ 【①　　　　　　　　　　　　　　　　　　　　　　　　　】\n   マイナス（実際 ＞ 予算）→ 浪費（不利差異）\n   プラス → 節約（有利差異）\n\n② 操業度差異（設備稼働率のズレ）\n   ＝ 【②　　　　　　　　　　　　　　　　　　　　　　　　　】\n   設備を目標より少なく動かした → 固定費の回収不足 → 不利差異',
     q_en:'(Fill in) Describe the two-variance method for overhead variance analysis. ①Budget variance = [___] ②Volume variance = [___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①予算差異</td><td>実際発生額 vs 予算許容額（変動費率×実際操業度＋固定費予算）の差<br>→ コスト管理の効率性を示す</td></tr><tr><td class="hl">②操業度差異</td><td>固定費率×（実際操業度－基準操業度）<br>→ 生産量の変化による固定費の回収差異</td></tr></tbody></table>`,
+    a:'① 予算差異 ＝ 予算許容額（変動費率×実際操業度＋固定費予算）− 実際発生額\n② 操業度差異 ＝ 固定費率 × （実際操業度 − 基準操業度）\n\n【まとめ】\n予算差異：コスト管理の効率性を示す\n操業度差異：生産量の変化による固定費の回収差異を示す\n\n▶ ポイント：2分法で「どちらが原因か」を特定することで、改善策の方向性が分かる',
     exp:'2分法は配賦差異を「使い方の無駄（予算差異）」と「稼働率の問題（操業度差異）」に分解します。予算差異：実際のコストが予算通りだったか。操業度差異：生産量が計画通りだったか（固定費の回収度合い）。「原因を特定して改善策を立てる」ための差異分析です。',
     exp_en:'Two-variance analysis splits the overhead variance into: ①Budget variance: "Did we spend within budget?" (cost management) ②Volume variance: "Did we produce at the planned level?" (fixed cost recovery). Identifying which caused the gap helps management focus improvement efforts.',
     steps:[
@@ -5172,9 +5172,9 @@ const ALL = [
     id:296,
     level:2,
     cat:'製造間接費',
-    q:'（穴埋め）製造間接費の配賦基準（「何に比例して間接費が発生するか」で選ぶ）：\n手作業中心の組立工場→人が多く働くほど間接費増→【①　　】で配賦\n機械化が進んだ工場（ロボット生産）→機械を回すほど間接費増→【②　　】で配賦\n材料費が原価の大半を占める工場→材料費に比例して間接費増→【③　　】を配賦基準にする場合もある\n配賦基準の選択で製品原価が変わるため「因果関係」を重視',
+    q:'（穴埋め）\n━━ 製造間接費の配賦基準とは ━━\n「何に比例して間接費が発生するか」で配賦基準を選ぶルール。\n工場の特性（手作業か機械かなど）によって最適な基準が変わる。\n━━━━━━━━━━\n\n① 手作業中心の組立工場\n   人が多く働くほど間接費が増える\n   → 【①　　　　　　】で配賦\n\n② 機械化が進んだ工場（ロボット生産）\n   機械を回すほど間接費が増える\n   → 【②　　　　　　】で配賦\n\n③ 材料費が原価の大半を占める工場\n   材料費に比例して間接費が増える\n   → 【③　　　　　　】を配賦基準にする場合もある\n\n配賦基準の選択で製品原価が変わるため「因果関係」を重視',
     q_en:'(Fill in) Various bases can be used for overhead allocation. Assembly-focused factories typically use [①___]; highly automated factories use [②___]; when material cost dominates, [③___] may be used.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>直接作業時間（DLH）</td></tr><tr><td class="hl">②</td><td>機械運転時間（MH）</td></tr><tr><td class="hl">③</td><td>直接材料費（割合）</td></tr></tbody></table><div class="formula-box">配賦基準の選択基準：「製造間接費の発生と最も因果関係の強いもの」を使う</div>`,
+    a:'① 直接作業時間（DLH）　② 機械運転時間（MH）　③ 直接材料費（割合）\n\n【計算過程】\n配賦基準の選択基準：「製造間接費の発生と最も因果関係の強いもの」を使う\n手作業中心 → 直接作業時間（人が動くほど間接費増）\n機械化工場 → 機械運転時間（機械を動かすほど電気・消耗品増）\n\n▶ ポイント：基準の選択で製品原価が変わるため、「何に比例して間接費が発生するか」という因果関係を重視する',
     exp:'配賦基準は「製造間接費の発生と最も関係の深い要因」を選びます。人手による作業が多い→直接作業時間（人が動くほど間接費がかかる）。機械が主役→機械運転時間（機械を動かすほど電気・消耗品がかかる）。「因果関係の強い基準を使うことで、より正確な原価計算ができる」のが基本原則です。',
     exp_en:'Choose the allocation base most causally related to overhead incurrence. Labor-intensive work → direct labor hours (more labor = more overhead). Highly automated → machine hours (more machine time = more electricity, wear). The closer the causal link between the base and overhead, the more accurate the cost allocation.',
     steps:[
@@ -5187,9 +5187,9 @@ const ALL = [
     id:297,
     level:2,
     cat:'製造間接費',
-    q:'（穴埋め）製造間接費配賦差異の月末処理：\n差異が小さく重要性が低い（誤差程度）→全額【①　　】に処理\n　例）差異5,000円→売上原価に加算（不利差異の場合）\n差異が大きく重要性が高い→製品・仕掛品・売上原価の3勘定に按分→【②　　】\n不利差異（実際＞標準→コスト超過）→売上原価を【③　　】させ、有利差異なら減少\nこの一括処理を【②　　】という',
+    q:'（穴埋め）\n━━ 製造間接費配賦差異の月末処理とは ━━\n配賦差異（予定と実際のズレ）を月末にどう処理するかのルール。\n差異の大小によって処理方法が変わる。\n━━━━━━━━━━\n\n① 差異が小さく重要性が低い（誤差程度）の場合\n   → 全額【①　　　　　　　　　】に加減算して処理\n   例）差異5,000円 → 売上原価に加算（不利差異の場合）\n\n② 差異が大きく重要性が高い場合\n   → 製品・仕掛品・売上原価の3勘定に按分\n   → この按分処理を【②　　　　　　　　　】という\n\n③ 不利差異（実際 ＞ 予定 → コスト超過）の場合\n   → 売上原価を【③　　　】させる（有利差異なら減少）',
     q_en:'(Fill in) Month-end treatment of overhead variance: normally, it is [①___] to adjust [②___]. When the variance is material, it is allocated to [③___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>売上原価に加減算（不利差異は加算、有利差異は減算）</td></tr><tr><td class="hl">②</td><td>売上原価調整（または原価差異の売上原価への振替）</td></tr><tr><td class="hl">③</td><td>売上原価・期末仕掛品・期末製品（各残高に比例して）に按分配分</td></tr></tbody></table>`,
+    a:'① 売上原価　② 売上原価・仕掛品・製品への按分（原価差異の配分）　③ 増加\n\n【計算過程】\n差異が小さい場合：全額売上原価へ加減算（簡便法）\n差異が大きい場合：期末残高比率で売上原価・仕掛品・製品に按分（正確法）\n不利差異（実際 ＞ 予定）→ 売上原価を増加\n有利差異（実際 ＜ 予定）→ 売上原価を減少\n\n▶ ポイント：差異の重要性（金額の大小）によって処理方法を選択する。試験では「指示に従う」が原則',
     exp:'配賦差異の処理：①差異が軽微な場合→全額を売上原価に加減算（簡便法）。②差異が重要な場合→期末仕掛品・期末製品・売上原価に残高割合で按分配分（より正確）。試験では「指示に従う」のが原則。不利差異は追加コストなので売上原価を増やし、有利差異は売上原価を減らします。',
     exp_en:'Variance treatment: ①Immaterial → add/subtract entirely from COGS (simplified). ②Material → prorate across closing WIP, closing finished goods, and COGS in proportion to their balances (more accurate). Unfavorable = COGS increases; favorable = COGS decreases. Follow exam instructions.',
     steps:[
@@ -5202,9 +5202,9 @@ const ALL = [
     id:298,
     level:2,
     cat:'部門別原価計算',
-    q:'（穴埋め）部門別原価計算（間接費を部門単位で正確に管理）：\n例）切削部門（機械中心）と塗装部門（手作業中心）がある工場\n→切削は機械時間で配賦、塗装は直接作業時間で配賦するほうが正確\n部門別原価計算＝製造間接費を【①　　】ごとに集計し、より正確に配賦する方法\n製造部門（切削・塗装・組立など製品を直接作る）とは別に【②　　】部門（動力部門・修繕部門・管理部門など）もあり、補助部門費は製造部門へ配賦',
+    q:'（穴埋め）\n━━ 部門別原価計算とは ━━\n間接費を「部門」単位で集計し、各部門の特性に合わせて配賦する方法。\n工場全体で一括配賦するより正確な製品原価が計算できる。\n━━━━━━━━━━\n\n例）切削部門（機械中心）と塗装部門（手作業中心）がある工場\n→切削は機械時間、塗装は直接作業時間で配賦するほうが正確\n\n部門別原価計算 ＝ 製造間接費を【①　　　　　】ごとに集計し、より正確に配賦する方法\n\n② 工場内の部門の種類\n   製造部門（切削・塗装・組立など：製品を直接作る）\n   → 【②　　　】部門（動力部門・修繕部門・管理部門など）もあり\n   補助部門費は最終的に製造部門へ配賦する',
     q_en:'(Fill in) Departmental overhead costing collects manufacturing overhead by [①___] to allocate it to products more accurately. Production departments directly manufacture products; [②___] departments support them.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>部門（製造部門・補助部門）</td></tr><tr><td class="hl">②</td><td>補助（サービス）</td></tr></tbody></table><div class="formula-box">製造部門（切削・組立・仕上など）：製品を直接製造→製品に配賦<br>補助部門（動力・修繕・工場事務など）：製造部門を支援→製造部門に配賦→製品へ</div>`,
+    a:'① 部門（製造部門・補助部門）　② 補助（サービス）\n\n【計算過程】\n製造部門（切削・組立・仕上など）：製品を直接製造 → 製品に配賦\n補助部門（動力・修繕・工場事務など）：製造部門を支援 → まず製造部門へ配賦 → 次に製品へ\n\n▶ ポイント：工場全体一括配賦より部門ごとの配賦基準を設定する方が、正確な製品原価を計算できる',
     exp:'部門別原価計算は「工場内の部署（部門）ごとにコストを把握する」方法です。工場全体で一括配賦するより、部門別に配賦基準を設定する方が正確な原価計算ができます。例：切削部門は機械時間基準、組立部門は作業時間基準、というように部門の特性に合わせた基準を選べます。',
     exp_en:'Departmental costing tracks overhead by department (cost center) for more accurate product costing. Instead of one plant-wide rate, each department uses its own allocation base. Example: Machining dept. uses machine hours; Assembly dept. uses labor hours — matching the rate to the department\'s cost driver.',
     steps:[
@@ -5264,9 +5264,9 @@ const ALL = [
     id:303,
     level:2,
     cat:'部門別原価計算',
-    q:'（穴埋め）補助部門の配賦方法（動力部門・修繕部門などの費用をどう割り振るか）：\n動力部門と修繕部門が互いにサービスを提供し合うケース:\n①【　　　】：補助部門間の【ア　　】を無視し、製造部門のみに直接配賦→計算が簡単だが不正確\n②【　　　】：補助部門が互いに提供するサービスを【イ　　】して配賦→2回に分けて計算→より正確だが計算が複雑\n試験では直接配賦法が多く出題、相互配賦法は上級向け',
+    q:'（穴埋め）\n━━ 補助部門の配賦方法とは ━━\n動力部門・修繕部門などの費用を製造部門へ割り振る方法。\n補助部門同士がサービスを提供し合うとき、その扱い方によって2つの方法がある。\n━━━━━━━━━━\n\n動力部門と修繕部門が互いにサービスを提供し合うケース：\n\n① 【①　　　　　　】\n   補助部門間の【ア　　　　　　　　　　　　　　】を無視し、製造部門のみに直接配賦\n   → 計算が簡単だが不正確\n\n② 【②　　　　　　】\n   補助部門が互いに提供するサービスを【イ　　　　　　　　　　　　　　】して配賦\n   → 2回に分けて計算 → より正確だが計算が複雑\n\n試験では直接配賦法が多く出題、相互配賦法は上級向け',
     q_en:'(Fill in) Explain service dept. allocation methods. ①Direct method: [ア___] and allocates only to production depts. ②Reciprocal method: [イ___] services among service depts. (more accurate).',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア（直接配賦法）</td><td>補助部門間のサービスのやり取り（相互サービス）</td></tr><tr><td class="hl">イ（相互配賦法）</td><td>相互に認識・反映</td></tr></tbody></table><div class="formula-box">直接配賦法：簡単・計算が楽（補助部門間サービスを無視）<br>相互配賦法：正確・計算が複雑（補助部門間サービスも考慮）<br>→2級では直接配賦法が主に出題</div>`,
+    a:'① 直接配賦法　② 相互配賦法\nア 補助部門間のサービスのやり取り（相互サービス）\nイ 相互に認識・反映\n\n【計算過程】\n直接配賦法：補助部門間サービスを無視 → 計算が楽 → 2級試験で主に出題\n相互配賦法：補助部門間サービスも考慮 → 計算が複雑 → より正確\n\n▶ ポイント：2級では直接配賦法が主に出題。補助部門間サービスを「無視する（直接）か考慮する（相互）か」が2つの違い',
     exp:'動力部門は修繕部門に電力を提供し、修繕部門は動力部門の機械を修理する、というように補助部門同士でもサービスのやり取りがあります。直接配賦法はこれを無視（計算簡単）、相互配賦法はこれを考慮（正確だが複雑）。日商2級では主に直接配賦法が出題されます。',
     exp_en:'Service departments often serve each other (Power dept. supplies electricity to Maintenance; Maintenance repairs Power\'s equipment). The direct method ignores this (simple). The reciprocal method accounts for it (accurate but complex). The direct method is the primary focus of Level 2 exams.',
     steps:[
@@ -5278,9 +5278,9 @@ const ALL = [
     id:304,
     level:2,
     cat:'部門別原価計算',
-    q:'（穴埋め）部門費の集計（製造間接費を部門に割り振る方法）：\n切削部門だけで発生→【①　　】費（例：切削機械の減価償却費→切削部門のみに直接算入）\n複数部門に共通→【②　　】費（例：工場長給与・建物減価償却費→全部門に共通）\n共通費は適切な配賦基準で各部門に【③　　】する\n　例）建物費用→床面積比率で配賦、工場長給与→人員数で配賦\n「特定部門に追跡できるか否か」が直課か配賦かの判断基準',
+    q:'（穴埋め）\n━━ 部門費の集計とは ━━\n製造間接費を部門に割り振る方法。\n「特定部門に追跡できるか否か」で、直課か配賦かが変わる。\n━━━━━━━━━━\n\n① 切削部門だけで発生する費用\n   例：切削機械の減価償却費 → 切削部門のみに直接算入\n   → 【①　　　　】費（直課）\n\n② 複数部門に共通する費用\n   例：工場長給与・建物減価償却費 → 全部門に共通\n   → 【②　　　　】費\n\n③ 部門共通費は適切な配賦基準で各部門に【③　　　　】する\n   例）建物費用 → 床面積比率で配賦\n   例）工場長給与 → 人員数で配賦',
     q_en:'(Fill in) Department costs include [①___] costs (incurred only in a specific dept.) and [②___] costs (shared among departments). ②is [③___] to departments using an appropriate base (floor area, headcount, power consumption, etc.).',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>部門個別（費）→直課</td></tr><tr><td class="hl">②</td><td>部門共通（費）</td></tr><tr><td class="hl">③</td><td>配賦（按分）</td></tr></tbody></table><div class="formula-box">部門個別費（直課）：その部門専用の機械費・専用設備費など<br>部門共通費（配賦）：工場長給与・建物減価償却費・工場光熱費など</div>`,
+    a:'① 部門個別（費）　② 部門共通（費）　③ 配賦（按分）\n\n【計算過程】\n部門個別費（直課）：その部門専用の機械費・専用設備費など\n部門共通費（配賦）：工場長給与・建物減価償却費・工場光熱費など\n\n▶ ポイント：「特定部門に追跡できるか」が判断基準。追跡できる → 直課、できない → 配賦',
     exp:'部門費の集計は「追跡できるか→直課、できないか→配賦」という原則で行います。特定部門専用の機械の減価償却費は直課。工場全体の建物減価償却費や工場長給与は部門共通費として各部門に配賦。「直課できるものは直課、できないものは適切な基準で按分」が原則。',
     exp_en:'Department cost accumulation follows: "Can it be traced? → direct charge. Can\'t be traced? → allocate." Depreciation on a department\'s dedicated machine → direct charge. Building depreciation, plant manager salary → common costs → allocate by an appropriate base. "Trace what you can; allocate the rest proportionally."',
     steps:[
@@ -5293,9 +5293,9 @@ const ALL = [
     id:305,
     level:2,
     cat:'部門別原価計算',
-    q:'（穴埋め）部門別原価計算の3段階手順：\n第1段階：製造間接費を【①　　】と【②　　】に集計する（直課または共通費配賦）\n第2段階：補助部門費（動力費・修繕費等）を【③　　】に配賦する（直接配賦法または相互配賦法）\n第3段階：製造部門費（第1段階＋第2段階からの配賦分）を【④　　】に配賦する（機械時間・直接作業時間など）\n「間接費→部門→製品」という2段階の配賦が特徴',
+    q:'（穴埋め）\n━━ 部門別原価計算の3段階手順とは ━━\n間接費を「部門→製品」の順に2段階で配賦するのが部門別原価計算の特徴。\n━━━━━━━━━━\n\n第1段階：製造間接費を【①　　　　　　】と【②　　　　　　】に集計する\n         （直課または共通費配賦）\n\n第2段階：補助部門費（動力費・修繕費等）を【③　　　　　　】に配賦する\n         （直接配賦法または相互配賦法）\n\n第3段階：製造部門費（第1段階＋第2段階からの配賦分）を【④　　　　　　】に配賦する\n         （機械時間・直接作業時間などの配賦基準を使用）\n\n流れ：製造間接費 → 各部門費 → 製造部門費のみ → 製品原価',
     q_en:'(Fill in) Steps in departmental overhead costing. Step 1: Collect overhead in [①___] and [②___] depts. Step 2: Allocate service dept. costs to [③___]. Step 3: Allocate production dept. costs to [④___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①②</td><td>製造部門・補助部門（どちらでも可）</td></tr><tr><td class="hl">③</td><td>製造部門</td></tr><tr><td class="hl">④</td><td>製品（仕掛品）</td></tr></tbody></table><div class="formula-box">製造間接費 →[第1段階]→ 各部門費 →[第2段階]→ 製造部門費のみ →[第3段階]→ 製品原価</div>`,
+    a:'① 製造部門　② 補助部門　③ 製造部門　④ 製品（仕掛品）\n\n【計算過程】\n製造間接費\n→ [第1段階] 各部門費へ集計\n→ [第2段階] 補助部門費を製造部門へ配賦\n→ [第3段階] 製造部門費を製品（仕掛品）へ配賦\n\n▶ ポイント：「間接費 → 部門 → 製品」という2段階の配賦が部門別原価計算の特徴',
     exp:'部門別原価計算の3ステップ：①全間接費を各部門に集計（直課＋配賦）②補助部門費を製造部門へ配賦（直接配賦法等）③製造部門費を製品へ配賦（機械時間・作業時間等の基準で）。最終的に製品原価には直接費＋各製造部門からの間接費配賦分が含まれます。',
     exp_en:'Three steps: ①Collect all indirect costs in each dept. (direct charge + allocation) ②Transfer service dept. costs to production depts. ③Allocate production dept. costs to products using dept.-specific rates (machine hrs, labor hrs, etc.). Final product cost = direct costs + allocated overhead from each production department.',
     steps:[
@@ -5308,9 +5308,9 @@ const ALL = [
     id:306,
     level:2,
     cat:'個別原価計算',
-    q:'（穴埋め）個別原価計算（受注生産向き）：\n例）造船会社が「船A号」「橋梁B号」と受注ごとに異なる製品を製造\n→各受注案件（製造指図書）ごとにコストを集計\n個別原価計算とは【①　　】ごとに原価を集計する方法\n原価集計には【②　　】が使われ、直接費・間接費配賦額を記入\n完成したら仕掛品から【③　　】勘定へ振り替え\n大型機械・建設・特注品製造に適している',
+    q:'（穴埋め）\n━━ 個別原価計算とは ━━\n受注ごとに異なる製品を製造する場合に使う原価計算方法。\n造船・建設・特注品など「オーダーメイド型」の製造業に向く。\n━━━━━━━━━━\n\n例）造船会社が「船A号」「橋梁B号」と受注ごとに異なる製品を製造\n\n個別原価計算 ＝ 【①　　　　　　　　】ごとに原価を集計する方法\n\n原価集計には【②　　　　　　　　】が使われ、直接費・間接費配賦額を記入する\n\n完成したら仕掛品から【③　　　　　　　　】勘定へ振り替える',
     q_en:'(Fill in) Job-order costing accumulates costs by [①___]. A [②___] is used for each job; direct costs and applied overhead are recorded on it. Upon completion, transfer from WIP to [③___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>製造指図書（製品ロット・受注品）</td></tr><tr><td class="hl">②</td><td>製造指図書（原価計算表）</td></tr><tr><td class="hl">③</td><td>製品</td></tr></tbody></table><div class="formula-box">個別原価計算：受注生産・多品種少量生産に向く<br>総合原価計算：見込生産・少品種大量生産に向く</div>`,
+    a:'① 製造指図書（受注案件・製品ロット）　② 製造指図書（原価計算表）　③ 製品\n\n【計算過程】\n個別原価計算：受注生産・多品種少量生産に向く\n総合原価計算：見込生産・少品種大量生産に向く\n\n▶ ポイント：製造指図書ごとに材料費・労務費・間接費配賦額を集計し、完成時に仕掛品から製品へ振り替える',
     exp:'個別原価計算は「オーダーメイド型の原価計算」。例えば建設業・造船業・特注機械製造など、製品ごとに仕様が異なる場合に使います。製造指図書（job order）を発行し、その指図書番号ごとに材料費・労務費・間接費配賦額を集計します。指図書が完成品の「原価計算書」になります。',
     exp_en:'Job-order costing = "custom-order costing." Used when each unit or batch is unique (construction, shipbuilding, custom machinery). A job order (manufacturing order) is issued for each job; direct materials, direct labor, and applied overhead are accumulated on it. The job order becomes the product\'s cost record.',
     steps:[
@@ -5354,9 +5354,9 @@ const ALL = [
     id:310,
     level:2,
     cat:'個別原価計算',
-    q:'（穴埋め）仕損（製造中の不合格品）の処理：\n例）製品100個製造中に5個が不合格（傷・不良）\n①追加加工（補修）で合格品にできる場合→補修コストは当初指図書の製造原価に加算\n　→仕損費は【ア　　】に算入して処理\n②補修不可→代品を新たに製造する場合→仕損専用の指図書（#200）を新発行\n　→仕損指図書の原価（廃棄コスト）を【イ　　】で処理\n正常仕損（想定内）→製品原価に含める / 異常仕損（想定外・大量）→特別損失等で処理',
+    q:'（穴埋め）\n━━ 仕損（製造中の不合格品）の処理とは ━━\n製造中に出た不合格品（仕損品）のコストをどう扱うかのルール。\n「正常な失敗か異常な失敗か」によって処理が変わる。\n━━━━━━━━━━\n\n例）製品100個製造中に5個が不合格（傷・不良）\n\n① 追加加工（補修）で合格品にできる場合\n   補修コストは当初指図書の製造原価に加算\n   → 仕損費は【ア　　　　　　　　　　　　　　　】に算入して処理\n\n② 補修不可 → 代品を新たに製造する場合\n   仕損専用の指図書（#200）を新発行\n   → 仕損指図書の原価（廃棄コスト）を【イ　　　　　　　　　　　　　　　】で処理\n\n正常仕損（想定内）→ 製品原価に含める\n異常仕損（想定外・大量）→ 特別損失等で処理',
     q_en:'(Fill in) Spoilage refers to defective units in production. ①If the defective units can be reworked, rework cost is treated as [ア___]. ②If irreparable, a spoilage job order (#200) is issued, and its cost is treated as [イ___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>元の指図書（正常仕損なら製造間接費、異常なら非原価項目）への追加計上</td></tr><tr><td class="hl">イ</td><td>元の指図書（正常仕損）への賦課、または製造間接費（複数指図書に共通）への配賦</td></tr></tbody></table><div class="formula-box">正常仕損：製品原価の一部として吸収<br>異常仕損：非原価項目（営業外費用・特別損失）として処理</div>`,
+    a:'ア 製品原価（元の指図書）に算入　イ 非原価項目（異常仕損の場合）または元の指図書に賦課\n\n【計算過程】\n正常仕損：製品原価の一部として吸収（良品に負担させる）\n異常仕損：非原価項目（営業外費用・特別損失）として処理\n\n▶ ポイント：「通常の失敗は製品コストに含める、異常な失敗は別途損失計上」という考え方',
     exp:'仕損の処理は「正常か異常か」「補修可能か不可能か」で変わります。正常仕損（通常範囲内の不合格品）は製品原価の一部として吸収。異常仕損（災害・ミスなど特別原因）は原価外（非原価項目）として処理。「通常の失敗は製品に乗せる、異常な失敗は別途損失計上」という考え方。',
     exp_en:'Spoilage treatment depends on: normal vs. abnormal, and reworkable vs. irreparable. Normal spoilage (expected defect rate) → absorbed into product cost. Abnormal spoilage (accident, major error) → non-product cost (special loss). "Expected failures are part of the product\'s cost; unexpected disasters are expensed separately."'
 ,
@@ -5370,9 +5370,9 @@ const ALL = [
     id:311,
     level:2,
     cat:'個別原価計算',
-    q:'（穴埋め）作業くず（Scrap：製造過程の端材・廃材）の処理：\n例）家具製造で木材の端材が発生し、1万円で売却\n→この1万円は製造コスト（材料費）の節約に相当\n処理方法A：作業くず収入を【①　　】として処理\n処理方法B：元の製造指図書の原価から【②　　】する（製品コストが下がる）\n一般的にはB（原価から控除）が原価計算上の正確な処理。金額が小さければAでも可',
+    q:'（穴埋め）\n━━ 作業くず（Scrap）の処理とは ━━\n製造過程で発生する端材・廃材（作業くず）の売却収入をどう扱うかのルール。\n製造コストの節約として処理する。\n━━━━━━━━━━\n\n例）家具製造で木材の端材が発生し、1万円で売却\n→ この1万円は製造コスト（材料費）の節約に相当\n\n処理方法A：作業くず収入を【①　　　　　　　　　　　　　】として処理\n\n処理方法B：元の製造指図書の原価から【②　　　　　　　】する（製品コストが下がる）\n\n一般的にはB（原価から控除）が原価計算上の正確な処理。金額が小さければAでも可',
     q_en:'(Fill in) Scrap is leftover material from the manufacturing process. Revenue from selling scrap is typically recognized as [①___] or deducted from [②___] of the original job.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>雑収入（作業くず売却収益）または製造間接費の控除</td></tr><tr><td class="hl">②</td><td>材料費（製造コスト）</td></tr></tbody></table><div class="formula-box">作業くず売却→現金 ／ 作業くず（雑収入 or 材料費控除）<br>金額が少ない場合：発生時に無視して売却時に雑収入計上が実務では一般的</div>`,
+    a:'① 雑収入（作業くず売却収益）または製造間接費の控除\n② 材料費（製造コスト）から控除\n\n【計算過程】\n作業くず売却 → 現金 / 作業くず（雑収入 or 材料費控除）\n金額が少ない場合：発生時に無視して売却時に雑収入計上が実務では一般的\n\n▶ ポイント：作業くずは製造コストの節約。「原価から控除する（製品コスト減）」か「雑収入として計上する」かの2つの方法がある',
     exp:'作業くず（切りくず・端材）は製品原価を正確にするために処理が必要です。処理方法：①売却益を製造間接費から控除→間接費配賦率が下がる②製品の材料費から控除→個別製品の原価が減る③雑収入として認識。金額的重要性が低い場合は実務上省略されることも多いです。',
     exp_en:'Scrap requires accounting treatment for accurate product costing. Options: ①Reduce Manufacturing Overhead (lowers overhead rate) ②Reduce material cost of the specific job ③Recognize as miscellaneous income. When the amount is immaterial, many companies simply record scrap sale proceeds as miscellaneous income when sold.',
     steps:[
@@ -5400,9 +5400,9 @@ const ALL = [
     id:313,
     level:2,
     cat:'総合原価計算',
-    q:'（穴埋め）総合原価計算（大量同一製品の製造向き）：\n例）飲料メーカーが1か月でコーラ10万本を大量生産\n→全て同一製品なので指図書別管理は不要、1か月の総コストを本数で割るだけ\n総合原価計算＝【①　　】生産に用いられる方法\n1か月の総製造費用を【②　　】で割って単位原価を計算\n個別原価計算との最大の違いは製造【③　　】の有無\n（個別は指図書あり、総合は指図書なし）',
+    q:'（穴埋め）\n━━ 総合原価計算とは ━━\n同じ製品を大量生産する場合に使う原価計算方法。\n1か月の総コストを生産量で割って単位原価を求める。\n━━━━━━━━━━\n\n例）飲料メーカーが1か月でコーラ10万本を大量生産\n→ 全て同一製品なので指図書別管理は不要、1か月の総コストを本数で割るだけ\n\n総合原価計算 ＝ 【①　　　　　　　　　　　　　　　】生産に用いられる方法\n\n1か月の総製造費用を【②　　　　　　　　　　】で割って単位原価を計算\n\n個別原価計算との最大の違いは製造【③　　　　　】の有無\n（個別は指図書あり、総合は指図書なし）',
     q_en:'(Fill in) Process costing is used in [①___] production; it divides total manufacturing costs for a period by [②___] to find unit cost. The biggest difference from job-order costing is the [③___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>同種製品の連続大量（見込み）</td></tr><tr><td class="hl">②</td><td>完成品換算量（総生産量）</td></tr><tr><td class="hl">③</td><td>指図書（製造指図書）</td></tr></tbody></table><div class="formula-box">総合原価計算：同じ製品を大量生産（化学品・飲料・食品等）<br>個別原価計算：注文ごとに異なる製品（建設・造船・特注品等）</div>`,
+    a:'① 同種製品の連続大量（見込み）　② 完成品換算量（総生産量）　③ 指図書（製造指図書）\n\n【計算過程】\n総合原価計算：同じ製品を大量生産（化学品・飲料・食品等）\n個別原価計算：注文ごとに異なる製品（建設・造船・特注品等）\n単位原価 ＝ 当月総製造費用 ÷ 完成品換算量\n\n▶ ポイント：「指図書なし」「完成品換算量で割る」が総合原価計算の特徴',
     exp:'総合原価計算は「コンベアで大量生産する工場の原価計算」です。個別の製造指図書はなく、一定期間（1ヶ月）に発生した全製造コストを完成品換算量で割って単位原価を計算します。例：飲料工場で1ヶ月に1,000万円のコストで100,000本生産→1本@100円。',
     exp_en:'Process costing is for mass-production factories (conveyor-style). No individual job orders — divide total monthly manufacturing costs by equivalent units to get unit cost. Example: beverage factory spends ¥10M/month producing 100,000 bottles → ¥100/bottle. Industries: chemicals, food, beverages, paper.',
     steps:[
@@ -5415,9 +5415,9 @@ const ALL = [
     id:314,
     level:2,
     cat:'総合原価計算',
-    q:'（穴埋め）完成品換算量（加工途中の製品を「何個分の完成品に相当するか」で換算）：\n例）コーラ製造途中の仕掛品100本（加工50%完了）\n加工費は50%の作業しかしていない→完成品換算量＝100本×50%＝【①　　】個相当\n材料費（最初に全量投入する場合）：工程の【②　　】で全量投入→仕掛品でも材料は100%投入済み→100個分で計算\n「材料は全部投入済みだが加工は半分しかしていない」→材料費100個分・加工費50個分という換算の非対称性がポイント',
+    q:'（穴埋め）\n━━ 完成品換算量とは ━━\n加工途中の製品（仕掛品）を「何個分の完成品に相当するか」で換算する概念。\n材料費と加工費で換算量が異なるのがポイント。\n━━━━━━━━━━\n\n例）コーラ製造途中の仕掛品100本（加工50%完了）\n加工費は50%の作業しかしていない\n→ 完成品換算量 ＝ 100本 × 50% ＝ 【①　　　　】個相当\n\n② 材料費（最初に全量投入する場合）\n   工程の【②　　　　】で全量投入\n   → 仕掛品でも材料は100%投入済み → 100個分で計算\n\n「材料は全部投入済みだが加工は半分しかしていない」\n→ 材料費100個分・加工費50個分 という換算の非対称性がポイント',
     q_en:'(Fill in) In process costing, closing WIP is measured in "equivalent units." 100 units of WIP at 50% completion = [①___] equivalent units for conversion costs. If direct materials are added at [②___] of the process, closing WIP gets 100% of its materials (100 units).',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>50個（100個×50%）</td></tr><tr><td class="hl">②</td><td>始点（工程の最初）</td></tr></tbody></table><div class="formula-box">完成品換算量（加工費）＝仕掛品数量×加工進捗度<br>直接材料費：始点投入→仕掛品は100%換算<br>直接材料費：終点投入→仕掛品は0%換算</div>`,
+    a:'① 50個（100個×50%）　② 始点（工程の最初）\n\n【計算過程】\n完成品換算量（加工費）＝ 仕掛品数量 × 加工進捗度\n直接材料費：始点投入 → 仕掛品は100%換算\n直接材料費：終点投入 → 仕掛品は0%換算\n\n▶ ポイント：材料費と加工費で換算量が違う。始点投入の材料は仕掛品も100%換算',
     exp:'総合原価計算の核心は「月末の作りかけ（仕掛品）をどう評価するか」。加工費（労務費・間接費）は進捗度に応じて消費されるため、50%完成の仕掛品は「完成品0.5個分」と換算。一方、直接材料費は通常「始点投入（工程開始時に全量投入）」なので、進捗度に関係なく100%で計算します。',
     exp_en:'Process costing\'s core challenge: how to value closing WIP. Conversion costs (labor + overhead) are incurred continuously → WIP at 50% completion = 0.5 equivalent completed unit. Direct materials are usually added all at the start → WIP gets 100% of materials regardless of completion percentage.',
     steps:[
@@ -5475,9 +5475,9 @@ const ALL = [
     id:318,
     level:2,
     cat:'総合原価計算',
-    q:'（穴埋め）正常仕損 vs 異常仕損の処理：\n例）100個製造→5個は製造上避けられない不合格（正常）、10個は設備故障で大量不合格（異常）\n①正常仕損（5個：予定内の不合格品）の仕損費は【ア　　】として処理（度外視法：仕損を無視して計算）\n　→「製品コストの一部として仕方ない」という考え方\n②異常仕損（10個：予定外の大量不合格品）の仕損費は【イ　　】として処理\n　→「通常のコストではないため製品原価に含めない」',
+    q:'（穴埋め）\n━━ 正常仕損 vs 異常仕損の処理とは ━━\n製造中の不合格品（仕損）が「想定内か想定外か」によって処理が変わる。\n度外視法では正常仕損を計算から除外し、自動的に良品に負担させる。\n━━━━━━━━━━\n\n例）100個製造 → 5個は製造上避けられない不合格（正常）、10個は設備故障で大量不合格（異常）\n\n① 正常仕損（5個：予定内の不合格品）\n   仕損費は【ア　　　　　　　　　　　　　　　　　　　　　　　　】として処理\n   （度外視法：仕損を無視して計算）\n   →「製品コストの一部として仕方ない」という考え方\n\n② 異常仕損（10個：予定外の大量不合格品）\n   仕損費は【イ　　　　　　　　　　　　　　　　　　　　　　　　】として処理\n   →「通常のコストではないため製品原価に含めない」',
     q_en:'(Fill in) ①Normal spoilage (unavoidable in normal production) costs are treated as [ア___] (using the neglect method). ②Abnormal spoilage costs are treated as [イ___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア（正常仕損）</td><td>完成品（と月末仕掛品）の製造原価の一部として吸収（度外視法：仕損品を計算から除外して自動的に良品に負担させる）</td></tr><tr><td class="hl">イ（異常仕損）</td><td>非原価項目（異常仕損費）として損失計上（製品原価に含めない）</td></tr></tbody></table>`,
+    a:'ア 完成品（と月末仕掛品）の製造原価の一部として吸収\nイ 非原価項目（異常仕損費）として損失計上\n\n【計算過程】\n正常仕損（度外視法）：仕損品を計算から除外 → 自動的に良品に負担させる\n異常仕損：製品原価に含めず → 「異常仕損費」として営業外費用・特別損失に計上\n\n▶ ポイント：「想定内の失敗は製品コストに含める（度外視）、想定外の失敗は別途損失計上」',
     exp:'度外視法は「仕損品を存在しないものとして計算する」シンプルな方法。正常仕損を度外視すると、完成品と月末仕掛品でその分のコストを自然に負担します。異常仕損（地震・機械故障など特別原因）は「正常な製造活動のコストではない」ため製品原価から除外し、「異常仕損費」として営業外費用・特別損失に計上。',
     exp_en:'The neglect method ignores normal spoilage in calculations — its cost is automatically absorbed by good output and closing WIP. Simple but less precise. Abnormal spoilage (caused by accidents, machine breakdowns) is NOT a product cost → separate as "Abnormal Spoilage Loss" (non-operating/special loss). "Normal waste is the cost of doing business; abnormal waste is a separate mishap."',
     steps:[
@@ -5501,9 +5501,9 @@ const ALL = [
     id:320,
     level:2,
     cat:'総合原価計算',
-    q:'（穴埋め）工程別総合原価計算（2段階製造の場合）：\n例）製紙工場：第1工程（パルプ製造）→第2工程（紙加工・仕上げ）\n第1工程完成品原価500,000円を第2工程に引き渡す\n→第2工程では第1工程の完成品原価を【①　　】として受け入れ\n→さらに第2工程の材料費・加工費を加えて最終完成品原価を計算\n引き渡し時の仕訳：借方【②　　】・貸方【③　　】',
+    q:'（穴埋め）\n━━ 工程別総合原価計算とは ━━\n複数の工程を経て製品が完成する場合の原価計算方法。\n第1工程の完成品が第2工程の「原材料」となる。\n━━━━━━━━━━\n\n例）製紙工場：第1工程（パルプ製造）→ 第2工程（紙加工・仕上げ）\n\n第1工程完成品原価500,000円を第2工程に引き渡す\n→ 第2工程では第1工程の完成品原価を【①　　　　　　　　　】として受け入れ\n→ さらに第2工程の材料費・加工費を加えて最終完成品原価を計算\n\n引き渡し時の仕訳：\n借方【②　　　　　　　　　】\n貸方【③　　　　　　　　　】',
     q_en:'(Fill in) Process-by-process costing: finished output from Process 1 is transferred to Process 2 as [①___]. Process 2 adds its own materials and conversion costs to calculate final product cost. Transfer entry: Dr. [②___] / Cr. [③___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>前工程費（前工程からの振替材料費）</td></tr><tr><td class="hl">②（借方）</td><td>第2工程仕掛品</td></tr><tr><td class="hl">③（貸方）</td><td>第1工程仕掛品（or 半製品）</td></tr></tbody></table><div class="formula-box">第1工程→（半製品 or 直接移転）→第2工程→完成品</div>`,
+    a:'① 前工程費（前工程からの振替材料費）\n② 第2工程仕掛品（借方）\n③ 第1工程仕掛品（または半製品）（貸方）\n\n【計算過程】\n第1工程 →（半製品 or 直接移転）→ 第2工程 → 完成品\n前工程費 ＝ 第1工程の完成品原価\n第2工程での最終原価 ＝ 前工程費 ＋ 第2工程材料費 ＋ 第2工程加工費\n\n▶ ポイント：前工程の完成品原価は次工程で「前工程費（材料費の一種）」として扱う',
     exp:'工程別原価計算では、複数の工程を経て製品が完成します。第1工程の完成品が第2工程に移ると、第2工程での計算では「前工程費（前の工程のコスト）」として受け入れます。「第1工程で作ったものを原材料として第2工程がさらに加工する」イメージで、前工程費は材料費の一種として扱います。',
     exp_en:'Multi-process costing tracks costs across sequential production stages. Output from Process 1 becomes input to Process 2, recognized as "prior process cost" — treated as a type of material cost in Process 2. "Process 1\'s output is the raw material that Process 2 works on."'
 ,
@@ -5518,9 +5518,9 @@ const ALL = [
     id:321,
     level:2,
     cat:'総合原価計算',
-    q:'（穴埋め）組別 vs 等級別（製品の種類に応じた総合原価計算の選択）：\n①組別総合原価計算は【ア　　】場合に使用\n　例）家具会社が椅子・テーブル・棚を同時製造→椅子組・テーブル組・棚組ごとに原価計算\n②等級別総合原価計算は【イ　　】場合に使用\n　例）缶詰工場が同じ内容物でS・M・L缶を製造→等価係数（重量比など）で按分\n「全然違う製品→組別」「同じ製品のサイズ違い→等級別」',
+    q:'（穴埋め）\n━━ 組別 vs 等級別総合原価計算とは ━━\n製品の種類に応じて使い分ける総合原価計算の2つの形態。\n「全く違う製品 → 組別」「同じ製品のサイズ違い → 等級別」がポイント。\n━━━━━━━━━━\n\n① 組別総合原価計算\n   【ア　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】場合に使用\n   例）家具会社が椅子・テーブル・棚を同時製造\n   → 椅子組・テーブル組・棚組ごとに原価計算\n\n② 等級別総合原価計算\n   【イ　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】場合に使用\n   例）缶詰工場が同じ内容物でS・M・L缶を製造\n   → 等価係数（重量比など）で按分',
     q_en:'(Fill in) ①Process costing by group (組別) is used when [ア___]. ②Process costing by grade (等級別) is used when [イ___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア（組別）</td><td>製品の種類が異なる複数の製品を同一工程で生産する場合（例：A型・B型・C型の製品を混合生産）</td></tr><tr><td class="hl">イ（等級別）</td><td>同一工程から品質・サイズ等が異なる等級品が生産される場合（例：特上・上・並の米、L・M・Sサイズの製品）</td></tr></tbody></table>`,
+    a:'ア 製品の種類が異なる複数の製品を同一工程で生産する場合（例：A型・B型・C型の製品を混合生産）\nイ 同一工程から品質・サイズ等が異なる等級品が生産される場合（例：L・M・Sサイズの製品、特上・上・並の米）\n\n【計算過程】\n組別：種類の異なる製品ごとに原価を集計（組ごとに配賦）\n等級別：同種製品のサイズ・品質差に等価係数を使って原価を按分\n\n▶ ポイント：「全然違う製品 → 組別」「同じ製品のサイズ違い → 等級別」で判断する',
     exp:'総合原価計算の応用形態：組別＝「同じ工程でA型・B型・C型を作る」→組ごとに原価を集計。等級別＝「同じ工程でL・M・Sサイズが出てくる」→等価係数（重みづけ）で原価を按分。等価係数の例：L=1.5、M=1.0、S=0.7として各等級への原価配分比率を決めます。',
     exp_en:'Process costing variants: Group (組別) = same process produces distinct product types (A, B, C) → accumulate costs by product group. Grade (等級別) = same process produces same-type products of different sizes/quality → use equivalence ratios (L=1.5, M=1.0, S=0.7) to allocate joint costs proportionally.',
     steps:[
@@ -5558,9 +5558,9 @@ const ALL = [
     id:324,
     level:2,
     cat:'標準原価計算',
-    q:'（穴埋め）標準原価計算（「あるべきコスト」を事前設定して管理）：\n例）ハンバーガー1個の標準コスト：材料200円・労務100円・間接費50円＝合計350円\n→これが【①　　】\n実際に作ったら材料220円・労務90円・間接費60円＝合計370円（20円の超過）\n→差額20円が【②　　】\n差異を分析→「材料を20円使いすぎ、労務は10円節約、間接費を10円超過」とわかる\n→【③　　】ができる\n見込み予算との対比で効率性を測る管理会計の核心',
+    q:'（穴埋め）\n━━ 標準原価計算とは ━━\n「あるべきコスト（標準）」を事前に設定し、実際コストとの差（差異）を分析する方法。\n管理会計の核心：なぜコストが超過したかを突き止め、改善につなげる。\n━━━━━━━━━━\n\n例）ハンバーガー1個の標準コスト：材料200円・労務100円・間接費50円 ＝ 合計350円\n→ これが【①　　　　　　　　　　　　　　】\n\n実際に作ったら材料220円・労務90円・間接費60円 ＝ 合計370円（20円の超過）\n→ 差額20円が【②　　　　　　　　　　　　　　】\n\n差異を分析すると\n「材料を20円使いすぎ、労務は10円節約、間接費を10円超過」とわかる\n→ 【③　　　　　　　　　　　　　　】ができる',
     q_en:'(Fill in) Standard costing pre-sets [①___] per unit and uses it as a basis for cost control and accounting. The difference between standard and actual cost is called [②___]. Analyzing it enables [③___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>あるべき（標準）原価</td></tr><tr><td class="hl">②</td><td>原価差異（標準原価差異）</td></tr><tr><td class="hl">③</td><td>原因究明・業績評価・コスト改善</td></tr></tbody></table><div class="formula-box">原価差異＝標準原価－実際原価<br>正（有利差異）：実際が標準以下（コスト節約）<br>負（不利差異）：実際が標準超過（コスト超過）</div>`,
+    a:'① あるべき（標準）原価　② 原価差異（標準原価差異）　③ 原因究明・業績評価・コスト改善\n\n【計算過程】\n原価差異 ＝ 標準原価 − 実際原価\n正（有利差異）：実際が標準以下（コスト節約）\n負（不利差異）：実際が標準超過（コスト超過）\n\n▶ ポイント：「目標（標準）と実績（実際）の差を分析して改善策を立てる」のが標準原価計算の目的',
     exp:'標準原価計算は「目標コスト（標準）」と「実績コスト（実際）」の差を分析するマネジメントツールです。「この製品は1個あたり材料費200円・労務費150円・間接費100円の計450円で作れるはずだ」と標準を設定し、実績がそれより良かったか悪かったかを差異として把握します。',
     exp_en:'Standard costing is a management tool: set target costs (standards), then compare to actual costs (variances). "This product should cost ¥450/unit (materials ¥200 + labor ¥150 + overhead ¥100)." Variances reveal whether actual performance was better or worse than plan, guiding improvement.',
     steps:[
@@ -5632,9 +5632,9 @@ const ALL = [
     id:329,
     level:2,
     cat:'標準原価計算',
-    q:'（穴埋め）製造間接費差異の2分法（ズレを2種類に分ける方法）を答えよ（変動予算使用）。製造間接費予算：変動費率300円/h（稼働1時間増えるごとに増える費用）・固定費予算120,000円/月（稼働に関わらず固定）・基準操業度（想定する標準的な稼働時間）400h/月。当月実績：実際時間380h・標準時間（完成品ベース）370h・実際発生額234,000円。①予算差異（予算通りのコスト管理ができたか）②操業度差異（設備の稼働率のズレ）を求めよ。',
+    q:'（穴埋め）\n━━ 製造間接費差異の2分法とは ━━\n配賦差異（予定と実際のズレ）を「予算差異」と「操業度差異」の2種類に分けて分析する方法。\n「使い方の問題か」「稼働率の問題か」を切り分ける。\n━━━━━━━━━━\n\n製造間接費予算：変動費率300円/h・固定費予算120,000円/月・基準操業度400h/月\n当月実績：実際時間380h・標準時間370h・実際発生額234,000円\n\n① 予算差異（コスト管理のズレ）\n   予算許容額 ＝ 変動費@300 × 実際時間 ＋ 固定費予算\n             ＝ 300 × 380 ＋ 120,000 ＝ 【①　　　　　　　】円\n   予算差異 ＝ 予算許容額 − 実際発生額 ＝ 【②　　　】円\n\n② 操業度差異（設備稼働率のズレ）\n   固定費率 ＝ 120,000 ÷ 400h ＝ 【③　　　　】円/h\n   操業度差異 ＝ 固定費率 × （実際操業度 − 基準操業度）\n             ＝ 300 × （380 − 400）＝ 【④　　　　】円',
     q_en:'(Fill in) Two-variance overhead analysis (flexible budget). Overhead budget: variable rate ¥300/hr, fixed budget ¥120,000/month, normal capacity 400 hrs/month. Actual: 380 actual hrs, 370 standard hrs (based on output), actual overhead ¥234,000. ①Budget variance? ②Volume variance?',
-    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">予算許容額（実際操業度基準）＝変動費@300×380h＋固定費120,000<br>　　　　　　　　　　　＝114,000＋120,000＝234,000円<br>①予算差異＝予算許容額234,000－実際234,000＝0円<br>固定費率＝120,000÷400h＝@300円/h<br>②操業度差異＝固定費率@300×(実際380h－基準400h)<br>　　　　　　＝300×(△20)＝△6,000円（不利）</div>`,
+    a:'① 234,000円　② 0円（予算通り）　③ 300円/h　④ △6,000円（不利）\n\n【計算過程】\n予算許容額（実際操業度基準）＝ 変動費@300 × 380h ＋ 固定費120,000 ＝ 234,000円\n予算差異 ＝ 予算許容額234,000 − 実際234,000 ＝ 0円\n固定費率 ＝ 120,000 ÷ 400h ＝ @300円/h\n操業度差異 ＝ 固定費率@300 × (実際380h − 基準400h) ＝ △6,000円（不利）\n\n▶ ポイント：2分法で「どちらが原因か」を特定することで、改善策の方向性が分かる',
     exp:'①予算差異：実際発生額が予算許容額と等しい→0（予算通りのコスト管理）②操業度差異：実際操業度（380h）が基準（400h）を20h下回ったため、固定費6,000円分が回収できなかった（不利差異）。「予算通りに使ったが、生産量が少なくて固定費を十分回収できなかった」状況。',
     exp_en:'①Budget variance = actual ¥234,000 − budget allowance ¥234,000 = ¥0 (exactly on budget) ②Volume variance = fixed rate ¥300 × (380 − 400) = −¥6,000 (unfav). "Spent exactly what was budgeted, but produced less than planned, so fixed costs were under-recovered." Under-production always creates an unfavorable volume variance.',
     note:'固定費率 = 固定費予算 ÷ 基準操業度 / 操業度差異 = 固定費率 × (実際操業度 − 基準操業度)',
@@ -5649,9 +5649,9 @@ const ALL = [
     id:330,
     level:2,
     cat:'標準原価計算',
-    q:'（穴埋め）標準原価差異の月末処理：\n差異が小さく重要性が低い（誤差程度）→全額【①　　】に処理\n　例）差異5,000円→売上原価に加算（不利差異の場合）\n差異が大きく重要性が高い→製品・仕掛品・売上原価の3勘定に按分→【②　　】\n不利差異（実際＞標準→コスト超過）→売上原価を【③　　】させる\n有利差異（実際＜標準→コスト節約）→売上原価を【④　　】させる',
+    q:'（穴埋め）\n━━ 標準原価差異の月末処理とは ━━\n差異（標準と実際のズレ）を月末にどう処理するかのルール。\n差異の大小によって処理方法が変わる点が重要。\n━━━━━━━━━━\n\n① 差異が小さく重要性が低い（誤差程度）の場合\n   → 全額【①　　　　　　　　　　　　　　　　　】に処理\n   例）差異5,000円 → 売上原価に加算（不利差異の場合）\n\n② 差異が大きく重要性が高い場合\n   → 製品・仕掛品・売上原価の3勘定に按分\n   → この按分処理を【②　　　　　　　　　　　　】という\n\n③ 不利差異（実際 ＞ 標準 → コスト超過）の場合\n   → 売上原価を【③　　　　　　　　　　　　　　】させる\n\n④ 有利差異（実際 ＜ 標準 → コスト節約）の場合\n   → 売上原価を【④　　　　　　　　　　　　　　】させる',
     q_en:'(Fill in) Month-end treatment of cost variances. Immaterial variances → [①___]. Material variances → [②___]. Unfavorable variances [③___] COGS; favorable variances [④___] COGS.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>売上原価（全額加減算）</td></tr><tr><td class="hl">②</td><td>売上原価・期末仕掛品・期末製品の残高比率で按分配分</td></tr><tr><td class="hl">③</td><td>増加（加算）</td></tr><tr><td class="hl">④</td><td>減少（減算）</td></tr></tbody></table>`,
+    a:'① 売上原価（全額加減算）\n② 売上原価・期末仕掛品・期末製品の残高比率で按分配分\n③ 増加（加算）\n④ 減少（減算）\n\n【計算過程】\n差異が小さい場合：全額売上原価へ加減算（簡便法）\n差異が大きい場合：期末残高比率で売上原価・仕掛品・製品に按分（正確法）\n\n▶ ポイント：不利差異（コスト超過）→売上原価増加、有利差異（コスト節約）→売上原価減少',
     exp:'差異の処理は商業簿記の棚卸減耗損と同様の考え方。重要性の低い差異は「売上原価一括調整（簡便法）」、重要性の高い差異は「各在庫・売上原価に按分（より正確）」で処理します。不利差異（コスト超過）は売上原価を増やし、有利差異（コスト節約）は売上原価を減らします。',
     exp_en:'Variance disposition: immaterial → adjust COGS directly (all at once, simple). Material → prorate across COGS, closing WIP, and closing finished goods (more precise). Unfavorable = COGS increases (we spent more than standard). Favorable = COGS decreases (we spent less than standard).',
     steps:[
@@ -5665,9 +5665,9 @@ const ALL = [
     id:331,
     level:2,
     cat:'直接原価計算',
-    q:'（穴埋め）直接原価計算（変動原価計算）vs 全部原価計算：\n全部原価計算→固定費も製品原価に含める（在庫に固定費が「蓄積」される）\n直接原価計算→製品原価に【①　　】のみを含め\n　　　　　　→【②　　】は製品原価とせず発生期間の費用として即計上\n最大の違いは【③　　】の扱い\n長所：CVP分析・損益分岐点計算・意思決定に役立つ\n短所：外部報告（決算）には使えない（全部原価計算が日本基準で必要）',
+    q:'（穴埋め）\n━━ 直接原価計算（変動原価計算）vs 全部原価計算とは ━━\n固定費を「製品原価に含めるか（全部）」「期間費用にするか（直接）」の違い。\n直接原価計算はCVP分析・意思決定に役立つが、外部報告（決算）には使えない。\n━━━━━━━━━━\n\n全部原価計算 → 固定費も製品原価に含める（在庫に固定費が「蓄積」される）\n\n直接原価計算\n→ 製品原価に【①　　　　　　　　　　　　】のみを含める\n→ 【②　　　　　　　　　　　　】は製品原価とせず発生期間の費用として即計上\n\n最大の違いは【③　　　　　　　　　　　　】の扱い\n\n長所：CVP分析・損益分岐点計算・意思決定に役立つ\n短所：外部報告（決算）には使えない（全部原価計算が日本基準で必要）',
     q_en:'(Fill in) Direct (variable) costing includes only [①___] in product cost; [②___] is treated as a period cost, not a product cost. The key difference from absorption costing is the treatment of [③___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>変動製造原価（変動費）</td></tr><tr><td class="hl">②</td><td>固定製造原価（固定費）</td></tr><tr><td class="hl">③</td><td>固定製造間接費</td></tr></tbody></table><div class="formula-box">全部原価計算：製品原価＝変動費＋固定費<br>直接原価計算：製品原価＝変動費のみ、固定費は期間費用</div>`,
+    a:'① 変動製造原価（変動費）　② 固定製造原価（固定費）　③ 固定製造間接費\n\n【計算過程】\n全部原価計算：製品原価 ＝ 変動費 ＋ 固定費\n直接原価計算：製品原価 ＝ 変動費のみ、固定費は期間費用\n\n▶ ポイント：固定費を「製品原価か期間費用か」という扱いの違いが、両計算法の利益差の原因',
     exp:'直接原価計算は「固定費は製品を作っても作らなくても発生する→製品原価に含めない」という考え方。工場の機械の減価償却費（固定費）は0個作っても1,000個作っても同額かかる→期間費用として発生時に損益計算書へ。変動費（材料・直接労務費）のみを製品原価に含めます。',
     exp_en:'Direct costing: "Fixed costs occur whether you produce or not → don\'t include in product cost." Factory depreciation (fixed) is the same whether you make 0 or 1,000 units → period expense. Only variable costs flow to product cost. This separates "costs that change with volume" from "costs that don\'t."',
     steps:[
@@ -5727,9 +5727,9 @@ const ALL = [
     id:335,
     level:2,
     cat:'直接原価計算',
-    q:'（穴埋め）全部原価計算 vs 直接原価計算の利益差異：\n例）製品100個生産・80個販売（在庫20個）・固定製造費100万円\n全部原価計算：固定費100万→製品1個10万→売上原価80万（80個分）、在庫に20万が残留\n直接原価計算：固定費100万→全額その期の費用（在庫に載らない）\n利益差異の原因は【①　　】から生じる\n生産量＞販売量（在庫増加）の場合、全部原価計算の方が固定費一部が在庫へ→費用少→利益【②　　】くなる',
+    q:'（穴埋め）\n━━ 全部原価計算 vs 直接原価計算の利益差異とは ━━\n在庫が増える（生産 ＞ 販売）と、全部原価計算の利益が高くなる。\n固定費が在庫に「蓄積」されるか「全額費用化」されるかの違いによる。\n━━━━━━━━━━\n\n例）製品100個生産・80個販売（在庫20個）・固定製造費100万円\n全部原価計算：固定費100万 → 製品1個10万 → 売上原価80万（80個分）、在庫に20万が残留\n直接原価計算：固定費100万 → 全額その期の費用（在庫に載らない）\n\n利益差異の原因は【①　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　】から生じる\n\n生産量 ＞ 販売量（在庫増加）の場合\n全部原価計算の方が固定費一部が在庫へ → 費用少 → 利益【②　　　　　　　】くなる',
     q_en:'(Fill in) Why do absorption costing and direct costing produce different operating income? The difference arises from [①___]. When production > sales (inventory builds up), absorption costing income is [②___] than direct costing income.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>固定製造間接費が期末在庫（製品・仕掛品）に含まれるか否かの違い。全部原価計算では期末在庫に固定費が含まれるため、それが売れるまで費用にならない。直接原価計算では固定費を全額当期費用とする。</td></tr><tr><td class="hl">②</td><td>高（大き）</td></tr></tbody></table><div class="formula-box">全部原価計算利益＝直接原価計算利益＋期末在庫固定費－期首在庫固定費</div>`,
+    a:'① 固定製造間接費が期末在庫（製品・仕掛品）に含まれるか否かの違い\n② 高（大き）\n\n【計算過程】\n全部原価計算利益 ＝ 直接原価計算利益 ＋ 期末在庫固定費 − 期首在庫固定費\n\n生産量 ＞ 販売量（在庫増加）：全部原価計算利益 ＞ 直接原価計算利益\n生産量 ＜ 販売量（在庫減少）：全部原価計算利益 ＜ 直接原価計算利益\n\n▶ ポイント：在庫に固定費が「隠れるか否か」が利益差の原因。在庫が増えると全部原価計算の利益が高くなる',
     exp:'利益の差の原因：全部原価計算では固定製造間接費が製品原価に含まれるため、生産したが売れなかった分の固定費が「製品（在庫）」として資産に留まります。一方、直接原価計算では固定費を全額当期費用にするため、在庫増加期は全部原価計算の利益が高くなります（固定費の一部が在庫に繰り越されるため）。',
     exp_en:'Income difference cause: absorption costing includes fixed overhead in product cost — unsold units carry fixed costs as inventory assets. Direct costing expenses all fixed costs in the period. When inventory builds (production > sales): absorption income > direct costing income. The ¥ difference = fixed overhead per unit × change in inventory quantity.',
     steps:[
@@ -5757,9 +5757,9 @@ const ALL = [
     id:337,
     level:2,
     cat:'直接原価計算',
-    q:'（穴埋め）直接原価計算の意思決定への活用：\n①追加受注の可否判断（余剰能力あり）：\n　例）1個の変動費600円・固定費は変わらない→追加受注単価が【ア　　】を上回れば受注すべき\n　（固定費は変わらないから考慮不要→「追加的コスト＝変動費だけ」）\n②Make or Buy（製造するか外注するか）：\n　→固定費のうち「外注すれば削減できる部分（回避可能固定費）」か「外注しても変わらない部分（回避不能）」かで判断\n　→固定費の【イ　　】を考慮することが重要',
+    q:'（穴埋め）\n━━ 直接原価計算の意思決定への活用とは ━━\n固定費は変わらないため、追加的な意思決定では変動費だけで判断できるというロジック。\n━━━━━━━━━━\n\n① 追加受注の可否判断（余剰能力あり）\n   例）1個の変動費600円・固定費は変わらない\n   → 追加受注単価が【ア　　　　　　　　　　　】を上回れば受注すべき\n   （固定費は変わらないから考慮不要 →「追加的コスト ＝ 変動費だけ」）\n\n② Make or Buy（製造するか外注するか）\n   → 固定費のうち「外注すれば削減できる部分（回避可能固定費）」か\n     「外注しても変わらない部分（回避不能）」かで判断\n   → 固定費の【イ　　　　　　　　　　　　　　】を考慮することが重要',
     q_en:'(Fill in) Name two decisions where direct costing is useful. ①Special order acceptance: when spare capacity exists, accept the order if the price exceeds [ア___]. ②Make-or-buy decisions also require careful consideration of [イ___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>単位変動費（変動製造原価）</td></tr><tr><td class="hl">イ</td><td>固定費の可否変動性（回避可能固定費か否か）。製造を外注する場合に固定費が本当に節約できるかどうか。</td></tr></tbody></table><div class="formula-box">特別注文の意思決定：単価＞変動費→受注OK（限界利益がプラスなら受注）<br>固定費は既に発生済みで変わらない（埋没原価）</div>`,
+    a:'ア 単位変動費（変動製造原価）\nイ 固定費の可否変動性（回避可能固定費か否か）\n\n【計算過程】\n特別注文の意思決定：単価 ＞ 変動費 → 受注OK（限界利益がプラスなら受注）\n固定費は既に発生済みで変わらない（埋没原価）→ 意思決定では無視してよい\n\n▶ ポイント：追加受注や自製vs外注の判断では「変わるコスト（変動費）だけ」で比較するのが基本',
     exp:'直接原価計算の意思決定への応用：①特別注文（余裕生産能力がある場合）→通常の利益がなくても変動費をカバーできれば受注OK（固定費は変わらないため）。②自製か外注かの判断→外注した場合に本当に固定費が下がるか確認が必要（下がらない固定費は「埋没原価」として意思決定に無関係）。',
     exp_en:'Direct costing for decisions: ①Special order with spare capacity → accept if price > variable cost (fixed costs won\'t change anyway — they\'re sunk). ②Make-or-buy → consider whether outsourcing actually reduces fixed costs. Fixed costs that don\'t change regardless = "sunk costs" → irrelevant to the decision.',
     steps:[
@@ -5771,9 +5771,9 @@ const ALL = [
     id:338,
     level:2,
     cat:'直接原価計算',
-    q:'（穴埋め）直接原価計算の損益計算書（contribution margin format）を完成させよ。売上高8,000,000円・変動売上原価4,000,000円・変動販管費800,000円・固定製造費用2,000,000円・固定販管費600,000円。①変動費合計②【　　　】③固定費合計④【　　　】',
+    q:'（穴埋め）\n━━ 直接原価計算の損益計算書の構造とは ━━\n費用を「変動費」と「固定費」に分けて表示するのが直接原価計算P/Lの特徴。\n「売上高 − 変動費 ＝ 限界利益」「限界利益 − 固定費 ＝ 営業利益」の2段構造。\n━━━━━━━━━━\n\n売上高：8,000,000円\n変動売上原価：4,000,000円・変動販管費：800,000円・固定製造費用：2,000,000円・固定販管費：600,000円\n\n① 変動費合計\n   変動売上原価 ＋ 変動販管費 ＝ 【①　　　　　　　　　】円\n\n② 【②　　　　　　　　　】\n   売上高 − 変動費合計\n\n③ 固定費合計\n   固定製造費用 ＋ 固定販管費 ＝ 【③　　　　　　　　　】円\n\n④ 【④　　　　　　　　　】\n   ②限界利益 − ③固定費合計',
     q_en:'(Fill in) Complete the direct costing P&L: Sales ¥8,000,000; variable COGS ¥4,000,000; variable SGA ¥800,000; fixed manufacturing ¥2,000,000; fixed SGA ¥600,000. ①Total variable costs ②Contribution margin ③Total fixed costs ④Operating income',
-    ans_html:`<div class="tbl-sec">答え</div><div class="formula-box">売　上　高　　　　　　　8,000,000円<br>変動費（売上原価＋変動販管費）△4,800,000円<br>─────────────────────<br>限界利益（貢献利益）　　3,200,000円<br>固定費（製造＋販管）　△2,600,000円<br>─────────────────────<br>営 業 利 益　　　　　　　　600,000円</div><table><tbody><tr><td class="hl">①変動費</td><td>4,800,000円</td></tr><tr><td class="hl">②限界利益</td><td>3,200,000円（CM率40%）</td></tr><tr><td class="hl">③固定費</td><td>2,600,000円</td></tr><tr><td class="hl">④営業利益</td><td>600,000円</td></tr></tbody></table>`,
+    a:'① 変動費合計 4,800,000円（4,000,000 ＋ 800,000）\n② 限界利益（貢献利益）\n③ 固定費合計 2,600,000円（2,000,000 ＋ 600,000）\n④ 営業利益\n\n【計算過程】\n売上高 8,000,000 − 変動費 4,800,000 ＝ 限界利益 3,200,000円（CM率40%）\n限界利益 3,200,000 − 固定費 2,600,000 ＝ 営業利益 600,000円\n\n▶ ポイント：直接原価計算P/Lは変動費・固定費を明確に分けることで、CVP分析・損益分岐点計算が容易になる',
     exp:'直接原価計算P/Lの見方：限界利益（3,200,000円）は「売上から変動費を引いた、固定費を回収するための金額」。限界利益率＝3,200,000÷8,000,000＝40%。固定費2,600,000÷CM率40%＝6,500,000円が損益分岐点売上高。実際売上8,000,000との差（1,500,000円）×40%＝600,000円が営業利益。',
     exp_en:'Direct costing P&L: CM (¥3,200,000) = "amount available to cover fixed costs after variable costs." CM ratio = 40%. BEP = ¥2,600,000 ÷ 40% = ¥6,500,000. Gap from BEP = ¥1,500,000 × 40% = ¥600,000 operating income. Every ¥1 of sales above BEP contributes ¥0.40 to profit.',
     note:'変動損益計算書：売上高 − 変動費 = 限界利益 / 限界利益 − 固定費 = 営業利益',
@@ -5788,9 +5788,9 @@ const ALL = [
     id:339,
     level:2,
     cat:'直接原価計算',
-    q:'（穴埋め）製造業特有の財務諸表の特徴：\n①損益計算書の売上原価の内訳として【ア　　】が別途添付される\n　（材料費・労務費・経費の内訳と仕掛品の増減が記載）\n②貸借対照表の流動資産に、商業簿記の「商品」に代わる3つの在庫勘定が計上される：\n　【イ　　】：購入した原材料在庫\n　【ウ　　】：製造途中の製品\n　【エ　　】：完成したが未販売の製品\n商業簿記では棚卸資産は「商品」だけだが、製造業は3種類の在庫を管理',
+    q:'（穴埋め）\n━━ 製造業特有の財務諸表の特徴とは ━━\n製造業では、商業簿記にはない「製造原価報告書」が損益計算書に添付される。\nまた在庫（棚卸資産）が3種類に分かれる点が商業簿記との大きな違い。\n━━━━━━━━━━\n\n① 損益計算書の売上原価の内訳として【ア　　　　　　　　　　　　　】が別途添付される\n   （材料費・労務費・経費の内訳と仕掛品の増減が記載）\n\n② 貸借対照表の流動資産に3つの在庫勘定が計上される\n   【イ　　　　　】：購入した原材料在庫\n   【ウ　　　　　】：製造途中の製品\n   【エ　　　　　】：完成したが未販売の製品\n\n商業簿記では棚卸資産は「商品」だけだが、製造業は3種類の在庫を管理する',
     q_en:'(Fill in) Characteristics of industrial financial statements. ①Attached to the income statement is [ア___] (cost of production report). ②The current assets section of the balance sheet includes [イ___], [ウ___], and [エ___].',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>製造原価報告書（製造原価明細書）</td></tr><tr><td class="hl">イ・ウ・エ</td><td>材料・仕掛品・製品（商業簿記の「商品」に相当）</td></tr></tbody></table><div class="formula-box">製造業B/S流動資産（棚卸資産）：<br>材料 → 仕掛品 → 製品　（3段階の在庫）<br>商業簿記は「商品」1種類だけ</div>`,
+    a:'ア 製造原価報告書（製造原価明細書）\nイ 材料　ウ 仕掛品　エ 製品\n\n【計算過程】\n製造業B/S流動資産（棚卸資産）：材料 → 仕掛品 → 製品（3段階の在庫）\n商業簿記は「商品」1種類だけ\n\n▶ ポイント：製造業特有の2つの特徴「製造原価報告書」と「3種類の棚卸資産」を覚える',
     exp:'製造業の財務諸表の特徴：①製造原価報告書が追加（材料費＋労務費＋経費→完成品原価の明細）②B/Sの棚卸資産が「材料」「仕掛品」「製品」の3種類（商業簿記は「商品」だけ）。製造プロセスを追跡するために在庫が3段階に分かれています。これが工業簿記と商業簿記の最大の構造的違いです。',
     exp_en:'Industrial financial statements: ①Cost of Production Report attached to the income statement (details material, labor, overhead → product cost) ②Balance sheet has THREE inventory types: Materials, WIP, Finished Goods — vs. commercial bookkeeping\'s single "Merchandise" account. These three inventory layers reflect the manufacturing process.',
     steps:[
@@ -5802,9 +5802,9 @@ const ALL = [
     id:340,
     level:2,
     cat:'直接原価計算',
-    q:'（穴埋め）工業簿記 vs 商業簿記の主な違い：\n①コスト計算：商業簿記は仕入単価×販売数量→売上原価だが、製造業は材料費・労務費・経費を集計して【ア　　】を計算\n②棚卸資産：商業簿記は【イ　　】のみ vs 工業簿記は【ウ　　】の3種類\n③製造原価計算のための帳票として【エ　　】が損益計算書に添付される\n商業：買ったものをそのまま売る / 工業：原材料を変形・加工して付加価値を生む',
+    q:'（穴埋め）\n━━ 工業簿記 vs 商業簿記の主な違いとは ━━\n商業：買ったものをそのまま売る（仕入→販売の2ステップ）\n工業：原材料を変形・加工して付加価値を生む（購入→製造→完成→販売の多段階）\n━━━━━━━━━━\n\n① コスト計算の違い\n   商業簿記：仕入単価 × 販売数量 → 売上原価\n   製造業：材料費・労務費・経費を集計して【ア　　　　　　　　　　　　　　　】を計算\n\n② 棚卸資産の違い\n   商業簿記：【イ　　　　　　　】のみ\n   工業簿記：【ウ　　　　　　　】・仕掛品・製品の3種類\n\n③ 製造原価計算のための帳票として【エ　　　　　　　　　　　　　　　】が損益計算書に添付される',
     q_en:'(Fill in) Compare industrial vs. commercial bookkeeping. ①Commercial: buy-and-sell (purchases & sales). Industrial: accumulates material, labor, overhead to calculate [ア___]. ②Inventory: commercial has [イ___]; industrial has [ウ___], WIP, and Finished Goods. ③Industrial requires [エ___] as a special cost document.',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">ア</td><td>製品原価（製造原価）</td></tr><tr><td class="hl">イ</td><td>商品（1種類）</td></tr><tr><td class="hl">ウ</td><td>材料</td></tr><tr><td class="hl">エ</td><td>製造原価報告書（製造指図書 or 原価計算表）</td></tr></tbody></table>`,
+    a:'ア 製品原価（製造原価）　イ 商品（1種類）　ウ 材料　エ 製造原価報告書\n\n【計算過程】\n商業：仕入 → 商品 → 売上原価（2段階）\n工業：材料 → 仕掛品 → 製品 → 売上原価（4段階）\n\n▶ ポイント：工業簿記は「製造プロセスを追跡する」という目的のため、棚卸資産が3段階に分かれ、製造原価報告書が必要になる',
     exp:'工業簿記のエッセンス：①「作る」プロセスのコストを追跡する→材料費・労務費・経費→製品原価②在庫が3段階（材料→仕掛品→製品）③原価管理のための差異分析（標準原価計算）。商業簿記が「仕入→販売」の2ステップなのに対し、工業簿記は「購入→製造（複数工程）→完成→販売」の多段階プロセスを記録します。',
     exp_en:'Industrial bookkeeping essence: ①Track costs through the production process (materials + labor + overhead = product cost) ②Three inventory stages (Materials → WIP → Finished Goods) ③Variance analysis for cost control (standard costing). Commercial = 2 steps (buy → sell). Industrial = multiple steps (buy → manufacture → complete → sell).',
     steps:[
@@ -5818,21 +5818,9 @@ const ALL = [
     id:341,
     level:2,
     cat:'工業簿記総まとめ',
-    q:'（穴埋め）製造原価報告書（製造原価明細書）の構造を完成させよ。\n当月製造費用：材料費 [①]、労務費 600,000、経費 200,000。\n月初仕掛品 300,000、月末仕掛品 [②]。\n当期製品製造原価 1,900,000。',
+    q:'（穴埋め）\n━━ 製造原価報告書の構造とは ━━\n「モノを作るのにいくらかかったか」をまとめた表。\n公式：当期製品製造原価 ＝ 当月製造費用 ＋ 月初仕掛品 − 月末仕掛品\n━━━━━━━━━━\n\n当月製造費用：材料費 [①]、労務費 600,000円、経費 200,000円\n月初仕掛品：300,000円、月末仕掛品：[②]円\n当期製品製造原価：1,900,000円\n\n① 材料費を逆算する\n   ＝ 1,900,000 ＋ [②] − 300,000 − 600,000 − 200,000\n\n② 月末仕掛品を逆算する\n   ＝ 当月製造費用合計 ＋ 300,000 − 1,900,000',
     q_en:'(Fill-in) Complete the Cost of Goods Manufactured statement.\nCurrent month costs: Materials [①], Labor 600,000, Overhead 200,000.\nBeginning WIP 300,000, Ending WIP [②].\nCost of Goods Manufactured 1,900,000.',
-    ans_html:`<div class="tbl-sec">
-<table><tr><th>項目</th><th>金額</th></tr>
-<tr><td>材料費</td><td>① <b>900,000</b></td></tr>
-<tr><td>労務費</td><td>600,000</td></tr>
-<tr><td>経費</td><td>200,000</td></tr>
-<tr><td>当月製造費用合計</td><td>1,700,000</td></tr>
-<tr><td>月初仕掛品</td><td>300,000</td></tr>
-<tr><td>合計</td><td>2,000,000</td></tr>
-<tr><td>月末仕掛品</td><td>② <b>100,000</b></td></tr>
-<tr><td>当期製品製造原価</td><td>1,900,000</td></tr>
-</table></div>
-<p>①：1,900,000 + 100,000 − 300,000 − 600,000 − 200,000 = 900,000<br>
-②：1,700,000 + 300,000 − 1,900,000 = 100,000</p>`,
+    a:'① 900,000円　② 100,000円\n\n【計算過程】\n当月製造費用合計 ＝ 材料費 ＋ 600,000 ＋ 200,000\n月末仕掛品 ＝ 当月製造費用合計 ＋ 月初仕掛品 − 当期製品製造原価\n逆算①：材料費 ＝ 1,900,000 ＋ 100,000 − 300,000 − 600,000 − 200,000 ＝ 900,000円\n逆算②：月末仕掛品 ＝ 1,700,000 ＋ 300,000 − 1,900,000 ＝ 100,000円\n\n▶ ポイント：製造原価報告書の公式「当期製品製造原価 ＝ 当月製造費用 ＋ 月初仕掛品 − 月末仕掛品」を使って逆算する',
     exp:'製造原価報告書は「モノを作るのにいくらかかったか」をまとめた表です。\n公式は：当期製品製造原価 ＝ 当月製造費用 ＋ 月初仕掛品 − 月末仕掛品。\n逆算：月末仕掛品 ＝ 当月製造費用 ＋ 月初仕掛品 − 当期製品製造原価。\n財務諸表では損益計算書の「売上原価」の内訳として添付されます。',
     exp_en:'The Cost of Goods Manufactured statement summarizes production costs.\nFormula: Cost Mfg = Current Costs + Beginning WIP − Ending WIP.\nReverse calc: Ending WIP = Current Costs + Beginning WIP − Cost Mfg.\nIt appears as a supporting schedule to the income statement.',
     steps:[
@@ -5854,15 +5842,9 @@ const ALL = [
     id:343,
     level:2,
     cat:'直接原価計算',
-    q:'（穴埋め）高低点法で電力費（混合費）を固定費と変動費に分解する。\n最高操業度：4,000時間 / 費用 320,000円\n最低操業度：1,000時間 / 費用 140,000円\n変動費率 [①] 円/時間、固定費 [②] 円。',
+    q:'（穴埋め）\n━━ 高低点法とは ━━\n費用を「固定費」と「変動費」に分解する方法。\n最も操業度が高い月と低い月の2点だけで計算するシンプルな方法。\n━━━━━━━━━━\n\n電力費（混合費）を固定費と変動費に分解する\n最高操業度：4,000時間 / 費用 320,000円\n最低操業度：1,000時間 / 費用 140,000円\n\n① 変動費率の計算\n   変動費率 ＝ （費用の差） ÷ （操業度の差）\n   ＝ （320,000 − 140,000） ÷ （4,000 − 1,000）\n   ＝ 【①　　　　　　　　】円/時間\n\n② 固定費の計算\n   固定費 ＝ 最高月の費用 − 変動費率 × 最高月の操業度\n   ＝ 320,000 − 【①　　　】 × 4,000\n   ＝ 【②　　　　　　　　】円',
     q_en:'(Fill-in) Use the high-low method to separate mixed electricity cost.\nHigh: 4,000 hrs / ¥320,000. Low: 1,000 hrs / ¥140,000.\nVariable rate [①] yen/hr, Fixed cost [②] yen.',
-    ans_html:`<div class="tbl-sec">
-<p>① 変動費率 ＝ (320,000 − 140,000) ÷ (4,000 − 1,000) ＝ <b>60円/時間</b><br>
-② 固定費 ＝ 320,000 − 60 × 4,000 ＝ <b>80,000円</b></p>
-<table><tr><th></th><th>計算</th><th>答え</th></tr>
-<tr><td>① 変動費率</td><td>180,000 ÷ 3,000</td><td><b>60円/時間</b></td></tr>
-<tr><td>② 固定費</td><td>320,000 − 240,000</td><td><b>80,000円</b></td></tr>
-</table></div>`,
+    a:'① 60円/時間　② 80,000円\n\n【計算過程】\n変動費率 ＝ (320,000 − 140,000) ÷ (4,000 − 1,000) ＝ 180,000 ÷ 3,000 ＝ 60円/時間\n固定費 ＝ 320,000 − 60 × 4,000 ＝ 320,000 − 240,000 ＝ 80,000円\n\n▶ ポイント：高低点法は「2点を結んだ直線の傾きが変動費率、y切片が固定費」と考える',
     exp:'高低点法は「一番多い月」と「一番少ない月」の2点だけで費用を分解する方法です。\n変動費率 ＝ 費用の差 ÷ 操業度の差（傾き）\n固定費 ＝ どちらかの月の費用 − 変動費率 × その月の操業度（切片）\nグラフでいうと2点を結んだ直線の「傾き」が変動費率、「y切片」が固定費です。',
     exp_en:'The high-low method uses only the highest and lowest activity months.\nVariable rate = Change in cost ÷ Change in activity (slope)\nFixed cost = Total cost − Variable rate × Activity (y-intercept)\nThink of it as finding the slope and intercept of a line through two points.',
     steps:[
@@ -5874,14 +5856,9 @@ const ALL = [
     id:344,
     level:2,
     cat:'直接原価計算',
-    q:'（穴埋め）直接原価計算。販売価格1個2,000円、変動費1,200円、固定費480,000円。\n目標営業利益 240,000円を達成するための必要販売量は [①] 個。\n現在の販売量が900個のとき、安全余裕率は [②] ％。',
+    q:'（穴埋め）\n━━ 直接原価計算の目標利益達成とは ━━\n「目標利益を達成するために何個売ればよいか」をCVP分析で計算する方法。\n公式：必要販売量 ＝ （固定費 ＋ 目標利益）÷ 1個あたり限界利益\n━━━━━━━━━━\n\n販売価格1個2,000円、変動費1,200円、固定費480,000円\n\n① 目標営業利益240,000円を達成するための必要販売量\n   1個あたり限界利益 ＝ 2,000 − 1,200 ＝ 800円\n   必要販売量 ＝ （480,000 ＋ 240,000）÷ 800 ＝ 【①　　　　　　】個\n\n② 現在の販売量が900個のときの安全余裕率\n   損益分岐点販売量 ＝ 480,000 ÷ 800 ＝ 600個\n   安全余裕率 ＝ （900 − 600）÷ 900 × 100 ＝ 【②　　　　　　】％',
     q_en:'(Fill-in) Selling price ¥2,000/unit, variable cost ¥1,200/unit, fixed cost ¥480,000.\nUnits needed for target profit of ¥240,000: [①]. Safety margin ratio at 900 units: [②]%.',
-    ans_html:`<div class="tbl-sec">
-<p>貢献利益率 ＝ (2,000 − 1,200) ÷ 2,000 ＝ 40%</p>
-<p>① 必要販売量 ＝ (480,000 + 240,000) ÷ (2,000 − 1,200) ＝ 720,000 ÷ 800 ＝ <b>900個</b></p>
-<p>② 損益分岐点販売量 ＝ 480,000 ÷ 800 ＝ 600個<br>
-安全余裕率 ＝ (900 − 600) ÷ 900 × 100 ＝ <b>33.3%</b></p>
-</div>`,
+    a:'① 900個　② 33.3%\n\n【計算過程】\n1個あたり限界利益 ＝ 2,000 − 1,200 ＝ 800円\n必要販売量 ＝ (480,000 ＋ 240,000) ÷ 800 ＝ 720,000 ÷ 800 ＝ 900個\n損益分岐点販売量 ＝ 480,000 ÷ 800 ＝ 600個\n安全余裕率 ＝ (900 − 600) ÷ 900 × 100 ＝ 33.3%\n\n▶ ポイント：目標利益達成には「（固定費＋目標利益）÷限界利益」で必要販売量を求める',
     exp:'目標利益達成の公式：必要販売量 ＝ (固定費 ＋ 目標利益) ÷ 1個あたり貢献利益\n安全余裕率：実際販売量が損益分岐点からどれだけ余裕があるかを示すパーセント。\n　安全余裕率 ＝ (実際販売量 − BEP販売量) ÷ 実際販売量 × 100\n安全余裕率が高いほど「ちょっと売上が落ちても赤字にならない」ということです。',
     exp_en:'Target profit formula: Required units = (Fixed costs + Target profit) ÷ Unit contribution margin.\nSafety margin ratio shows how far actual sales are above break-even.\nSafety margin = (Actual − BEP) ÷ Actual × 100.\nHigher safety margin = more cushion before losses occur.',
     steps:[
@@ -5904,16 +5881,9 @@ const ALL = [
     id:346,
     level:2,
     cat:'工業簿記総まとめ',
-    q:'（穴埋め）工業簿記と商業簿記を比較する。\n商業簿記の「商品」に対応する工業簿記の勘定科目は [①] と [②]。\n商業では「売上原価 ＝ 期首商品 ＋ 仕入 − 期末商品」だが、\n工業では「売上原価 ＝ 期首製品 ＋ [③] − 期末製品」となる。',
+    q:'（穴埋め）\n━━ 工業簿記と商業簿記の比較とは ━━\n工業簿記は「商業簿記の応用版」。在庫の種類と原価の計算方法が異なる。\n━━━━━━━━━━\n\n商業簿記の「商品」に対応する工業簿記の勘定科目は【①　　　　　】と【②　　　　　】\n\n商業では：売上原価 ＝ 期首商品 ＋ 仕入 − 期末商品\n工業では：売上原価 ＝ 期首製品 ＋ 【③　　　　　　　　　　　】 − 期末製品',
     q_en:'(Fill-in) Compare industrial and commercial bookkeeping.\nIndustrial accounts corresponding to commercial "Merchandise": [①] and [②].\nIndustrial COGS formula uses [③] instead of "Purchases".',
-    ans_html:`<div class="tbl-sec">
-<table><tr><th>比較項目</th><th>商業簿記</th><th>工業簿記</th></tr>
-<tr><td>在庫勘定</td><td>商品</td><td>① <b>仕掛品</b> ・ ② <b>製品</b></td></tr>
-<tr><td>費用取得</td><td>仕入（購入）</td><td>③ <b>当期製品製造原価</b></td></tr>
-<tr><td>原価の流れ</td><td>仕入→商品→売上原価</td><td>材料→仕掛品→製品→売上原価</td></tr>
-</table>
-<p>売上原価（工業）＝ 期首製品 ＋ 当期製品製造原価 − 期末製品</p>
-</div>`,
+    a:'① 仕掛品　② 製品　③ 当期製品製造原価\n\n【計算過程】\n商業：仕入 → 商品 → 売上原価\n工業：材料 → 仕掛品 → 製品 → 売上原価\n\n売上原価（工業）＝ 期首製品 ＋ 当期製品製造原価 − 期末製品\n\n▶ ポイント：「仕入」が「当期製品製造原価」に、「商品」が「仕掛品＋製品」に置き換わるだけで基本構造は同じ',
     exp:'工業簿記は「商業簿記の応用版」とも言えます。\n商品（買ってきたもの）→ 仕掛品（作りかけ）＋ 製品（作り終わったもの）に分かれる。\n仕入（買ってきた金額）→ 当期製品製造原価（材料費＋労務費＋経費）に置き換わる。\n基本的な流れは同じで「在庫があって、売った分だけ費用」というシンプルな原則です。',
     exp_en:'Industrial bookkeeping is essentially "commercial bookkeeping for manufacturers."\nMerchandise splits into: WIP (in-process) + Finished Goods (completed).\nPurchases become: Cost of Goods Manufactured (materials + labor + overhead).\nThe core logic is the same: inventory on hand, and only what\'s sold becomes expense.',
     steps:[
@@ -5951,19 +5921,9 @@ const ALL = [
     id:348,
     level:2,
     cat:'標準原価計算',
-    q:'（穴埋め）製造間接費の3分法差異分析。\n予算差異 [①]、能率差異 [②]、操業度差異 [③] を計算せよ。\n標準配賦率：200円/時間（固定費率120円/時間、変動費率80円/時間）\n標準操業度：500時間、実際操業度：480時間、実際直接作業時間：490時間\n固定費予算：60,000円、実際発生額：108,000円',
+    q:'（穴埋め）\n━━ 製造間接費の3分法とは ━━\n差異を「予算差異」「能率差異」「操業度差異」の3つに分解する方法。\n3分法では「実際操業度」と「実際直接作業時間」の2つの基準点を使う。\n━━━━━━━━━━\n\n標準配賦率：200円/時間（固定費率120円/時間、変動費率80円/時間）\n標準操業度：500時間、実際操業度：480時間、実際直接作業時間：490時間\n固定費予算：60,000円、実際発生額：108,000円\n\n① 予算差異\n   予算許容額（実際操業度）＝ 60,000 ＋ 80 × 480 ＝ 98,400円\n   予算差異 ＝ 98,400 − 108,000 ＝ 【①　　　　　】円（有利/不利）\n\n② 能率差異\n   予算許容額（標準DLH）＝ 60,000 ＋ 80 × 490 ＝ 99,200円\n   能率差異 ＝ 99,200 − 98,400 ＝ 【②　　　　　】円（有利/不利）\n\n③ 操業度差異\n   標準配賦額 ＝ 200 × 500 ＝ 100,000円\n   操業度差異 ＝ 100,000 − 99,200 ＝ 【③　　　　　】円（有利/不利）',
     q_en:'(Fill-in) 3-way overhead variance.\nStandard rate: ¥200/hr (fixed ¥120, variable ¥80). Standard hrs: 500, Actual capacity: 480, Actual direct labor: 490. Fixed budget: ¥60,000, Actual overhead: ¥108,000.',
-    ans_html:`<div class="tbl-sec">
-<p>3分法では「予算許容額」を<b>実際操業度基準</b>と<b>標準操業度基準</b>の2段階で考えます。</p>
-<table><tr><th></th><th>計算</th><th>答え</th></tr>
-<tr><td>予算許容額（実際操業度）</td><td>60,000 + 80×480</td><td>98,400円</td></tr>
-<tr><td>予算許容額（標準操業度）</td><td>60,000 + 80×490</td><td>99,200円</td></tr>
-<tr><td>標準配賦額</td><td>200×500</td><td>100,000円</td></tr>
-<tr><td>① 予算差異</td><td>98,400 − 108,000</td><td><b>9,600円 不利</b></td></tr>
-<tr><td>② 能率差異</td><td>99,200 − 98,400 = 800</td><td><b>800円 有利</b></td></tr>
-<tr><td>③ 操業度差異</td><td>100,000 − 99,200</td><td><b>800円 有利</b></td></tr>
-</table>
-</div>`,
+    a:'① △9,600円（不利）　② 800円（有利）　③ 800円（有利）\n\n【計算過程】\n予算許容額（実際操業度）＝ 60,000 ＋ 80 × 480 ＝ 98,400円\n予算許容額（標準DLH）＝ 60,000 ＋ 80 × 490 ＝ 99,200円\n標準配賦額 ＝ 200 × 500 ＝ 100,000円\n\n予算差異 ＝ 98,400 − 108,000 ＝ △9,600円（不利）\n能率差異 ＝ 99,200 − 98,400 ＝ 800円（有利）\n操業度差異 ＝ 100,000 − 99,200 ＝ 800円（有利）\n合計差異 ＝ △9,600 ＋ 800 ＋ 800 ＝ △8,000円（不利）\n\n▶ ポイント：3分法は「使いすぎ（予算差異）」「作業効率（能率差異）」「稼働率（操業度差異）」の3つの原因に分けて改善策を明確にする',
     exp:'3分法は「なぜ差異が生まれたか」を3段階で分析します。\n\n【予算差異】実際操業度での予算と実際費用の差。「使いすぎ？節約？」\n【能率差異】標準時間と実際時間の差 × 変動費率。「作業が速かった？遅かった？」\n【操業度差異】固定費の吸収不足。「工場の設備をフル活用できたか？」\n\n3分法では「実際操業度」と「実際直接作業時間（標準操業度）」の2つの基準点を使うのがポイント。\n能率差異は「直接作業の効率」を純粋に測るために分離されます。',
     exp_en:'3-way analysis separates efficiency from capacity utilization.\nBudget variance: actual cost vs. flexible budget at actual capacity.\nEfficiency variance: standard vs. actual direct labor hours × variable rate.\nVolume variance: fixed overhead over/underabsorption from capacity.\nKey: uses two reference points — actual capacity and actual direct labor hours.',
     note:'3分法の3点：\n① 予算差異 ＝ 予算許容額(実際操業度) − 実際発生額\n② 能率差異 ＝ 予算許容額(標準DLH) − 予算許容額(実際操業度)\n③ 操業度差異 ＝ 標準配賦額 − 予算許容額(標準DLH)',
@@ -5977,17 +5937,9 @@ const ALL = [
     id:349,
     level:2,
     cat:'標準原価計算',
-    q:'（穴埋め）製造間接費の4分法。\n3分法の「能率差異」をさらに「変動費能率差異」[①] と「固定費能率差異」[②] に分解する。\n変動費率80円/時間、固定費率120円/時間。\n実際操業度：480時間、実際直接作業時間（標準操業度）：490時間。',
+    q:'（穴埋め）\n━━ 製造間接費の4分法とは ━━\n3分法の「能率差異」をさらに「変動費部分」と「固定費部分」に分解する方法。\n4つの差異：予算差異 ＋ 変動費能率差異 ＋ 固定費能率差異 ＋ 操業度差異\n━━━━━━━━━━\n\n変動費率80円/時間、固定費率120円/時間\n実際操業度：480時間、実際直接作業時間（標準操業度）：490時間\n\n① 変動費能率差異\n   （標準DLH − 実際操業度）× 変動費率\n   ＝ （490 − 480）× 80 ＝ 【①　　　　　】円（有利/不利）\n\n② 固定費能率差異\n   （標準DLH − 実際操業度）× 固定費率\n   ＝ （490 − 480）× 120 ＝ 【②　　　　　】円（有利/不利）',
     q_en:'(Fill-in) 4-way overhead variance: split the efficiency variance into variable and fixed parts.\nVariable rate ¥80/hr, Fixed rate ¥120/hr. Actual capacity: 480hrs, Standard DLH: 490hrs.',
-    ans_html:`<div class="tbl-sec">
-<p>4分法＝3分法の「能率差異」を変動・固定に分ける</p>
-<table><tr><th></th><th>計算</th><th>答え</th></tr>
-<tr><td>① 変動費能率差異</td><td>(490−480) × 80</td><td><b>800円 有利</b></td></tr>
-<tr><td>② 固定費能率差異</td><td>(490−480) × 120</td><td><b>1,200円 有利</b></td></tr>
-<tr><td>合計（能率差異）</td><td>800 + 1,200</td><td>2,000円 有利</td></tr>
-</table>
-<p>4分法の4つ：予算差異 ＋ 変動費能率差異 ＋ 固定費能率差異 ＋ 操業度差異</p>
-</div>`,
+    a:'① 800円（有利）　② 1,200円（有利）\n\n【計算過程】\n変動費能率差異 ＝ (490 − 480) × 80 ＝ 800円（有利）\n固定費能率差異 ＝ (490 − 480) × 120 ＝ 1,200円（有利）\n能率差異合計 ＝ 800 ＋ 1,200 ＝ 2,000円（有利）\n\n▶ ポイント：4分法は3分法の能率差異を変動費・固定費に分けたもの。作業時間の節約が変動費・固定費の両方の節約につながる',
     exp:'4分法は3分法をさらに一歩細かく分析する方法です。\n\n3分法の「能率差異」は「作業が速かったおかげで、変動費も固定費も節約できた」という2つの効果が混ざっています。\nこれを変動費部分と固定費部分に分けたのが4分法です。\n\n【変動費能率差異】作業時間が短縮した分の変動費節約額\n　（標準DLH − 実際操業度）× 変動費率\n\n【固定費能率差異】作業時間が短縮した分の固定費の追加吸収\n　（標準DLH − 実際操業度）× 固定費率\n\n2級試験では2分法・3分法が主流ですが、4分法も出題されます。まず2分法→3分法→4分法の順に理解すると迷わない。',
     exp_en:'4-way analysis further splits the efficiency variance by cost type.\nVariable efficiency: time saved × variable rate.\nFixed efficiency: time saved × fixed rate.\nThe 4 variances: budget + variable efficiency + fixed efficiency + volume.',
     note:'4分法：予算差異・変動費能率差異・固定費能率差異・操業度差異の4つに分析\n変動費能率差異 ＝ (標準DLH − 実際操業度) × 変動費率\n固定費能率差異 ＝ (標準DLH − 実際操業度) × 固定費率',
@@ -6011,16 +5963,9 @@ const ALL = [
     id:351,
     level:2,
     cat:'標準原価計算',
-    q:'（穴埋め）標準原価計算における差異分析の体系を整理する。\n直接材料費差異 ＝ [①] 差異 ＋ [②] 差異。\n直接労務費差異 ＝ [③] 差異 ＋ [④] 差異。\n製造間接費差異（2分法）＝ [⑤] 差異 ＋ [⑥] 差異。',
+    q:'（穴埋め）\n━━ 標準原価計算の差異分析体系とは ━━\n各原価要素の差異は「単価のズレ」と「量のズレ」に分解できる。\n材料費・労務費・間接費それぞれで名称が違うだけで構造は同じ。\n━━━━━━━━━━\n\n直接材料費差異 ＝ 【①　　　　　　】差異 ＋ 【②　　　　　　】差異\n\n直接労務費差異 ＝ 【③　　　　　　】差異 ＋ 【④　　　　　　】差異\n\n製造間接費差異（2分法）＝ 【⑤　　　　　　】差異 ＋ 【⑥　　　　　　】差異\n\n覚え方：\n材料は「値段の差 ＋ 使った量の差」\n労務費は「時給の差 ＋ 作業時間の差」',
     q_en:'(Fill-in) Organize standard cost variances.\nDirect material variance = [①] variance + [②] variance.\nDirect labor variance = [③] variance + [④] variance.\nOverhead variance (2-way) = [⑤] variance + [⑥] variance.',
-    ans_html:`<div class="tbl-sec">
-<table><tr><th>原価要素</th><th>差異①</th><th>差異②</th></tr>
-<tr><td>直接材料費</td><td>① <b>価格</b>差異</td><td>② <b>数量</b>差異</td></tr>
-<tr><td>直接労務費</td><td>③ <b>賃率</b>差異</td><td>④ <b>時間</b>差異</td></tr>
-<tr><td>製造間接費（2分法）</td><td>⑤ <b>予算</b>差異</td><td>⑥ <b>操業度</b>差異</td></tr>
-</table>
-<p>覚え方：材料は「値段の差 ＋ 使った量の差」、労務費は「時給の差 ＋ 作業時間の差」</p>
-</div>`,
+    a:'① 価格　② 数量　③ 賃率　④ 時間　⑤ 予算　⑥ 操業度\n\n【計算過程】\n直接材料費差異 ＝ 価格差異（単価のズレ）＋ 数量差異（使用量のズレ）\n直接労務費差異 ＝ 賃率差異（時給のズレ）＋ 時間差異（作業時間のズレ）\n製造間接費差異（2分法）＝ 予算差異（使いすぎ？）＋ 操業度差異（稼働率のズレ）\n\n▶ ポイント：全て「（標準 − 実際）の差 × もう一方の数値」という計算パターンが共通',
     exp:'標準原価計算の差異は3種類の原価要素それぞれに対して行います。\n\n【直接材料費差異】\n　価格差異：標準単価と実際単価の差 × 実際消費量\n　数量差異：標準消費量と実際消費量の差 × 標準単価\n\n【直接労務費差異】\n　賃率差異：標準賃率と実際賃率の差 × 実際作業時間\n　時間差異：標準作業時間と実際作業時間の差 × 標準賃率\n\n【製造間接費差異（2分法）】\n　予算差異：「使いすぎ？節約？」\n　操業度差異：「固定費をどれだけ活用できたか？」\n\n全部合計したのが「全差異」で、これが標準原価と実際原価の違いです。',
     exp_en:'Standard cost variances cover 3 cost elements.\nMaterial: price variance + quantity variance.\nLabor: rate variance + efficiency (time) variance.\nOverhead: budget variance + volume variance.\nAll variances combined equal total standard cost variance.',
     note:'全差異 ＝ 標準原価 − 実際原価\n材料費差異：価格差異 ＋ 数量差異\n労務費差異：賃率差異 ＋ 時間差異\n間接費差異(2分法)：予算差異 ＋ 操業度差異',
@@ -6037,17 +5982,9 @@ const ALL = [
     id:352,
     level:2,
     cat:'総合原価計算',
-    q:'（穴埋め）総合原価計算における仕損・減損の用語を整理する。\n製造工程中に不合格品が出ることを [①]、\n蒸発・散逸など形がなくなることを [②] という。\n[①] のうち、一定の割合内のものを [③] 仕損、\n予想外の多量のものを [④] 仕損という。',
+    q:'（穴埋め）\n━━ 仕損・減損の用語とは ━━\n製造工程で発生するロスには「仕損」と「減損」の2種類があり、\nさらに仕損は「正常」と「異常」に分類される。\n━━━━━━━━━━\n\n製造工程中に不合格品が出ることを【①　　　　　】という\n蒸発・散逸など形がなくなることを【②　　　　　】という\n\n【①】のうち：\n一定の割合内のものを【③　　　　　】仕損という\n予想外の多量のものを【④　　　　　】仕損という\n\n正常仕損の原価は製品原価に含める\n異常仕損は「異常仕損費」として損益計算書へ計上する',
     q_en:'(Fill-in) Define spoilage and shrinkage terms.\n[①] = defective units produced. [②] = units that evaporate/disappear.\n[③] = normal spoilage (within tolerance). [④] = abnormal spoilage.',
-    ans_html:`<div class="tbl-sec">
-<table><tr><th>用語</th><th>意味</th></tr>
-<tr><td>① <b>仕損</b></td><td>製造工程中に出た不合格品・失敗品</td></tr>
-<tr><td>② <b>減損</b></td><td>蒸発・散逸など物理的に消えてなくなる</td></tr>
-<tr><td>③ <b>正常</b>仕損</td><td>製造上やむを得ない一定範囲内の仕損</td></tr>
-<tr><td>④ <b>異常</b>仕損</td><td>予想を超える仕損（特別な原因による）</td></tr>
-</table>
-<p>正常仕損の原価は製品原価に含める。異常仕損は<b>異常仕損費</b>として損益計算書へ。</p>
-</div>`,
+    a:'① 仕損　② 減損　③ 正常（仕損）　④ 異常（仕損）\n\n【計算過程】\n仕損：不合格品・失敗品（形はある）\n減損：蒸発・散逸など物理的に消えてなくなる（形がなくなる）\n正常仕損 → 製品原価に含める（良品に負担させる）\n異常仕損 → 製品原価に含めない → 異常仕損費として損益計算書へ\n\n▶ ポイント：「形があって不合格品 → 仕損」「形がなくなる → 減損」「想定内 → 正常」「想定外 → 異常」で分類する',
     exp:'工場で100個作っても、全部が合格品になるとは限りません。これが「仕損」です。\n\n【仕損のイメージ】陶芸で焼いたら歪んでしまった → 仕損品（不合格品）\n【減損のイメージ】塗料が蒸発して減ってしまった → 減損（量が減る）\n\n正常仕損は「想定内のコスト」なので製品の原価に上乗せします（良品が仕損分のコストも負担する）。\n異常仕損は「想定外のコスト」なので製品原価に含めず、特別損失として処理します。\n\n【覚え方】正常＝コストに含める（製品が責任持つ）、異常＝コストから除く（製品は被害者）',
     exp_en:'Spoilage = defective units that fail quality standards.\nShrinkage/Waste = units that physically disappear (evaporation, etc.).\nNormal spoilage: expected production loss → included in product cost.\nAbnormal spoilage: unexpected excess → charged to income statement as loss.',
     note:'仕損：不合格品（形はある）\n減損：蒸発・消失（形がなくなる）\n正常仕損 → 製品原価に算入\n異常仕損 → 異常仕損費（損益計算書）',
@@ -6062,25 +5999,9 @@ const ALL = [
     id:353,
     level:2,
     cat:'総合原価計算',
-    q:'（穴埋め）度外視法（仕損品を計算から除外し、そのコストを良品に自動的に負担させる方法）・終点発生の正常仕損\n完成品 800個、正常仕損 100個（終点発生）、月末仕掛品 200個（加工進捗50%）\n当月製造費用：材料費 450,000円（始点投入）、加工費 350,000円\n月初仕掛品なし。\n完成品原価 [①] 円、月末仕掛品原価 [②] 円。',
+    q:'（穴埋め）\n━━ 度外視法（終点発生の正常仕損）とは ━━\n仕損品を計算から除外（度外視）し、そのコストを良品に自動的に負担させる方法。\n終点発生の場合、仕掛品は仕損発生点を通っていないため、完成品だけが負担する。\n━━━━━━━━━━\n\n完成品：800個、正常仕損：100個（終点発生）、月末仕掛品：200個（加工進捗50%）\n材料費：450,000円（始点投入）、加工費：350,000円、月初仕掛品なし\n\n① 換算量の計算（仕損品は度外視 = 分母に入れない）\n   材料費換算量 ＝ 完成品800 ＋ 月末仕掛品200×100% ＝ 【　①計　　　　　】個\n   加工費換算量 ＝ 完成品800 ＋ 月末仕掛品200×50% ＝ 【　①計　　　　　】個\n\n② 単価の計算\n   材料費単価 ＝ 450,000 ÷ 換算量\n   加工費単価 ＝ 350,000 ÷ 換算量\n\n完成品原価 [①]円　月末仕掛品原価 [②]円',
     q_en:'(Fill-in) Normal spoilage at end of process (degree-of-completion ignored method).\nCompleted 800 units, Normal spoilage 100 units (end), Ending WIP 200 units (50% complete).\nMaterial ¥450,000 (start), Conversion ¥350,000. No beginning WIP.',
-    ans_html:`<div class="tbl-sec">
-<p><b>度外視法</b>：仕損品を計算上無視する → 仕損コストを良品・仕掛品に自動按分</p>
-<p>終点発生の正常仕損 → <b>完成品だけ</b>が負担（仕掛品は負担しない）</p>
-<table><tr><th></th><th>材料費</th><th>加工費</th></tr>
-<tr><td>完成品</td><td>800個</td><td>800個</td></tr>
-<tr><td>仕損品（度外視）</td><td>－</td><td>－</td></tr>
-<tr><td>月末仕掛品</td><td>200個</td><td>100個(×50%)</td></tr>
-<tr><td>計</td><td>1,000個</td><td>900個</td></tr>
-</table>
-<table><tr><th></th><th>材料費</th><th>加工費</th></tr>
-<tr><td>単価</td><td>450,000÷1,000=450</td><td>350,000÷900=388.9</td></tr>
-<tr><td>① 完成品原価</td><td>450×800=360,000</td><td>388.9×800=311,111</td></tr>
-<tr><td>合計①</td><td colspan="2"><b>671,111円</b></td></tr>
-<tr><td>② 月末仕掛品</td><td>450×200=90,000</td><td>388.9×100=38,889</td></tr>
-<tr><td>合計②</td><td colspan="2"><b>128,889円</b></td></tr>
-</table>
-</div>`,
+    a:'① 完成品原価 671,111円（概算）　② 月末仕掛品原価 128,889円（概算）\n\n【計算過程】\n材料費換算量 ＝ 800 ＋ 200×100% ＝ 1,000個（仕損品は除く）\n加工費換算量 ＝ 800 ＋ 200×50% ＝ 900個（仕損品は除く）\n材料費単価 ＝ 450,000 ÷ 1,000 ＝ @450円\n加工費単価 ＝ 350,000 ÷ 900 ≒ @388.9円\n完成品原価 ＝ 450×800 ＋ 388.9×800 ＝ 360,000 ＋ 311,111 ≒ 671,111円\n月末仕掛品原価 ＝ 450×200 ＋ 388.9×100 ＝ 90,000 ＋ 38,889 ≒ 128,889円\n\n▶ ポイント：度外視法は「仕損品を分母から除く」だけ。終点発生なら仕掛品は仕損コストを負担しない',
     exp:'度外視法の名前の通り「仕損を無視して計算する」方法です。\n\n【キーポイント】仕損品を計算から外すだけ → 残りの完成品・仕掛品で費用を割り算する → 自動的に仕損コストが配分される\n\n【終点発生の場合】仕損が工程の最後に発生する → 仕掛品はまだ仕損が発生する地点を通っていない → 仕掛品は仕損コストを負担しなくてよい\n\n【計算のポイント】分母の個数に仕損品を入れない。これだけ！\n\n検算：完成品 671,111 ＋ 月末仕掛品 128,889 ＝ 800,000（＝450,000＋350,000）✓',
     exp_en:'Degree-of-completion-ignored (degree-of-completion method): simply exclude spoiled units from the denominator.\nEnd-of-process spoilage: only completed units bear the spoilage cost.\nWIP units have not yet passed the spoilage point, so they bear no spoilage cost.',
     note:'度外視法のコツ：\n・仕損品を分母から除くだけ\n・終点発生 → 仕掛品は仕損コスト負担なし\n・途中発生 → 進捗度によっては仕掛品も負担あり',
@@ -6093,24 +6014,9 @@ const ALL = [
     id:354,
     level:2,
     cat:'総合原価計算',
-    q:'（穴埋め）度外視法（仕損品を計算から除外し、そのコストを良品に自動的に負担させる方法）・途中発生の正常仕損\n正常仕損は加工進捗40%地点で発生。月末仕掛品は進捗50%（仕損発生点を通過済み）。\n完成品 800個、正常仕損 100個（40%地点）、月末仕掛品 200個（50%）\n材料費 450,000円（始点投入）、加工費 360,000円。月初仕掛品なし。\n完成品原価 [①] 円、月末仕掛品原価 [②] 円。',
+    q:'（穴埋め）\n━━ 度外視法（途中発生の正常仕損）とは ━━\n仕損が工程の途中で発生する場合、月末仕掛品が仕損発生点を通過しているかどうかで\n仕掛品が仕損コストを負担するかどうかが決まる。\n━━━━━━━━━━\n\n正常仕損：加工進捗40%地点で発生\n月末仕掛品：進捗50%（仕損発生点を通過済み）\n完成品：800個、正常仕損：100個（40%地点）、月末仕掛品：200個（50%）\n材料費：450,000円（始点投入）、加工費：360,000円、月初仕掛品なし\n\n判断：月末仕掛品進捗（50%）【ア　　　　　　　　　　　　　　】仕損発生点（40%）\n→ 月末仕掛品は仕損コストを【イ　　　　　　　　】する\n\n完成品原価 [①]円　月末仕掛品原価 [②]円',
     q_en:'(Fill-in) Spoilage at 40% of process. WIP is 50% complete (past spoilage point).\nCompleted 800, Spoilage 100 (at 40%), Ending WIP 200 (50%).',
-    ans_html:`<div class="tbl-sec">
-<p>月末仕掛品進捗(50%) ＞ 仕損発生点(40%) → <b>両方</b>が仕損コストを負担</p>
-<table><tr><th></th><th>材料費</th><th>加工費</th></tr>
-<tr><td>完成品</td><td>800個</td><td>800個</td></tr>
-<tr><td>仕損品（度外視）</td><td>－</td><td>－</td></tr>
-<tr><td>月末仕掛品</td><td>200個</td><td>100個(×50%)</td></tr>
-<tr><td>計</td><td>1,000個</td><td>900個</td></tr>
-</table>
-<table><tr><th></th><th>材料費</th><th>加工費</th></tr>
-<tr><td>単価</td><td>450,000÷1,000=450</td><td>360,000÷900=400</td></tr>
-<tr><td>① 完成品原価</td><td>450×800=360,000</td><td>400×800=320,000</td></tr>
-<tr><td>合計①</td><td colspan="2"><b>680,000円</b></td></tr>
-<tr><td>② 月末仕掛品</td><td>450×200=90,000</td><td>400×100=40,000</td></tr>
-<tr><td>合計②</td><td colspan="2"><b>130,000円</b></td></tr>
-</table>
-</div>`,
+    a:'ア ＞（大きい）　イ 負担\n① 680,000円　② 130,000円\n\n【計算過程】\n月末仕掛品進捗(50%) ＞ 仕損発生点(40%) → 両方が仕損コストを負担\n材料費換算量 ＝ 800 ＋ 200×100% ＝ 1,000個（仕損品は度外視）\n加工費換算量 ＝ 800 ＋ 200×50% ＝ 900個（仕損品は度外視）\n材料費単価 ＝ 450,000 ÷ 1,000 ＝ @450円\n加工費単価 ＝ 360,000 ÷ 900 ＝ @400円\n完成品原価 ＝ 450×800 ＋ 400×800 ＝ 360,000 ＋ 320,000 ＝ 680,000円\n月末仕掛品原価 ＝ 450×200 ＋ 400×100 ＝ 90,000 ＋ 40,000 ＝ 130,000円\n\n▶ ポイント：月末仕掛品の進捗度 ＞ 仕損発生点 → 仕掛品も仕損コストを負担（完成品と仕掛品で按分）',
     exp:'途中発生の仕損は「どこで発生したか」と「仕掛品がどこまで進んでいるか」を比較することが重要です。\n\n【判断基準】\n月末仕掛品の進捗度 ＞ 仕損発生点 → 仕掛品も仕損コストを負担する\n月末仕掛品の進捗度 ＜ 仕損発生点 → 仕掛品はまだ仕損点を通っていないので負担しない\n\n【度外視法の計算】分母から仕損品を除くだけなので、仕掛品が負担するかどうかは「分母に入れるかどうか」で自動的に反映されます。\n\nこの問題では進捗50%＞発生点40%なので、仕掛品も仕損コストを分担 → 完成品の負担が減る。',
     exp_en:'Key comparison: WIP completion % vs. spoilage occurrence %.\nIf WIP% > spoilage%, WIP has passed the spoilage point → WIP shares spoilage cost.\nIf WIP% < spoilage%, WIP has not reached spoilage point → only completed goods bear cost.\nIn degree-ignored method, this is handled automatically by the denominator calculation.',
     note:'仕損発生点 vs 仕掛品進捗度\n仕掛品進捗 > 発生点 → 両者で負担（分母に両方入れる）\n仕掛品進捗 < 発生点 → 完成品のみ負担（仕掛品を分母に入れる）',
@@ -6134,17 +6040,9 @@ const ALL = [
     id:356,
     level:2,
     cat:'総合原価計算',
-    q:'（穴埋め）正常仕損が発生したが、仕損品に処分価値（評価額）がある場合。\n正常仕損費の計算額：80,000円\n仕損品評価額：20,000円\n製品に負担させる正常仕損費は [①] 円になる。',
+    q:'（穴埋め）\n━━ 正常仕損の処分価値がある場合とは ━━\n仕損品でも「廃材として売れる」「材料に戻せる」など価値がある場合、\nその評価額を仕損費から控除して「正味の仕損費」を製品に負担させる。\n━━━━━━━━━━\n\n正常仕損費の計算額：80,000円\n仕損品評価額：20,000円\n\n製品に負担させる正味の正常仕損費\n＝ 正常仕損費 − 仕損品評価額\n＝ 80,000 − 20,000 ＝ 【①　　　　　　】円',
     q_en:'(Fill-in) Normal spoilage has salvage value.\nCalculated spoilage cost: ¥80,000. Salvage value: ¥20,000.\nNet spoilage cost charged to product = [①].',
-    ans_html:`<div class="tbl-sec">
-<p>正常仕損費（純額）＝ 正常仕損費 − 仕損品評価額</p>
-<p>① ＝ 80,000 − 20,000 ＝ <b>60,000円</b></p>
-<table><tr><th>項目</th><th>金額</th></tr>
-<tr><td>正常仕損費（総額）</td><td>80,000円</td></tr>
-<tr><td>仕損品評価額（控除）</td><td>△20,000円</td></tr>
-<tr><td>① 製品負担額</td><td><b>60,000円</b></td></tr>
-</table>
-</div>`,
+    a:'① 60,000円\n\n【計算過程】\n正常仕損費（純額）＝ 正常仕損費 − 仕損品評価額\n＝ 80,000 − 20,000 ＝ 60,000円\n\n▶ ポイント：仕損品に評価額（処分価値）がある場合は「正味の仕損費 ＝ 総仕損費 − 評価額」で製品に負担させる金額を計算する',
     exp:'仕損品でも「廃材として売れる」「材料に戻せる」など価値がある場合があります。\n\n【イメージ】製造中に形がおかしくなった製品でも、材料として溶かして再利用できる → 評価額あり！\n\n評価額がある場合は、その分だけ製品が負担すべき仕損コストが減ります。\n正味の仕損費 ＝ 総仕損費 − 評価額\n\n【仕訳イメージ】\n（借）仕損品 20,000 ／ （貸）仕掛品 20,000\n（借）正常仕損費（仕掛品へ）60,000 ／ （残りの原価から按分）\n\n試験では「純額で製品原価に上乗せする」という点が重要です。',
     exp_en:'When spoiled units have salvage value, net spoilage cost = gross spoilage − salvage value.\nSalvage reduces the burden on good output.\nJournal: Dr. Spoiled Goods (salvage value) / Cr. WIP.\nOnly the net cost is charged to the completed product.',
     note:'仕損品評価額がある場合：\n正味仕損費 ＝ 総仕損費 − 評価額\n（借）仕損品 ／ （貸）仕掛品　で評価額を分離',
@@ -6156,17 +6054,9 @@ const ALL = [
     id:357,
     level:2,
     cat:'標準原価計算',
-    q:'（穴埋め）直接材料費差異（標準と実際の材料費のズレ）の分析。\n標準：500円/kg × 3kg ＝ 1,500円/個。当月生産量：400個。\n実際：520円/kg × 1,280kg（実際消費量）。\n価格差異（購入単価のズレ）[①] 円（有利/不利）、数量差異（使用量のズレ）[②] 円（有利/不利）。',
+    q:'（穴埋め）\n━━ 直接材料費差異の分析とは ━━\n材料費のズレを「単価のズレ（価格差異）」と「使用量のズレ（数量差異）」に分解して原因を特定する。\n━━━━━━━━━━\n\n標準：500円/kg × 3kg ＝ 1,500円/個　当月生産量：400個\n実際：520円/kg × 1,280kg（実際消費量）\n\n① 価格差異（購入単価のズレ）\n   ＝ （標準単価 − 実際単価）× 実際消費量\n   ＝ （500 − 520）× 1,280 ＝ 【①　　　　　　】円（有利/不利）\n\n② 数量差異（使用量のズレ）\n   標準消費量 ＝ 3kg × 400個 ＝ 1,200kg\n   ＝ （標準消費量 − 実際消費量）× 標準単価\n   ＝ （1,200 − 1,280）× 500 ＝ 【②　　　　　　】円（有利/不利）',
     q_en:'(Fill-in) Direct material variance. Standard: ¥500/kg × 3kg = ¥1,500/unit. Production: 400 units. Actual: ¥520/kg × 1,280kg.\nPrice variance [①], Quantity variance [②].',
-    ans_html:`<div class="tbl-sec">
-<p>標準消費量 ＝ 3kg × 400個 ＝ 1,200kg</p>
-<table><tr><th></th><th>計算式</th><th>答え</th></tr>
-<tr><td>① 価格差異</td><td>(500−520)×1,280</td><td><b>25,600円 不利</b></td></tr>
-<tr><td>② 数量差異</td><td>(1,200−1,280)×500</td><td><b>40,000円 不利</b></td></tr>
-<tr><td>合計差異</td><td colspan="2">65,600円 不利</td></tr>
-</table>
-<p>検算：標準原価 600,000 − 実際原価 665,600 ＝ △65,600（不利）✓</p>
-</div>`,
+    a:'① △25,600円（不利）　② △40,000円（不利）\n\n【計算過程】\n標準消費量 ＝ 3kg × 400個 ＝ 1,200kg\n価格差異 ＝ (500 − 520) × 1,280 ＝ △25,600円（不利）\n数量差異 ＝ (1,200 − 1,280) × 500 ＝ △40,000円（不利）\n合計差異 ＝ △65,600円（不利）\n検算：標準原価 600,000 − 実際原価 665,600 ＝ △65,600（不利）✓\n\n▶ ポイント：価格差異は「購買部門の責任（仕入単価）」、数量差異は「製造現場の責任（使いすぎ）」で管理責任が異なる',
     exp:'直接材料費差異は「高い値段で買ったのか」「使いすぎたのか」を分けて分析します。\n\n【価格差異】「買い値の差」\n　（標準単価 − 実際単価）× 実際消費量\n　→ 実際に買った分全部に対して、単価の差がどれだけ影響したか\n\n【数量差異】「使いすぎの差」\n　（標準消費量 − 実際消費量）× 標準単価\n　→ 標準通りに使えば1,200kgのはずが1,280kg使った → 80kg余計に使った\n\n【コツ】どちらも「差 × もう一方の数値」という形。符号は標準−実際なのでプラスが有利！\n\n実際＞標準 → 不利差異（損した）\n実際＜標準 → 有利差異（得した）',
     exp_en:'Direct material variance = price variance + quantity variance.\nPrice variance: (Standard price - Actual price) × Actual qty.\nQuantity variance: (Standard qty - Actual qty) × Standard price.\nPositive = favorable (saved money), Negative = unfavorable (overspent).',
     note:'価格差異 ＝ (標準単価 − 実際単価) × 実際消費量\n数量差異 ＝ (標準消費量 − 実際消費量) × 標準単価\n両方の合計 ＝ 直接材料費差異（全体）',
@@ -6180,19 +6070,9 @@ const ALL = [
     id:358,
     level:2,
     cat:'標準原価計算',
-    q:'（穴埋め）直接労務費差異（標準と実際の人件費のズレ）の分析。\n標準：1,000円/時間 × 2時間 ＝ 2,000円/個。当月生産量：400個。\n実際賃率：1,050円/時間、実際作業時間：780時間。\n賃率差異（時給のズレ）[①] 円（有利/不利）、時間差異（作業時間のズレ）[②] 円（有利/不利）。',
+    q:'（穴埋め）\n━━ 直接労務費差異の分析とは ━━\n労務費のズレを「時給のズレ（賃率差異）」と「作業時間のズレ（時間差異）」に分解して原因を特定する。\n━━━━━━━━━━\n\n標準：1,000円/時間 × 2時間 ＝ 2,000円/個　当月生産量：400個\n実際賃率：1,050円/時間、実際作業時間：780時間\n\n① 賃率差異（時給のズレ）\n   ＝ （標準賃率 − 実際賃率）× 実際作業時間\n   ＝ （1,000 − 1,050）× 780 ＝ 【①　　　　　　】円（有利/不利）\n\n② 時間差異（作業時間のズレ）\n   標準作業時間 ＝ 2時間 × 400個 ＝ 800時間\n   ＝ （標準作業時間 − 実際作業時間）× 標準賃率\n   ＝ （800 − 780）× 1,000 ＝ 【②　　　　　　】円（有利/不利）',
     q_en:'(Fill-in) Direct labor variance. Standard: ¥1,000/hr × 2hr. Production: 400 units. Actual: ¥1,050/hr × 780hrs.\nRate variance [①], Efficiency (time) variance [②].',
-    ans_html:`<div class="tbl-sec">
-<p>標準作業時間 ＝ 2時間 × 400個 ＝ 800時間</p>
-<table><tr><th></th><th>計算式</th><th>答え</th></tr>
-<tr><td>① 賃率差異</td><td>(1,000−1,050)×780</td><td><b>39,000円 不利</b></td></tr>
-<tr><td>② 時間差異</td><td>(800−780)×1,000</td><td><b>20,000円 有利</b></td></tr>
-<tr><td>合計差異</td><td colspan="2">19,000円 不利</td></tr>
-</table>
-<p>実際労務費：1,050 × 780 ＝ 819,000円<br>
-標準労務費：1,000 × 800 ＝ 800,000円<br>
-差異：800,000 − 819,000 ＝ △19,000（不利）✓</p>
-</div>`,
+    a:'① △39,000円（不利）　② 20,000円（有利）\n\n【計算過程】\n標準作業時間 ＝ 2時間 × 400個 ＝ 800時間\n賃率差異 ＝ (1,000 − 1,050) × 780 ＝ △39,000円（不利）\n時間差異 ＝ (800 − 780) × 1,000 ＝ 20,000円（有利）\n合計差異 ＝ △19,000円（不利）\n検算：標準800,000 − 実際819,000 ＝ △19,000（不利）✓\n\n▶ ポイント：賃率差異は「管理部門の責任（残業・賃率変更）」、時間差異は「製造現場の責任（作業効率）」で管理責任が異なる',
     exp:'直接労務費差異は材料費差異と同じ考え方です。「時給が高かったのか」「時間がかかりすぎたのか」を分けます。\n\n【賃率差異】「時給の差」\n　（標準賃率 − 実際賃率）× 実際作業時間\n　→ 残業手当や特別手当で時給が上がると不利差異になる\n\n【時間差異】「作業時間の差」\n　（標準作業時間 − 実際作業時間）× 標準賃率\n　→ 標準800時間のはずが780時間で済んだ → 20時間節約 → 有利差異！\n\n【まとめ】賃率差異（管理部門の責任）、時間差異（製造現場の責任）という分析ができます。',
     exp_en:'Direct labor variance = rate variance + efficiency variance.\nRate variance: (Standard rate - Actual rate) × Actual hours.\nEfficiency variance: (Standard hours - Actual hours) × Standard rate.\nFavorable efficiency means workers finished faster than expected.',
     note:'賃率差異 ＝ (標準賃率 − 実際賃率) × 実際作業時間\n時間差異 ＝ (標準作業時間 − 実際作業時間) × 標準賃率\n材料費と同じパターン（価格→賃率、数量→時間）',
@@ -6206,20 +6086,9 @@ const ALL = [
     id:359,
     level:2,
     cat:'総合原価計算',
-    q:'（穴埋め）工程別総合原価計算。2工程製造。\n第1工程完成品原価：500,000円（600個）\n第2工程：前工程費 500,000円、第2工程加工費 300,000円\n完成品 500個、月末仕掛品 100個（50%）\n第2工程完成品原価 [①] 円。',
+    q:'（穴埋め）\n━━ 工程別総合原価計算とは ━━\n複数の製造工程を経て製品を作る場合、各工程ごとに原価を集計する方法。\n前工程から受け取ったコスト（前工程費）は「始点で100%投入」として計算する。\n━━━━━━━━━━\n\n第1工程完成品原価：500,000円（600個）\n第2工程：前工程費 500,000円、加工費 300,000円\n完成品 500個、月末仕掛品 100個（加工進捗度50%）\n\n① 前工程費換算量\n   ＝ 完成品500 ＋ 月末仕掛品100（始点100%）＝ 600個\n   前工程費単価 ＝ 500,000 ÷ 600 ＝ 833.3円\n\n② 加工費換算量\n   ＝ 完成品500 ＋ 月末仕掛品100 × 50% ＝ 550個\n   加工費単価 ＝ 300,000 ÷ 550 ＝ 545.5円\n\n第2工程完成品原価\n   ＝ 833.3 × 500 ＋ 545.5 × 500 ＝ 【①　　　　　　】円',
     q_en:'(Fill-in) Process costing with 2 departments.\nDept 1 output cost: ¥500,000 (600 units).\nDept 2: transferred-in ¥500,000, conversion ¥300,000.\nCompleted 500, Ending WIP 100 (50%). Dept 2 complete cost = [①].',
-    ans_html:`<div class="tbl-sec">
-<p>工程別：前工程費＝前の工程から受け取ったコスト（始点100%投入扱い）</p>
-<table><tr><th>費目</th><th>完成品</th><th>WIP</th><th>合計</th></tr>
-<tr><td>前工程費（500,000）</td><td>500個</td><td>100個</td><td>600個</td></tr>
-<tr><td>単価</td><td colspan="3">500,000÷600 ≒ 833.3円</td></tr>
-<tr><td>加工費（300,000）</td><td>500個</td><td>50個(×50%)</td><td>550個</td></tr>
-<tr><td>単価</td><td colspan="3">300,000÷550 ≒ 545.5円</td></tr>
-</table>
-<p>① 完成品原価 ＝ 833.3×500 ＋ 545.5×500<br>
-＝ 416,667 ＋ 272,727 ＝ <b>689,394円</b><br>
-（端数処理により約 689,394円）</p>
-</div>`,
+    a:'① 689,394円（端数処理による）\n\n【計算過程】\n前工程費換算量 ＝ 500 ＋ 100 ＝ 600個（月末仕掛品も始点100%）\n前工程費単価 ＝ 500,000 ÷ 600 ≒ 833.3円\n加工費換算量 ＝ 500 ＋ 100 × 50% ＝ 550個\n加工費単価 ＝ 300,000 ÷ 550 ≒ 545.5円\n完成品原価 ＝ 833.3 × 500 ＋ 545.5 × 500 ＝ 416,667 ＋ 272,727 ＝ 689,394円\n\n▶ ポイント：前工程費は「始点100%投入」なので月末仕掛品にも100%負担させる。加工費だけ進捗度を掛ける',
     exp:'工程別総合原価計算は「工場の中でバトンリレーをする」イメージです。\n\n第1工程（鋳造）→ 第2工程（仕上げ）→ 完成！\n\n第2工程では「前工程費」という費用項目が登場します。\nこれは第1工程から引き継いだコストで、始点で全額投入として扱います（進捗度100%として計算）。\n\n第2工程では前工程費と第2工程加工費の2種類を別々に計算して、最後に合計します。\n\n【ポイント】前工程費は「始点投入100%」として完成品と仕掛品の両方が負担する（月末仕掛品も100%）。',
     exp_en:'Process costing tracks costs through sequential departments.\nDept 2 receives "transferred-in costs" (前工程費) from Dept 1.\nTransferred-in costs are treated as 100% complete at the start of Dept 2.\nDept 2 adds its own conversion costs separately.',
     note:'前工程費は「始点投入100%」→ WIPも100%で計算\n前工程費単価 ＝ 前工程費合計 ÷ (完成品 ＋ WIP×100%)\n加工費単価 ＝ 加工費合計 ÷ (完成品 ＋ WIP×加工進捗度)',
@@ -6232,20 +6101,9 @@ const ALL = [
     id:360,
     level:2,
     cat:'総合原価計算',
-    q:'（穴埋め）等級別総合原価計算。\nA製品（等価係数1.0）500個、B製品（等価係数1.5）300個を製造。\n総合原価 320,000円。\nA製品の完成品原価 [①] 円、B製品の完成品原価 [②] 円。',
+    q:'（穴埋め）\n━━ 等級別総合原価計算とは ━━\n同じ製造工程で大きさ・品質が異なる製品を作る場合、「等価係数」で原価を按分する方法。\n個数 × 等価係数 ＝ 積数（重み付き個数）で比率を決める。\n━━━━━━━━━━\n\nA製品（等価係数1.0）500個、B製品（等価係数1.5）300個\n総合原価 320,000円\n\n① A製品の積数 ＝ 500 × 1.0 ＝ 500\n② B製品の積数 ＝ 300 × 1.5 ＝ 450\n③ 積数合計 ＝ 500 ＋ 450 ＝ 950\n\n④ A製品完成品原価\n   ＝ 320,000 × 500 ÷ 950 ＝ 【①　　　　　　】円\n\n⑤ B製品完成品原価\n   ＝ 320,000 × 450 ÷ 950 ＝ 【②　　　　　　】円',
     q_en:'(Fill-in) Grade-cost allocation. Product A (coefficient 1.0): 500 units. Product B (coefficient 1.5): 300 units. Total cost ¥320,000.\nCost of A = [①], Cost of B = [②].',
-    ans_html:`<div class="tbl-sec">
-<p>等価係数で個数を積数に変換してから按分する</p>
-<table><tr><th>製品</th><th>個数</th><th>等価係数</th><th>積数</th><th>比率</th></tr>
-<tr><td>A</td><td>500個</td><td>1.0</td><td>500</td><td>500/950</td></tr>
-<tr><td>B</td><td>300個</td><td>1.5</td><td>450</td><td>450/950</td></tr>
-<tr><td>合計</td><td></td><td></td><td>950</td><td></td></tr>
-</table>
-<table><tr><th></th><th>計算</th><th>答え</th></tr>
-<tr><td>① A製品原価</td><td>320,000×500/950</td><td><b>168,421円</b></td></tr>
-<tr><td>② B製品原価</td><td>320,000×450/950</td><td><b>151,579円</b></td></tr>
-</table>
-</div>`,
+    a:'① 168,421円　② 151,579円\n\n【計算過程】\nA積数 ＝ 500 × 1.0 ＝ 500\nB積数 ＝ 300 × 1.5 ＝ 450\n積数合計 ＝ 950\nA製品原価 ＝ 320,000 × 500 ÷ 950 ≒ 168,421円\nB製品原価 ＝ 320,000 × 450 ÷ 950 ≒ 151,579円\n検算：168,421 ＋ 151,579 ＝ 320,000円 ✓\n\n▶ ポイント：等価係数が高い製品ほど「原価が多くかかる」という意味。積数 = 個数 × 等価係数 で実質的な比率を計算する',
     exp:'等級別総合原価計算は「同じ工程で大きさや品質が違う製品を作る」場合の方法です。\n\n【イメージ】同じ生地からLサイズとMサイズのTシャツを作る工場。Lサイズは布を多く使うので、原価も多くなる。\n\n等価係数は「どれだけコストが多くかかるか」の重みです。\n例：B製品はA製品の1.5倍のコストがかかる → 等価係数1.5\n\n【計算手順】\n① 個数 × 等価係数 ＝ 積数（重み付き個数）\n② 積数の比率で総合原価を按分\n\n【組別】は製品種類が全く異なる場合（個別に費用を集計）、【等級別】は規格が違うだけの場合（積数で按分）。',
     exp_en:'Grade costing is used when different sizes/grades are made in the same process.\nEquivalent coefficients (等価係数) weight each grade by relative cost.\nStep 1: Multiply units × coefficient = weighted units (積数).\nStep 2: Allocate total cost by weighted-unit ratio.',
     note:'等級別：積数 ＝ 個数 × 等価係数\n原価按分 ＝ 総合原価 × (自製品の積数 ÷ 積数合計)\n組別：製品ごとに費用を個別集計（等価係数不要）',
@@ -6258,16 +6116,9 @@ const ALL = [
     id:361,
     level:2,
     cat:'キャッシュフロー計算書',
-    q:'（穴埋め）キャッシュフロー計算書の3つの区分を答えよ。\n① 本業での現金の流れ：[①] 活動によるキャッシュフロー\n② 設備投資・有価証券売買の流れ：[②] 活動によるキャッシュフロー\n③ 借入・返済・配当の流れ：[③] 活動によるキャッシュフロー',
+    q:'（穴埋め）\n━━ キャッシュフロー計算書の3区分とは ━━\n企業のお金の動きを「本業・投資・資金調達」の3種類に分けて表示する財務諸表。\n「黒字倒産」を防ぐために、利益ではなく現金の流れを見る。\n━━━━━━━━━━\n\n① 本業での現金の流れ\n   → 【①　　　　　】活動によるキャッシュフロー\n\n② 設備投資・有価証券売買の流れ\n   → 【②　　　　　】活動によるキャッシュフロー\n\n③ 借入・返済・配当の流れ\n   → 【③　　　　　】活動によるキャッシュフロー',
     q_en:'(Fill-in) Three sections of the Cash Flow Statement.\n[①] = operations section. [②] = investing section. [③] = financing section.',
-    ans_html:`<div class="tbl-sec">
-<table><tr><th>区分</th><th>主な内容</th></tr>
-<tr><td>① <b>営業</b>活動CF</td><td>商品の売上・仕入、人件費、税金の支払いなど本業の現金</td></tr>
-<tr><td>② <b>投資</b>活動CF</td><td>設備の購入・売却、有価証券の売買、貸付金の回収など</td></tr>
-<tr><td>③ <b>財務</b>活動CF</td><td>借入・返済、社債の発行・償還、株式の発行、配当の支払い</td></tr>
-</table>
-<p>健全な企業：営業CF＞0（本業で稼ぐ）、投資CF＜0（設備投資している）、財務CF＜0（借金を返している）</p>
-</div>`,
+    a:'① 営業　② 投資　③ 財務\n\n【計算過程】\n営業活動CF：商品の売上・仕入、人件費、税金の支払いなど本業の現金\n投資活動CF：設備の購入・売却、有価証券の売買など\n財務活動CF：借入・返済、社債の発行・償還、配当の支払いなど\n\n健全な企業のパターン：営業CF＞0（本業で稼ぐ）、投資CF＜0（設備投資している）、財務CF＜0（借金を返している）\n\n▶ ポイント：「本業で稼いで（営業）、設備に使って（投資）、借金を返す（財務）」が理想のCFパターン',
     exp:'キャッシュフロー計算書（CF計算書）は「企業がどうやってお金を生み出し、使ったか」を3つに分けて見せる財務諸表です。\n\n【営業CF】本業でのお金の動き。プラスが大きいほど「稼いでいる企業」のサイン。\n【投資CF】設備や有価証券への投資。マイナスが大きい場合は「将来への投資をしている」とも読める。\n【財務CF】借入や返済、配当など資金調達・返還。マイナスなら借金を減らしている健全な状態。\n\n損益計算書は「もうけ」を、CF計算書は「現金の動き」を見せます。黒字でも現金がない会社は倒産します（黒字倒産）。CF計算書はこれを防ぐために重要！',
     exp_en:'The Cash Flow Statement has 3 sections: Operating, Investing, Financing.\nOperating: cash from core business (positive = company earns cash).\nInvesting: cash for equipment and securities (negative = investing for future).\nFinancing: cash from/to debt and equity (negative = repaying debt = healthy).',
     note:'3区分の覚え方：\n営業 = 本業（売上・費用）\n投資 = 設備・有価証券（将来への投資）\n財務 = 借入・配当（資金調達と返還）',
@@ -6281,19 +6132,9 @@ const ALL = [
     id:362,
     level:2,
     cat:'キャッシュフロー計算書',
-    q:'（穴埋め）間接法（利益から出発して現金の動きに直す方法）による営業活動CFの計算。\n税引前当期純利益：500,000円\n減価償却費：80,000円（加算）\n売上債権の増加：30,000円（[①]算）\n棚卸資産の減少：20,000円（[②]算）\n仕入債務の増加：40,000円（[③]算）\n営業活動CF：[④] 円',
+    q:'（穴埋め）\n━━ 間接法による営業活動CFとは ━━\n「利益（損益計算書）」から出発して、現金のズレを調整することで実際の現金収支を求める方法。\n資産が増えると現金が減り（マイナス）、負債が増えると現金が増える（プラス）。\n━━━━━━━━━━\n\n税引前当期純利益：500,000円\n減価償却費：80,000円（→ 加算：現金が出ていない費用）\n\n① 売上債権の増加：30,000円\n   → 【①　　】算（売上は計上したが現金未回収）\n\n② 棚卸資産の減少：20,000円\n   → 【②　　】算（在庫が減った ＝ 現金が入った）\n\n③ 仕入債務の増加：40,000円\n   → 【③　　】算（仕入れたが未払い ＝ 現金未出）\n\n④ 営業活動CF ＝ 500,000 ＋ 80,000 − 30,000 ＋ 20,000 ＋ 40,000 ＝ 【④　　　　　　】円',
     q_en:'(Fill-in) Indirect method operating CF.\nNet income before tax: ¥500,000. Depreciation: ¥80,000. Receivables increase: ¥30,000 ([①]). Inventory decrease: ¥20,000 ([②]). Payables increase: ¥40,000 ([③]). Operating CF = [④].',
-    ans_html:`<div class="tbl-sec">
-<p>間接法：利益から出発して現金の動きに修正する</p>
-<table><tr><th>項目</th><th>加減</th><th>金額</th></tr>
-<tr><td>税引前当期純利益</td><td></td><td>500,000</td></tr>
-<tr><td>減価償却費</td><td>加算</td><td>＋80,000</td></tr>
-<tr><td>売上債権の増加</td><td>① <b>減</b>算</td><td>△30,000</td></tr>
-<tr><td>棚卸資産の減少</td><td>② <b>加</b>算</td><td>＋20,000</td></tr>
-<tr><td>仕入債務の増加</td><td>③ <b>加</b>算</td><td>＋40,000</td></tr>
-<tr><td>④ 営業活動CF</td><td></td><td><b>610,000円</b></td></tr>
-</table>
-</div>`,
+    a:'① 減　② 加　③ 加　④ 610,000円\n\n【計算過程】\n税引前当期純利益　　500,000円\n＋ 減価償却費　　　 ＋80,000円（非現金費用）\n− 売上債権の増加　 △30,000円（現金未回収）\n＋ 棚卸資産の減少　 ＋20,000円（在庫売れて現金入）\n＋ 仕入債務の増加　 ＋40,000円（未払いで現金未出）\n＝ 営業活動CF　　　610,000円\n\n▶ ポイント：「資産増 → マイナス」「資産減 → プラス」「負債増 → プラス」「負債減 → マイナス」のルールで符号を決める',
     exp:'間接法は「利益（損益計算書）から始めて、現金の動きに直す」方法です。\n\n【なぜ修正が必要か？】\n利益＝売上−費用ですが、売掛金（まだ現金になっていない売上）が含まれます。\n現金ベースに修正するために調整項目を加減します。\n\n【加減のルール】\n・減価償却費→加算（費用として引いたけど現金は出ていない）\n・売上債権増加→減算（売上計上したが現金未回収）\n・棚卸資産減少→加算（在庫を売って現金が入ったのに費用で控除済み）\n・仕入債務増加→加算（仕入れたが代金未払い＝現金が出ていない）\n\n【覚え方】「資産増加→マイナス、資産減少→プラス、負債増加→プラス、負債減少→マイナス」',
     exp_en:'Indirect method: start with net income, adjust to cash basis.\nAdd back: non-cash expenses (depreciation), decreases in assets, increases in liabilities.\nSubtract: increases in assets (cash not yet received), decreases in liabilities (cash paid).\nMemory trick: asset↑ = subtract, liability↑ = add.',
     note:'間接法の調整ルール：\n減価償却費 → ＋（非現金費用）\n売上債権増加 → −（現金未回収）\n棚卸資産増加 → −、減少 → ＋\n仕入債務増加 → ＋（現金未払い）',
@@ -6308,16 +6149,9 @@ const ALL = [
     id:363,
     level:2,
     cat:'キャッシュフロー計算書',
-    q:'（穴埋め）CF計算書の投資・財務活動区分。\n建物を 3,000,000円で購入した → [①] 活動CF（[②]算）\n借入金 1,000,000円を調達した → [③] 活動CF（[④]算）\n配当金 200,000円を支払った → [⑤] 活動CF（[⑥]算）',
+    q:'（穴埋め）\n━━ CF計算書の投資・財務活動区分とは ━━\n投資活動 ＝ 設備・有価証券の売買（購入はマイナス、売却はプラス）\n財務活動 ＝ 銀行・株主との資金授受（借入・株式発行はプラス、返済・配当はマイナス）\n━━━━━━━━━━\n\n① 建物を 3,000,000円で購入した\n   → 【①　　　】活動CF（【②　　】算）\n\n② 借入金 1,000,000円を調達した\n   → 【③　　　】活動CF（【④　　】算）\n\n③ 配当金 200,000円を支払った\n   → 【⑤　　　】活動CF（【⑥　　】算）',
     q_en:'(Fill-in) Classify cash flows.\nBuilding purchased ¥3,000,000 → [①] CF ([②]). Borrowed ¥1,000,000 → [③] CF ([④]). Dividend paid ¥200,000 → [⑤] CF ([⑥]).',
-    ans_html:`<div class="tbl-sec">
-<table><tr><th>取引</th><th>区分</th><th>加減</th></tr>
-<tr><td>建物購入 ¥3,000,000</td><td>① <b>投資</b>活動</td><td>② <b>減</b>算（現金流出）</td></tr>
-<tr><td>借入 ¥1,000,000</td><td>③ <b>財務</b>活動</td><td>④ <b>加</b>算（現金流入）</td></tr>
-<tr><td>配当支払 ¥200,000</td><td>⑤ <b>財務</b>活動</td><td>⑥ <b>減</b>算（現金流出）</td></tr>
-</table>
-<p>投資CF：設備・有価証券の売買。財務CF：借入・返済・配当・株式発行</p>
-</div>`,
+    a:'① 投資　② 減　③ 財務　④ 加　⑤ 財務　⑥ 減\n\n【計算過程】\n建物購入 → 投資活動CF　△3,000,000円（現金流出）\n借入金調達 → 財務活動CF　＋1,000,000円（現金流入）\n配当支払 → 財務活動CF　△200,000円（現金流出）\n\n▶ ポイント：設備（固定資産）の売買は「投資活動」、銀行・株主との資金授受は「財務活動」。配当の支払いは財務活動の一択',
     exp:'投資活動と財務活動の分類をしっかり覚えましょう。\n\n【投資活動CF】設備や有価証券への投資・回収\n　購入→現金が出る→マイナス\n　売却・回収→現金が入る→プラス\n\n【財務活動CF】お金の調達と返還（株主・債権者との取引）\n　借入・株式発行→現金が入る→プラス\n　返済・配当支払→現金が出る→マイナス\n\n【覚え方】\n投資＝「設備を買う・売る」「株や債券を買う・売る」\n財務＝「銀行から借りる」「株主に配当を払う」「借金を返す」\n\n配当の支払いは財務活動ですが、利息の支払い・受取は営業活動になることも（企業の方針による）。',
     exp_en:'Investing CF: purchase/sale of long-term assets and investments.\n  Purchase = cash outflow (−). Sale = cash inflow (+).\nFinancing CF: transactions with capital providers.\n  Borrowing, stock issuance = inflow (+).\n  Repayment, dividends paid = outflow (−).',
     note:'投資CF：設備/有価証券の売買（購入−、売却+）\n財務CF：借入+、返済−、配当支払−、株式発行+\n利息・配当の受取・支払は企業方針によって営業/投資/財務が変わる',
@@ -6353,16 +6187,9 @@ const ALL = [
     id:365,
     level:2,
     cat:'キャッシュフロー計算書',
-    q:'（穴埋め）固定資産の売却が含まれる場合のCF計算。\n帳簿価額 800,000円の設備を 1,000,000円で売却（売却益 200,000円を計上）。\n① 間接法（利益から出発して現金の動きに直す方法）の営業CFでは「固定資産売却益」を [①] 算する。\n② 投資活動CFに「設備の売却」として [②] 円を計上する。',
+    q:'（穴埋め）\n━━ 固定資産売却のCF処理とは ━━\n固定資産の売却益は「損益計算書の利益」に含まれるが、現金は「投資活動CF」に計上する。\n二重計上を防ぐため、営業CFで売却益を除いて、投資CFで売却全額を計上する。\n━━━━━━━━━━\n\n帳簿価額 800,000円の設備を 1,000,000円で売却（売却益 200,000円）\n\n① 間接法の営業CFでは「固定資産売却益」を\n   → 【①　　】算する（理由：売却益は投資CFで処理するため）\n\n② 投資活動CFに「設備の売却」として\n   → 【②　　　　　　】円を計上する（実際の現金受取額）',
     q_en:'(Fill-in) CF treatment when a fixed asset is sold.\nBook value ¥800,000, sold for ¥1,000,000 (gain on sale ¥200,000).\n① In operating CF: the gain is [①]-adjusted. ② In investing CF: record [②].',
-    ans_html:`<div class="tbl-sec">
-<p>固定資産売却益は損益計算書上は営業外収益として利益に入っているが、現金は「投資活動CF」で計上する。</p>
-<table><tr><th></th><th>答え</th><th>理由</th></tr>
-<tr><td>① 営業CF調整</td><td><b>減</b>算（△200,000）</td><td>売却益は投資CFなので営業CFから除く</td></tr>
-<tr><td>② 投資活動CF</td><td><b>1,000,000円</b>（加算）</td><td>実際の現金受取額全額</td></tr>
-</table>
-<p>間接法の考え方：利益200,000を引いて、投資CFで1,000,000を加える → 二重計上を防ぐ！</p>
-</div>`,
+    a:'① 減　② 1,000,000円\n\n【計算過程】\n間接法では利益200,000（売却益含む）から出発\n→ 営業CFで売却益△200,000（減算）：営業CFから除去\n→ 投資CFで売却収入＋1,000,000（加算）：実際の現金受取額を計上\n二重計上チェック：営業CFで200,000引いて、投資CFで1,000,000加える ＝ 純増800,000（帳簿価額分）\n\n▶ ポイント：売却益は「営業CFから除いて投資CFへ移す」。計上するのは売却益ではなく実際の受取額全額',
     exp:'固定資産の売却は「投資活動CF」に分類されます。しかし売却益は損益計算書で利益に含まれています。\n\n【問題の構造】\n間接法では「税引前利益（売却益200,000が含まれる）」から出発している。\nでも売却による現金1,000,000は投資活動CFに計上する。\n\n【解決策】\n① 営業CFで売却益200,000を「減算」（重複を除く）\n② 投資CFで売却額全額1,000,000を「加算」\n\n→ これで現金1,000,000は正しく投資CFに計上され、利益ベースの200,000は営業CFから除かれる。\n\n【覚え方】利益に含まれている「他の区分の収益」は営業CFで引いて、その区分のCFで全額計上。',
     exp_en:'Gain on sale is in income (operating profit) but the cash belongs in investing CF.\nStep 1: Deduct gain from operating CF (remove it from income-based calculation).\nStep 2: Add full sale proceeds to investing CF.\nThis prevents double-counting.',
     note:'固定資産売却：\n営業CF → 売却益を減算、売却損を加算\n投資CF → 売却収入の全額を加算\n（二重計上防止のため）',
@@ -6375,13 +6202,9 @@ const ALL = [
     id:366,
     level:2,
     cat:'キャッシュフロー計算書',
-    q:'（穴埋め）フリーキャッシュフロー（FCF）の計算。\n営業活動CF：800,000円\n投資活動CF：△500,000円\nFCF ＝ [①] 円\nFCFが正（プラス）の場合、企業はどのような状態か説明せよ。[②]',
+    q:'（穴埋め）\n━━ フリーキャッシュフロー（FCF）とは ━━\n「本業で稼いだお金から設備投資を差し引いた、自由に使えるお金」のこと。\nFCF ＝ 営業活動CF ＋ 投資活動CF\n━━━━━━━━━━\n\n営業活動CF：800,000円\n投資活動CF：△500,000円\n\n① FCF ＝ 800,000 ＋ （△500,000）＝ 【①　　　　　　】円\n\n② FCFが正（プラス）の場合、企業はどのような状態か？\n   → 【②　　　　　　　　　　　　　　　　　　　　　　　　　　　】',
     q_en:'(Fill-in) Free Cash Flow. Operating CF: ¥800,000. Investing CF: △¥500,000.\nFCF = [①]. What does positive FCF indicate? [②].',
-    ans_html:`<div class="tbl-sec">
-<p>FCF ＝ 営業活動CF ＋ 投資活動CF</p>
-<p>① FCF ＝ 800,000 ＋ (△500,000) ＝ <b>300,000円</b></p>
-<p>② プラスのFCF：<b>本業で稼いだ現金が設備投資を上回っており、借入返済・配当・成長投資に使える自由な現金がある状態</b></p>
-</div>`,
+    a:'① 300,000円　② 本業の稼ぎが設備投資を上回り、借入返済・配当・成長投資に自由に使える現金がある状態\n\n【計算過程】\nFCF ＝ 営業活動CF ＋ 投資活動CF\n    ＝ 800,000 ＋ (△500,000)\n    ＝ 300,000円\n\n▶ ポイント：FCFがプラス ＝「稼いで余る」健全な状態。FCFがマイナス ＝ 設備投資のために外部資金が必要な状態',
     exp:'フリーキャッシュフロー（FCF）は「企業が自由に使えるお金」です。\n\nFCF ＝ 営業CF（本業で稼いだ現金）＋ 投資CF（設備に使った現金）\n\n【イメージ】\n月収50万円（営業CF）、家賃・光熱費20万円（投資CF）→ 自由に使えるお金30万円（FCF）\n\nFCFがプラス → 「本業の稼ぎで設備投資をまかなって、まだお金が余る！」\nFCFがマイナス → 「設備投資のために借金が必要な状態」\n\n企業価値評価（DCF法）でも使われる重要な指標です。\n高い FCF ＝ 配当増額・自社株買い・新規投資の原資になる。',
     exp_en:'Free Cash Flow = Operating CF + Investing CF.\nPositive FCF: the business generates more cash than it spends on investments.\nThis cash is "free" to return to shareholders, pay debt, or fund new growth.\nFCF is a key metric in company valuation.',
     note:'FCF ＝ 営業CF ＋ 投資CF\nプラス → 自由資金あり（借金返済・配当・成長投資に使える）\nマイナス → 本業の稼ぎだけでは投資をまかなえない',
@@ -6393,17 +6216,9 @@ const ALL = [
     id:367,
     level:2,
     cat:'キャッシュフロー計算書',
-    q:'（穴埋め）損益計算書とキャッシュフロー計算書の比較。\n売上 1,000,000円（うち未回収 200,000円）、費用 700,000円（うち未払い 100,000円）、減価償却費 50,000円。\n損益計算書上の利益：[①] 円\n営業活動CF（間接法）：[②] 円',
+    q:'（穴埋め）\n━━ 損益計算書とCF計算書の比較とは ━━\n「利益」と「現金の動き」は別物。売掛金・未払金・減価償却費があるとズレが生じる。\n利益が出ていても現金がなければ倒産する（黒字倒産）。\n━━━━━━━━━━\n\n売上 1,000,000円（うち未回収 200,000円）\n費用 700,000円（うち未払い 100,000円）\n減価償却費 50,000円（非現金費用）\n\n① 損益計算書上の利益\n   ＝ 1,000,000 − 700,000 ＝ 【①　　　　　　】円\n\n② 営業活動CF（間接法）\n   ＝ 利益① − 売上債権増200,000 ＋ 仕入債務増100,000 ＋ 減価償却費50,000\n   ＝ 【②　　　　　　】円',
     q_en:'(Fill-in) P&L vs. CF comparison.\nSales ¥1,000,000 (¥200,000 uncollected). Expenses ¥700,000 (¥100,000 unpaid). Depreciation ¥50,000.\nIncome statement profit: [①]. Operating CF: [②].',
-    ans_html:`<div class="tbl-sec">
-<table><tr><th></th><th>損益計算書</th><th>営業活動CF</th></tr>
-<tr><td>売上</td><td>1,000,000</td><td>800,000（△200,000未回収）</td></tr>
-<tr><td>費用</td><td>△700,000</td><td>△600,000（＋100,000未払い）</td></tr>
-<tr><td>減価償却費</td><td>（費用に含む）</td><td>＋50,000（加算）</td></tr>
-<tr><td>結果</td><td>① <b>300,000円</b></td><td>② <b>250,000円</b></td></tr>
-</table>
-<p>間接法：300,000（利益）− 200,000（売上債権増）＋ 100,000（仕入債務増）＋ 50,000（減価償却）＝ 250,000</p>
-</div>`,
+    a:'① 300,000円　② 250,000円\n\n【計算過程】\n損益計算書の利益 ＝ 1,000,000 − 700,000 ＝ 300,000円\n\n営業活動CF（間接法）\n＝ 利益300,000\n− 売上債権増200,000（現金未回収）\n＋ 仕入債務増100,000（現金未払い）\n＋ 減価償却費50,000（非現金費用）\n＝ 250,000円\n\n▶ ポイント：利益300,000 ≠ 現金250,000。この差50,000は「売掛金が増えた（現金未回収）が、減価償却費が戻った」ことで生じる',
     exp:'同じ会社の同じ期間の数字なのに、利益とCFが違う！これが会計の面白いところです。\n\n【利益とCFの差が生まれる原因】\n① 現金化されていない売上（売掛金）→ 利益には入るがCFには入らない\n② 現金が出ていない費用（減価償却費）→ 利益では引かれるがCFは引かない\n③ 現金が出ていない費用（買掛金）→ 利益では引かれるがCFは引かない\n\n【黒字倒産とは？】\n利益は出ているのに現金がない → 売掛金が多すぎて手元現金が枯渇 → 支払いできずに倒産\nCF計算書があれば早期にこのリスクを察知できます！',
     exp_en:'Same company, same period, but profit ≠ cash flow.\nDifferences arise from: uncollected receivables, unpaid payables, non-cash expenses.\nCF statement reveals cash reality behind accounting profit.\n"Cash is king" — a profitable company can still go bankrupt if cash runs out.',
     note:'利益とCFの差の主な原因：\n① 売上債権（未回収）→ CF減\n② 仕入債務（未払い）→ CF増\n③ 減価償却費（非現金）→ CF増\n黒字倒産はCF計算書で早期発見できる',
@@ -6416,20 +6231,9 @@ const ALL = [
     id:368,
     level:2,
     cat:'キャッシュフロー計算書',
-    q:'（穴埋め）間接法による営業活動CF。\n税引前当期純利益：1,200,000円\n減価償却費：300,000円\n売上債権の増加：150,000円\n棚卸資産の増加：80,000円\n仕入債務の減少：60,000円\n法人税等の支払：250,000円\n営業活動CF：[①] 円',
+    q:'（穴埋め）\n━━ 間接法の営業活動CF（応用）とは ━━\n小計を出してから法人税の支払を別途差し引く2段階の計算。\n「資産増 → マイナス」「負債増 → プラス」「非現金費用 → プラス」のルールを適用する。\n━━━━━━━━━━\n\n税引前当期純利益：1,200,000円\n\n調整項目：\n　減価償却費：＋300,000円（非現金費用）\n　売上債権の増加：△150,000円（資産増→マイナス）\n　棚卸資産の増加：△80,000円（資産増→マイナス）\n　仕入債務の減少：△60,000円（負債減→マイナス）\n\n① 小計\n   ＝ 1,200,000 ＋ 300,000 − 150,000 − 80,000 − 60,000 ＝ 1,210,000円\n\n　法人税等の支払：△250,000円\n\n② 営業活動CF ＝ 1,210,000 − 250,000 ＝ 【①　　　　　　】円',
     q_en:'(Fill-in) Operating CF (indirect method).\nPre-tax income: ¥1,200,000. Depreciation: ¥300,000. Receivables increase: ¥150,000. Inventory increase: ¥80,000. Payables decrease: ¥60,000. Tax paid: ¥250,000.\nOperating CF = [①].',
-    ans_html:`<div class="tbl-sec">
-<table><tr><th>項目</th><th>金額</th></tr>
-<tr><td>税引前当期純利益</td><td>1,200,000</td></tr>
-<tr><td>減価償却費</td><td>＋300,000</td></tr>
-<tr><td>売上債権の増加</td><td>△150,000</td></tr>
-<tr><td>棚卸資産の増加</td><td>△80,000</td></tr>
-<tr><td>仕入債務の減少</td><td>△60,000</td></tr>
-<tr><td>小計</td><td>1,210,000</td></tr>
-<tr><td>法人税等の支払</td><td>△250,000</td></tr>
-<tr><td>① 営業活動CF</td><td><b>960,000円</b></td></tr>
-</table>
-</div>`,
+    a:'① 960,000円\n\n【計算過程】\n税引前当期純利益　　1,200,000円\n＋ 減価償却費　　　　＋300,000円\n− 売上債権の増加　　△150,000円\n− 棚卸資産の増加　　△80,000円\n− 仕入債務の減少　　△60,000円\n＝ 小計　　　　　　　1,210,000円\n− 法人税等の支払　　△250,000円\n＝ 営業活動CF　　　　960,000円\n\n▶ ポイント：法人税の支払は「小計」の後に別途記載する。仕入債務の「減少」はマイナス（現金が出ていった）',
     exp:'間接法のCF計算の手順をもう一度整理しましょう。\n\n【ステップ1】税引前利益から出発\n【ステップ2】非現金項目を調整\n　・減価償却費→加算（お金を使っていないのに費用）\n【ステップ3】運転資本の増減を調整\n　・売上債権増加→減算（売上に計上したが現金未回収）\n　・棚卸資産増加→減算（現金を使ったが費用にまだなっていない）\n　・仕入債務減少→減算（前期分の買掛金を支払い→現金が出た）\n【ステップ4】法人税の支払をさらに引く\n\n法人税は「小計」の後に別途記載するのが日本のCF計算書のルールです。',
     exp_en:'Indirect method operating CF steps:\n1. Start with pre-tax income.\n2. Add back non-cash items (depreciation).\n3. Adjust working capital changes (receivables+, inventory+ = subtract; payables+ = add).\n4. Subtract taxes paid.\nNote: taxes are shown separately after the subtotal in Japanese CF statements.',
     note:'手順：\n① 税引前利益からスタート\n② ＋減価償却費（非現金）\n③ 運転資本調整（資産増→−、負債増→＋）\n④ 小計を出す\n⑤ −法人税等の支払\n⑥ 完成',
@@ -6442,20 +6246,9 @@ const ALL = [
     id:369,
     level:2,
     cat:'キャッシュフロー計算書',
-    q:'（穴埋め）直接法（主要な現金収支を直接列挙する方法）と間接法（利益から出発して現金の動きに調整する方法）の違い。\n直接法：[①] の収入・支出を直接列挙\n間接法：[②] から出発して調整項目を加減\n日本の実務で多く採用されているのは [③] 法。\n投資・財務CFは直接法・間接法どちらでも [④] 方法で表示する。',
+    q:'（穴埋め）\n━━ 直接法 vs 間接法とは ━━\n「営業活動CF」の表示方法が2種類ある。どちらも同じ金額になるが、見せ方が違う。\n投資・財務CFはどちらも「直接列挙」で変わらない。\n━━━━━━━━━━\n\n直接法：【①　　　　　　　　　　】の収入・支出を直接列挙\n間接法：【②　　　　　　　　　　】から出発して調整項目を加減\n\n日本の実務で多く採用されているのは【③　　　】法（作成が容易なため）\n\n投資・財務CFは直接法・間接法どちらでも【④　　　】方法で表示する',
     q_en:'(Fill-in) Direct vs. indirect method.\n[①] = direct method records. [②] = indirect method starts from. [③] = more common in Japan. [④] = both use same method for investing/financing CF.',
-    ans_html:`<div class="tbl-sec">
-<table><tr><th>比較項目</th><th>直接法</th><th>間接法</th></tr>
-<tr><td>①方法</td><td>主要取引種類ごとの<br>総収入・総支出を列挙</td><td>純利益から出発して<br>調整項目を加減</td></tr>
-<tr><td>利点</td><td>わかりやすい（現金の動きが見える）</td><td>作成しやすい（既存の財務諸表から作れる）</td></tr>
-</table>
-<table><tr><th></th><th>答え</th></tr>
-<tr><td>① 直接法が記録するもの</td><td><b>主要な営業取引種類ごとの現金</b></td></tr>
-<tr><td>② 間接法の出発点</td><td><b>当期純利益（税引前）</b></td></tr>
-<tr><td>③ 日本での主流</td><td><b>間接</b>法</td></tr>
-<tr><td>④ 投資・財務CF</td><td><b>直接</b>法（同じ）</td></tr>
-</table>
-</div>`,
+    a:'① 主要な営業取引（売上入金・仕入支払など）　② 税引前当期純利益　③ 間接　④ 直接（列挙）\n\n【計算過程】\n直接法：商品販売収入・仕入支払・人件費支払など個別に列挙（わかりやすいが手間）\n間接法：利益から出発して調整（既存財務諸表から作成しやすい → 実務主流）\n投資CF・財務CF：どちらの方法でも個別取引を直接列挙して表示\n\n▶ ポイント：試験は間接法の計算問題が圧倒的多数。投資・財務CFは方法に関わらず直接列挙という点も頻出',
     exp:'営業活動CFには2つの表示方法があります。\n\n【直接法】「商品の販売で〇〇円入った」「仕入代金で〇〇円出た」と取引ごとに列挙。\n→ わかりやすいが、データ収集に手間がかかる。\n\n【間接法】利益からスタートして「これを加えると現金に近くなる」「これを引くと…」と調整。\n→ 既存の財務諸表から比較的簡単に作れる → 実務で主流。\n\n投資活動・財務活動は直接法・間接法どちらでも「直接列挙」です（利益との調整ではなく個別の取引を列挙）。\n\n試験では間接法の計算問題が圧倒的に多く出題されます。',
     exp_en:'Two methods exist only for the operating section.\nDirect method: lists major cash receipts and payments by category.\nIndirect method: adjusts net income to cash basis.\nJapanese practice favors indirect method for ease of preparation.\nInvesting and financing sections always use the direct approach (listing individual transactions).',
     note:'直接法：取引を直接列挙（わかりやすい）\n間接法：利益から出発して調整（実務主流）\n投資・財務CF：両方とも直接列挙',
@@ -6468,15 +6261,9 @@ const ALL = [
     id:370,
     level:2,
     cat:'キャッシュフロー計算書',
-    q:'（穴埋め）CFのパターン分析。\nパターンA：営業CF（＋）、投資CF（−）、財務CF（−）\nパターンB：営業CF（−）、投資CF（−）、財務CF（＋）\nAは [①] 型企業、Bは [②] 型企業と評価される。',
+    q:'（穴埋め）\n━━ CFパターン分析とは ━━\n営業・投資・財務CFの組み合わせを見ることで、企業の財務状態を診断できる。\n━━━━━━━━━━\n\nパターンA：営業CF（＋）、投資CF（−）、財務CF（−）\n→ Aは【①　　　　　　　】型企業\n（本業で稼ぎ、設備に投資し、借金も返している）\n\nパターンB：営業CF（−）、投資CF（−）、財務CF（＋）\n→ Bは【②　　　　　　　】型企業\n（借りて投資中、本業はまだ赤字の段階）\n\nパターンC（参考）：営業CF（−）、投資CF（＋）、財務CF（＋）\n→ 資産売却で延命（資金繰り危険サイン）',
     q_en:'(Fill-in) CF pattern analysis.\nPattern A: Operating(+), Investing(−), Financing(−). Pattern B: Operating(−), Investing(−), Financing(+).\nA = [①] type company. B = [②] type company.',
-    ans_html:`<div class="tbl-sec">
-<table><tr><th>パターン</th><th>営業CF</th><th>投資CF</th><th>財務CF</th><th>評価</th></tr>
-<tr><td>A（理想）</td><td>＋</td><td>−</td><td>−</td><td>① <b>優良・成熟</b>型（稼いで投資し借金も返す）</td></tr>
-<tr><td>B（成長期）</td><td>−</td><td>−</td><td>＋</td><td>② <b>成長</b>型（借りて投資中、本業はまだ赤字）</td></tr>
-<tr><td>C（危険）</td><td>−</td><td>＋</td><td>＋</td><td>資産売却で延命（資金繰り危険）</td></tr>
-</table>
-</div>`,
+    a:'① 優良・成熟型　② 成長型\n\n【計算過程】\nパターンA：営業+（本業で稼ぐ）、投資−（設備投資）、財務−（借金返済・配当）→ 最も理想的な健全企業\nパターンB：営業−（本業まだ赤字）、投資−（ガンガン投資中）、財務+（銀行・投資家から調達）→ スタートアップ・成長企業\nパターンC：営業−（本業苦戦）、投資+（資産を売ってお金に換える）、財務+（さらに借りる）→ 要注意\n\n▶ ポイント：CF3区分の「＋−の組み合わせ」で企業の成長ステージや健全性が読み取れる',
     exp:'CF計算書の3区分の組み合わせで企業の状況が読み取れます。\n\n【パターンA（優良・成熟企業）】\n営業+：本業で稼いでいる！\n投資−：稼いだお金で設備投資している！\n財務−：借金も返している！\n→ 最も理想的なパターン。安定・成長企業。\n\n【パターンB（スタートアップ・成長企業）】\n営業−：本業はまだ赤字（投資回収前）\n投資−：ガンガン投資中\n財務+：銀行・投資家からお金を調達している\n→ 危険に見えるが、成長投資中なら自然な姿。\n\n【パターンC（要注意）】\n営業−：本業で稼げていない\n投資+：資産を売ってお金を作っている\n財務+：さらに借りている\n→ 資金繰り悪化のサイン。',
     exp_en:'CF pattern analysis reveals company health:\nPattern A (healthy): Operating+ Investing- Financing- = profitable, investing, repaying debt.\nPattern B (growth): Operating- Investing- Financing+ = not yet profitable, investing via financing.\nPattern C (distress): Operating- Investing+ Financing+ = selling assets to survive.',
     note:'CFパターン分析：\n理想：営業+ 投資− 財務−（稼いで投資・返済）\n成長：営業− 投資− 財務+（調達して投資中）\n危険：営業− 投資+ 財務+（資産売却で延命）',
@@ -6489,17 +6276,9 @@ const ALL = [
     id:371,
     level:2,
     cat:'キャッシュフロー計算書',
-    q:'（穴埋め）利息と配当のCF表示。\n利息の受取：[①] 活動または [②] 活動\n利息の支払：[③] 活動または [④] 活動\n配当金の受取：[⑤] 活動または [⑥] 活動\n配当金の支払：[⑦] 活動（財務活動のみ）',
+    q:'（穴埋め）\n━━ 利息と配当のCF表示とは ━━\n利息・配当の分類は「選択可」なものが多いが、配当の支払いだけは「財務活動の一択」。\n日本の実務では多くが「営業活動」に分類される。\n━━━━━━━━━━\n\n利息の受取：【①　　　】活動または【②　　　】活動（選択可）\n利息の支払：【③　　　】活動または【④　　　】活動（選択可）\n配当金の受取：【⑤　　　】活動または【⑥　　　】活動（選択可）\n配当金の支払：【⑦　　　】活動（一択のみ）',
     q_en:'(Fill-in) CF classification of interest and dividends.\nInterest received: [①] or [②]. Interest paid: [③] or [④].\nDividends received: [⑤] or [⑥]. Dividends paid: [⑦] (only one option).',
-    ans_html:`<div class="tbl-sec">
-<table><tr><th>項目</th><th>選択肢①</th><th>選択肢②</th></tr>
-<tr><td>利息の受取</td><td>① <b>営業</b>活動</td><td>② <b>投資</b>活動</td></tr>
-<tr><td>利息の支払</td><td>③ <b>営業</b>活動</td><td>④ <b>財務</b>活動</td></tr>
-<tr><td>配当金の受取</td><td>⑤ <b>営業</b>活動</td><td>⑥ <b>投資</b>活動</td></tr>
-<tr><td>配当金の支払</td><td>⑦ <b>財務</b>活動（一択）</td><td></td></tr>
-</table>
-<p>日本の実務では利息支払・受取・配当受取は<b>営業活動</b>に分類することが多い。</p>
-</div>`,
+    a:'① 営業　② 投資　③ 営業　④ 財務　⑤ 営業　⑥ 投資　⑦ 財務\n\n【計算過程】\n利息の受取：営業活動 or 投資活動（選択可）\n利息の支払：営業活動 or 財務活動（選択可）\n配当金の受取：営業活動 or 投資活動（選択可）\n配当金の支払：財務活動のみ（一択。株主へのリターン ＝ 財務活動）\n日本の実務：利息・配当は営業活動に分類することが多い\n\n▶ ポイント：「配当の支払いだけは財務活動の一択」が最重要。他は選択可で問題の指示に従う',
     exp:'利息・配当のCF分類は少し複雑です。国際会計基準（IFRS）と日本基準で違いがあります。\n\n【日本の会計基準（J-GAAP）での原則】\n・利息の受取：営業活動または投資活動（選択可）\n・利息の支払：営業活動または財務活動（選択可）\n・配当の受取：営業活動または投資活動（選択可）\n・配当の支払：財務活動（一択）\n\n【覚え方のコツ】\n配当の支払いだけは「財務活動一択」でOK。\n「株主へのリターン＝財務活動」と覚えれば迷わない。\n他の利息・配当は「営業 or 投資/財務」の選択で、問題文に指示がある場合はそれに従う。',
     exp_en:'Interest and dividend CF classification allows choice under J-GAAP.\nInterest received: operating or investing.\nInterest paid: operating or financing.\nDividends received: operating or investing.\nDividends paid: ONLY financing (no choice).\nMnemonic: dividends paid always = financing.',
     note:'配当の支払い → 財務活動（一択）\n他（利息受取・支払、配当受取）→ 選択可\n問題文の指示に従うこと',
@@ -6514,30 +6293,9 @@ const ALL = [
     id:372,
     level:2,
     cat:'キャッシュフロー計算書',
-    q:'（穴埋め）CF計算書を完成させよ。\n【営業活動CF】\n税引前利益 600,000、減価償却費 100,000、売上債権増加 50,000、\n仕入債務増加 30,000、法人税支払 120,000 → 営業CF [①]\n【投資活動CF】\n建物購入 800,000、有価証券売却 200,000 → 投資CF [②]\n【財務活動CF】\n借入金返済 300,000、配当支払 80,000 → 財務CF [③]\n現金純増減 [④]',
+    q:'（穴埋め）\n━━ CF計算書（総合）の完成とは ━━\n営業・投資・財務の3区分をすべて計算して、最後に現金の純増減を求める総合問題。\n━━━━━━━━━━\n\n【営業活動CF】\n税引前利益 600,000 ＋ 減価償却費 100,000\n− 売上債権増加 50,000 ＋ 仕入債務増加 30,000\n小計 680,000 − 法人税支払 120,000\n→ 営業CF ＝ 【①　　　　　　】円\n\n【投資活動CF】\n建物購入 △800,000 ＋ 有価証券売却 200,000\n→ 投資CF ＝ 【②　　　　　　】円\n\n【財務活動CF】\n借入金返済 △300,000 ＋ 配当支払 △80,000\n→ 財務CF ＝ 【③　　　　　　】円\n\n現金純増減 ＝ ①＋②＋③ ＝ 【④　　　　　　】円',
     q_en:'(Fill-in) Complete CF statement.\nOperating: pre-tax ¥600,000, dep ¥100,000, recv.↑¥50,000, pay.↑¥30,000, tax paid ¥120,000 → OpCF [①].\nInvesting: building purchased ¥800,000, securities sold ¥200,000 → InvCF [②].\nFinancing: loan repaid ¥300,000, dividend paid ¥80,000 → FinCF [③].\nNet change [④].',
-    ans_html:`<div class="tbl-sec">
-<table><tr><th>項目</th><th>金額</th></tr>
-<tr><td colspan="2"><b>営業活動CF</b></td></tr>
-<tr><td>税引前利益</td><td>600,000</td></tr>
-<tr><td>減価償却費</td><td>＋100,000</td></tr>
-<tr><td>売上債権増加</td><td>△50,000</td></tr>
-<tr><td>仕入債務増加</td><td>＋30,000</td></tr>
-<tr><td>小計</td><td>680,000</td></tr>
-<tr><td>法人税支払</td><td>△120,000</td></tr>
-<tr><td>① 営業活動CF</td><td><b>560,000</b></td></tr>
-<tr><td colspan="2"><b>投資活動CF</b></td></tr>
-<tr><td>建物購入</td><td>△800,000</td></tr>
-<tr><td>有価証券売却</td><td>＋200,000</td></tr>
-<tr><td>② 投資活動CF</td><td><b>△600,000</b></td></tr>
-<tr><td colspan="2"><b>財務活動CF</b></td></tr>
-<tr><td>借入金返済</td><td>△300,000</td></tr>
-<tr><td>配当支払</td><td>△80,000</td></tr>
-<tr><td>③ 財務活動CF</td><td><b>△380,000</b></td></tr>
-<tr><td>④ 現金純増減</td><td><b>△420,000</b></td></tr>
-</table>
-<p>現金純増減 ＝ 560,000 − 600,000 − 380,000 ＝ △420,000</p>
-</div>`,
+    a:'① 560,000円　② △600,000円　③ △380,000円　④ △420,000円\n\n【計算過程】\n営業CF：600,000 ＋ 100,000 − 50,000 ＋ 30,000 ＝ 680,000（小計）− 120,000 ＝ 560,000円\n投資CF：△800,000 ＋ 200,000 ＝ △600,000円\n財務CF：△300,000 ＋ △80,000 ＝ △380,000円\n現金純増減：560,000 − 600,000 − 380,000 ＝ △420,000円\n\n▶ ポイント：本業で56万円稼いだが、設備投資に60万円・返済・配当で38万円払ったため現金は42万円の減少',
     exp:'CF計算書の全体を通しで解く総合問題です。ひとつずつ確認しましょう。\n\n【営業CF】利益600,000 ＋ 減価償却100,000 − 売上債権増50,000 ＋ 仕入債務増30,000 ＝ 680,000（小計）− 税金120,000 ＝ 560,000\n\n【投資CF】建物購入（出ていく）△800,000 ＋ 有価証券売却（入ってくる）＋200,000 ＝ △600,000\n\n【財務CF】借入返済（出ていく）△300,000 ＋ 配当支払（出ていく）△80,000 ＝ △380,000\n\n【現金純増減】560,000 − 600,000 − 380,000 ＝ △420,000\n→ 今期は現金が42万円減少した\n\n本業では56万円稼いだが、設備投資に60万円使い、返済や配当で38万円払ったため、トータルで減少。',
     exp_en:'Full CF statement practice.\nOperating: 600,000 + 100,000 − 50,000 + 30,000 = 680,000 subtotal, minus taxes 120,000 = 560,000.\nInvesting: −800,000 + 200,000 = −600,000.\nFinancing: −300,000 − 80,000 = −380,000.\nNet change: 560,000 − 600,000 − 380,000 = −420,000.',
     note:'検算：営業CF ＋ 投資CF ＋ 財務CF ＝ 現金純増減\n560,000 ＋ (△600,000) ＋ (△380,000) ＝ △420,000',
@@ -6660,9 +6418,9 @@ const ALL = [
     id:381,
     level:2,
     cat:'工業簿記総まとめ',
-    q:'（穴埋め）工業簿記の勘定連絡図を完成させよ。\n材料勘定→【①】勘定（直接材料費）・【②】勘定（間接材料費）\n仕掛品勘定→【③】勘定（完成時）\n製品勘定→【④】勘定（販売時）',
+    q:'（穴埋め）\n━━ 工業簿記の勘定連絡図とは ━━\n工場でのお金の流れを「材料→仕掛品→製品→売上原価」の順で追う仕組み。\n直接費は仕掛品へ直行、間接費は一旦「製造間接費」に集めてから仕掛品に配賦する。\n━━━━━━━━━━\n\n材料勘定 → 【①　　　　　】勘定（直接材料費）\n材料勘定 → 【②　　　　　】勘定（間接材料費）\n仕掛品勘定 → 【③　　　　】勘定（完成時の振替）\n製品勘定 → 【④　　　　　】勘定（販売時の振替）',
     q_en:'(Fill in) Complete the manufacturing account flow diagram.\nMaterials → [①] (direct) and [②] (indirect)\nWIP → [③] (on completion)\nFinished Goods → [④] (on sale)',
-    ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>仕掛品</td></tr><tr><td class="hl">②</td><td>製造間接費</td></tr><tr><td class="hl">③</td><td>製品</td></tr><tr><td class="hl">④</td><td>売上原価</td></tr></tbody></table><div class="formula-box">材料→[仕掛品(直接) / 製造間接費(間接)]→仕掛品→製品→売上原価</div>`,
+    a:'① 仕掛品　② 製造間接費　③ 製品　④ 売上原価\n\n【計算過程】\n材料（直接材料費）→ 仕掛品（直接、製品に追跡可能）\n材料（間接材料費）→ 製造間接費（間接、複数製品に共通）\n仕掛品（完成時）→ 製品（在庫として保管）\n製品（販売時）→ 売上原価（費用として損益計算書へ）\n\n▶ ポイント：この勘定連絡図を頭に入れれば工業簿記の仕訳問題の大半が解ける。「直接→仕掛品直行」「間接→製造間接費経由」が最重要',
     exp:'工業簿記の勘定連絡図は試験で必ず問われる核心知識。「直接費→仕掛品直行」「間接費→製造間接費→配賦→仕掛品」「完成→製品」「販売→売上原価」この4つの矢印の流れを図で頭に入れましょう。この図を理解していれば仕訳問題の8割は解けます。',
     exp_en:'The manufacturing account flow diagram is the backbone of industrial bookkeeping. Direct costs → WIP directly. Indirect costs → Manufacturing Overhead → allocated to WIP. Completion → Finished Goods. Sale → COGS. Master this diagram and you can solve 80% of journal entry problems.',
     steps:[
@@ -6675,9 +6433,9 @@ const ALL = [
 
   // ===== 為替手形（追加）=====
   { id:382, level:2, cat:'手形',
-    q:'（穴埋め）為替手形には3者が登場する。\n①手形を作成・発行する者を【　】という。\n②「○○円払え」と命令を受け、支払いを引き受けた者を【　】という。\n③手形を受け取り、満期日に代金を受け取る者を【　】という。',
+    q:'（穴埋め）\n━━ 為替手形の3者とは ━━\n為替手形は「振出人が引受人に命令して、受取人に払わせる」3者間の証書。\n約束手形（2者）とは違い、第三者（引受人）を通じて決済する。\n━━━━━━━━━━\n\n① 手形を作成・発行する者\n   → 【①　　　　　】という\n\n② 「○○円払え」と命令を受け、支払いを引き受けた者\n   → 【②　　　　　】という\n\n③ 手形を受け取り、満期日に代金を受け取る者\n   → 【③　　　　　】という',
     q_en:'(Fill in) A bill of exchange involves three parties. ①The party who creates and issues the bill is called [　]. ②The party ordered to pay and who accepts the bill is called [　]. ③The party who receives the bill and collects on the due date is called [　].',
-    ans_html:`<table><tbody><tr><td>①</td><td class="hl">振出人（Drawer）</td></tr><tr><td>②</td><td class="hl">引受人（Acceptor）</td></tr><tr><td>③</td><td class="hl">受取人（Payee）</td></tr></tbody></table><div class="formula-box">約束手形は2者（振出人・受取人）。為替手形は3者。振出人が引受人に「受取人へ払え」と命令する。</div>`,
+    a:'① 振出人（Drawer）　② 引受人（Acceptor）　③ 受取人（Payee）\n\n【計算過程】\n振出人：「私の代わりに払ってくれ」と手形を作成して発行する者\n引受人：「わかった、払います」と承諾して手形を引き受ける者（支払義務を負う）\n受取人：手形を受け取り、満期日に引受人から代金を受け取る者\n\n▶ ポイント：約束手形は2者（振出人が払う）、為替手形は3者（引受人が払う）。振出人は買掛金と売掛金を同時に決済できる',
     exp:'為替手形は振出人・引受人・受取人の3者間の手形。振出人はBへの買掛金とCへの売掛金を同時に決済できる。引受人は振出人への買掛金を支払手形に振り替え、受取人は振出人への売掛金を受取手形に振り替える。',
     steps:[
       {label:'①手形を発行する者', hint:'手形を作って流通させる人は？', ans:'振出人', choices:['振出人','引受人','受取人','名宛人']},
@@ -6774,9 +6532,9 @@ const ALL = [
   },
 
   { id:392, level:2, cat:'圧縮記帳',
-    q:'（穴埋め）圧縮記帳の2方式の比較。\n圧縮記帳の目的は、補助金受取による【①】の課税を将来に繰り延べることにある。\n直接控除方式：固定資産の帳簿価額を【②】する→毎期の減価償却費が【③】なる\n積立金方式：固定資産の帳簿価額は【④】→毎期【⑤】を取り崩して課税調整する',
+    q:'（穴埋め）\n━━ 圧縮記帳の2方式とは ━━\n国から補助金をもらったとき、すぐに全額課税されると困るため、課税を将来に繰り延べる会計処理。\n「直接控除方式」と「積立金方式」の2つのやり方がある。\n━━━━━━━━━━\n\n圧縮記帳の目的：補助金受取による【①　　　　　　　　　　】の課税を将来に繰り延べること\n\n直接控除方式：\n　固定資産の帳簿価額を【②　　　　　】する\n　→ 毎期の減価償却費が【③　　　　　】なる（税金の繰延効果）\n\n積立金方式：\n　固定資産の帳簿価額は【④　　　　　】\n　→ 毎期【⑤　　　　　】を取り崩して課税調整する',
     q_en:'(Fill in) Comparison of two compression methods. The purpose is to defer tax on [①]. Direct reduction: book value is [②] → depreciation becomes [③]. Reserve method: book value is [④] → each period [⑤] is released.',
-    ans_html:`<table><tbody><tr><td>①繰り延べる対象</td><td class="hl">収益（国庫補助金受贈益）への課税</td></tr><tr><td>②直接控除方式</td><td class="hl">減額（圧縮）</td></tr><tr><td>③減価償却費</td><td class="hl">小さくなる</td></tr><tr><td>④積立金方式の帳簿価額</td><td class="hl">変わらない</td></tr><tr><td>⑤毎期取り崩す</td><td class="hl">圧縮積立金</td></tr></tbody></table>`,
+    a:'① 収益（国庫補助金受贈益）　② 減額（圧縮）　③ 小さく　④ 変わらない　⑤ 圧縮積立金\n\n【計算過程】\n直接控除方式：帳簿価額を補助金額だけ下げる → 減価償却の基礎が小さくなる → 毎期の償却費が減る → 少しずつ課税\n積立金方式：帳簿価額はそのまま → 圧縮積立金（純資産）を積立 → 毎期取崩して課税調整\n\n▶ ポイント：両方式とも「補助金受取時の一括課税を避けて、将来に分割課税する」効果は同じ。直接控除方式が簡単で実務主流',
     exp:'圧縮記帳は税務上の特例で、補助金収益をすぐに課税せず分割課税するイメージ。直接控除方式は帳簿価額を下げることで減価償却費（損金）を減らし、毎期少しずつ課税される。積立金方式は帳簿価額を変えず、積立金の取崩しで課税調整する。',
     steps:[
       {label:'①繰り延べる課税の対象', hint:'補助金受取時に生じる収益科目は？', ans:'収益（国庫補助金受贈益）', choices:['収益（国庫補助金受贈益）','費用（支出）','損失','資産増加']},
@@ -6812,9 +6570,9 @@ const ALL = [
   },
 
   { id:396, level:2, cat:'繰延資産',
-    q:'（穴埋め）繰延資産の種類と最長償却期間を答えよ。\n①創立費：【　】年以内\n②開業費：【　】年以内\n③株式交付費：【　】年以内\n④社債発行費：社債の【　】以内\n⑤開発費：【　】年以内',
+    q:'（穴埋め）\n━━ 繰延資産の種類と最長償却期間とは ━━\n繰延資産とは「支出したがすぐに費用にせず、数年かけて費用化する資産」のこと。\n株式交付費だけ3年、他は5年が基本（社債発行費のみ特殊ルール）。\n━━━━━━━━━━\n\n① 創立費（会社を作る費用）：【①　】年以内\n② 開業費（営業開始前の準備費用）：【②　】年以内\n③ 株式交付費（増資時の株式発行費用）：【③　】年以内\n④ 社債発行費（社債を発行する費用）：社債の【④　　　　　　　　　　】以内\n⑤ 開発費（新製品・技術の開発費用）：【⑤　】年以内',
     q_en:'(Fill in) Deferred assets and their maximum amortization periods: ①Organization costs ②Pre-opening costs ③Share issuance costs ④Bond issuance costs ⑤Development costs.',
-    ans_html:`<table><tbody><tr><td>①創立費</td><td class="hl">5年以内</td></tr><tr><td>②開業費</td><td class="hl">5年以内</td></tr><tr><td>③株式交付費</td><td class="hl">3年以内</td></tr><tr><td>④社債発行費</td><td class="hl">社債の償還期限以内</td></tr><tr><td>⑤開発費</td><td class="hl">5年以内</td></tr></tbody></table>`,
+    a:'① 5　② 5　③ 3　④ 償還期限　⑤ 5\n\n【計算過程】\n創立費：5年以内（会社設立の費用）\n開業費：5年以内（営業開始前の準備費用）\n株式交付費：3年以内（他と違う！3年）\n社債発行費：社債の償還期限以内（社債の存続期間に合わせる特殊ルール）\n開発費：5年以内（研究開発費のうち繰延資産にできるもの）\n\n▶ ポイント：「株式交付費だけ3年、他は5年（社債発行費は例外）」が試験の頻出ポイント',
     exp:'繰延資産の償却期間：①創立費5年②開業費5年③株式交付費3年④社債発行費は社債の償還期限以内⑤開発費5年。株式交付費だけが3年で他は5年。社債発行費だけ「社債の期間に合わせる」という特殊ルール。試験で必ず問われる知識。',
     steps:[
       {label:'①創立費の最長償却期間', hint:'会社設立費用の繰延資産は何年以内？', ans:'5年', choices:['5年','3年','10年','1年']},
@@ -6917,9 +6675,9 @@ const ALL = [
   },
 
   { id:408, level:2, cat:'リース会計',
-    q:'（穴埋め）ファイナンス・リースの利子込み法と利子抜き法を比較せよ。\n①利子込み法：リース開始時のリース債務計上額＝【リ　　】\n②利子抜き法：リース開始時のリース債務計上額＝【リ　　】\n③利子込み法のリース料支払時の借方勘定＝【リ　　】\n④利子抜き法のリース料支払時に計上する費用＝【　　　】',
+    q:'（穴埋め）\n━━ ファイナンス・リースの2方式とは ━━\n利息をどう扱うかで「利子込み法」と「利子抜き法」の2つの方法がある。\n利子込み法はシンプル（1勘定）、利子抜き法は厳密（元本＋利息を分離）。\n━━━━━━━━━━\n\n① 利子込み法：リース開始時のリース債務計上額\n   ＝ 【①　　　　　　　　　】\n\n② 利子抜き法：リース開始時のリース債務計上額\n   ＝ 【②　　　　　　　　　】\n\n③ 利子込み法のリース料支払時の借方勘定\n   ＝ 【③　　　　　　　　　】（利息も込みで1勘定）\n\n④ 利子抜き法のリース料支払時に計上する費用\n   ＝ 【④　　　　　】（利息部分を別途計上）',
     q_en:'(Fill in) Compare finance lease accounting methods. ①Interest-inclusive: initial liability = [sum/PV]. ②Interest-separation: initial liability = [sum/PV]. ③Inclusive payment debit = [one account / two accounts]. ④Separation expense = [interest expense/rent/lease payment].',
-    ans_html:`<table><tbody><tr><td>①利子込み法の計上額</td><td class="hl">リース料合計額</td></tr><tr><td>②利子抜き法の計上額</td><td class="hl">現金購入価額（現在価値）</td></tr><tr><td>③利子込み法の支払時借方</td><td class="hl">リース債務のみ（1勘定）</td></tr><tr><td>④利子抜き法の費用科目</td><td class="hl">支払利息</td></tr></tbody></table>`,
+    a:'① リース料合計額　② 現金購入価額（現在価値）　③ リース債務のみ（1勘定）　④ 支払利息\n\n【計算過程】\n利子込み法：\n　開始時：リース債務 ＝ リース料総額（利息込みの全額）\n　支払時：リース債務のみを減らす（1勘定で簡単）\n利子抜き法：\n　開始時：リース債務 ＝ 現金購入価額（利息を除いた現在価値）\n　支払時：リース債務（元本分）＋ 支払利息（利息分）の2勘定\n\n▶ ポイント：日商2級では利子込み法が中心。「込み法 ＝ 合計額・1勘定」「抜き法 ＝ 現在価値・2勘定」で覚える',
     exp:'利子込み法：シンプル。リース料総額でリース債務を計上し、支払時はリース債務だけを減らす（利息分も含めて一括処理）。利子抜き法：厳密。現在価値でリース債務を計上し、支払時は元本（リース債務）と利息（支払利息）を分ける。日商2級では利子込み法が中心だが利子抜き法の出題も増加中。',
     steps:[
       {label:'①利子込み法のリース債務計上額', hint:'「利子込み」＝利息も含めた総額で計上する', ans:'リース料合計額', choices:['リース料合計額','現金購入価額','取得原価','残存価額']},
