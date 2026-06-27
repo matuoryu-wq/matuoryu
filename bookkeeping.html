@@ -7063,7 +7063,8 @@ function loadExpEntry(){
   const multi=q.e.length>1;
   const label=multi?`<div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px;">【仕訳 ${expEntryIdx+1}／${q.e.length}】</div>`:'';
   const accounts=getExpEntryAccounts(q, expEntryIdx);
-  window._expCards=[...accounts];
+  const _sh=[...accounts];for(let _i=_sh.length-1;_i>0;_i--){const _j=Math.floor(Math.random()*(_i+1));[_sh[_i],_sh[_j]]=[_sh[_j],_sh[_i]];}
+  window._expCards=_sh;
   expPlaced={d:[],c:[]}; expHistory=[]; expCardIdx=0;
   document.getElementById('exp-entry-area').innerHTML=`
     ${label}
