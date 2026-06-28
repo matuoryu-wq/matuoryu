@@ -2214,7 +2214,7 @@ const ALL = [
     exp_en:'A bank overdraft occurs when a check drawn exceeds the checking account balance. The excess creates "Bank Overdraft" (liability) — essentially a short-term bank loan. A reversing entry is made at the start of the next period.'
   },
   { id:25, cat:'伝票',
-    q:'3伝票制の文具店で、後払いで販売した ノート5冊（@100円＝500円）の代金を現金で回収した。① 使う伝票の種類と ② 仕訳を行いなさい。',
+    q:'3伝票制の文具店で、後払いで販売したノート5冊（@100円＝500円）の代金を現金で回収した（入金伝票を使用）。仕訳を行いなさい。',
     q_en:'Under the three-voucher system, a company collected ¥500 cash against an outstanding receivable. (1) Which voucher type? (2) Record the journal entry.',
     e:[{d:[['現金',500]], c:[['売掛金',500]]}],
     note:'入金伝票の貸方に「売掛金 500」と記入。借方の「現金」は入金伝票では省略してよい。',
@@ -2385,7 +2385,7 @@ const ALL = [
 
   // ===== 家賃・手数料 =====
   { id:46, cat:'伝票',
-    q:'3伝票制を採用している会社で、消耗品費800円を現金で支払った。① 使う伝票の種類と ② 仕訳を行いなさい。',
+    q:'3伝票制を採用している会社で、消耗品費800円を現金で支払った（出金伝票を使用）。仕訳を行いなさい。',
     q_en:'Under the three-voucher system, a company paid ¥800 cash for supplies. (1) Which voucher type? (2) Record the journal entry.',
     e:[{d:[['消耗品費',800]], c:[['現金',800]]}],
     note:'出金伝票の借方に「消耗品費 800」と記入。貸方の「現金」は出金伝票では省略してよい。',
@@ -2513,7 +2513,7 @@ const ALL = [
     exp_en:'Interest for the current period is an expense even though it has not been paid yet. This is the accrual basis. The unpaid interest is carried forward as a liability and reversed at the start of the next period.'
   },
   { id:62, cat:'伝票',
-    q:'3伝票制の文具店で、ノート10冊（@100円＝1,000円）を掛けで仕入れた。① 使う伝票の種類と ② 仕訳を行いなさい。',
+    q:'3伝票制の文具店で、ノート10冊（@100円＝1,000円）を掛けで仕入れた（振替伝票を使用）。仕訳を行いなさい。',
     q_en:'Under the three-voucher system, goods worth ¥1,000 were purchased on credit. (1) Which voucher type? (2) Record the journal entry.',
     e:[{d:[['仕入',1000]], c:[['買掛金',1000]]}],
     note:'振替伝票に「仕入 1,000 ／ 買掛金 1,000」と借方・貸方の両方を記入する。',
@@ -2560,28 +2560,24 @@ const ALL = [
     exp_en:'The same logic as prepaid insurance: the next-period portion of interest already paid is reclassified from expense to a prepaid asset. Reversed at the start of the next period.'
   },
   { id:68, cat:'伝票',
-    q:'3伝票制の文具店で、ノート20冊（@100円＝2,000円）を仕入れ、うち500円を現金で支払い、残り1,500円は掛けにした。何枚の伝票に分けて起票するか。それぞれの内容と合算した仕訳を行いなさい。',
-    q_en:'Under the three-voucher system, goods worth ¥2,000 were purchased — ¥500 in cash and ¥1,500 on credit. How many vouchers? Show their contents and the combined journal entry.',
-    ans_html:`<div class="tbl-sec">起票する伝票（2枚）</div><table><thead><tr><th>伝票の種類</th><th>借方</th><th>貸方</th></tr></thead><tbody><tr><td class="hl">①出金伝票</td><td>仕入　500</td><td>（現金　500）省略</td></tr><tr><td class="hl">②振替伝票</td><td>仕入　1,500</td><td>買掛金　1,500</td></tr></tbody></table><div class="tbl-sec">2枚を合算した仕訳</div><table><tbody><tr><td>（借方）仕入　2,000</td><td>（貸方）現金　500</td></tr><tr><td></td><td>（貸方）買掛金　1,500</td></tr></tbody></table><div class="formula-box">現金払い部分 → 出金伝票　／　掛け部分 → 振替伝票　／　2枚を合算すると元の仕訳に戻る</div>`,
+    q:'3伝票制の文具店で、ノート20冊（@100円＝2,000円）を仕入れた。うち500円を現金で支払い、残り1,500円は掛けにした（出金伝票＋振替伝票の2枚で起票）。2枚を合算した仕訳を行いなさい。',
+    q_en:'Under the three-voucher system, goods worth ¥2,000 were purchased — ¥500 in cash and ¥1,500 on credit (two vouchers: payment + journal). Record the combined journal entry.',
+    e:[{d:[['仕入',2000]], c:[['現金',500],['買掛金',1500]]}],
+    note:'現金払い部分→出金伝票 / 掛け部分→振替伝票。2枚を合算すると元の仕訳（仕入2,000 ／ 現金500・買掛金1,500）に戻る。',
     exp:'現金と掛けが混ざった取引は「現金部分→出金伝票」「掛け部分→振替伝票」の2枚に分けて起票します。なぜ分けるかというと、入金・出金伝票のルールは「相手科目（貸方または借方）が必ず現金」だからです。掛け部分には現金が絡まないので、別の振替伝票にしなければなりません。2枚の伝票を合算すると元の仕訳（仕入2,000 ／ 現金500・買掛金1,500）にちゃんと戻ります。' ,
-    exp_en:'Mixed-payment purchases are split: cash portion → payment voucher; credit portion → journal voucher (two vouchers total). Combining them reconstructs the original journal entry.',
-    steps:[
-      {label:'起票する伝票の枚数', hint:'現金払い分＋掛け払い分を別々の伝票に分ける', ans:'2枚', choices:['2枚','1枚','3枚','4枚']},
-      {label:'①の伝票の種類', hint:'現金500円を支払う伝票は？', ans:'出金伝票', choices:['出金伝票','入金伝票','振替伝票','仕入伝票']},
-      {label:'②の伝票の種類', hint:'買掛金1,500円の取引（現金不要）には？', ans:'振替伝票', choices:['振替伝票','入金伝票','出金伝票','売上伝票']}
-    ]
+    exp_en:'Mixed-payment purchases are split: cash portion → payment voucher; credit portion → journal voucher (two vouchers total). Combining them reconstructs the original journal entry.'
   },
   { id:69, cat:'伝票',
-    q:'文具店で3枚の伝票が起票された。①入金伝票：売掛金（ノート代）200円の回収 ②出金伝票：消耗品費（コピー用紙）300円の支払い ③振替伝票：文具仕入500円／買掛金500円。それぞれ仕訳に直せ。また当日の現金の純増減額はいくらか。',
-    q_en:'Three vouchers were issued: ① cash receipt: AR ¥200; ② cash payment: supplies expense ¥300; ③ journal voucher: purchases ¥500 / AP ¥500. Convert each to a journal entry and determine the net cash change.',
-    ans_html:`<div class="tbl-sec">伝票 → 仕訳の変換</div><table><thead><tr><th>伝票</th><th>借方</th><th>貸方</th></tr></thead><tbody><tr><td class="hl">①入金伝票（売掛金200）</td><td>現金　200</td><td>売掛金　200</td></tr><tr><td class="hl">②出金伝票（消耗品費300）</td><td>消耗品費　300</td><td>現金　300</td></tr><tr><td class="hl">③振替伝票</td><td>仕入　500</td><td>買掛金　500</td></tr></tbody></table><div class="formula-box">現金の動き：①入金＋200　②出金△300　③振替伝票は現金に影響なし　→　当日の現金純増減＝200－300＝△100円（純減）</div>`,
+    q:'文具店で3枚の伝票が起票された。①入金伝票：売掛金（ノート代）200円の回収 ②出金伝票：消耗品費（コピー用紙）300円の支払い ③振替伝票：文具仕入500円／買掛金500円。それぞれ仕訳に直しなさい。',
+    q_en:'Three vouchers were issued: ① cash receipt: AR ¥200; ② cash payment: supplies expense ¥300; ③ journal voucher: purchases ¥500 / AP ¥500. Convert each to a journal entry.',
+    e:[
+      {d:[['現金',200]], c:[['売掛金',200]]},
+      {d:[['消耗品費',300]], c:[['現金',300]]},
+      {d:[['仕入',500]], c:[['買掛金',500]]}
+    ],
+    note:'現金の純増減：①入金＋200 − ②出金300 ＝ △100円（純減）。③振替伝票は現金に影響なし。',
     exp:'伝票を仕訳に戻す3つのルール：①入金伝票→「現金（借方）、伝票の科目（貸方）」②出金伝票→「伝票の科目（借方）、現金（貸方）」③振替伝票→「書いてある通りそのまま」。振替伝票は現金を使わない取引なので、現金残高には影響しません。入金・出金伝票だけが現金を動かします。複数の伝票を合算したものが帳簿への転記データになります。' ,
-    exp_en:'Rules for reconstructing journal entries from vouchers: ① cash receipt → Dr Cash / Cr [voucher account]; ② cash payment → Dr [voucher account] / Cr Cash; ③ journal voucher → record as written.',
-    steps:[
-      {label:'入金伝票の現金増加額', hint:'①入金伝票（売掛金200）→ 現金が増える金額', ans:200, unit:'円', choices:[200,300,500,100]},
-      {label:'出金伝票の現金減少額', hint:'②出金伝票（消耗品費300）→ 現金が減る金額', ans:300, unit:'円', choices:[300,200,500,400]},
-      {label:'現金の純増減額', hint:'入金200 − 出金300 ＝ 純増減', ans:-100, unit:'円', choices:[-100,100,-200,200]}
-    ]
+    exp_en:'Rules for reconstructing journal entries from vouchers: ① cash receipt → Dr Cash / Cr [voucher account]; ② cash payment → Dr [voucher account] / Cr Cash; ③ journal voucher → record as written.'
   },
   { id:70, cat:'経過勘定',
     q:'当期の決算にあたり、受取利息12,000円のうち、4,000円が翌期分であることが判明した。決算整理仕訳を行いなさい。',
