@@ -2721,7 +2721,7 @@ const ALL = [
     exp_en:'Rent received for a future period is not yet earned. The next-period portion is reclassified from revenue to Unearned Revenue (liability). Revenue is recognized only when the rental service is provided.'
   },
   { id:87, cat:'帳簿・精算表',
-    q:'決算整理後の各勘定残高は次のとおりだった。精算表のB/S欄に記入するとき、借方（資産）側と貸方（負債）側に分けて勘定科目・金額を答えよ。繰越商品200円・前払費用12,000円・未収収益5,000円・前受収益8,000円・未払費用3,000円・未払法人税等40,000円',
+    q:'雑貨小売店A社（会計期間4月〜翌3月）の今期末に、以下の6件が判明した。\n\n①期末の売れ残り商品在庫（繰越商品）：200円\n②半年分の火災保険料を先払いしたが、翌期分がまだ残っている（前払費用）：12,000円\n③所有ビルの3月分賃貸収益がテナントからまだ入金されていない（未収収益）：5,000円\n④別のテナントから翌期分の家賃を前受けした（前受収益）：8,000円\n⑤3月分の従業員給料がまだ未払い（未払費用）：3,000円\n⑥今期の法人税が確定したがまだ未納付（未払法人税等）：40,000円\n\nこれらを精算表のB/S欄の借方（資産）側・貸方（負債）側に分類せよ。',
     q_en:'Post-adjustment account balances: Merchandise ¥200, Prepaid exp ¥12,000, Accrued revenue ¥5,000, Unearned revenue ¥8,000, Accrued exp ¥3,000, Corporate tax payable ¥40,000. Classify each into the B/S debit (asset) or credit (liability) column.',
     e:[{d:[['繰越商品',200],['前払費用',12000],['未収収益',5000]], c:[['前受収益',8000],['未払費用',3000],['未払法人税等',40000]]}],
     note:'資産（借方）：繰越商品・前払費用・未収収益　／　負債（貸方）：前受収益・未払費用・未払法人税等',
@@ -3447,7 +3447,7 @@ const ALL = [
     exp_en:'"Debit" and "Credit" simply mean "left" and "right." Assets and expenses increase on the left; liabilities, equity, and revenues increase on the right. Total debits always equal total credits.'
   },
   { id:159, level:3, cat:'消費税',
-    q:'消費税の処理（税抜経理）について（　）に答えよ。文具（ノート類）を税込1,100円で仕入れたとき、本体1,000円は【①】（費用）、消費税100円は【②】（資産）として記録する。文具を税込2,200円で売り上げたとき、本体2,000円は【③】（収益）、消費税200円は【④】（負債）として記録する。決算で両者を相殺した差額（1,100円）が【⑤】（負債）になる。',
+    q:'税抜経理方式を採用している文具店。\n\n①ノートを税込1,100円（本体1,000円＋消費税100円）で現金仕入れした。\n②消耗品を税込2,200円（本体2,000円＋消費税200円）で現金売り上げた。\n③期末に仮払消費税100円と仮受消費税200円を相殺し、差額100円を未払計上した。\n\n①〜③それぞれの仕訳を行いなさい。',
     q_en:'About tax-exclusive consumption tax: purchased goods at ¥1,100 tax-inclusive; base ¥1,000 is [①___] (expense), tax ¥100 is [②___] (asset). Sold at ¥2,200; base ¥2,000 is [③___] (revenue), tax ¥200 is [④___] (liability). Year-end net difference (¥1,100) becomes [⑤___] (liability).',
     ans_html:`<div class="tbl-sec">答え</div><table><tbody><tr><td class="hl">①</td><td>仕入</td></tr><tr><td class="hl">②</td><td>仮払消費税</td></tr><tr><td class="hl">③</td><td>売上</td></tr><tr><td class="hl">④</td><td>仮受消費税</td></tr><tr><td class="hl">⑤</td><td>未払消費税</td></tr></tbody></table><div class="formula-box">仕入時：仕入1,000・仮払消費税100 ／ 現金1,100　　売上時：現金2,200 ／ 売上2,000・仮受消費税200　　決算：仮受消費税1,100 ／ 未払消費税1,100（純額）</div>`,
     exp:'税抜経理では消費税を本体と分けて記録します。仕入時の消費税は「仮払消費税（資産）」、売上時は「仮受消費税（負債）」。決算で差し引きした差額だけ「未払消費税（負債）」として国に納めます。' ,
