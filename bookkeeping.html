@@ -6759,12 +6759,10 @@ function loadExpQ(){
   const main=document.getElementById('exp-main');
 
   const qEnHtml=q.q_en?`<div class="exp-q-en">${fmtQen(q)}</div>`:'';
-  const noteHtml=q.note?`<div class="note-box">💡 ${q.note.replace(/\n/g,'<br>')}</div>`:'';
   if(!q.e){
     main.innerHTML=`
       ${expNavBar()}
       <div class="exp-q-card">${fmtQ(q)}${qEnHtml}</div>
-      ${noteHtml}
       <button class="exp-reveal-btn" onclick="expRevealAns(this)">答えを見る ▼</button>
       <div class="exp-readonly-ans" id="exp-ro-ans">${q.ans_html||''}</div>`;
   } else {
@@ -6805,11 +6803,9 @@ function loadExpSteps(){
   expStepIdx=0;
   const main=document.getElementById('exp-main');
   const qEnHtml=q.q_en?`<div class="exp-q-en">${fmtQen(q)}</div>`:'';
-  const noteHtml=q.note?`<div class="note-box">💡 ${q.note.replace(/\n/g,'<br>')}</div>`:'';
   main.innerHTML=`
     ${expNavBar()}
     <div class="exp-q-card">${fmtQ(q)}${qEnHtml}</div>
-    ${noteHtml}
     <div id="exp-step-area" class="exp-step-area"></div>`;
   renderExpStep();
 }
