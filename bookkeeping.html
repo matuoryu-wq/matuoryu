@@ -491,6 +491,18 @@
     .qa-done-sub { font-size:13px; color:#555; margin-bottom:16px; }
     .qa-restart-btn { padding:10px 24px; background:var(--primary); color:#fff; border:none; border-radius:20px; font-size:14px; font-weight:700; cursor:pointer; }
 
+    /* 四択ボタン */
+    .qa-choices { display:flex; flex-direction:column; gap:8px; margin:14px 0 8px; }
+    .qa-choice-btn { text-align:left; padding:11px 14px; border:2px solid var(--border); border-radius:10px; background:#fff; font-size:13px; cursor:pointer; font-family:inherit; line-height:1.4; font-weight:600; transition:background 0.15s,border-color 0.15s; }
+    .qa-choice-btn:hover:not(:disabled) { background:#F0F8FF; border-color:var(--primary); }
+    .qa-choice-btn.correct { background:#E8F5E9 !important; border-color:#43A047 !important; color:#2E7D32 !important; }
+    .qa-choice-btn.wrong   { background:#FFEBEE !important; border-color:#E53935 !important; color:#C62828 !important; }
+    .qa-choice-btn:disabled { cursor:default; }
+    .qa-mc-result { font-size:13px; font-weight:700; text-align:center; padding:6px 0; min-height:24px; }
+    .qa-mc-result.ok { color:#2E7D32; }
+    .qa-mc-result.ng { color:#C62828; }
+    .qa-mc-next { width:100%; padding:12px; margin-top:4px; background:var(--primary); color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; }
+
     /* ===== スクロールモード ===== */
     .exp-panel { display:block; max-width:640px; margin:0 auto; padding:14px 14px; }
     .exp-q-card { background:#fff; border-radius:12px; padding:14px 16px; margin-bottom:14px; border:1.5px solid var(--border); font-size:14px; line-height:2.0; font-weight:500; }
@@ -1809,12 +1821,13 @@ function applyApxFilter(tab){
 }
 
 // ===================== 一問一答モード =====================
-let qaAllItems = null;
-let qaActive   = [];
-let qaIdx      = 0;
-let qaRevealed = false;
-let qaKnown    = new Set();
-let qaFilter   = 'all';
+let qaAllItems  = null;
+let qaActive    = [];
+let qaIdx       = 0;
+let qaRevealed  = false;
+let qaKnown     = new Set();
+let qaFilter    = 'all';
+let qaMCCurrent = null; // {choices:string[], correctIdx:number, chosen:number|null}
 
 const QA_TYPE_LABEL = {asset:'資産',liability:'負債',expense:'費用',revenue:'収益',equity:'純資産',other:'その他'};
 
@@ -1917,7 +1930,7 @@ function getQAFiltered(){
 
 function showQA(){
   if(!qaAllItems) qaAllItems = buildQAAllItems();
-  qaFilter='all'; qaIdx=0; qaRevealed=false; qaKnown=new Set();
+  qaFilter='all'; qaIdx=0; qaRevealed=false; qaKnown=new Set(); qaMCCurrent=null;
   qaActive = getQAFiltered();
   document.querySelectorAll('#qa-tabs .qa-tab').forEach(t=>t.classList.toggle('active',t.dataset.f==='all'));
   document.getElementById('qa-overlay').classList.add('show');
@@ -1927,10 +1940,65 @@ function showQA(){
 function closeQA(){ document.getElementById('qa-overlay').classList.remove('show'); }
 
 function setQAFilter(f){
-  qaFilter=f; qaIdx=0; qaRevealed=false; qaKnown=new Set();
+  qaFilter=f; qaIdx=0; qaRevealed=false; qaKnown=new Set(); qaMCCurrent=null;
   qaActive = getQAFiltered();
   document.querySelectorAll('#qa-tabs .qa-tab').forEach(t=>t.classList.toggle('active',t.dataset.f===f));
   renderQABody();
+}
+
+function generateMCChoices(item) {
+  const correct = item.ans;
+  const allCands = qaActive.filter(i => i.ans !== correct);
+  const shuffle = a => [...a].sort(() => Math.random()-0.5);
+  let preferred = [];
+  if(item.src === 'acct')       preferred = allCands.filter(i => i.src==='acct' && i.type===item.type);
+  else if(item.src === 'gloss') preferred = allCands.filter(i => i.src==='gloss' && i.cat===item.cat);
+  else                          preferred = allCands.filter(i => i.src===item.src);
+
+  const seen = new Set();
+  const distractors = [];
+  for(const cand of shuffle(preferred)) {
+    if(!seen.has(cand.ans)){ seen.add(cand.ans); distractors.push(cand.ans); }
+    if(distractors.length===3) break;
+  }
+  if(distractors.length<3) {
+    for(const cand of shuffle(allCands)) {
+      if(!seen.has(cand.ans)){ seen.add(cand.ans); distractors.push(cand.ans); }
+      if(distractors.length===3) break;
+    }
+  }
+  const choices = distractors.slice(0,3);
+  const correctIdx = Math.floor(Math.random()*4);
+  choices.splice(correctIdx, 0, correct);
+  return { choices, correctIdx, chosen: null };
+}
+
+function qaMCChoose(idx) {
+  if(!qaMCCurrent || qaMCCurrent.chosen !== null) return;
+  qaMCCurrent.chosen = idx;
+  const isCorrect = (idx === qaMCCurrent.correctIdx);
+  if(isCorrect) qaKnown.add(qaIdx);
+  document.querySelectorAll('.qa-choice-btn').forEach((b, i) => {
+    b.disabled = true;
+    if(i === qaMCCurrent.correctIdx) b.classList.add('correct');
+    else if(i === idx) b.classList.add('wrong');
+  });
+  const r = document.getElementById('qa-mc-result');
+  if(r) {
+    r.className = 'qa-mc-result ' + (isCorrect ? 'ok' : 'ng');
+    r.textContent = isCorrect ? '✓ 正解！' : '✗ 不正解（正解：' + qaMCCurrent.choices[qaMCCurrent.correctIdx] + '）';
+  }
+  const n = document.getElementById('qa-mc-next');
+  if(n) n.style.display = 'block';
+  const sc = document.querySelector('.qa-known-count');
+  if(sc) sc.textContent = '✓ 正解 ' + qaKnown.size + '問';
+}
+
+function qaMCNext() {
+  qaMCCurrent = null;
+  qaIdx++;
+  renderQABody();
+  document.getElementById('qa-body').scrollTop = 0;
 }
 
 function renderQABody(){
@@ -1950,26 +2018,22 @@ function renderQABody(){
   const item = qaActive[qaIdx];
   const knownCount = qaKnown.size;
 
-  // 問題文のサフィックス（何を答えるかを示す）
-  const suffix = item.src==='acct'       ? 'この<b>勘定科目</b>は何？'
-               : item.src==='industrial' ? 'この<b>工業簿記の科目</b>は何？'
-               :                           'この<b>簿記用語</b>は何？';
+  if(!qaMCCurrent) qaMCCurrent = generateMCChoices(item);
+  const { choices, correctIdx, chosen } = qaMCCurrent;
 
-  const acctTypeLine = (item.src==='industrial' && item.acctType)
-    ? `<div class="qa-ans-type">${item.acctType}</div>` : '';
+  const choicesHtml = choices.map((c, i) => {
+    let cls = '';
+    if(chosen !== null) {
+      if(i === correctIdx) cls = ' correct';
+      else if(i === chosen) cls = ' wrong';
+    }
+    return `<button class="qa-choice-btn${cls}" onclick="qaMCChoose(${i})" ${chosen!==null?'disabled':''}>${c}</button>`;
+  }).join('');
 
-  const ansHtml = qaRevealed ? `
-    <div class="qa-ans-area">
-      <div class="qa-ans-label">答え</div>
-      <div class="qa-ans-text">${item.ans}</div>
-      <div class="qa-ans-en">${item.ans_en}</div>
-      ${acctTypeLine}
-    </div>
-    <div class="qa-judge-row">
-      <button class="qa-judge-btn qa-again-btn" onclick="qaJudge(false)">↩ もう一度</button>
-      <button class="qa-judge-btn qa-known-btn" onclick="qaJudge(true)">✓ 知ってた!</button>
-    </div>` : `
-    <button class="qa-reveal-btn" onclick="qaReveal()">▼ 答えを確認する</button>`;
+  const resultText = chosen !== null
+    ? (chosen===correctIdx ? '✓ 正解！' : '✗ 不正解（正解：' + choices[correctIdx] + '）')
+    : '';
+  const resultCls = chosen !== null ? (chosen===correctIdx ? 'ok' : 'ng') : '';
 
   body.innerHTML = `
     <div class="qa-q-card">
@@ -1977,13 +2041,14 @@ function renderQABody(){
         <span class="qa-q-badge ${item.hintCls}">${item.hint}</span>
         ${item.lv===2?'<span class="qa-q-badge cat">2級</span>':''}
       </div>
-      <div class="qa-q-text">${styleParens(addQBreaks(item.q))}<span class="qa-q-suffix">${suffix}</span></div>
-      ${item.q_en ? `<div class="qa-q-en">${item.q_en}</div>` : ''}
+      <div class="qa-q-text">${styleParens(addQBreaks(item.q))}</div>
     </div>
-    ${ansHtml}
+    <div class="qa-choices">${choicesHtml}</div>
+    <div id="qa-mc-result" class="qa-mc-result ${resultCls}">${resultText}</div>
+    <button id="qa-mc-next" class="qa-mc-next" onclick="qaMCNext()" style="display:${chosen!==null?'block':'none'}">次へ →</button>
     <div class="qa-nav-row">
       <button class="qa-nav-btn" onclick="qaPrev()" ${qaIdx===0?'disabled':''}>← 前</button>
-      <span class="qa-known-count">✓ 済み ${knownCount}問</span>
+      <span class="qa-known-count">✓ 正解 ${knownCount}問</span>
       <button class="qa-nav-btn" onclick="qaSkip()">スキップ →</button>
     </div>`;
 }
@@ -2002,13 +2067,13 @@ function qaJudge(known){
 }
 
 function qaSkip(){
-  qaIdx++; qaRevealed=false;
+  qaMCCurrent=null; qaIdx++; qaRevealed=false;
   renderQABody();
   document.getElementById('qa-body').scrollTop = 0;
 }
 
 function qaPrev(){
-  if(qaIdx>0){ qaIdx--; qaRevealed=false; renderQABody(); document.getElementById('qa-body').scrollTop=0; }
+  if(qaIdx>0){ qaMCCurrent=null; qaIdx--; qaRevealed=false; renderQABody(); document.getElementById('qa-body').scrollTop=0; }
 }
 
 function buildQADone(total){
@@ -2017,13 +2082,13 @@ function buildQADone(total){
   return `<div class="qa-done-card">
     <div class="qa-done-emoji">${pct>=80?'🎉':pct>=50?'😊':'📚'}</div>
     <div class="qa-done-title">${pct>=80?'素晴らしい！':pct>=50?'いい調子！':'もう一度挑戦！'}</div>
-    <div class="qa-done-sub">${total}問中 ${k}問 知ってた！（${pct}%）</div>
+    <div class="qa-done-sub">${total}問中 ${k}問 正解！（${pct}%）</div>
     <button class="qa-restart-btn" onclick="qaRestart()">もう一度最初から</button>
   </div>`;
 }
 
 function qaRestart(){
-  qaIdx=0; qaRevealed=false; qaKnown=new Set();
+  qaMCCurrent=null; qaIdx=0; qaRevealed=false; qaKnown=new Set();
   renderQABody();
   document.getElementById('qa-body').scrollTop=0;
 }
