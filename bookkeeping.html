@@ -502,6 +502,10 @@
     .qa-mc-result.ok { color:#2E7D32; }
     .qa-mc-result.ng { color:#C62828; }
     .qa-mc-next { width:100%; padding:12px; margin-top:4px; background:var(--primary); color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; }
+    .qa-check-btn { margin-left:auto; background:none; border:none; font-size:20px; cursor:pointer; padding:2px 4px; line-height:1; color:#ddd; transition:color 0.15s; }
+    .qa-check-btn.on { color:#F9A825; }
+    .qa-tab.checked-tab { background:#FFF8E1; border-color:#F9A825; color:#E65100; }
+    .qa-tab.checked-tab.active { background:#F9A825; color:#fff; border-color:#F9A825; }
 
     /* ===== スクロールモード ===== */
     .exp-panel { display:block; max-width:640px; margin:0 auto; padding:14px 14px; }
@@ -664,6 +668,7 @@
         <button class="qa-tab" data-f="gloss-comm" onclick="setQAFilter('gloss-comm')">商業用語</button>
         <button class="qa-tab" data-f="gloss-ind" onclick="setQAFilter('gloss-ind')">工業用語</button>
         <button class="qa-tab" data-f="gloss-adv" onclick="setQAFilter('gloss-adv')">上級用語</button>
+        <button class="qa-tab checked-tab" data-f="checked" onclick="setQAFilter('checked')" id="qa-tab-checked">★チェック(<span id="qa-checked-count">0</span>)</button>
       </div>
       <div class="qa-prog-bar-wrap"><div class="qa-prog-bar-fill" id="qa-prog-fill" style="width:0%"></div></div>
     </div>
@@ -1828,6 +1833,7 @@ let qaRevealed  = false;
 let qaKnown     = new Set();
 let qaFilter    = 'all';
 let qaMCCurrent = null; // {choices:string[], correctIdx:number, chosen:number|null}
+let qaChecked   = new Set(JSON.parse(localStorage.getItem('bk_qa_checked') || '[]'));
 
 const QA_TYPE_LABEL = {asset:'資産',liability:'負債',expense:'費用',revenue:'収益',equity:'純資産',other:'その他'};
 
@@ -1925,7 +1931,25 @@ function getQAFiltered(){
   if(qaFilter==='gloss-comm')  return qaAllItems.filter(i=>i.src==='gloss' && i.catIdx>=4 && i.catIdx<=13);
   if(qaFilter==='gloss-ind')   return qaAllItems.filter(i=>i.src==='gloss' && i.catIdx===14);
   if(qaFilter==='gloss-adv')   return qaAllItems.filter(i=>i.src==='gloss' && i.catIdx>=15);
+  if(qaFilter==='checked')     return qaAllItems.filter(i=>qaChecked.has(qaItemKey(i)));
   return [...qaAllItems];
+}
+
+function qaItemKey(item){ return item.src + ':' + item.ans; }
+
+function saveQAChecked(){
+  localStorage.setItem('bk_qa_checked', JSON.stringify([...qaChecked]));
+  const el = document.getElementById('qa-checked-count');
+  if(el) el.textContent = qaChecked.size;
+}
+
+function qaToggleCheck(){
+  if(qaIdx >= qaActive.length) return;
+  const key = qaItemKey(qaActive[qaIdx]);
+  if(qaChecked.has(key)) qaChecked.delete(key); else qaChecked.add(key);
+  saveQAChecked();
+  const btn = document.getElementById('qa-check-btn');
+  if(btn){ btn.classList.toggle('on', qaChecked.has(key)); btn.title = qaChecked.has(key)?'チェック解除':'チェックする'; }
 }
 
 function showQA(){
@@ -1934,6 +1958,8 @@ function showQA(){
   qaActive = getQAFiltered();
   document.querySelectorAll('#qa-tabs .qa-tab').forEach(t=>t.classList.toggle('active',t.dataset.f==='all'));
   document.getElementById('qa-overlay').classList.add('show');
+  const el = document.getElementById('qa-checked-count');
+  if(el) el.textContent = qaChecked.size;
   renderQABody();
 }
 
@@ -2035,11 +2061,13 @@ function renderQABody(){
     : '';
   const resultCls = chosen !== null ? (chosen===correctIdx ? 'ok' : 'ng') : '';
 
+  const isChecked = qaChecked.has(qaItemKey(item));
   body.innerHTML = `
     <div class="qa-q-card">
       <div class="qa-q-meta">
         <span class="qa-q-badge ${item.hintCls}">${item.hint}</span>
         ${item.lv===2?'<span class="qa-q-badge cat">2級</span>':''}
+        <button id="qa-check-btn" class="qa-check-btn${isChecked?' on':''}" onclick="qaToggleCheck()" title="${isChecked?'チェック解除':'チェックする'}">★</button>
       </div>
       <div class="qa-q-text">${styleParens(addQBreaks(item.q))}</div>
     </div>
