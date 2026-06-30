@@ -448,7 +448,7 @@
     .qa-q-badge.industrial{ background:#FFF3E0; color:#BF360C; border:1.5px solid #FF8F00; }
     .qa-q-badge.cat       { background:#E8EAF6; color:#283593; border:1.5px solid #9FA8DA; }
     .qa-q-text { font-size:13px; color:#333; line-height:1.8; }
-    .qa-q-text mark { background:#FFF9C4; padding:0 2px; border-radius:2px; }
+    .qa-q-text mark { background:linear-gradient(transparent 45%, rgba(255,210,0,0.45) 45%); padding:0 1px; border-radius:0; color:inherit; -webkit-box-decoration-break:clone; box-decoration-break:clone; }
     .qa-q-text strong { color:#1A2B3C; }
     .q-paren { color: #a0b5c8; font-size: 0.88em; }
     .qa-mask { display:inline-block; background:#333; color:transparent; border-radius:3px; padding:0 4px; min-width:3em; user-select:none; }
@@ -1845,6 +1845,14 @@ function qaMask(html, term){
 }
 
 // （...）を薄くする
+function markQKey(text){
+  // Highlight the distinctive feature clause (after で、/ が、/ を指し、)
+  // while leaving the final question stem (は何か？ / を何というか？) unmarked
+  const m = text.match(/^([\s\S]+?)(で、|が、|を指し、)([\s\S]+?)(は何か？|を何というか？|は何というか？)$/);
+  if(m) return m[1] + m[2] + '<mark>' + m[3] + '</mark>' + m[4];
+  return text;
+}
+
 function styleParens(html){
   return html.replace(/（([^（）]*)）/g,'<span class="q-paren">（$1）</span>');
 }
@@ -2460,7 +2468,7 @@ function renderQABody(){
         ${item.lv===2?'<span class="qa-q-badge cat">2級</span>':''}
         <button id="qa-check-btn" class="qa-check-btn${isChecked?' on':''}" onclick="qaToggleCheck()" title="${isChecked?'チェック解除':'チェックする'}">★</button>
       </div>
-      <div class="qa-q-text">${styleParens(addQBreaks(item.q))}</div>
+      <div class="qa-q-text">${styleParens(addQBreaks(markQKey(item.q)))}</div>
     </div>
     <div class="qa-choices">${choicesHtml}</div>
     <div id="qa-mc-result" class="qa-mc-result ${resultCls}">${resultText}</div>
