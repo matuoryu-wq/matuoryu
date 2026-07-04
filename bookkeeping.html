@@ -2866,7 +2866,7 @@ function renderQABody(){
     </div>
     <div class="qa-choices">${choicesHtml}</div>
     <div id="qa-mc-result" class="qa-mc-result ${resultCls}">${resultText}</div>
-    ${chosen!==null && item.ex ? `<div class="qa-ex-text">${item.ex.replace(/\n/g,'<br>')}</div>` : ''}
+    ${item.ex ? `<div class="qa-ex-text">${item.ex.replace(/\n/g,'<br>')}</div>` : ''}
     <button id="qa-mc-next" class="qa-mc-next" onclick="qaMCNext()" style="display:${chosen!==null?'block':'none'}">次へ →</button>
     <div class="qa-nav-row">
       <button class="qa-nav-btn" onclick="qaPrev()" ${qaIdx===0?'disabled':''}>← 前</button>
