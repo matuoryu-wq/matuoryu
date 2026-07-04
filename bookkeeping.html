@@ -2669,9 +2669,6 @@ function buildQAAllItems(){
       q: ACCT_Q[name] || qaMask(note, name),
       ans: name,
       ex: DETAIL[name] || '',
-      ex: DETAIL[name] || '',
-      ex: DETAIL[name] || '',
-      ex: DETAIL[name] || '',
     });
   });
 
@@ -2692,9 +2689,6 @@ function buildQAAllItems(){
       q: IND_Q[name] || qaMask(note, name),
       ans: name,
       ex: DETAIL[name] || '',
-      ex: DETAIL[name] || '',
-      ex: DETAIL[name] || '',
-      ex: DETAIL[name] || '',
     });
   });
 
@@ -2707,9 +2701,6 @@ function buildQAAllItems(){
         hintCls: 'gloss',
         q: GLOSSARY_Q[term] || qaMask(def, term),
         ans: term,
-        ex: DETAIL[term] || '',
-        ex: DETAIL[term] || '',
-        ex: DETAIL[term] || '',
         ex: DETAIL[term] || '',
       });
     });
@@ -2875,8 +2866,6 @@ function renderQABody(){
     </div>
     <div class="qa-choices">${choicesHtml}</div>
     <div id="qa-mc-result" class="qa-mc-result ${resultCls}">${resultText}</div>
-    ${chosen!==null && item.ex ? `<div class="qa-ex-text">${item.ex.replace(/\n/g,'<br>')}</div>` : ''}
-    ${chosen!==null && item.ex ? `<div class="qa-ex-text">${item.ex.replace(/\n/g,'<br>')}</div>` : ''}
     ${chosen!==null && item.ex ? `<div class="qa-ex-text">${item.ex.replace(/\n/g,'<br>')}</div>` : ''}
     <button id="qa-mc-next" class="qa-mc-next" onclick="qaMCNext()" style="display:${chosen!==null?'block':'none'}">次へ →</button>
     <div class="qa-nav-row">
