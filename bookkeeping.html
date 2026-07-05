@@ -2277,6 +2277,266 @@ const GLOSSARY_Q = {
 };
 
 const DETAIL = {};
+function buildQAAllItems(){
+  const items = [];
+  const typeLabel = QA_TYPE_LABEL;
+
+  // 商業簿記 勘定科目：説明文が問い、科目名が答え
+  ACCT_DATA.forEach(([name, en, note, lv]) => {
+    const type = T[name]||'other';
+    items.push({
+      src:'acct', type, lv:lv||3,
+      hint: typeLabel[type]+'科目',
+      hintCls: type,
+      q: ACCT_Q[name] || qaMask(note, name),
+      ans: name,
+      ex: DETAIL[name] || '',
+    });
+  });
+
+  // 工業簿記 勘定科目
+  const IND_ACCT_TYPE = {
+    '材料・在庫':   '資産科目（流動資産）',
+    '労務費':       '費用（製造直接費 / 間接費）',
+    '製造間接費':   '費用（製造間接費）',
+    '原価差異':     '差異勘定　不利差異→借方 / 有利差異→貸方',
+    '本社・工場':   '内部取引勘定（合算時に消去）',
+  };
+  INDUSTRIAL_DATA.forEach(([name, en, note, subcat]) => {
+    items.push({
+      src:'industrial', type:'industrial', subcat,
+      hint: subcat,
+      hintCls: 'industrial',
+      acctType: IND_ACCT_TYPE[subcat] || '',
+      q: IND_Q[name] || qaMask(note, name),
+      ans: name,
+      ex: DETAIL[name] || '',
+    });
+  });
+
+  // 用語集：定義が問い、用語名が答え
+  GLOSSARY_DATA.forEach(({category, items:gi}, catIdx) => {
+    gi.forEach(({term, def}) => {
+      items.push({
+        src:'gloss', type:'gloss', cat:category, catIdx,
+        hint: category,
+        hintCls: 'gloss',
+        q: GLOSSARY_Q[term] || qaMask(def, term),
+        ans: term,
+        ex: DETAIL[term] || '',
+      });
+    });
+  });
+
+  return items;
+}
+
+function getQAFiltered(){
+  if(!qaAllItems) qaAllItems = buildQAAllItems();
+  if(qaFilter==='all')         return [...qaAllItems];
+  if(qaFilter==='asset3')      return qaAllItems.filter(i=>i.src==='acct' && i.type==='asset'    && i.lv===3);
+  if(qaFilter==='asset2')      return qaAllItems.filter(i=>i.src==='acct' && i.type==='asset'    && i.lv===2);
+  if(qaFilter==='liability')   return qaAllItems.filter(i=>i.src==='acct' && i.type==='liability');
+  if(qaFilter==='expense3')    return qaAllItems.filter(i=>i.src==='acct' && i.type==='expense'  && i.lv===3);
+  if(qaFilter==='expense2')    return qaAllItems.filter(i=>i.src==='acct' && i.type==='expense'  && i.lv===2);
+  if(qaFilter==='revenue')     return qaAllItems.filter(i=>i.src==='acct' && i.type==='revenue');
+  if(qaFilter==='equity')      return qaAllItems.filter(i=>i.src==='acct' && i.type==='equity');
+  if(qaFilter==='industrial')  return qaAllItems.filter(i=>i.src==='industrial');
+  if(qaFilter==='gloss-basic') return qaAllItems.filter(i=>i.src==='gloss' && i.catIdx<=3);
+  if(qaFilter==='gloss-comm')  return qaAllItems.filter(i=>i.src==='gloss' && i.catIdx>=4 && i.catIdx<=13);
+  if(qaFilter==='gloss-ind')   return qaAllItems.filter(i=>i.src==='gloss' && i.catIdx===14);
+  if(qaFilter==='gloss-adv')   return qaAllItems.filter(i=>i.src==='gloss' && i.catIdx>=15);
+  if(qaFilter==='checked')     return qaAllItems.filter(i=>qaChecked.has(qaItemKey(i)));
+  return [...qaAllItems];
+}
+
+function qaItemKey(item){ return item.src + ':' + item.ans; }
+
+function saveQAChecked(){
+  localStorage.setItem('bk_qa_checked', JSON.stringify([...qaChecked]));
+  const el = document.getElementById('qa-checked-count');
+  if(el) el.textContent = qaChecked.size;
+}
+
+function qaToggleCheck(){
+  if(qaIdx >= qaActive.length) return;
+  const key = qaItemKey(qaActive[qaIdx]);
+  if(qaChecked.has(key)) qaChecked.delete(key); else qaChecked.add(key);
+  saveQAChecked();
+  const btn = document.getElementById('qa-check-btn');
+  if(btn){ btn.classList.toggle('on', qaChecked.has(key)); btn.title = qaChecked.has(key)?'チェック解除':'チェックする'; }
+}
+
+function showQA(){
+  if(!qaAllItems) qaAllItems = buildQAAllItems();
+  qaFilter='all'; qaIdx=0; qaRevealed=false; qaKnown=new Set(); qaMCCurrent=null;
+  qaActive = getQAFiltered();
+  document.querySelectorAll('#qa-tabs .qa-tab').forEach(t=>t.classList.toggle('active',t.dataset.f==='all'));
+  document.getElementById('qa-overlay').classList.add('show');
+  const el = document.getElementById('qa-checked-count');
+  if(el) el.textContent = qaChecked.size;
+  renderQABody();
+}
+
+function closeQA(){ document.getElementById('qa-overlay').classList.remove('show'); }
+
+function setQAFilter(f){
+  qaFilter=f; qaIdx=0; qaRevealed=false; qaKnown=new Set(); qaMCCurrent=null;
+  qaActive = getQAFiltered();
+  document.querySelectorAll('#qa-tabs .qa-tab').forEach(t=>t.classList.toggle('active',t.dataset.f===f));
+  renderQABody();
+}
+
+function generateMCChoices(item) {
+  const correct = item.ans;
+  const allCands = qaActive.filter(i => i.ans !== correct);
+  const shuffle = a => [...a].sort(() => Math.random()-0.5);
+  let preferred = [];
+  if(item.src === 'acct')       preferred = allCands.filter(i => i.src==='acct' && i.type===item.type);
+  else if(item.src === 'gloss') preferred = allCands.filter(i => i.src==='gloss' && i.cat===item.cat);
+  else                          preferred = allCands.filter(i => i.src===item.src);
+
+  const seen = new Set();
+  const distractors = [];
+  for(const cand of shuffle(preferred)) {
+    if(!seen.has(cand.ans)){ seen.add(cand.ans); distractors.push(cand.ans); }
+    if(distractors.length===3) break;
+  }
+  if(distractors.length<3) {
+    for(const cand of shuffle(allCands)) {
+      if(!seen.has(cand.ans)){ seen.add(cand.ans); distractors.push(cand.ans); }
+      if(distractors.length===3) break;
+    }
+  }
+  const choices = distractors.slice(0,3);
+  const correctIdx = Math.floor(Math.random()*4);
+  choices.splice(correctIdx, 0, correct);
+  return { choices, correctIdx, chosen: null };
+}
+
+function qaMCChoose(idx) {
+  if(!qaMCCurrent || qaMCCurrent.chosen !== null) return;
+  qaMCCurrent.chosen = idx;
+  const isCorrect = (idx === qaMCCurrent.correctIdx);
+  if(isCorrect) qaKnown.add(qaIdx);
+  document.querySelectorAll('.qa-choice-btn').forEach((b, i) => {
+    b.disabled = true;
+    if(i === qaMCCurrent.correctIdx) b.classList.add('correct');
+    else if(i === idx) b.classList.add('wrong');
+  });
+  const r = document.getElementById('qa-mc-result');
+  if(r) {
+    r.className = 'qa-mc-result ' + (isCorrect ? 'ok' : 'ng');
+    r.textContent = isCorrect ? '✓ 正解！' : '✗ 不正解（正解：' + qaMCCurrent.choices[qaMCCurrent.correctIdx] + '）';
+  }
+  const n = document.getElementById('qa-mc-next');
+  if(n) n.style.display = 'block';
+  const sc = document.querySelector('.qa-known-count');
+  if(sc) sc.textContent = '✓ 正解 ' + qaKnown.size + '問';
+}
+
+function qaMCNext() {
+  qaMCCurrent = null;
+  qaIdx++;
+  renderQABody();
+  document.getElementById('qa-body').scrollTop = 0;
+}
+
+function renderQABody(){
+  const body  = document.getElementById('qa-body');
+  const total = qaActive.length;
+  const prog  = total ? Math.round((qaIdx+1)/total*100) : 0;
+  document.getElementById('qa-prog-text').textContent = total ? `${qaIdx+1} / ${total}` : '0 / 0';
+  document.getElementById('qa-prog-fill').style.width  = prog+'%';
+
+  if(!total){ body.innerHTML='<p style="text-align:center;color:var(--muted);padding:40px">問題がありません</p>'; return; }
+
+  if(qaIdx >= total){
+    body.innerHTML = buildQADone(total);
+    return;
+  }
+
+  const item = qaActive[qaIdx];
+  const knownCount = qaKnown.size;
+
+  if(!qaMCCurrent) qaMCCurrent = generateMCChoices(item);
+  const { choices, correctIdx, chosen } = qaMCCurrent;
+
+  const choicesHtml = choices.map((c, i) => {
+    let cls = '';
+    if(chosen !== null) {
+      if(i === correctIdx) cls = ' correct';
+      else if(i === chosen) cls = ' wrong';
+    }
+    return `<button class="qa-choice-btn${cls}" onclick="qaMCChoose(${i})" ${chosen!==null?'disabled':''}>${c}</button>`;
+  }).join('');
+
+  const resultText = chosen !== null
+    ? (chosen===correctIdx ? '✓ 正解！' : '✗ 不正解（正解：' + choices[correctIdx] + '）')
+    : '';
+  const resultCls = chosen !== null ? (chosen===correctIdx ? 'ok' : 'ng') : '';
+
+  const isChecked = qaChecked.has(qaItemKey(item));
+  body.innerHTML = `
+    <div class="qa-q-card">
+      <div class="qa-q-meta">
+        <span class="qa-q-badge ${item.hintCls}">${item.hint}</span>
+        ${item.lv===2?'<span class="qa-q-badge cat">2級</span>':''}
+        <button id="qa-check-btn" class="qa-check-btn${isChecked?' on':''}" onclick="qaToggleCheck()" title="${isChecked?'チェック解除':'チェックする'}">★</button>
+      </div>
+      <div class="qa-q-text">${styleParens(addQBreaks(markQKey(item.q)))}</div>
+    </div>
+    <div class="qa-choices">${choicesHtml}</div>
+    <div id="qa-mc-result" class="qa-mc-result ${resultCls}">${resultText}</div>
+    ${chosen!==null && item.ex ? `<div class="qa-ex-text">${item.ex.replace(/\n/g,'<br>')}</div>` : ''}
+    <button id="qa-mc-next" class="qa-mc-next" onclick="qaMCNext()" style="display:${chosen!==null?'block':'none'}">次へ →</button>
+    <div class="qa-nav-row">
+      <button class="qa-nav-btn" onclick="qaPrev()" ${qaIdx===0?'disabled':''}>← 前</button>
+      <span class="qa-known-count">✓ 正解 ${knownCount}問</span>
+      <button class="qa-nav-btn" onclick="qaSkip()">スキップ →</button>
+    </div>`;
+}
+
+function qaReveal(){
+  qaRevealed = true;
+  renderQABody();
+  document.getElementById('qa-body').scrollTop = 999;
+}
+
+function qaJudge(known){
+  if(known) qaKnown.add(qaIdx);
+  qaIdx++; qaRevealed=false;
+  renderQABody();
+  document.getElementById('qa-body').scrollTop = 0;
+}
+
+function qaSkip(){
+  qaMCCurrent=null; qaIdx++; qaRevealed=false;
+  renderQABody();
+  document.getElementById('qa-body').scrollTop = 0;
+}
+
+function qaPrev(){
+  if(qaIdx>0){ qaMCCurrent=null; qaIdx--; qaRevealed=false; renderQABody(); document.getElementById('qa-body').scrollTop=0; }
+}
+
+function buildQADone(total){
+  const k = qaKnown.size;
+  const pct = Math.round(k/total*100);
+  return `<div class="qa-done-card">
+    <div class="qa-done-emoji">${pct>=80?'🎉':pct>=50?'😊':'📚'}</div>
+    <div class="qa-done-title">${pct>=80?'素晴らしい！':pct>=50?'いい調子！':'もう一度挑戦！'}</div>
+    <div class="qa-done-sub">${total}問中 ${k}問 正解！（${pct}%）</div>
+    <button class="qa-restart-btn" onclick="qaRestart()">もう一度最初から</button>
+  </div>`;
+}
+
+function qaRestart(){
+  qaMCCurrent=null; qaIdx=0; qaRevealed=false; qaKnown=new Set();
+  renderQABody();
+  document.getElementById('qa-body').scrollTop=0;
+}
+
 const ALL = [
   // ===== 商品売買 =====
   { id:1, cat:'商品売買',
