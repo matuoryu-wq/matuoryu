@@ -518,6 +518,10 @@
     .qa-check-btn.on { color:#F9A825; }
     .qa-tab.checked-tab { background:#FFF8E1; border-color:#F9A825; color:#E65100; }
     .qa-tab.checked-tab.active { background:#F9A825; color:#fff; border-color:#F9A825; }
+    .qa-tts-btn { background:none; border:1.5px solid var(--border); border-radius:20px; font-size:14px; cursor:pointer; padding:4px 10px; line-height:1; color:var(--muted); font-weight:700; transition:background 0.15s,color 0.15s,border-color 0.15s; }
+    .qa-tts-btn.on { background:#E3F2FD; color:#0277BD; border-color:#0277BD; }
+    @keyframes ttsPulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+    .qa-tts-speaking { animation:ttsPulse 0.9s ease-in-out infinite; }
 
     /* ===== スクロールモード ===== */
     .exp-panel { display:block; max-width:640px; margin:0 auto; padding:14px 14px; }
@@ -664,6 +668,7 @@
       <div class="qa-hd-row">
         <div class="qa-title">📝 一問一答</div>
         <span class="qa-prog-text" id="qa-prog-text">0 / 0</span>
+        <button id="qa-tts-btn" class="qa-tts-btn" onclick="qaTTSToggle()" title="音声読み上げ">🔇</button>
         <button class="qa-close" onclick="closeQA()">✕</button>
       </div>
       <div class="qa-tabs" id="qa-tabs">
@@ -1846,6 +1851,61 @@ let qaKnown     = new Set();
 let qaFilter    = 'all';
 let qaMCCurrent = null; // {choices:string[], correctIdx:number, chosen:number|null}
 let qaChecked   = new Set(JSON.parse(localStorage.getItem('bk_qa_checked') || '[]'));
+let qaTTSEnabled = false;
+
+// ===== 音声読み上げ =====
+function qaTTSClean(text){
+  return text
+    .replace(/<[^>]+>/g, '')          // HTMLタグ除去
+    .replace(/【　　　　　　】/g, '、なになに、')
+    .replace(/【　　　】/g, '、なになに、')
+    .replace(/\n/g, '。')
+    .replace(/（/g, '、(')
+    .replace(/）/g, ')、')
+    .replace(/　/g, ' ')
+    .replace(/[→←↑↓＋－×÷＝≠]/g, ' ')
+    .replace(/\/\//g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function qaTTSStop(){
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  const btn = document.getElementById('qa-tts-btn');
+  if(btn) btn.classList.remove('qa-tts-speaking');
+}
+
+function qaTTSSpeak(text, onEnd){
+  if(!qaTTSEnabled || !('speechSynthesis' in window)) return;
+  qaTTSStop();
+  const utt = new SpeechSynthesisUtterance(qaTTSClean(text));
+  utt.lang = 'ja-JP';
+  utt.rate = 0.9;
+  utt.pitch = 1.0;
+  const btn = document.getElementById('qa-tts-btn');
+  if(btn) btn.classList.add('qa-tts-speaking');
+  utt.onend = () => {
+    if(btn) btn.classList.remove('qa-tts-speaking');
+    if(onEnd) onEnd();
+  };
+  utt.onerror = () => { if(btn) btn.classList.remove('qa-tts-speaking'); };
+  window.speechSynthesis.speak(utt);
+}
+
+function qaTTSToggle(){
+  qaTTSEnabled = !qaTTSEnabled;
+  const btn = document.getElementById('qa-tts-btn');
+  if(btn){
+    btn.textContent = qaTTSEnabled ? '🔊' : '🔇';
+    btn.classList.toggle('on', qaTTSEnabled);
+  }
+  if(!qaTTSEnabled) qaTTSStop();
+  else {
+    // 現在の問題を読み上げ
+    if(qaActive.length && qaIdx < qaActive.length)
+      qaTTSSpeak(qaActive[qaIdx].q);
+  }
+}
 
 const QA_TYPE_LABEL = {asset:'資産',liability:'負債',expense:'費用',revenue:'収益',equity:'純資産',other:'その他'};
 
@@ -2378,7 +2438,7 @@ function showQA(){
   renderQABody();
 }
 
-function closeQA(){ document.getElementById('qa-overlay').classList.remove('show'); }
+function closeQA(){ qaTTSStop(); document.getElementById('qa-overlay').classList.remove('show'); }
 
 function setQAFilter(f){
   qaFilter=f; qaIdx=0; qaRevealed=false; qaKnown=new Set(); qaMCCurrent=null;
@@ -2433,6 +2493,10 @@ function qaMCChoose(idx) {
   if(n) n.style.display = 'block';
   const sc = document.querySelector('.qa-known-count');
   if(sc) sc.textContent = '✓ 正解 ' + qaKnown.size + '問';
+  // 正解を読み上げ
+  const ans = qaMCCurrent.choices[qaMCCurrent.correctIdx];
+  const msg = isCorrect ? `正解！${ans}` : `不正解。正解は、${ans}`;
+  qaTTSSpeak(msg);
 }
 
 function qaMCNext() {
@@ -2495,6 +2559,9 @@ function renderQABody(){
       <span class="qa-known-count">✓ 正解 ${knownCount}問</span>
       <button class="qa-nav-btn" onclick="qaSkip()">スキップ →</button>
     </div>`;
+
+  // 未回答の問題なら問題文を読み上げ
+  if(chosen === null) qaTTSSpeak(item.q);
 }
 
 function qaReveal(){
