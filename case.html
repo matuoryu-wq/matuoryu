@@ -335,6 +335,40 @@ function computeKPI(){
   return {uketachu:uketachu, thisWeek:thisWeek, overdue:overdue, ball:ball, noNext:noNext};
 }
 
+/* ============ sample data ============ */
+function seedSampleData(){
+  var today = todayStr();
+  var c1 = {id:uid(), name:'山田太郎様 相続', category:'相続', client:'山田太郎', status:'進行中', ball:'自分', nextAction:'戸籍収集を依頼', createdAt:addDays(today,-12)};
+  var c2 = {id:uid(), name:'佐藤花子様 離婚', category:'離婚', client:'佐藤花子', status:'受任', ball:'先生', nextAction:'', createdAt:addDays(today,-8)};
+  var c3 = {id:uid(), name:'鈴木一郎様 交通事故', category:'交通事故', client:'鈴木一郎', status:'相談中', ball:'依頼者', nextAction:'資料の提出待ち', createdAt:addDays(today,-3)};
+  var c4 = {id:uid(), name:'高橋商事様 債務整理', category:'債務整理', client:'高橋商事', status:'最終段階', ball:'事務', nextAction:'和解書の最終確認', createdAt:addDays(today,-40)};
+  var c5 = {id:uid(), name:'田中次郎様 刑事事件', category:'刑事', client:'田中次郎', status:'進行中', ball:'先生', nextAction:'控訴理由書の準備', createdAt:addDays(today,-20)};
+  DB.cases.push(c1,c2,c3,c4,c5);
+
+  DB.tasks.push(
+    {id:uid(), caseId:c1.id, title:'遺産分割協議書の起案', start:addDays(today,-3), due:today, type:'task', assignee:'自分', done:false, createdAt:today},
+    {id:uid(), caseId:c1.id, title:'固定資産税の按分確認', start:addDays(today,-10), due:addDays(today,-2), type:'task', assignee:'事務', done:false, createdAt:today},
+    {id:uid(), caseId:c2.id, title:'相手方代理人との打合せ', start:addDays(today,1), due:addDays(today,1), type:'meeting', assignee:'先生', done:false, createdAt:today},
+    {id:uid(), caseId:c3.id, title:'診断書・修理見積の受領', start:today, due:addDays(today,5), type:'task', assignee:'依頼者', done:false, createdAt:today},
+    {id:uid(), caseId:c4.id, title:'和解書ドラフトのチェック', start:addDays(today,-1), due:addDays(today,3), type:'task', assignee:'事務', done:false, createdAt:today},
+    {id:uid(), caseId:null, title:'コピー機トナー注文', start:null, due:addDays(today,1), type:'task', assignee:'', done:false, createdAt:today},
+    {id:uid(), caseId:null, title:'〇〇先生に紹介の御礼状', start:null, due:null, type:'task', assignee:'', done:false, createdAt:today}
+  );
+
+  DB.deadlines.push(
+    {id:uid(), caseId:c1.id, label:'相続放棄申述期限', dueDate:addDays(today,30), basis:'民法915条', note:'', tentative:false, resolved:false, createdAt:today},
+    {id:uid(), caseId:c5.id, label:'刑事控訴期限', dueDate:addDays(today,19), basis:'刑訴法373条', note:'判決宣告日から起算。宣告日確定後に本登録し直す', tentative:true, resolved:false, createdAt:today},
+    {id:uid(), caseId:c2.id, label:'家事審判即時抗告期限', dueDate:addDays(today,21), basis:'家事事件手続法86条', note:'送達日未確定のため仮登録', tentative:true, resolved:false, createdAt:today}
+  );
+
+  DB.notes.push(
+    {id:uid(), caseId:c1.id, text:'初回面談を実施。相続人は3名、不動産1件、預金2件を確認。', createdAt:addDays(today,-12)},
+    {id:uid(), caseId:c1.id, text:'戸籍の収集を開始。あと2通で揃う見込み。', createdAt:addDays(today,-4)}
+  );
+
+  save();
+}
+
 /* ============ modal ============ */
 function openModal(html){
   document.getElementById('modal-box').innerHTML = html;
@@ -422,6 +456,11 @@ function renderPep(today){
       '<div class="pep-cta">「<b>'+esc(pick.name)+'</b>」の次のアクションが未設定です。'+
       '<button class="btn btn-sm btn-primary" style="margin-left:auto" data-set-next="'+pick.id+'">次のアクションを設定</button></div></div>';
   }
+  if(!blocks && DB.cases.length===0){
+    blocks = '<div class="pep-block"><div class="pep-msg">👋 はじめまして。まだ案件が登録されていません</div>'+
+      '<div class="pep-cta">「案件」から新規登録するか、まずはサンプルデータで使い心地を確かめられます。'+
+      '<button class="btn btn-sm btn-primary" style="margin-left:auto" id="pep-seed-btn">サンプルデータを入れる</button></div></div>';
+  }
   if(!blocks){
     blocks = '<div class="pep-block"><div class="pep-msg">✨ 今日やることはありません。素晴らしい状態です！</div></div>';
   }
@@ -437,6 +476,8 @@ function bindPepActions(){
   Array.prototype.forEach.call(document.querySelectorAll('[data-set-next]'), function(el){
     el.addEventListener('click', function(){ openCaseModal(el.getAttribute('data-set-next')); });
   });
+  var pepSeedBtn = document.getElementById('pep-seed-btn');
+  if(pepSeedBtn) pepSeedBtn.addEventListener('click', function(){ seedSampleData(); render(); });
 }
 
 function renderTimeline(today){
@@ -781,7 +822,7 @@ function renderCases(){
       '<div class="ct-main"><div class="ct-name">'+esc(c.name)+'</div>'+
       '<div class="ct-meta"><span class="badge badge-stage">'+esc(c.status)+'</span>'+(c.category?'<span class="badge badge-muted">'+esc(c.category)+'</span>':'')+(c.client?'<span>👤 '+esc(c.client)+'</span>':'')+(c.ball?'<span class="badge badge-ball">'+esc(c.ball)+'</span>':'')+'</div></div>'+
       '<div class="ct-side">'+(soonest?'次の期限 '+dispDate(soonest.dueDate):'')+'<br>未完了 '+openTasks+'件</div></div>';
-  }).join('') || '<div class="empty"><div class="empty-ic">📁</div>案件がまだありません。まず1件登録しましょう</div>';
+  }).join('') || '<div class="empty"><div class="empty-ic">📁</div>案件がまだありません。まず1件登録しましょう<div style="margin-top:12px"><button class="btn btn-sm" id="seed-btn">サンプルデータを入れる</button></div></div>';
 
   document.getElementById('view-root').innerHTML =
     '<div class="card"><div class="card-title">📁 案件一覧<span class="ct-sub">'+list.length+'件</span><button class="btn btn-sm btn-primary" id="case-new-btn" style="margin-left:10px">＋ 新規案件</button></div>'+rows+'</div>';
@@ -790,6 +831,8 @@ function renderCases(){
   Array.prototype.forEach.call(document.querySelectorAll('[data-open-case]'), function(el){
     el.addEventListener('click', function(){ openCaseModal(el.getAttribute('data-open-case')); });
   });
+  var seedBtn = document.getElementById('seed-btn');
+  if(seedBtn) seedBtn.addEventListener('click', function(){ seedSampleData(); render(); });
 }
 function openCaseModal(id){
   var c = id ? caseById(id) : {id:null,name:'',category:'',status:'相談中',client:'',ball:'自分',nextAction:''};
