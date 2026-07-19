@@ -1,0 +1,15 @@
+{
+  "name": "案件管理",
+  "short_name": "案件管理",
+  "description": "案件・タスク・期限を管理し、今日やることを教えてくれる案件管理アプリ",
+  "start_url": "./case.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F2EDE4",
+  "theme_color": "#7C5C3E",
+  "lang": "ja",
+  "icons": [
+    { "src": "case-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "case-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

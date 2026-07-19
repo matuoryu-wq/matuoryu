@@ -112,6 +112,20 @@
     .br-table tr.breakeven{background:#FFFBEC}
     .phase-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:4px;vertical-align:middle}
     .phase-badge.stop{background:#FEF2F2;color:var(--danger);border:1px solid #fca5a5}
+    .quiz-card{background:var(--card);border-radius:var(--radius);border:2px solid var(--primary);padding:20px;margin-bottom:14px;}
+    .quiz-question{font-size:15px;font-weight:700;color:var(--text);line-height:1.7;margin-bottom:14px;}
+    .quiz-answer{display:none;background:#F7F0E8;border-radius:8px;padding:14px;margin-top:10px;}
+    .quiz-answer.show{display:block;}
+    .quiz-step{font-size:13px;line-height:1.9;margin-bottom:8px;}
+    .quiz-formula{font-family:'Courier New',monospace;font-size:12px;background:#EDE5D8;padding:6px 10px;border-radius:5px;margin:4px 0;}
+    .quiz-answer-final{font-size:20px;font-weight:800;color:var(--success);margin-top:10px;}
+    .quiz-btn{padding:10px 20px;border:none;border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;margin-right:8px;margin-top:8px;}
+    .quiz-btn-show{background:var(--success);color:#fff;}
+    .quiz-btn-show:hover{background:#3A6B46;}
+    .quiz-btn-next{background:var(--primary);color:#fff;}
+    .quiz-btn-next:hover{background:var(--primary-hover);}
+    .quiz-btn-start{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;}
+    .quiz-btn-start:hover{background:var(--primary-hover);}
   </style>
 </head>
 <body>
@@ -122,8 +136,9 @@
 <nav class="tabs">
   <button class="tab-btn active" onclick="switchTab('konin',this)">💰 婚姻費用</button>
   <button class="tab-btn" onclick="switchTab('youiku',this)">👶 養育費</button>
+  <button class="tab-btn" onclick="switchTab('break',this)">🏥 児童扶養手当</button>
   <button class="tab-btn" onclick="switchTab('zaisan',this)">🏠 財産分与</button>
-  <button class="tab-btn" onclick="switchTab('break',this)">⚖️ 損益分岐点</button>
+  <button class="tab-btn" onclick="switchTab('mondai',this)">📝 計算問題</button>
 </nav>
 <div class="container">
 
@@ -274,7 +289,7 @@
     </div>
     <!-- ④ New card: 夫婦間の子（義務者と同居）for 養育費 -->
     <div class="card">
-      <div class="card-title"><span class="icon icon-child">子</span>夫婦間の子（義務者と同居）<button class="help-btn" onclick="showHelp('ob_child')">詳しく</button></div>
+      <div class="card-title"><span class="icon icon-child">子</span>(元)夫婦間の子（義務者と同居）<button class="help-btn" onclick="showHelp('ob_child')">詳しく</button></div>
       <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">義務者と同居している夫婦間の子がいる場合は入力してください。義務者側の生活費指数に加算されます。</p>
       <div id="y-ob-children-list" class="children-list"></div>
       <button class="btn-add" onclick="addObChild('y')">＋ 子を追加</button>
@@ -329,7 +344,7 @@
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fee2e2;color:#dc2626">－</span>共同の負債（不動産ローン以外）</div>
+      <div class="card-title"><span class="icon" style="background:#fee2e2;color:#dc2626">－</span>共同の負債（不動産ローン以外）<button class="help-btn" onclick="showHelp('kyodo_saimu')">詳しく</button></div>
       <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">婚姻中に共同で負担した借金（カーローン・教育ローンなど）を入力してください。</p>
       <div id="z-debt-list" class="asset-list"></div>
       <button class="btn-add" onclick="addDebt()">＋ 負債を追加</button>
@@ -400,36 +415,9 @@
 
     <!-- 子の情報 -->
     <div class="card">
-      <div class="card-title"><span class="icon icon-child">子</span>子の情報</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>子の人数（扶養人数）</label>
-          <select id="br-child-count">
-            <option value="1">1人</option>
-            <option value="2">2人</option>
-            <option value="3">3人</option>
-            <option value="4">4人</option>
-            <option value="5">5人</option>
-          </select>
-        </div>
-      </div>
-      <div class="sec-title">末子（一番下の子）の誕生年月</div>
-      <div class="form-row" style="margin-bottom:0">
-        <div class="form-group">
-          <label>誕生年（西暦4桁）</label>
-          <div class="input-wrap"><input type="number" id="br-birth-year" placeholder="例：2018" min="2000" max="2030"><span class="unit">年</span></div>
-        </div>
-        <div class="form-group">
-          <label>誕生月</label>
-          <select id="br-birth-month">
-            <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option>
-            <option value="4">4月</option><option value="5">5月</option><option value="6">6月</option>
-            <option value="7">7月</option><option value="8">8月</option><option value="9">9月</option>
-            <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
-          </select>
-        </div>
-      </div>
-      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>末子が18歳になる年度末（3月31日）まで児童扶養手当を受給できます。子が1人の場合はその子の誕生年月を入力してください。</div>
+      <div class="card-title"><span class="icon icon-child">子</span>子の情報（誕生年月）</div>
+      <div class="note" style="margin-bottom:10px"><span class="note-icon">ℹ️</span>婚姻費用・養育費タブで子を追加すると、各子の欄がここに自動で表示されます。それぞれの誕生年月を入力してください。</div>
+      <div id="br-children-list"></div>
     </div>
 
     <!-- 月額・終期 -->
@@ -461,6 +449,17 @@
     <button class="btn-calc" onclick="calcBreakeven()">損益分岐点を計算する</button>
     <div id="br-result" style="display:none;margin-top:14px"></div>
   </div>
+
+  <!-- ===== 計算問題 ===== -->
+  <div id="panel-mondai" class="panel">
+    <div class="info-banner">
+      <p>婚姻費用・養育費・財産分与・児童扶養手当・損益分岐点の計算問題をランダムに出題します（6種類）。<br>A=婚姻費用 / B=養育費（子2人） / C=財産分与 / D=児童扶養手当 / E=損益分岐点 / F=養育費（自営）</p>
+    </div>
+    <div id="mondai-start-area">
+      <button class="quiz-btn-start" onclick="mondaiNext()">問題を出す</button>
+    </div>
+    <div id="mondai-card" style="display:none;margin-top:14px"></div>
+  </div>
 </div>
 
 <!-- モーダル -->
@@ -487,8 +486,9 @@ const HELP={
   separate_property:{title:'特有財産とは',body:`<p><strong>特有財産</strong>とは、財産分与の対象とならない、各自の固有の財産のことです。</p><h4>特有財産の例</h4><ul><li>婚姻前から所有していた預貯金・不動産</li><li>婚姻中に相続によって取得した財産</li><li>婚姻中に贈与を受けた財産</li></ul><div class="help-note">特有財産であることの立証は、主張する側が行う必要があります。</div>`},
   base_income:{title:'基礎収入とは',body:`<p><strong>基礎収入</strong>とは、総収入から税金・社会保険料・職業費等を控除した後の、実際に生活費として使用できる収入の目安となる金額です。</p><h4>算定方法</h4><ul><li><strong>給与所得者</strong>：年収 × 38〜54%（収入が高いほど割合が低下）</li><li><strong>事業所得者</strong>：課税所得 × 48〜61%</li><li><strong>給与＋事業所得</strong>：多い方の所得に換算した上で合計</li></ul>`},
   ob_child:{title:'義務者と同居する子について',body:`<p>夫婦間の子のうち、義務者（支払う側）と同居している子がいる場合、その子の生活費指数を義務者側の指数に加算します。</p><p>これにより、義務者が養育する子のコストが考慮され、婚姻費用・養育費の金額が調整されます。</p>`},
+  kyodo_saimu:{title:'共同の負債の分与方法について',body:`<p>婚姻中に共同で作った借金（カーローン・教育ローンなど）は、<strong>共有財産から差し引いた上で財産分与が行われます</strong>。</p><h4>計算の仕組み</h4><p>共有財産 − 共同の負債 ＝ 分与対象の純財産 として、この純財産を決めた割合で分け合います。</p><h4>計算例</h4><p>共有財産 2,000万円、共同の負債 400万円 の場合：<br>純財産 ＝ 1,600万円 → 各自 800万円ずつ（50%の場合）</p><h4>注意点</h4><ul><li>金融機関との関係では、<strong>名義人が返済義務を負い続けます</strong>。離婚後に相手が支払わなかった場合のリスクがあります。</li><li>純財産がマイナスになる場合（負債超過）は、双方が負担する形での協議が別途必要になります。</li><li>具体的な負債の引き受け方や金融機関との交渉については、弁護士にご相談ください。</li></ul><div class="help-note">不動産ローンは「不動産」欄で別途管理します（査定額からローン残高を引いた純資産として計上）。</div>`},
   break_overview:{title:'損益分岐点とは',body:`<p>離婚を検討する際、<strong>経済的な観点から「いつ離婚するのが得か」</strong>を判断するための計算です。</p><h4>比較の仕組み</h4><ul><li><strong>婚姻継続</strong>：毎月、婚姻費用を受け取る</li><li><strong>今すぐ離婚</strong>：毎月、養育費＋児童扶養手当を受け取る</li></ul><p>この差額を月ごとに累積し、累積差額が0を超えた時点が「損益分岐点」です。</p><h4>注意点</h4><ul><li>児童扶養手当は末子が18歳年度末（3月31日）を迎えると支給が終了します</li><li>養育費は合意した終期（18歳・20歳・22歳等）で終了します</li><li>経済的判断だけでなく、精神的・家庭的事情も重要です</li></ul><div class="help-note">この計算は概算です。具体的な判断は弁護士にご相談ください。</div>`},
-  break_income:{title:'児童扶養手当と収入について',body:`<p>児童扶養手当は、<strong>受け取る側（権利者）の前年の所得</strong>に基づいて支給額が決まります。</p><h4>所得の計算方法</h4><ol><li>年収から給与所得控除を引いて「給与所得」を算出</li><li>給与所得に養育費年額×80%を加算し、10万円＋8万円（社会保険料相当）を控除して「所得額」を算出</li><li>所得額と限度額を比較して支給区分を判定</li></ol><h4>所得制限限度額（2026年度）</h4><table><tr><th>子の人数</th><th>全部支給限度額</th><th>一部支給限度額</th></tr><tr><td>1人</td><td>107万円</td><td>246万円</td></tr><tr><td>2人</td><td>145万円</td><td>284万円</td></tr><tr><td>3人</td><td>183万円</td><td>322万円</td></tr></table>`}
+  break_income:{title:'児童扶養手当と収入について',body:`<p>児童扶養手当は、<strong>受け取る側（権利者）の前年の所得</strong>に基づいて支給額が決まります。</p><h4>STEP 1：給与所得の算出（給与所得控除 令和2年改正・住民税基準）</h4><table><tr><th>年収</th><th>給与所得控除額</th></tr><tr><td>162.5万円以下</td><td>55万円（一律）</td></tr><tr><td>162.5万〜180万円</td><td>年収×40%−10万円</td></tr><tr><td>180万〜360万円</td><td>年収×30%＋8万円</td></tr><tr><td>360万〜660万円</td><td>年収×20%＋44万円</td></tr><tr><td>660万〜850万円</td><td>年収×10%＋110万円</td></tr><tr><td>850万円超</td><td>195万円（一律）</td></tr></table><p style="margin-top:6px">給与所得 ＝ 年収 − 給与所得控除額</p><h4>STEP 2：所得額の算出</h4><p>所得額 ＝ 給与所得 ＋ 養育費年額×80% − 8万円（社保相当） − 10万円（給与所得者控除）</p><h4>STEP 3：所得制限限度額との比較（2026年度）</h4><table><tr><th>扶養人数（子の数）</th><th>全部支給限度額</th><th>一部支給限度額</th></tr><tr><td>1人</td><td>107万円</td><td>246万円</td></tr><tr><td>2人</td><td>145万円</td><td>284万円</td></tr><tr><td>3人</td><td>183万円</td><td>322万円</td></tr><tr><td>4人</td><td>221万円</td><td>360万円</td></tr></table><div class="help-note">令和6年11月改正で所得限度額が引き上げられました。限度額は毎年度改定されます。</div>`}
 };
 
 function getRate(income,table){for(const[max,rate]of table){if(income<=max)return rate;}return table[table.length-1][1];}
@@ -612,7 +612,9 @@ function calcKonin(){
   }
 
   const html=`<div class="result-box ${mon<0?'warning':''}"><div class="result-label">月額婚姻費用（目安）</div><div class="result-amount">${mon<0?'0円':fmtEn(mon)}</div><div class="result-sub">年額：${mon<0?'0円':fmtEn(ann)}${mon<0?'<br>※権利者の収入が高いため婚姻費用は発生しません':''}</div></div>${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。収入が高いほど控除率が上がります。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}</div>${otherHtml}${betaHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計（権利者と同居）</span><span class="bk-val">${cs}</span></div>${D('各子の生活費を数値化したものです。大人を100として、0〜14歳は62、15〜19歳は85として計算します。複数の子がいる場合は合計します。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}<div class="bk-row" style="margin-top:4px"><span class="bk-key">権利者側の指数合計</span><span class="bk-val">100（権利者）＋${cs}（子）＝${ei}</span></div>${D('権利者自身（大人=100）と子たちの指数を合算した数値です。権利者と子が生活するために必要な費用の規模を表しています。')}${obChildHtml}${obSideDesc}<div class="bk-row" style="margin-top:6px"><span class="bk-key">婚姻費用（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D('義務者と権利者の基礎収入を合わせた生活費総額を、それぞれの指数に応じて按分します。権利者側（子含む）に割り当てられた分から、権利者自身の基礎収入を差し引いた差額が、義務者が支払うべき婚姻費用です。')}<div class="bk-formula">${resultFormula}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
-  const el=document.getElementById('k-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  const kNote=`<div class="note" style="margin-top:10px"><span class="note-icon">💡</span><span>通常は離婚前の<strong>婚姻費用</strong>の方が多くなりますが、離婚後の養育費に<strong>児童扶養手当</strong>を加えると実質的に多くなることもあります。<br><a onclick="switchTabByName('break')" style="color:var(--primary);cursor:pointer;font-weight:700;text-decoration:underline">→ 児童扶養手当タブで確認する</a></span></div>`;
+  const el=document.getElementById('k-result');el.innerHTML=html+kNote;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  const brKEl=document.getElementById('br-konin');if(brKEl)brKEl.value=mon>0?Math.round(mon*10)/10:0;
 }
 
 // ⑧ Updated calcYouiku with ob-child and res-other support
@@ -708,7 +710,9 @@ function calcYouiku(){
   }
 
   const html=`<div class="result-box"><div class="result-label">月額養育費（目安）</div><div class="result-amount">${fmtEn(mon)}</div><div class="result-sub">年額：${fmtEn(ann)}</div></div>${corr?`<div class="note"><span class="note-icon">⚠️</span>権利者の基礎収入(${fmtMan(bOrig)})が義務者を上回るため、b=${fmtMan(a)}として計算しています。</div>`:''} ${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}${corr?'<br>→補正後: '+fmtMan(b):''}</div>${otherHtml}${betaHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div>${D('各子の年齢に応じた生活費の指数を合計します。0〜14歳は62、15〜19歳は85です。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}${obChildHtml}${cSection}<div class="bk-row" style="margin-top:6px"><span class="bk-key">養育費（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D(hasResOther?'義務者の基礎収入（a）に子の指数（α）の比率を掛け、婚外子の修正指数（β）を考慮して按分した結果が義務者の支払うべき養育費です。':'子の生活費（c）を、義務者と権利者の基礎収入の比率で按分した結果が、義務者が支払うべき養育費です。収入の多い義務者がより多く負担する仕組みです。')}<div class="bk-formula">${resultFormula}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>`;
-  const el=document.getElementById('y-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  const yNote=`<div class="note" style="margin-top:10px"><span class="note-icon">💡</span><span>通常は離婚前の<strong>婚姻費用</strong>の方が多くなりますが、離婚後の養育費に<strong>児童扶養手当</strong>を加えると実質的に多くなることもあります。<br><a onclick="switchTabByName('break')" style="color:var(--primary);cursor:pointer;font-weight:700;text-decoration:underline">→ 児童扶養手当タブで確認する</a></span></div>`;
+  const el=document.getElementById('y-result');el.innerHTML=html+yNote;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  const brYEl=document.getElementById('br-youiku');if(brYEl)brYEl.value=Math.round(mon*10)/10;
 }
 
 function calcZaisan(){
@@ -742,11 +746,49 @@ function calcZaisan(){
 }
 
 // UI HELPERS
-let cc={k:0,y:0},oc={k:0,y:0},ac=0,dc=0,rc=0;
+let cc=0,oc={k:0,y:0},ac=0,dc=0,rc=0;
 // ⑧ New counters for ob-children and res-other children
 let obc={k:0,y:0},roc={k:0,y:0};
 
-function addChild(p){cc[p]++;const id=cc[p];const d=document.createElement('div');d.className='child-row';d.id=`${p}-child-${id}`;d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${p}-cage-${id}" oninput="updIdx(this,'${p}-cidx-${id}')"><span class="unit">歳</span><span class="age-index" id="${p}-cidx-${id}">─</span><button class="btn-remove" onclick="rmEl('${p}-child-${id}')">✕</button>`;document.getElementById(`${p}-children-list`).appendChild(d);}
+function addChild(p){
+  if(_syncing)return;
+  cc++;const id=cc;
+  ['k','y'].forEach(tab=>{
+    const d=document.createElement('div');d.className='child-row';d.id=`${tab}-child-${id}`;
+    d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${tab}-cage-${id}" oninput="updIdx(this,'${tab}-cidx-${id}');syncChildAge('${tab}',${id},this.value)"><span class="unit">歳</span><span class="age-index" id="${tab}-cidx-${id}">─</span><button class="btn-remove" onclick="rmSharedChild(${id})">✕</button>`;
+    document.getElementById(`${tab}-children-list`).appendChild(d);
+  });
+  addBrChild(id);
+}
+function addBrChild(id){
+  const list=document.getElementById('br-children-list');
+  if(!list)return;
+  const d=document.createElement('div');
+  d.id=`br-child-${id}`;
+  d.style.cssText='margin-bottom:10px;padding:10px 12px;background:#f8f9fa;border-radius:8px;border:1px solid var(--border)';
+  const opts=[1,2,3,4,5,6,7,8,9,10,11,12].map(m=>`<option value="${m}">${m}月</option>`).join('');
+  d.innerHTML=`<div style="font-weight:600;margin-bottom:8px;color:var(--primary)">第${id}子の誕生年月</div>
+    <div class="form-row" style="margin-bottom:0">
+      <div class="form-group">
+        <label>誕生年（西暦）</label>
+        <div class="input-wrap"><input type="number" id="br-year-${id}" placeholder="例：2018" min="2000" max="2040"><span class="unit">年</span></div>
+      </div>
+      <div class="form-group">
+        <label>誕生月</label>
+        <select id="br-month-${id}">${opts}</select>
+      </div>
+    </div>`;
+  list.appendChild(d);
+}
+function rmBrChild(id){rmEl(`br-child-${id}`);}
+function syncChildAge(srcP,id,val){
+  if(_syncing)return;_syncing=true;
+  const peer=srcP==='k'?'y':'k';
+  const peerEl=document.getElementById(`${peer}-cage-${id}`);
+  if(peerEl){peerEl.value=val;updIdx(peerEl,`${peer}-cidx-${id}`);}
+  _syncing=false;
+}
+function rmSharedChild(id){rmEl(`k-child-${id}`);rmEl(`y-child-${id}`);rmBrChild(id);}
 
 function addOtherChild(p){oc[p]++;const id=oc[p];const d=document.createElement('div');d.className='child-row';d.id=`${p}-other-${id}`;d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${p}-oage-${id}" oninput="updIdx(this,'${p}-oidx-${id}')"><span class="unit">歳</span><span class="age-index" id="${p}-oidx-${id}">─</span><button class="btn-remove" onclick="rmOther('${p}-other-${id}','${p}')">✕</button>`;document.getElementById(`${p}-other-list`).appendChild(d);document.getElementById(`${p}-other-parent-wrap`).style.display='block';}
 
@@ -819,15 +861,20 @@ function v(id){const el=document.getElementById(id);return el?el.value:null;}
 function nv(id){const el=document.getElementById(id);return el&&el.value!==''?Number(el.value):null;}
 function showErr(id,msg){const el=document.getElementById(id);el.innerHTML=`<div class="err-msg">⚠ ${msg}</div>`;el.style.display='block';}
 
+function switchTabByName(name){document.querySelectorAll('.tab-btn').forEach(btn=>{if(btn.getAttribute('onclick').includes("'"+name+"'"))switchTab(name,btn);});}
+function setBrKonin(val){const el=document.getElementById('br-konin');if(el)el.value=val;switchTabByName('break');}
+function setBrYouiku(val){const el=document.getElementById('br-youiku');if(el)el.value=val;switchTabByName('break');}
+
 // ─── 損益分岐点 ──────────────────────────────────────────────
 
-// STEP 1: 給与所得
+// STEP 1: 給与所得（給与所得控除：令和2年改正後・住民税と同一基準）単位：万円
 function brKyuyoShotoku(income){
-  if(income<=190)return Math.max(0,income-65);
-  if(income<=360)return income-(income*0.30+8);
-  if(income<=660)return income-(income*0.20+44);
-  if(income<=850)return income-(income*0.10+110);
-  return income-195;
+  if(income<=162.5)return Math.max(0,income-55);   // 控除55万
+  if(income<=180)  return income*0.60+10;           // 控除=収入×40%-10万
+  if(income<=360)  return income*0.70-8;            // 控除=収入×30%+8万
+  if(income<=660)  return income*0.80-44;           // 控除=収入×20%+44万
+  if(income<=850)  return income*0.90-110;          // 控除=収入×10%+110万
+  return income-195;                                // 控除195万
 }
 
 // STEP 2: 児童扶養手当上の所得額
@@ -884,85 +931,135 @@ function calcBreakeven(){
   if(!income)return showErr('br-result','権利者の年収を入力してください。');
   const koninMan=nv('br-konin')||0;
   const youikuMan=nv('br-youiku')||0;
-  const childCount=parseInt(v('br-child-count'))||1;
-  const birthYear=parseInt(v('br-birth-year'))||0;
-  const birthMonth=parseInt(v('br-birth-month'))||1;
   const endAge=parseInt(v('br-youiku-end-age'))||18;
 
-  if(!birthYear||birthYear<1990||birthYear>2030)
-    return showErr('br-result','末子の誕生年（西暦4桁）を正しく入力してください。');
+  // 各子の誕生年月を収集
+  const brList=document.getElementById('br-children-list');
+  const childEls=brList?brList.querySelectorAll('[id^="br-child-"]'):[];
+  if(!childEls.length)return showErr('br-result','子の誕生年月を入力してください。（婚姻費用・養育費タブで子を追加してください）');
+  const children=[];
+  for(const el of childEls){
+    const cid=el.id.replace('br-child-','');
+    const yr=parseInt(document.getElementById(`br-year-${cid}`)?.value)||0;
+    const mo=parseInt(document.getElementById(`br-month-${cid}`)?.value)||1;
+    if(!yr||yr<1990||yr>2040)
+      return showErr('br-result',`第${cid}子の誕生年（西暦4桁）を正しく入力してください。`);
+    const jidoEndYM=brJidoEndYM(yr,mo);
+    children.push({cid,yr,mo,jidoEndYM,jidoEndMN:toMN(jidoEndYM.year,jidoEndYM.month)});
+  }
+
+  // 末子（最後に追加した子 = 最も若い子）の養育費終期
+  const lastChild=children[children.length-1];
+  const youikuEndYM=brYouikuEndYM(lastChild.yr,lastChild.mo,endAge);
 
   const today=new Date();
   const cy=today.getFullYear(),cm=today.getMonth()+1;
-
-  // STEP 1〜2
-  const kyuyoShotoku=brKyuyoShotoku(income);
-  const youikuNen=youikuMan*12; // 万円/年
-  const jidoShotoku=brJidoShotoku(kyuyoShotoku,youikuNen);
-
-  // STEP 4: 現在の月額
-  const jr=brJidoAmount(jidoShotoku,childCount);
-
-  // 終了年月
-  const jidoEndYM=brJidoEndYM(birthYear,birthMonth);
-  const youikuEndYM=brYouikuEndYM(birthYear,birthMonth,endAge);
-
   const nowMN=toMN(cy,cm);
-  const jidoEndMN=toMN(jidoEndYM.year,jidoEndYM.month);
   const youikuEndMN=toMN(youikuEndYM.year,youikuEndYM.month);
-
   const totalMonths=youikuEndMN-nowMN;
   if(totalMonths<=0)return showErr('br-result','末子の養育費終期がすでに過ぎています。誕生年月・終期を確認してください。');
 
+  // 所得計算（共通）
+  const kyuyoShotoku=brKyuyoShotoku(income);
+  const youikuNen=youikuMan*12;
+  const jidoShotoku=brJidoShotoku(kyuyoShotoku,youikuNen);
+
+  // 子の人数ごとの手当月額をキャッシュ
+  const jidoCache={};
+  function getJidoAmt(n){
+    if(n<=0)return 0;
+    if(jidoCache[n]!==undefined)return jidoCache[n];
+    jidoCache[n]=brJidoAmount(jidoShotoku,n).amount;
+    return jidoCache[n];
+  }
+
+  // 現在の対象子数・手当
+  const activeNow=children.filter(c=>c.jidoEndMN>=nowMN).length;
+  const jrNow=brJidoAmount(jidoShotoku,activeNow>0?activeNow:1);
+  const currentJidoAmt=activeNow>0?jrNow.amount:0;
+
+  // 年月変換
+  function mnToYM(mn){const m=mn%12||12;const y=(mn-m)/12;return{year:y,month:m};}
+
+  // フェーズ変化点（手当の子の数が変わるタイミング）
+  const changeMNSet=new Set([nowMN,youikuEndMN+1]);
+  children.forEach(c=>{if(c.jidoEndMN+1<=youikuEndMN+1)changeMNSet.add(c.jidoEndMN+1);});
+  const sortedChanges=[...changeMNSet].sort((a,b)=>a-b);
+
+  // フェーズ一覧（手当が変わる期間ごと）
+  const phases=[];
+  for(let i=0;i<sortedChanges.length-1;i++){
+    const startMN=sortedChanges[i];
+    const endMN=sortedChanges[i+1]-1;
+    const activeCount=children.filter(c=>c.jidoEndMN>=startMN).length;
+    const jidoAmt=getJidoAmt(activeCount);
+    const jrPhase=brJidoAmount(jidoShotoku,activeCount>0?activeCount:1);
+    const startYM=mnToYM(startMN);
+    const endYM=mnToYM(endMN);
+    // この変化を起こした子（直前フェーズで対象外になった子）
+    const triggerChild=i>0?children.find(c=>c.jidoEndMN===sortedChanges[i]-1):null;
+    phases.push({startMN,endMN,activeCount,jidoAmt,jrPhase,startYM,endYM,triggerChild});
+  }
+
+  // 年単位累積（フェーズ変化を月ごとに処理）
   const konin_en=koninMan*10000;
   const youiku_en=youikuMan*10000;
-  const jido_en=jr.amount;
-  const divorce_total=youiku_en+jido_en;
-  const monthly_diff=divorce_total-konin_en;
-
-  // STEP 7: 年単位累積
   const yearRows=[];
   let cumTotal=0;
   let breakEvenYear=null;
   const totalYears=Math.ceil(totalMonths/12);
 
   for(let yr=1;yr<=totalYears;yr++){
-    const mStart=(yr-1)*12; // 0-indexed from nowMN
-    const mEnd=Math.min(yr*12,totalMonths);
+    const mStart=nowMN+(yr-1)*12;
+    const mEnd=nowMN+Math.min(yr*12,totalMonths)-1;
     let yearSum=0;
-    for(let m=mStart;m<mEnd;m++){
-      const mn=nowMN+m;
-      const jidoThisMonth=mn<=jidoEndMN?jido_en:0;
+    for(let mn=mStart;mn<=mEnd;mn++){
+      const activeCount=children.filter(c=>c.jidoEndMN>=mn).length;
+      const jidoThisMonth=getJidoAmt(activeCount);
       const youikuThisMonth=mn<=youikuEndMN?youiku_en:0;
-      const diff=(youikuThisMonth+jidoThisMonth)-konin_en;
-      yearSum+=diff;
+      yearSum+=(youikuThisMonth+jidoThisMonth)-konin_en;
     }
     const prevCum=cumTotal;
     cumTotal+=yearSum;
-    const jidoStopped=nowMN+mEnd-1>jidoEndMN;
-    yearRows.push({yr,yearSum,cumTotal,jidoStopped});
+    // この年に含まれる手当フェーズ変化（nowMN以降の変化点）
+    const yearPhases=phases.filter(p=>p.triggerChild&&p.startMN>nowMN&&p.startMN>=mStart&&p.startMN<=mEnd+1);
+    yearRows.push({yr,yearSum,cumTotal,yearPhases});
     if(breakEvenYear===null&&prevCum<0&&cumTotal>=0)breakEvenYear=yr;
     if(breakEvenYear===null&&prevCum===0&&cumTotal>0&&yr===1)breakEvenYear=yr;
   }
-  // 初月からプラスの場合
   if(breakEvenYear===null&&yearRows.length>0&&yearRows[0].cumTotal>0)breakEvenYear=1;
 
-  // HTML生成
-  const kyuLabel={full:'全部支給',partial:'一部支給',none:'支給停止'};
-  const kyuColor={full:'var(--success)',partial:'var(--warning)',none:'var(--danger)'};
+  const jido_en=currentJidoAmt;
+  const divorce_total=youiku_en+jido_en;
+  const monthly_diff=divorce_total-konin_en;
   const isDivAdv=monthly_diff>0;
   const diffSign=monthly_diff>=0?'+':'';
   const fmtEn=n=>(Math.round(n)).toLocaleString('ja-JP');
+  const kyuLabel={full:'全部支給',partial:'一部支給',none:'支給停止'};
+  const kyuColor={full:'var(--success)',partial:'var(--warning)',none:'var(--danger)'};
+
+  // 末子の手当終了年月
+  const lastJidoEndMN=Math.max(...children.map(c=>c.jidoEndMN));
+  const lastJidoEndYM=mnToYM(lastJidoEndMN);
+
+  // 児童扶養手当ボックス（現時点）
+  const jidoAmtColor=jrNow.kyu==='none'?'var(--danger)':jrNow.kyu==='partial'?'var(--warning)':'var(--success)';
+  const jidoResultHtml=`<div class="result-box${jrNow.kyu==='none'?' warning':''}" style="margin-bottom:14px">
+    <div class="result-label">児童扶養手当（月額・現時点）</div>
+    <div class="result-amount" style="color:${jidoAmtColor}">${fmtEn(currentJidoAmt)}円</div>
+    <div class="result-sub" style="color:${jidoAmtColor}">支給区分：<strong>${kyuLabel[jrNow.kyu]}</strong>${activeNow>0?`　対象の子：${activeNow}人　手当終了：${lastJidoEndYM.year}年${lastJidoEndYM.month}月（末子18歳年度末）`:''}</div>
+    <div style="font-size:12px;margin-top:6px">${children.map(c=>`第${c.cid}子 〜${c.jidoEndYM.year}年${c.jidoEndYM.month}月`).join('　／　')}</div>
+  </div>`;
 
   // 判定メッセージ
   let verdictHtml;
   if(isDivAdv){
-    verdictHtml=`<div class="result-box" style="margin-bottom:14px"><div class="result-label">月額判定</div><div class="result-amount">今すぐ離婚が有利</div><div class="result-sub">毎月 +${fmtEn(monthly_diff)}円 多く受け取れます（現時点）</div></div>`;
+    verdictHtml=`<div class="result-box" style="margin-bottom:14px"><div class="result-label">月額比較（現時点）</div><div class="result-amount">今すぐ離婚が有利</div><div class="result-sub">婚姻費用 ${fmtEn(konin_en)}円 → 養育費＋児童扶養手当 ${fmtEn(divorce_total)}円<br>毎月 <strong>+${fmtEn(monthly_diff)}円</strong> 多く受け取れます</div></div>`;
   }else{
-    verdictHtml=`<div class="result-box warning" style="margin-bottom:14px"><div class="result-label">月額判定</div><div class="result-amount">現時点は婚姻継続が有利</div><div class="result-sub">毎月 ${fmtEn(Math.abs(monthly_diff))}円 少なくなります</div></div>`;
+    verdictHtml=`<div class="result-box warning" style="margin-bottom:14px"><div class="result-label">月額比較（現時点）</div><div class="result-amount">現時点は婚姻継続が有利</div><div class="result-sub">婚姻費用 ${fmtEn(konin_en)}円 → 養育費＋児童扶養手当 ${fmtEn(divorce_total)}円<br>毎月 <strong>${fmtEn(Math.abs(monthly_diff))}円</strong> 少なくなります</div></div>`;
   }
 
-  // 損益分岐点メッセージ
+  // 損益分岐点
   let bepHtml;
   if(breakEvenYear!==null){
     bepHtml=`<div style="background:#FFFBEC;border:1.5px solid #F0C070;border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-size:12px;font-weight:700;color:var(--warning);margin-bottom:4px">損益分岐点</div><div style="font-size:22px;font-weight:800;color:var(--warning)">${breakEvenYear}年目</div><div style="font-size:13px;color:#5D3A1A;margin-top:4px">${breakEvenYear}年後（累積差額がプラスに転じる年）以降は、今すぐ離婚した方が経済的に有利になります。</div></div>`;
@@ -972,37 +1069,52 @@ function calcBreakeven(){
     bepHtml=`<div style="background:var(--danger-light);border:1.5px solid #fca5a5;border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-size:22px;font-weight:800;color:var(--danger)">損益分岐点なし</div><div style="font-size:13px;color:var(--danger);margin-top:4px">養育費終期（末子${endAge}歳）まで婚姻継続が経済的に有利です。</div></div>`;
   }
 
-  // 所得計算内訳
+  // STEP 1〜3 所得判定
   const incomeDeduct=income-kyuyoShotoku;
+  const kyuyoTier=income<=162.5?`年収162.5万円以下：控除額＝55万円`:
+    income<=180?`年収162.5〜180万円：控除額＝年収×40%−10万（${(income*0.40-10).toFixed(2)}万）`:
+    income<=360?`年収180〜360万円：控除額＝年収×30%＋8万（${(income*0.30+8).toFixed(2)}万）`:
+    income<=660?`年収360〜660万円：控除額＝年収×20%＋44万（${(income*0.20+44).toFixed(2)}万）`:
+    income<=850?`年収660〜850万円：控除額＝年収×10%＋110万（${(income*0.10+110).toFixed(2)}万）`:
+    `年収850万円超：控除額＝195万円`;
   const breakdown1=`
     <div class="breakdown">
       <div class="breakdown-title">STEP 1〜3 児童扶養手当の所得判定</div>
       <div class="bk-row"><span class="bk-key">権利者の年収</span><span class="bk-val">${income}万円</span></div>
-      <div class="bk-desc">給与所得控除を差し引いて「給与所得」を算出します。</div>
-      <div class="bk-formula">給与所得 ＝ 年収（${income}万）− 給与所得控除（${fmtMan(incomeDeduct)}）＝ ${fmtMan(kyuyoShotoku)}</div>
+      <div class="bk-desc">給与所得控除を差し引いて「給与所得」を算出します（令和2年改正・住民税基準）。</div>
+      <div class="bk-formula">${kyuyoTier}<br>給与所得 ＝ 年収${income}万 − 給与所得控除${fmtMan(incomeDeduct)} ＝ ${fmtMan(kyuyoShotoku)}</div>
       <div class="bk-row"><span class="bk-key">給与所得</span><span class="bk-val">${fmtMan(kyuyoShotoku)}</span></div>
       <div class="bk-desc">養育費の年間合計×80%を加え、10万円（給与所得者控除）と8万円（社会保険料相当）を差し引いて所得額を算出します。</div>
       <div class="bk-formula">所得額 ＝ 給与所得（${fmtMan(kyuyoShotoku)}）＋ 養育費年額×80%（${fmtMan(youikuNen*0.8)}）− 18万円 ＝ ${fmtMan(jidoShotoku)}</div>
       <div class="bk-row"><span class="bk-key">養育費年額×80%</span><span class="bk-val">＋${fmtMan(youikuNen*0.8)}</span></div>
       <div class="bk-row"><span class="bk-key">給与・社保控除（10万＋8万）</span><span class="bk-val">−18万円</span></div>
       <div class="bk-row" style="border-top:1.5px solid var(--border);padding-top:8px;margin-top:4px"><span class="bk-key" style="font-weight:700">児童扶養手当上の所得額</span><span class="bk-val" style="font-size:15px">${fmtMan(jidoShotoku)}</span></div>
-      <div class="bk-desc">子${childCount}人の場合の所得制限限度額：全部支給 ${jr.lim.full}万円 ／ 一部支給 ${jr.lim.partial}万円${jidoShotoku<jr.lim.full?'<br>→ 所得額が全部支給限度額未満 ✅ <strong>全部支給</strong>':jidoShotoku<jr.lim.partial?'<br>→ 所得額が一部支給限度額未満 ⚠️ <strong>一部支給</strong>':'<br>→ 所得額が一部支給限度額以上 ❌ <strong>支給停止</strong>'}</div>
+      <div class="bk-desc">現時点（子${activeNow}人）の所得制限限度額：全部支給 ${jrNow.lim.full}万円 ／ 一部支給 ${jrNow.lim.partial}万円${jidoShotoku<jrNow.lim.full?'<br>→ 所得額が全部支給限度額未満 ✅ <strong>全部支給</strong>':jidoShotoku<jrNow.lim.partial?'<br>→ 所得額が一部支給限度額未満 ⚠️ <strong>一部支給</strong>':'<br>→ 所得額が一部支給限度額以上 ❌ <strong>支給停止</strong>'}</div>
     </div>`;
 
-  // STEP 4 月額内訳
+  // STEP 4 月額内訳（フェーズ別）
+  const phaseRows=phases.map((p,i)=>{
+    const isFirst=(i===0);
+    const changeNote=p.triggerChild?`<span class="phase-badge stop">第${p.triggerChild.cid}子が18歳年度末 → 対象${p.activeCount}人へ</span>`:'';
+    const kyuStr=p.jrPhase.kyu==='full'?`全部支給 ${fmtEn(p.jidoAmt)}円（1人目48,050円${p.activeCount>1?' + '+(p.activeCount-1)+'人目以降×11,350円':''})`:
+      p.jrPhase.kyu==='partial'?`一部支給 ${fmtEn(p.jidoAmt)}円`:`支給停止（0円）`;
+    return `<div class="bk-row${!isFirst?' phase-change-row':''}" style="${!isFirst?'border-top:2px dashed var(--border);padding-top:10px;margin-top:10px':''}">
+      <span class="bk-key">${p.startYM.year}年${p.startYM.month}月 〜 ${p.endYM.year}年${p.endYM.month}月${changeNote}</span>
+      <span class="bk-val" style="color:${p.jidoAmt>0?'var(--success)':'var(--danger)'};white-space:nowrap">${fmtEn(p.jidoAmt)}円／月</span>
+    </div>
+    <div class="bk-desc">${kyuStr}</div>`;
+  }).join('');
+
   const breakdown2=`
     <div class="breakdown">
-      <div class="breakdown-title">STEP 4 児童扶養手当の月額</div>
-      <div class="bk-row"><span class="bk-key">支給区分</span><span class="bk-val" style="color:${kyuColor[jr.kyu]};font-weight:700">${kyuLabel[jr.kyu]}</span></div>
-      <div class="bk-row"><span class="bk-key">児童扶養手当（月額）</span><span class="bk-val">${fmtEn(jr.amount)}円</span></div>
-      <div class="bk-desc">${jr.kyu==='full'?('全部支給：1人目48,050円'+(childCount>1?' + '+(childCount-1)+'人目以降×11,350円':'')):jr.kyu==='partial'?('一部支給：1人目 48,040 −（所得額'+fmtMan(jidoShotoku)+'−限度額'+jr.lim.full+'万円）×0.0264029 を10円単位に丸めた金額'):'所得額が一部支給限度額以上のため支給停止'}</div>
-      <div class="bk-row"><span class="bk-key" style="font-size:11px">支給終了予定</span><span class="bk-val" style="font-size:12px">末子18歳年度末：${jidoEndYM.year}年3月</span></div>
+      <div class="breakdown-title">STEP 4 児童扶養手当の月額（期間別内訳）</div>
+      ${phaseRows}
     </div>`;
 
   // STEP 6 月額比較
   const breakdown3=`
     <div class="breakdown">
-      <div class="breakdown-title">STEP 6 月額比較</div>
+      <div class="breakdown-title">STEP 6 月額比較（現時点）</div>
       <div class="bk-row"><span class="bk-key">婚姻継続の場合（婚姻費用）</span><span class="bk-val">${fmtEn(konin_en)}円／月</span></div>
       <div class="bk-row"><span class="bk-key">離婚した場合：養育費</span><span class="bk-val">${fmtEn(youiku_en)}円</span></div>
       <div class="bk-row"><span class="bk-key">離婚した場合：児童扶養手当</span><span class="bk-val">${fmtEn(jido_en)}円</span></div>
@@ -1014,15 +1126,18 @@ function calcBreakeven(){
       <div class="bk-desc">${isDivAdv?`✅ 毎月 ${fmtEn(Math.abs(monthly_diff))}円 多く受け取れます（養育費＋手当が婚姻費用より多い）`:`⚠️ 毎月 ${fmtEn(Math.abs(monthly_diff))}円 少なくなります（養育費＋手当が婚姻費用より少ない）`}</div>
     </div>`;
 
-  // STEP 7 累積表
-  const tableRows=yearRows.map(({yr,yearSum,cumTotal,jidoStopped})=>{
+  // STEP 7 累積表（フェーズ変化マーカー付き）
+  const tableRows=yearRows.map(({yr,yearSum,cumTotal,yearPhases})=>{
     const isBEP=breakEvenYear===yr;
     const cumClass=cumTotal>=0?'pos':'neg';
     const yearClass=yearSum>=0?'pos':'neg';
     const cs=cumTotal>=0?'+':'';const ys=yearSum>=0?'+':'';
-    const jBadge=jidoStopped?'<span class="phase-badge stop">手当停止後</span>':'';
+    const phBadges=yearPhases.map(p=>{
+      const newAmt=fmtEn(p.jidoAmt);
+      return`<span class="phase-badge stop">第${p.triggerChild.cid}子手当終了（${p.startYM.year}年${p.startYM.month}月〜 ${newAmt}円）</span>`;
+    }).join('');
     return `<tr${isBEP?' class="breakeven"':''}>
-      <td style="font-weight:600">${yr}年目${jBadge}${isBEP?'<span class="phase-badge" style="background:#FFFBEC;color:var(--warning);border:1px solid #F0C070">← 損益分岐点</span>':''}</td>
+      <td style="font-weight:600">${yr}年目${phBadges}${isBEP?'<span class="phase-badge" style="background:#FFFBEC;color:var(--warning);border:1px solid #F0C070">← 損益分岐点</span>':''}</td>
       <td class="num ${yearClass}">${ys}${fmtEn(Math.round(yearSum))}円</td>
       <td class="num ${cumClass}">${cs}${fmtEn(Math.round(cumTotal))}円</td>
     </tr>`;
@@ -1036,10 +1151,9 @@ function calcBreakeven(){
         <thead><tr><th>期間</th><th style="text-align:right">その年の差額</th><th style="text-align:right">累積差額</th></tr></thead>
         <tbody>${tableRows}</tbody>
       </table></div>
-      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>児童扶養手当は${jidoEndYM.year}年3月以降0円。養育費は${youikuEndYM.year}年${youikuEndYM.month}月以降0円として計算。</div>
+      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>${children.map(c=>`第${c.cid}子：${c.jidoEndYM.year}年${c.jidoEndYM.month}月以降手当なし`).join('　')}。養育費は${youikuEndYM.year}年${youikuEndYM.month}月以降0円として計算。</div>
     </div>`;
 
-  // 注記
   const cautions=`
     <div class="note" style="flex-direction:column;gap:6px;line-height:1.8">
       <div style="font-weight:700">⚠️ 注意事項（必ずお読みください）</div>
@@ -1050,12 +1164,287 @@ function calcBreakeven(){
     </div>`;
 
   const el=document.getElementById('br-result');
-  el.innerHTML=verdictHtml+bepHtml+breakdown1+breakdown2+breakdown3+breakdown4+cautions;
+  el.innerHTML=jidoResultHtml+verdictHtml+bepHtml+breakdown1+breakdown2+breakdown3+breakdown4+cautions;
   el.style.display='block';
   el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-addChild('k');addChild('y');addProperty();addAsset();addDebt();
+let _syncing=false;
+function setupSync(){
+  const pairs=[
+    ['k-ob-type','y-ob-type'],['k-ob-salary','y-ob-salary'],
+    ['k-ob-business','y-ob-business'],['k-ob-insurance','y-ob-insurance'],
+    ['k-ee-type','y-ee-type'],['k-ee-salary','y-ee-salary'],
+    ['k-ee-business','y-ee-business'],['k-ee-insurance','y-ee-insurance']
+  ];
+  function link(aId,bId){
+    const a=document.getElementById(aId),b=document.getElementById(bId);
+    if(!a||!b)return;
+    function doSync(from,toId){
+      const to=document.getElementById(toId);if(!to)return;
+      ['input','change'].forEach(evt=>from.addEventListener(evt,()=>{
+        if(_syncing)return;_syncing=true;
+        to.value=from.value;
+        if(toId.endsWith('-type'))toggleExtra(toId.replace('-type',''));
+        _syncing=false;
+      }));
+    }
+    doSync(a,bId);doSync(b,aId);
+  }
+  pairs.forEach(([a,b])=>link(a,b));
+  ['k-ee-salary','y-ee-salary'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.addEventListener('input',()=>{const br=document.getElementById('br-income');if(br)br.value=el.value;});
+  });
+}
+
+addChild('k');addProperty();addAsset();addDebt();setupSync();
+
+// ─── 計算問題タブ ────────────────────────────────────────────────
+// mondaiCurrent は module level で宣言。タブ切り替えでは絶対にリセットしない。
+let mondaiCurrent = null;
+
+function mondaiRand(min,max,step){
+  const n=Math.floor((max-min)/step+1);
+  return min+Math.floor(Math.random()*n)*step;
+}
+function mondaiAge(){
+  return Math.random()<0.5?Math.floor(Math.random()*15):15+Math.floor(Math.random()*5);
+}
+
+function mondaiGenProblem(){
+  const type=Math.floor(Math.random()*6);
+  if(type===0){
+    // Type A: 婚姻費用（子2人）
+    const obSal=mondaiRand(300,800,50);
+    const eeSal=mondaiRand(0,400,50);
+    const age1=mondaiAge();
+    const age2=mondaiAge();
+    return{type:'A',obSal,eeSal,ages:[age1,age2]};
+  }else if(type===1){
+    // Type B: 養育費（子2人・年齢混在）
+    const obSal=mondaiRand(300,800,50);
+    const eeSal=mondaiRand(0,400,50);
+    const age1=mondaiAge();
+    const age2=mondaiAge();
+    return{type:'B',obSal,eeSal,age1,age2};
+  }else if(type===2){
+    // Type C: 財産分与（不動産+退職金+特有財産）
+    const fudosan=mondaiRand(1000,5000,100);
+    const loanMax=Math.min(fudosan-100,3000);
+    const loan=mondaiRand(200,Math.max(200,loanMax),100);
+    const yokin=mondaiRand(100,1000,50);
+    const taisyoku=mondaiRand(100,500,50);
+    const sep=mondaiRand(0,200,50);
+    return{type:'C',fudosan,loan,yokin,taisyoku,sep};
+  }else if(type===3){
+    // Type D: 児童扶養手当
+    const income=mondaiRand(100,400,50);
+    const n=Math.floor(Math.random()*3)+1;
+    const youiku=mondaiRand(2,8,1);
+    const birthYear=mondaiRand(2015,2022,1);
+    const birthMonth=mondaiRand(1,12,1);
+    return{type:'D',income,n,youiku,birthYear,birthMonth};
+  }else if(type===4){
+    // Type E: 損益分岐点
+    const income=mondaiRand(150,350,50);
+    const konin=mondaiRand(5,15,1);
+    const youiku=mondaiRand(3,10,1);
+    const n=Math.floor(Math.random()*2)+1;
+    const birthYear=mondaiRand(2016,2022,1);
+    const birthMonth=mondaiRand(1,12,1);
+    return{type:'E',income,konin,youiku,n,birthYear,birthMonth};
+  }else{
+    // Type F: 養育費（自営業者）
+    const jiSal=mondaiRand(200,600,50);
+    const eeSal=mondaiRand(0,400,50);
+    const age=mondaiAge();
+    return{type:'F',jiSal,eeSal,age};
+  }
+}
+
+function mondaiRenderQuestion(prob){
+  if(prob.type==='A'){
+    const childDesc=prob.ages.map((a,i)=>`第${i+1}子（${a}歳）`).join('、');
+    return `義務者（給与所得者）年収 <strong>${prob.obSal}万円</strong>、権利者（給与所得者）年収 <strong>${prob.eeSal}万円</strong>、子は ${childDesc}（計${prob.ages.length}人）。<br><br>婚姻費用の月額目安はいくらか。`;
+  }else if(prob.type==='B'){
+    return `義務者（給与所得者）年収 <strong>${prob.obSal}万円</strong>、権利者（給与所得者）年収 <strong>${prob.eeSal}万円</strong>、子は ${prob.age1}歳と${prob.age2}歳の2人。<br><br>養育費の月額目安はいくらか。`;
+  }else if(prob.type==='C'){
+    return `共有財産：預金 <strong>${prob.yokin}万円</strong>、自宅（査定額 <strong>${prob.fudosan}万円</strong>・ローン残高 <strong>${prob.loan}万円</strong>）、退職金（婚姻中相当分）<strong>${prob.taisyoku}万円</strong>。夫の特有財産（婚前預金）<strong>${prob.sep}万円</strong>。50:50分与。<br><br>① 自宅純資産はいくらか。② 分与対象純財産はいくらか。③ 各自の取得分はいくらか。`;
+  }else if(prob.type==='D'){
+    const childDesc=`子${prob.n}人（末子${prob.birthYear}年${prob.birthMonth}月生まれ）`;
+    return `権利者の年収 <strong>${prob.income}万円</strong>、${childDesc}。養育費 <strong>${prob.youiku}万円/月</strong>受領中。<br><br>本年の児童扶養手当の月額はいくらか。支給区分も答えよ。`;
+  }else if(prob.type==='E'){
+    const childDesc=`子${prob.n}人・末子${prob.birthYear}年${prob.birthMonth}月生まれ`;
+    return `権利者年収 <strong>${prob.income}万円</strong>（${childDesc}）。婚姻費用 <strong>${prob.konin}万円/月</strong>、今すぐ離婚した場合の養育費 <strong>${prob.youiku}万円/月</strong>。<br><br>① 児童扶養手当の月額はいくらか ② 今すぐ離婚した場合の月収受取総額は ③ 婚姻継続との月額差はいくらか`;
+  }else{
+    return `義務者（自営業者・課税所得 <strong>${prob.jiSal}万円</strong>）、権利者（給与所得者・年収 <strong>${prob.eeSal}万円</strong>）、子は ${prob.age}歳。<br><br>養育費の月額目安はいくらか。`;
+  }
+}
+
+function mondaiRenderAnswer(prob){
+  if(prob.type==='A'){
+    const ob=calcBaseIncome('employee',prob.obSal,0,0);
+    const ee=calcBaseIncome('employee',prob.eeSal,0,0);
+    const a=ob.baseIncome,b=ee.baseIncome;
+    const cs=prob.ages.reduce((t,ag)=>t+childIndex(ag),0);
+    const ei=100+cs,oi=100;
+    const ann=(a+b)*ei/(ei+oi)-b;
+    const mon=ann/12;
+    const childRows=prob.ages.map((ag,i)=>`第${i+1}子（${ag}歳）: 指数${childIndex(ag)}`).join('<br>');
+    return `<div class="quiz-step"><strong>① 基礎収入を計算</strong><br>
+<span class="quiz-formula">義務者基礎収入 a = ${prob.obSal}万 × ${ob.rate}% = ${a.toFixed(2)}万円</span>
+<span class="quiz-formula">権利者基礎収入 b = ${prob.eeSal}万 × ${ee.rate}% = ${b.toFixed(2)}万円</span></div>
+<div class="quiz-step"><strong>② 子の生活費指数</strong><br>
+<span class="quiz-formula">${childRows}<br>指数合計 α = ${cs}</span></div>
+<div class="quiz-step"><strong>③ 婚姻費用（年額）の計算</strong><br>
+<span class="quiz-formula">年額 = (a + b) × 権利者側指数 ÷ (権利者側指数 + 義務者側指数) − b<br>
+= (${a.toFixed(2)} + ${b.toFixed(2)}) × ${ei} ÷ (${ei} + ${oi}) − ${b.toFixed(2)}<br>
+= ${ann.toFixed(2)}万円</span></div>
+<div class="quiz-step"><strong>④ 月額 = 年額 ÷ 12</strong><br>
+<span class="quiz-formula">${ann.toFixed(2)} ÷ 12 = ${mon.toFixed(2)}万円</span></div>
+<div class="quiz-answer-final">月額婚姻費用の目安：約${fmtEn(mon)}</div>`;
+
+  }else if(prob.type==='B'){
+    const ob=calcBaseIncome('employee',prob.obSal,0,0);
+    const eeRaw=calcBaseIncome('employee',prob.eeSal,0,0);
+    let a=ob.baseIncome;let b=eeRaw.baseIncome;
+    const corr=b>a;if(corr)b=a;
+    const ages=[prob.age1,prob.age2];
+    const cs=ages.reduce((t,ag)=>t+childIndex(ag),0);
+    const c=a*cs/(100+cs);
+    const ann=c*a/(a+b);
+    const mon=ann/12;
+    const childRows=ages.map((ag,i)=>`第${i+1}子（${ag}歳）: 指数${childIndex(ag)}`).join('<br>');
+    return `<div class="quiz-step"><strong>① 基礎収入を計算</strong><br>
+<span class="quiz-formula">義務者基礎収入 a = ${prob.obSal}万 × ${ob.rate}% = ${ob.baseIncome.toFixed(2)}万円</span>
+<span class="quiz-formula">権利者基礎収入 b = ${prob.eeSal}万 × ${eeRaw.rate}% = ${eeRaw.baseIncome.toFixed(2)}万円${corr?' → b > a のため b = a = '+a.toFixed(2)+'万円 に補正':''}</span></div>
+<div class="quiz-step"><strong>② 子の生活費指数</strong><br>
+<span class="quiz-formula">${childRows}<br>指数合計 α = ${cs}</span></div>
+<div class="quiz-step"><strong>③ 子の生活費 c の計算</strong><br>
+<span class="quiz-formula">c = a × α ÷ (100 + α) = ${a.toFixed(2)} × ${cs} ÷ (100 + ${cs}) = ${c.toFixed(2)}万円</span></div>
+<div class="quiz-step"><strong>④ 養育費（年額）の計算</strong><br>
+<span class="quiz-formula">年額 = c × a ÷ (a + b) = ${c.toFixed(2)} × ${a.toFixed(2)} ÷ (${a.toFixed(2)} + ${b.toFixed(2)}) = ${ann.toFixed(2)}万円</span></div>
+<div class="quiz-step"><strong>⑤ 月額 = 年額 ÷ 12</strong><br>
+<span class="quiz-formula">${ann.toFixed(2)} ÷ 12 = ${mon.toFixed(2)}万円</span></div>
+<div class="quiz-answer-final">月額養育費の目安：約${fmtEn(mon)}</div>`;
+
+  }else if(prob.type==='C'){
+    const {fudosan,loan,yokin,taisyoku,sep}=prob;
+    const jidanSuisan=fudosan-loan;
+    const jidanForCalc=Math.max(0,jidanSuisan);
+    const kyodoFuSai=jidanSuisan<0?Math.abs(jidanSuisan):0;
+    const kyodoZaisan=yokin+jidanForCalc+taisyoku;
+    const junZaisan=kyodoZaisan-kyodoFuSai-sep;
+    const kakuJibun=junZaisan*0.5;
+    return `<div class="quiz-step"><strong>① 自宅純資産</strong><br>
+<span class="quiz-formula">自宅純資産 = 査定額 − ローン残高 = ${fudosan}万 − ${loan}万 = ${jidanSuisan}万円${jidanSuisan<0?' （オーバーローン）':''}</span></div>
+<div class="quiz-step"><strong>② 共有財産合計・共同負債</strong><br>
+<span class="quiz-formula">共有財産 = 預金${yokin}万 + 自宅純資産${jidanForCalc}万 + 退職金${taisyoku}万 = ${kyodoZaisan}万円</span>
+${kyodoFuSai>0?`<span class="quiz-formula">共同負債（オーバーローン分）= ${kyodoFuSai}万円</span>`:''}
+</div>
+<div class="quiz-step"><strong>③ 分与対象純財産 = 共有財産 − 共同負債 − 夫の特有財産</strong><br>
+<span class="quiz-formula">${kyodoZaisan}万 − ${kyodoFuSai}万 − ${sep}万 = ${junZaisan}万円</span></div>
+<div class="quiz-step"><strong>④ 各自の取得分（50%）</strong><br>
+<span class="quiz-formula">各自 = ${junZaisan}万 × 50% = ${kakuJibun}万円</span></div>
+<div class="quiz-answer-final">自宅純資産：${jidanSuisan}万円 / 分与対象純財産：${junZaisan}万円 / 各自：${kakuJibun}万円</div>`;
+
+  }else if(prob.type==='D'){
+    const {income,n,youiku,birthYear,birthMonth}=prob;
+    const kyuShotoku=brKyuyoShotoku(income);
+    const youikuNen=youiku*12;
+    const jidoShotokuVal=brJidoShotoku(kyuShotoku,youikuNen);
+    const jidoLims=brJidoLimits(n);
+    const jidoRes=brJidoAmount(jidoShotokuVal,n);
+    const kyuLabel={full:'全部支給',partial:'一部支給',none:'支給停止'};
+    const incomeDeduct=income-kyuShotoku;
+    const kyuyoTierStr=income<=162.5?`年収162.5万以下：控除55万`:
+      income<=180?`年収162.5〜180万：控除=年収×40%-10万`:
+      income<=360?`年収180〜360万：控除=年収×30%+8万`:
+      income<=660?`年収360〜660万：控除=年収×20%+44万`:
+      income<=850?`年収660〜850万：控除=年収×10%+110万`:
+      `年収850万超：控除195万`;
+    return `<div class="quiz-step"><strong>① 給与所得を計算（給与所得控除）</strong><br>
+<span class="quiz-formula">${kyuyoTierStr}<br>給与所得 = ${income}万 − ${incomeDeduct.toFixed(2)}万 = ${kyuShotoku.toFixed(2)}万円</span></div>
+<div class="quiz-step"><strong>② 児童扶養手当上の所得額</strong><br>
+<span class="quiz-formula">所得額 = 給与所得(${kyuShotoku.toFixed(2)}万) + 養育費年額×80%(${(youikuNen*0.8).toFixed(2)}万) − 18万（10万+8万控除）<br>= ${jidoShotokuVal.toFixed(2)}万円</span></div>
+<div class="quiz-step"><strong>③ 所得制限限度額との比較（子${n}人）</strong><br>
+<span class="quiz-formula">全部支給限度額：${jidoLims.full}万円 / 一部支給限度額：${jidoLims.partial}万円<br>所得額 ${jidoShotokuVal.toFixed(2)}万円 → ${jidoRes.kyu==='full'?'全部支給限度額未満':jidoRes.kyu==='partial'?'一部支給限度額未満':'一部支給限度額以上（支給停止）'}</span></div>
+<div class="quiz-step"><strong>④ 月額の計算</strong><br>
+<span class="quiz-formula">${jidoRes.kyu==='full'?`全部支給：48,050円 + ${n>1?`(${n}-1)人 × 11,350円 = ${((n-1)*11350).toLocaleString('ja-JP')}円`:'追加なし（子1人）'}`:jidoRes.kyu==='partial'?`一部支給（所得額と限度額の差に基づく逓減計算）`:`支給停止（所得額が限度額以上）`}</span></div>
+<div class="quiz-answer-final">月額：${jidoRes.amount.toLocaleString('ja-JP')}円（${kyuLabel[jidoRes.kyu]}）</div>`;
+
+  }else if(prob.type==='E'){
+    const {income,konin,youiku,n,birthYear,birthMonth}=prob;
+    const kyuShotoku=brKyuyoShotoku(income);
+    const youikuNen=youiku*12;
+    const jidoShotokuVal=brJidoShotoku(kyuShotoku,youikuNen);
+    const jidoRes=brJidoAmount(jidoShotokuVal,n);
+    const jidoAmt=jidoRes.amount;
+    const jidoLims=brJidoLimits(n);
+    const kyuLabel={full:'全部支給',partial:'一部支給',none:'支給停止'};
+    const divorceTotal=youiku*10000+jidoAmt;
+    const monthlyDiff=divorceTotal-konin*10000;
+    const diffSign=monthlyDiff>=0?'+':'';
+    const incomeDeduct=income-kyuShotoku;
+    return `<div class="quiz-step"><strong>① 児童扶養手当の計算</strong><br>
+<span class="quiz-formula">給与所得 = ${income}万 − ${incomeDeduct.toFixed(2)}万 = ${kyuShotoku.toFixed(2)}万円</span>
+<span class="quiz-formula">所得額 = ${kyuShotoku.toFixed(2)}万 + 養育費${youikuNen}万×80% − 18万 = ${jidoShotokuVal.toFixed(2)}万円</span>
+<span class="quiz-formula">限度額（子${n}人）: 全部支給${jidoLims.full}万 / 一部支給${jidoLims.partial}万 → ${kyuLabel[jidoRes.kyu]}</span>
+<span class="quiz-formula">手当月額 = ${jidoAmt.toLocaleString('ja-JP')}円</span></div>
+<div class="quiz-step"><strong>② 離婚した場合の月収受取総額</strong><br>
+<span class="quiz-formula">養育費 + 手当 = ${youiku}万円×10,000 + ${jidoAmt.toLocaleString('ja-JP')}円 = ${divorceTotal.toLocaleString('ja-JP')}円/月</span></div>
+<div class="quiz-step"><strong>③ 婚姻継続との月額差</strong><br>
+<span class="quiz-formula">離婚合計 − 婚姻費用 = ${divorceTotal.toLocaleString('ja-JP')}円 − ${(konin*10000).toLocaleString('ja-JP')}円 = ${diffSign}${monthlyDiff.toLocaleString('ja-JP')}円</span></div>
+<div class="quiz-answer-final">① 手当 ${jidoAmt.toLocaleString('ja-JP')}円（${kyuLabel[jidoRes.kyu]}） ② 離婚合計 ${divorceTotal.toLocaleString('ja-JP')}円/月 ③ 差額 ${diffSign}${monthlyDiff.toLocaleString('ja-JP')}円</div>`;
+
+  }else{
+    // Type F: 養育費（自営業者）
+    const ob=calcBaseIncome('self',prob.jiSal,0,0);
+    const eeRaw=calcBaseIncome('employee',prob.eeSal,0,0);
+    let a=ob.baseIncome;let b=eeRaw.baseIncome;
+    const corr=b>a;if(corr)b=a;
+    const idx=childIndex(prob.age);
+    const c=a*idx/(100+idx);
+    const ann=c*a/(a+b);
+    const mon=ann/12;
+    return `<div class="quiz-step"><strong>① 基礎収入を計算（事業所得者）</strong><br>
+<span class="quiz-formula">義務者基礎収入 a（自営）= ${prob.jiSal}万 × ${ob.rate}% = ${ob.baseIncome.toFixed(2)}万円</span>
+<span class="quiz-formula">権利者基礎収入 b（給与）= ${prob.eeSal}万 × ${eeRaw.rate}% = ${eeRaw.baseIncome.toFixed(2)}万円${corr?' → b > a のため b = a = '+a.toFixed(2)+'万円 に補正':''}</span></div>
+<div class="quiz-step"><strong>② 子の生活費指数</strong><br>
+<span class="quiz-formula">${prob.age}歳 → 指数 ${idx}</span></div>
+<div class="quiz-step"><strong>③ 子の生活費 c の計算</strong><br>
+<span class="quiz-formula">c = a × 指数 ÷ (100 + 指数) = ${a.toFixed(2)} × ${idx} ÷ (100 + ${idx}) = ${c.toFixed(2)}万円</span></div>
+<div class="quiz-step"><strong>④ 養育費（年額）の計算</strong><br>
+<span class="quiz-formula">年額 = c × a ÷ (a + b) = ${c.toFixed(2)} × ${a.toFixed(2)} ÷ (${a.toFixed(2)} + ${b.toFixed(2)}) = ${ann.toFixed(2)}万円</span></div>
+<div class="quiz-step"><strong>⑤ 月額 = 年額 ÷ 12</strong><br>
+<span class="quiz-formula">${ann.toFixed(2)} ÷ 12 = ${mon.toFixed(2)}万円</span></div>
+<div class="quiz-answer-final">月額養育費の目安：約${fmtEn(mon)}</div>`;
+  }
+}
+
+function mondaiNext(){
+  mondaiCurrent=mondaiGenProblem();
+  const typeNames={A:'A=婚姻費用（子2人）',B:'B=養育費（子2人）',C:'C=財産分与',D:'D=児童扶養手当',E:'E=損益分岐点',F:'F=養育費（自営）'};
+  const cardEl=document.getElementById('mondai-card');
+  cardEl.style.display='block';
+  cardEl.innerHTML=`<div class="quiz-card">
+  <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;margin-bottom:8px">問題タイプ：${typeNames[mondaiCurrent.type]}</div>
+  <div class="quiz-question">${mondaiRenderQuestion(mondaiCurrent)}</div>
+  <div>
+    <button class="quiz-btn quiz-btn-show" onclick="mondaiShowAnswer()">解答を見る</button>
+    <button class="quiz-btn quiz-btn-next" onclick="mondaiNext()">次の問題</button>
+  </div>
+  <div class="quiz-answer" id="mondai-answer"></div>
+</div>`;
+}
+
+function mondaiShowAnswer(){
+  const ansEl=document.getElementById('mondai-answer');
+  if(!ansEl||!mondaiCurrent)return;
+  ansEl.innerHTML=mondaiRenderAnswer(mondaiCurrent);
+  ansEl.classList.add('show');
+}
 </script>
 </body>
 </html>

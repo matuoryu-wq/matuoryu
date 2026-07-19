@@ -1,0 +1,2636 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>交通事故損害計算ツール</title>
+  <style>
+    :root{--primary:#7C5C3E;--primary-hover:#5D4230;--primary-light:#FAF3EC;--success:#4D7C5A;--success-light:#EEF7F1;--success-border:#95C4A4;--warning:#B07A3C;--warning-light:#FBF5EC;--danger:#B84040;--danger-light:#FEF2F2;--border:#DDD5C8;--bg:#F2EDE4;--card:#FEFCF9;--text:#2C1F14;--text-muted:#7A6555;--radius:10px;--shadow:0 1px 4px rgba(100,60,20,.10)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+    .header{background:linear-gradient(135deg,#3D2B1F,#7C5C3E);color:#fff;padding:18px 20px;text-align:center}
+    .header h1{font-size:20px;font-weight:700}.header p{font-size:12px;opacity:.8;margin-top:3px}
+    .tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:10}
+    .tab-btn{flex:1;min-width:80px;padding:13px 6px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+    .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-light)}
+    .container{max-width:720px;margin:0 auto;padding:16px 12px}
+    .panel{display:none}.panel.active{display:block}
+    .info-banner{background:var(--primary-light);border:1px solid #C8A882;border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .info-banner p{font-size:13px;color:#5D3A1A;flex:1;line-height:1.75}
+    .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+    .card-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--text)}
+    .help-btn{border:1px solid #C8A882;border-radius:20px;background:#FAF3EC;color:var(--text-muted);cursor:pointer;font-size:11px;font-weight:600;flex-shrink:0;margin-left:auto;padding:3px 9px;white-space:nowrap;transition:all .2s}
+    .help-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    @media(max-width:480px){.form-row{grid-template-columns:1fr}}
+    .form-group{display:flex;flex-direction:column;gap:4px}
+    label{font-size:12px;font-weight:600;color:var(--text-muted)}
+    .input-wrap{display:flex;align-items:center;gap:6px}.input-wrap input,.input-wrap select{flex:1}
+    .unit{font-size:13px;color:var(--text-muted);white-space:nowrap}
+    input[type=number],input[type=text],select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:14px;color:var(--text);background:#fff;transition:border-color .2s;-webkit-appearance:none}
+    input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(124,92,62,.12)}
+    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237A6555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:30px}
+    .extra-fields{background:#F7F0E8;border-radius:8px;padding:12px;margin-top:8px;border:1px dashed var(--border)}
+    .btn-calc{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:4px}
+    .btn-calc:hover{background:var(--primary-hover)}
+    .btn-secondary{padding:9px 16px;background:#fff;color:var(--primary);border:1.5px solid var(--primary);border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+    .btn-secondary:hover{background:var(--primary-light)}
+    .result-box{background:var(--success-light);border:1.5px solid var(--success-border);border-radius:var(--radius);padding:20px;margin-bottom:14px}
+    .result-box.warning{background:var(--warning-light);border-color:#F0C070}
+    .result-label{font-size:13px;font-weight:600;color:var(--success);margin-bottom:2px}
+    .result-box.warning .result-label{color:var(--warning)}
+    .result-amount{font-size:32px;font-weight:800;color:var(--success);line-height:1.1}
+    .result-box.warning .result-amount{color:var(--warning)}
+    .result-sub{font-size:13px;color:#2D5E3A;margin-top:6px}
+    .result-box.warning .result-sub{color:#7A4A1E}
+    .formula-header{background:#EDE5D8;border:1px solid #C8A882;border-radius:8px;padding:12px 14px;margin-bottom:14px}
+    .formula-header .fh-title{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+    .formula-header .fh-eq{font-family:'Courier New',monospace;font-size:12px;color:var(--primary);font-weight:700;margin-bottom:4px;word-break:break-all;line-height:2}
+    .formula-header .fh-vars{font-size:11.5px;color:var(--text-muted);line-height:2.1;margin-top:8px;border-top:1px dashed #C8A882;padding-top:8px}
+    .breakdown{background:#F7F0E8;border-radius:8px;border:1px solid var(--border);padding:14px;margin-bottom:14px}
+    .breakdown-title{font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
+    .bk-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px dashed #DDD5C8;gap:8px;font-size:13px}
+    .bk-row:last-child{border-bottom:none}
+    .bk-key{color:var(--text-muted);flex:1}.bk-val{font-weight:700;white-space:nowrap;color:var(--text)}
+    .bk-total{display:flex;justify-content:space-between;align-items:center;padding:8px 0 4px;gap:8px;font-size:14px;font-weight:700;border-top:2px solid var(--primary);margin-top:6px}
+    .bk-total .bk-key{color:var(--primary)}.bk-total .bk-val{color:var(--primary);font-size:16px}
+    .bk-formula{font-size:11.5px;color:var(--text-muted);background:#EDE5D8;padding:6px 10px;border-radius:5px;font-family:'Courier New',monospace;margin-top:2px;margin-bottom:6px;line-height:1.8;word-break:break-all}
+    .bk-desc{font-size:12px;color:var(--text);padding:6px 8px;margin:4px 0 10px;background:#fff;border-radius:5px;border-left:3px solid #C8A882;line-height:1.75}
+    .note{font-size:12px;color:#7A4A1E;background:#FBF5EC;border:1px solid #F0C070;border-radius:7px;padding:8px 12px;margin-top:8px;display:flex;gap:6px}
+    .note-icon{flex-shrink:0}
+    .err-msg{background:var(--danger-light);border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;color:var(--danger);font-size:13px;margin-bottom:12px}
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:var(--card);border-radius:14px;padding:22px;max-width:500px;width:100%;margin:auto;position:relative;border:1px solid var(--border)}
+    .modal-close{position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:20px;color:var(--text-muted);padding:4px}
+    .modal-title{font-size:16px;font-weight:700;margin-bottom:14px;padding-right:30px;color:var(--primary)}
+    .modal-body{font-size:13px;line-height:1.75}
+    .modal-body h4{font-size:13px;font-weight:700;margin:12px 0 5px;color:var(--text)}
+    .modal-body p{margin-bottom:8px}
+    .modal-body ol,.modal-body ul{padding-left:16px;margin-bottom:8px}
+    .modal-body li{margin-bottom:5px}
+    .help-note{background:#FBF5EC;border-left:3px solid #C8A882;padding:8px 12px;border-radius:0 6px 6px 0;margin:10px 0;font-size:12px}
+    .modal-body table{width:100%;border-collapse:collapse;margin:8px 0}
+    .modal-body th,.modal-body td{padding:6px 8px;border:1px solid var(--border);font-size:12px}
+    .modal-body th{background:var(--primary-light);color:var(--primary)}
+    .section-toggle{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+    .toggle-btn{padding:9px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+    .toggle-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .case-section{display:none}.case-section.active{display:block}
+    .sec-title{font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
+    .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    /* Reference tables */
+    .ref-table-wrap{overflow-x:auto;margin-bottom:14px}
+    .ref-table{border-collapse:collapse;font-size:12px;min-width:500px}
+    .ref-table th{background:#EDE5D8;color:var(--primary);padding:7px 10px;border:1px solid #C8A882;font-weight:700;text-align:center}
+    .ref-table td{padding:7px 10px;border:1px solid var(--border);text-align:center;vertical-align:middle}
+    .ref-table tr:nth-child(even) td{background:#F7F0E8}
+    .ref-table td.highlight{background:#FEF3C7;font-weight:700;color:#92400E;border:2px solid #F59E0B}
+    .ref-table td.row-header{font-weight:600;color:var(--text-muted);text-align:left;background:#F7F0E8}
+    /* Glossary */
+    .gloss-item{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+    .gloss-header{padding:12px 16px;background:var(--card);font-weight:700;font-size:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+    .gloss-header:hover{background:var(--primary-light)}
+    .gloss-body{display:none;padding:12px 16px;background:#FEFCF9;font-size:13px;line-height:1.75;border-top:1px solid var(--border)}
+    .gloss-body.open{display:block}
+    /* Quiz */
+    .quiz-question{background:#EDE5D8;border-radius:var(--radius);padding:16px;margin-bottom:14px;font-size:14px;line-height:1.75}
+    .quiz-answer{display:none;background:var(--success-light);border:1.5px solid var(--success-border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+    .quiz-answer.open{display:block}
+    .quiz-step{font-size:13px;line-height:1.85;margin-bottom:8px}
+    .mode-btn{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--text-muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+    .mode-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .doc-box{background:#EEF7F1;border:1px solid var(--success-border);border-radius:7px;padding:8px 12px;margin-top:10px;font-size:12px;color:#2D5E3A;line-height:1.65}
+    .ins-box{background:#FBF5EC;border:1px solid #F0C070;border-radius:7px;padding:8px 12px;margin-top:8px;font-size:12px;color:#7A4A1E;line-height:1.65}
+    .btn-add{padding:7px 14px;background:#fff;color:var(--primary);border:1.5px dashed var(--primary);border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+    .btn-add:hover{background:var(--primary-light)}
+    .quiz-formula{font-family:'Courier New',monospace;font-size:12px;background:#EDE5D8;padding:8px 12px;border-radius:6px;margin:6px 0;line-height:1.8;word-break:break-all}
+    .chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+    .chip-light{background:#DBEAFE;color:#1D4ED8}
+    .chip-heavy{background:#FEE2E2;color:#991B1B}
+    .chip-grade{background:#EDE5D8;color:var(--primary)}
+    .leibniz-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+    .lz-row{display:flex;justify-content:space-between;padding:5px 10px;border:1px solid var(--border);font-size:13px}
+    .lz-row:nth-child(even){background:#F7F0E8}
+    .lz-yr{font-weight:600;color:var(--text-muted)}
+    .lz-val{font-weight:700}
+    .cat-btn{padding:5px 12px;border:1.5px solid var(--primary);border-radius:20px;background:#fff;color:var(--primary);font-size:12px;cursor:pointer;font-weight:600;transition:.15s}
+    .cat-btn.active{background:var(--primary);color:#fff}
+    .cat-btn:hover:not(.active){background:var(--primary-light,#e8f0ea)}
+  </style>
+</head>
+<body>
+<header class="header">
+  <h1>交通事故 損害計算ツール</h1>
+  <p>弁護士基準（裁判基準）による損害賠償額算定 — 新人弁護士・一般の方向け教育ツール</p>
+</header>
+<nav class="tabs">
+  <button class="tab-btn active" onclick="switchTab('keisan',this)">損害計算</button>
+  <button class="tab-btn" onclick="switchTab('shiryo',this)">資料</button>
+  <button class="tab-btn" onclick="switchTab('quiz',this)">計算問題</button>
+</nav>
+<div class="container">
+
+<!-- ===== Tab 1: 損害計算 ===== -->
+<div id="panel-keisan" class="panel active">
+  <div class="info-banner">
+    <p>事故の種別を選んで各項目を入力してください。弁護士基準（裁判基準）で損害額を計算します。</p>
+    <button class="help-btn" onclick="showHelp('overview')">詳しく</button>
+  </div>
+
+  <!-- 共通入力 -->
+  <div class="card">
+    <div class="card-title">算定基準（弁護士基準の地域差） <button class="help-btn" onclick="showHelp('book_choice')">詳しく</button></div>
+    <div class="section-toggle">
+      <button class="toggle-btn active" id="book-btn-aka" onclick="setBook('aka')">赤い本（東京基準）</button>
+      <button class="toggle-btn" id="book-btn-midori" onclick="setBook('midori')">緑本（大阪基準）</button>
+    </div>
+    <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>入通院慰謝料・後遺障害慰謝料（弁護士基準）の金額表を切り替えます。それ以外の計算は共通です。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">事故種別・基本情報</div>
+    <div class="section-toggle">
+      <button class="toggle-btn active" onclick="setCaseType('injury',this)">傷害のみ（後遺障害なし）</button>
+      <button class="toggle-btn" onclick="setCaseType('sequela',this)">後遺障害あり</button>
+      <button class="toggle-btn" onclick="setCaseType('death',this)">死亡事故</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>事故発生日</label>
+        <input type="date" id="c-jiko-date" onchange="calcTreatPeriod()">
+      </div>
+      <div class="form-group">
+        <label>症状固定日 <button class="help-btn" onclick="showHelp('shojoKotei')">詳しく</button></label>
+        <input type="date" id="c-kotei-date" onchange="calcTreatPeriod()">
+      </div>
+    </div>
+    <div id="c-period-display" style="font-size:13px;color:var(--text-muted);margin-bottom:10px;min-height:16px"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>被害者の過失割合 <button class="help-btn" onclick="showHelp('kashitsu')">詳しく</button></label>
+        <div class="input-wrap"><input type="number" id="c-fault" value="0" min="0" max="100"><span class="unit">%</span></div>
+      </div>
+      <div class="form-group">
+        <label>既払保険金（自賠責・任意保険）<button class="help-btn" onclick="showHelp('kiharai')">詳しく</button></label>
+        <div class="input-wrap"><input type="number" id="c-paid" placeholder="0" min="0"><span class="unit">万円</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 傷害損害 (shown for all case types) -->
+  <div id="section-injury" class="case-section active">
+    <div class="card">
+      <div class="card-title">治療費 <button class="help-btn" onclick="showHelp('chiryohi')">詳しく</button></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="mode-btn active" id="t-mode-total" onclick="setTreatMode('total')">合計入力</button>
+        <button class="mode-btn" id="t-mode-monthly" onclick="setTreatMode('monthly')">月別入力（病院名別）</button>
+      </div>
+      <div id="treat-total-mode">
+        <div class="form-group">
+          <label>治療費合計（万円）</label>
+          <div class="input-wrap"><input type="number" id="i-chiryohi" placeholder="例：50" min="0" oninput="syncTreatTotal()"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <div id="treat-monthly-mode" style="display:none">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px">
+          <thead><tr><th style="text-align:left;padding:4px 6px;background:#EDE5D8;border-bottom:2px solid #C8A882">月</th><th style="text-align:left;padding:4px 6px;background:#EDE5D8;border-bottom:2px solid #C8A882">病院・医療機関名</th><th style="text-align:right;padding:4px 6px;background:#EDE5D8;border-bottom:2px solid #C8A882">金額（万円）</th><th style="padding:4px;background:#EDE5D8;border-bottom:2px solid #C8A882"></th></tr></thead>
+          <tbody id="treat-rows"></tbody>
+        </table>
+        <button class="btn-add" onclick="addTreatRow()">＋ 月・病院を追加</button>
+        <div style="margin-top:10px;font-weight:700;font-size:14px">合計: <span id="treat-monthly-total" style="color:var(--primary)">0万円</span></div>
+      </div>
+      <div class="doc-box">📄 必要書類: 診療報酬明細書（各医療機関の右下「上記金額」欄）、領収書 ／ ⚠️ 整骨院通院は医師の指示・同意書が必要</div>
+      <div class="ins-box">🏥 保険: 自賠責傷害限度120万円（治療費・休業損害・慰謝料等の合計上限）。健康保険での受診も可能。整骨院等への任意保険一括払いには注意が必要。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">入院雑費 <button class="help-btn" onclick="showHelp('nyuinzappi')">詳しく</button></div>
+      <div class="form-group">
+        <label>入院日数</label>
+        <div class="input-wrap"><input type="number" id="i-nyuindays" placeholder="例：30" min="0"><span class="unit">日</span></div>
+      </div>
+      <div class="bk-formula" style="margin-top:8px">入院雑費 ＝ 入院日数 × 1,500円（弁護士基準）</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">通院交通費 <button class="help-btn" onclick="showHelp('kotsuhi')">詳しく</button></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="mode-btn active" id="kt-mode-total" onclick="setKotsuMode('total')">総額入力</button>
+        <button class="mode-btn" id="kt-mode-calc" onclick="setKotsuMode('calc')">計算入力</button>
+      </div>
+      <div id="kotsu-total-mode">
+        <div class="form-group">
+          <label>通院交通費合計（万円）</label>
+          <div class="input-wrap"><input type="number" id="i-kotsuhi" placeholder="例：2" min="0"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <div id="kotsu-calc-mode" style="display:none">
+        <div class="form-group" style="margin-bottom:10px">
+          <label>交通手段</label>
+          <select id="kt-type" onchange="updateKotsuCalc()">
+            <option value="public">公共交通機関（電車・バス）</option>
+            <option value="car">自家用車</option>
+            <option value="taxi">タクシー</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group" id="kt-fare-group">
+            <label id="kt-fare-label">往復運賃（円）</label>
+            <div class="input-wrap"><input type="number" id="kt-fare" placeholder="例：820" min="0" oninput="calcKotsuAuto()"><span class="unit">円</span></div>
+          </div>
+          <div class="form-group" id="kt-dist-group" style="display:none">
+            <label>片道距離（km）</label>
+            <div class="input-wrap"><input type="number" id="kt-dist" placeholder="例：5" min="0" step="0.1" oninput="calcKotsuAuto()"><span class="unit">km</span></div>
+          </div>
+          <div class="form-group">
+            <label>通院日数（実日数）</label>
+            <div class="input-wrap"><input type="number" id="kt-days" placeholder="例：60" min="0" oninput="calcKotsuAuto()"><span class="unit">日</span></div>
+          </div>
+        </div>
+        <div id="kt-result" style="font-size:13px;color:var(--primary);font-weight:700;margin-top:6px"></div>
+        <input type="hidden" id="kt-calc-val" value="0">
+      </div>
+      <div class="doc-box">📄 必要書類: 交通費領収書（公共交通）、通院記録（通院日の確認） ／ 自家用車は距離計算のため領収書不要</div>
+      <div class="ins-box">🏥 タクシーは原則実費だが、身体障害・公共交通不便地域等、必要性が認められる場合に限る。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">休業損害 <button class="help-btn" onclick="showHelp('kyugyо')">詳しく</button></div>
+      <div class="form-group" style="margin-bottom:10px">
+        <label>職業区分</label>
+        <select id="i-job" onchange="updateJobFields()">
+          <option value="employee">給与所得者</option>
+          <option value="self">自営業者</option>
+          <option value="housewife">家事従事者（専業主婦・主夫）</option>
+          <option value="other">その他・なし</option>
+        </select>
+      </div>
+      <div id="i-job-employee" class="extra-fields">
+        <div class="bk-desc">日額 ＝ 事故前3ヶ月の収入合計 ÷ 稼働日数（または ÷ 90）</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>事故前3ヶ月の収入合計（万円）</label>
+            <div class="input-wrap"><input type="number" id="i-emp-income" placeholder="例：90" min="0"><span class="unit">万円</span></div>
+          </div>
+          <div class="form-group">
+            <label>稼働日数（空欄の場合90日）</label>
+            <div class="input-wrap"><input type="number" id="i-emp-workdays" placeholder="90" min="1" max="90"><span class="unit">日</span></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>休業日数</label>
+          <div class="input-wrap"><input type="number" id="i-emp-offdays" placeholder="例：30" min="0"><span class="unit">日</span></div>
+        </div>
+      </div>
+      <div id="i-job-self" class="extra-fields" style="display:none">
+        <div class="bk-desc">日額 ＝（確定申告所得金額 ＋ 青色申告特別控除額）÷ 365</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>年間所得（万円）</label>
+            <div class="input-wrap"><input type="number" id="i-self-income" placeholder="例：400" min="0"><span class="unit">万円</span></div>
+          </div>
+          <div class="form-group">
+            <label>休業日数</label>
+            <div class="input-wrap"><input type="number" id="i-self-offdays" placeholder="例：30" min="0"><span class="unit">日</span></div>
+          </div>
+        </div>
+      </div>
+      <div id="i-job-housewife" class="extra-fields" style="display:none">
+        <div class="bk-desc">賃金センサス女性全年齢平均賃金を基礎とします（目安：約410万円 ÷ 365 ≒ 11,233円/日）</div>
+        <div class="form-group">
+          <label>休業日数</label>
+          <div class="input-wrap"><input type="number" id="i-hw-offdays" placeholder="例：30" min="0"><span class="unit">日</span></div>
+        </div>
+      </div>
+      <div id="i-job-other" class="extra-fields" style="display:none">
+        <div class="form-group">
+          <label>休業損害（直接入力・万円）</label>
+          <div class="input-wrap"><input type="number" id="i-other-kyugyo" placeholder="0" min="0"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <div class="doc-box">📄 必要書類: 【給与所得者】休業損害証明書（勤務先作成）・給与明細書3ヶ月分・源泉徴収票 ／ 【自営業者】確定申告書（所得金額①欄＋青色申告特別控除④）・通帳コピー ／ 【主婦・主夫】戸籍謄本・住民票</div>
+      <div class="ins-box">🏥 保険: 自賠責傷害限度120万円内（治療費等と合算）。会社の傷害保険との損益相殺は原則なし（受け取っても請求額から引かれない）。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">付添費 <button class="help-btn" onclick="showHelp('fusoihi')">詳しく</button></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>入院中の近親者付添日数</label>
+          <div class="input-wrap"><input type="number" id="i-fusoi-nyuin" placeholder="例：10" min="0"><span class="unit">日</span></div>
+        </div>
+        <div class="form-group">
+          <label>通院付添日数</label>
+          <div class="input-wrap"><input type="number" id="i-fusoi-tsuin" placeholder="例：5" min="0"><span class="unit">日</span></div>
+        </div>
+      </div>
+      <div class="bk-formula" style="margin-top:8px">付添費 ＝ 入院付添日数 × 6,500円 ＋ 通院付添日数 × 3,300円（近親者付添・弁護士基準）<br>職業的付添人（ヘルパー等）は実費相当</div>
+      <div class="doc-box" style="margin-top:10px">📄 必要書類: 医師の付添必要性証明書・診断書（入院）、付添の事実を示す記録（通院）</div>
+      <div class="ins-box">🏥 保険: 自賠責傷害120万円の範囲内。付添の必要性が医学的に認められることが条件。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">入通院慰謝料 <button class="help-btn" onclick="showHelp('nyutsuin_isharyo')">詳しく</button></div>
+      <div class="form-group" style="margin-bottom:10px">
+        <label>傷病区分</label>
+        <select id="i-injury-type">
+          <option value="light">軽傷（むち打ち・打撲・擦過傷等）</option>
+          <option value="heavy">重傷（骨折・脱臼・手術・内臓損傷等）</option>
+        </select>
+      </div>
+      <div id="muchiuchi-wrap" style="display:none;align-items:flex-start;gap:8px;margin-bottom:10px;background:#F7F0E8;border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+        <input type="checkbox" id="i-muchiuchi" style="margin-top:3px">
+        <label for="i-muchiuchi" style="font-size:12px;font-weight:600;color:var(--text);cursor:pointer">軽度の神経症状（むちうち症）・軽度の打撲/挫創（傷）の場合 → 通常慰謝料の3分の2程度に減額して計算する</label>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>入院期間（ヶ月）— 日数の場合: 日数÷30</label>
+          <div class="input-wrap"><input type="number" id="i-nyuin-months" placeholder="0" min="0" step="0.1"><span class="unit">ヶ月</span></div>
+        </div>
+        <div class="form-group">
+          <label>通院期間（ヶ月）— 日数の場合: 日数÷30</label>
+          <div class="input-wrap"><input type="number" id="i-tsuin-months" placeholder="0" min="0" step="0.1"><span class="unit">ヶ月</span></div>
+        </div>
+      </div>
+      <div id="midori-tsuin-extra" style="display:none">
+        <div class="form-group" style="margin-bottom:4px">
+          <label>実通院日数（実際に通院した日数・任意）</label>
+          <div class="input-wrap"><input type="number" id="i-jitsu-tsuin-days" placeholder="例：40" min="0"><span class="unit">日</span></div>
+        </div>
+        <div class="note" style="margin-top:2px;margin-bottom:10px"><span class="note-icon">ℹ️</span>緑本（大阪基準）では、実通院期間（始期〜終期の日数）と実通院日数を3.5倍した日数を比較し、少ない方を通院期間として計算します。不規則・長期の通院の場合に用います。空欄の場合は入力した通院期間（ヶ月）をそのまま使用します。</div>
+      </div>
+      <div class="formula-header">
+        <div class="fh-title">入通院慰謝料の計算式</div>
+        <div class="fh-eq">慰謝料 ＝ 慰謝料表[通院月数][入院月数]（万円）</div>
+        <div class="fh-vars">端数がある場合: 整数月の値＋（次の月との差額×端数）で日割り計算<br>例: 通院2.4ヶ月（軽傷・入院なし）→ 36 + (53−36)×0.4 = 42.8万円</div>
+      </div>
+      <div class="doc-box">📄 必要書類: 自賠責診断書（入院日数・通院期間・症状固定日）、診療報酬明細書（通院日○印で実日数確認）</div>
+      <div class="ins-box">🏥 保険: 自賠責傷害限度120万円（治療費・休業損害・慰謝料の合計上限）。超過分は任意保険へ請求。入院給付金（生命保険）は損益相殺の対象外。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">車両損害・代車費用</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>修理費（実費・万円）</label>
+          <div class="input-wrap"><input type="number" id="i-sharyo-repair" placeholder="例：30" min="0"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>評価損（修理後の市場価値下落分・万円）</label>
+          <div class="input-wrap"><input type="number" id="i-sharyo-eval" placeholder="例：5" min="0"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label>代車費用（修理期間中・万円）</label>
+        <div class="input-wrap"><input type="number" id="i-sharyo-dasha" placeholder="例：3" min="0"><span class="unit">万円</span></div>
+      </div>
+      <div class="bk-formula">車両損害合計 ＝ 修理費 ＋ 評価損 ＋ 代車費用</div>
+      <div class="doc-box" style="margin-top:10px">📄 必要書類: 修理明細書・見積書・車両価値の証明（中古車査定書等）</div>
+      <div class="ins-box">🏥 保険: 対物賠償（相手任意保険）または車両保険から補償。物的損害は自賠責の対象外。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">損害賠償関係費用</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>診断書取得費用（万円）</label>
+          <div class="input-wrap"><input type="number" id="i-cost-shindan" placeholder="例：0.5" min="0" step="0.1"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>交通事故証明書等（万円）</label>
+          <div class="input-wrap"><input type="number" id="i-cost-shomei" placeholder="例：0.1" min="0" step="0.1"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label>後遺障害診断書作成費用（万円）</label>
+        <div class="input-wrap"><input type="number" id="i-cost-koi-shindan" placeholder="例：0.5" min="0" step="0.1"><span class="unit">万円</span></div>
+      </div>
+      <div class="doc-box" style="margin-top:10px">📄 必要書類: 各証明書・診断書の領収書</div>
+    </div>
+
+    <div class="card" id="card-弁護士費用">
+      <div class="card-title">弁護士費用 <button class="help-btn" onclick="showHelp('bengoshi')">詳しく</button></div>
+      <div class="form-group">
+        <label>弁護士費用を損害として請求する</label>
+        <select id="i-bengoshi">
+          <option value="yes">はい（訴訟の場合：認容額の約10%）</option>
+          <option value="no">いいえ（示談段階・計上しない）</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">遅延損害金 <button class="help-btn" onclick="showHelp('chien')">詳しく</button></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>事故日</label>
+          <input type="date" id="i-accident-date">
+        </div>
+        <div class="form-group">
+          <label>計算基準日（支払日・現在等）</label>
+          <input type="date" id="i-calc-date">
+        </div>
+      </div>
+      <div class="bk-formula">遅延損害金 ＝ 損害額 × 3% × 事故日からの年数（令和2年4月1日以降の事故）</div>
+    </div>
+  </div><!-- end #section-injury -->
+
+  <!-- 後遺障害 section -->
+  <div id="section-sequela" class="case-section" style="display:none">
+    <div class="card">
+      <div class="card-title">後遺障害慰謝料 <button class="help-btn" onclick="showHelp('koi_isharyo')">詳しく</button></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>後遺障害等級</label>
+          <select id="s-grade" onchange="updateGradeFields()">
+            <option value="kaigo1">要介護1級</option>
+            <option value="kaigo2">要介護2級</option>
+            <option value="1">第1級</option>
+            <option value="2">第2級</option>
+            <option value="3">第3級</option>
+            <option value="4">第4級</option>
+            <option value="5">第5級</option>
+            <option value="6">第6級</option>
+            <option value="7">第7級</option>
+            <option value="8">第8級</option>
+            <option value="9">第9級</option>
+            <option value="10">第10級</option>
+            <option value="11">第11級</option>
+            <option value="12">第12級</option>
+            <option value="13">第13級</option>
+            <option value="14">第14級</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>算定基準</label>
+          <select id="s-standard">
+            <option value="bengoshi">弁護士基準（裁判基準）</option>
+            <option value="jibaiseki">自賠責基準</option>
+          </select>
+        </div>
+      </div>
+      <div id="s-grade-display" class="bk-formula"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">後遺障害逸失利益 <button class="help-btn" onclick="showHelp('koi_isshitsu')">詳しく</button></div>
+      <div class="formula-header">
+        <div class="fh-title">後遺障害逸失利益の計算式</div>
+        <div class="fh-eq">逸失利益 ＝ 基礎収入 × 労働能力喪失率 × ライプニッツ係数</div>
+        <div class="fh-vars">就労可能年数 ＝ 67歳 − 症状固定時年齢（上限49年）<br>ライプニッツ係数: 年利3%複利で将来の収入を現在価値に割り引く係数</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>基礎収入（万円/年）<button class="help-btn" onclick="showHelp('kisoshunyuu')">詳しく</button></label>
+          <div class="input-wrap"><input type="number" id="s-income" placeholder="例：500" min="0"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>症状固定時年齢（歳）</label>
+          <div class="input-wrap"><input type="number" id="s-age" placeholder="例：40" min="18" max="66"><span class="unit">歳</span></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>労働能力喪失率（等級から自動設定）</label>
+          <div class="input-wrap"><input type="number" id="s-loss-rate" placeholder="14" min="0" max="100" step="0.1"><span class="unit">%</span></div>
+        </div>
+        <div class="form-group">
+          <label>喪失期間（年）※ 自動計算</label>
+          <div class="input-wrap"><input type="number" id="s-years" placeholder="27" min="0" max="49" readonly style="background:#F7F0E8"><span class="unit">年</span></div>
+        </div>
+      </div>
+      <div id="s-leibniz-display" class="bk-formula">ライプニッツ係数: — （年齢を入力すると自動表示）</div>
+    </div>
+
+    <div id="kaigo-section" style="display:none">
+      <div class="card">
+        <div class="card-title">将来介護費 <button class="help-btn" onclick="showHelp('kaigo')">詳しく</button></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>日額介護費（円/日）</label>
+            <div class="input-wrap"><input type="number" id="s-kaigo-daily" placeholder="例：8000" min="0"><span class="unit">円</span></div>
+          </div>
+          <div class="form-group">
+            <label>平均余命年数（歳）</label>
+            <div class="input-wrap"><input type="number" id="s-kaigo-years" placeholder="例：40" min="0" max="49"><span class="unit">年</span></div>
+          </div>
+        </div>
+        <div class="bk-formula">将来介護費 ＝ 日額 × 365日 × ライプニッツ係数（平均余命年数）</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">将来治療費</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>年額（万円/年）</label>
+          <div class="input-wrap"><input type="number" id="s-future-treat-annual" placeholder="例：12" min="0"><span class="unit">万円</span></div>
+        </div>
+        <div class="form-group">
+          <label>想定年数</label>
+          <div class="input-wrap"><input type="number" id="s-future-treat-years" placeholder="例：10" min="0" max="49"><span class="unit">年</span></div>
+        </div>
+      </div>
+      <div class="bk-formula" style="margin-top:4px">将来治療費 ＝ 年額 × ライプニッツ係数（想定年数）</div>
+      <div class="doc-box" style="margin-top:10px">📄 必要書類: 医師の意見書・診断書（将来治療の必要性・期間の見込み）</div>
+      <div class="ins-box">🏥 保険: 将来分は自賠責の対象外。任意保険への請求が必要。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">器具装具費</div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label>購入費用（実費・万円）— 義足・義手・車椅子・コルセット・補聴器等</label>
+        <div class="input-wrap"><input type="number" id="s-kigu" placeholder="例：30" min="0"><span class="unit">万円</span></div>
+      </div>
+      <div class="bk-formula">器具装具費 ＝ 実費（買い替えサイクルを考慮したライプニッツ係数は別途検討）</div>
+      <div class="doc-box" style="margin-top:10px">📄 必要書類: 医師の必要性証明書・領収書・見積書</div>
+      <div class="ins-box">🏥 保険: 自賠責後遺障害限度額の範囲で請求。任意保険への追加請求が必要な場合も。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">家屋・自動車改造費</div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label>改造費用（実費・万円）— バリアフリー改修・手すり・スロープ等</label>
+        <div class="input-wrap"><input type="number" id="s-kaoku" placeholder="例：50" min="0"><span class="unit">万円</span></div>
+      </div>
+      <div class="bk-formula">家屋・自動車改造費 ＝ 実費</div>
+      <div class="doc-box" style="margin-top:10px">📄 必要書類: 医師の意見書（必要性）・リフォーム業者の見積書・領収書</div>
+      <div class="ins-box">🏥 保険: 将来分は任意保険へ。住宅改修と自動車改造は別途計上。</div>
+    </div>
+  </div><!-- end #section-sequela -->
+
+  <!-- 死亡事故 section -->
+  <div id="section-death" class="case-section" style="display:none">
+    <div class="card">
+      <div class="card-title">死亡逸失利益 <button class="help-btn" onclick="showHelp('death_isshitsu')">詳しく</button></div>
+      <div class="formula-header">
+        <div class="fh-title">死亡逸失利益の計算式</div>
+        <div class="fh-eq">死亡逸失利益 ＝ 基礎収入 × (1 − 生活費控除率) × ライプニッツ係数</div>
+        <div class="fh-vars">就労可能年数 ＝ 67歳 − 被害者年齢（上限49年）<br>生活費控除率: 男性独身50%・女性/主婦30%・一家の支柱40%（被扶養者1人）/ 30%（2人以上）</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>被害者年齢（歳）</label>
+          <div class="input-wrap"><input type="number" id="d-age" placeholder="例：40" min="0" max="80" oninput="updateDeathFields()"><span class="unit">歳</span></div>
+        </div>
+        <div class="form-group">
+          <label>基礎収入（万円/年）</label>
+          <div class="input-wrap"><input type="number" id="d-income" placeholder="例：500" min="0"><span class="unit">万円</span></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>家族構成・属性</label>
+          <select id="d-family" onchange="updateDeathFields()">
+            <option value="male_single">独身男性</option>
+            <option value="female_single">独身女性</option>
+            <option value="pillar1">一家の支柱（被扶養者1人）</option>
+            <option value="pillar2">一家の支柱（被扶養者2人以上）</option>
+            <option value="spouse">専業主婦（夫）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>生活費控除率（自動設定）</label>
+          <div class="input-wrap"><input type="number" id="d-lossrate" readonly style="background:#F7F0E8"><span class="unit">%</span></div>
+        </div>
+      </div>
+      <div id="d-leibniz-display" class="bk-formula">就労可能年数・ライプニッツ係数: 年齢を入力すると自動表示</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">死亡慰謝料 <button class="help-btn" onclick="showHelp('death_isharyo')">詳しく</button></div>
+      <div class="form-group">
+        <label>被害者の立場</label>
+        <select id="d-position">
+          <option value="pillar">一家の支柱（2,800万円）</option>
+          <option value="spouse">母親・配偶者（2,500万円）</option>
+          <option value="other">独身・子供・幼児等（2,000万円）</option>
+        </select>
+      </div>
+      <div class="bk-desc" style="margin-top:8px">弁護士基準の死亡慰謝料（本人分＋遺族固有分を含む合計）を自動表示します。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">葬祭費 <button class="help-btn" onclick="showHelp('sosai')">詳しく</button></div>
+      <div class="form-group">
+        <label>実費（万円）— 弁護士基準の目安: 150万円。実費が150万未満の場合は実費を計上。</label>
+        <div class="input-wrap"><input type="number" id="d-sosai" placeholder="150" min="0"><span class="unit">万円</span></div>
+      </div>
+    </div>
+  </div><!-- end #section-death -->
+
+  <button class="btn-calc" onclick="calcAll()">計算する</button>
+  <div id="keisan-result" style="display:none;margin-top:14px"></div>
+</div>
+
+<!-- ===== Tab 2: 資料 ===== -->
+<div id="panel-shiryo" class="panel">
+<!-- 慰謝料表 -->
+<div id="panel-isharyo-inner">
+  <div class="info-banner">
+    <p id="isharyo-book-banner">弁護士基準（赤い本）の入通院慰謝料表です。縦が通院期間、横が入院期間（単位：万円）。</p>
+  </div>
+
+  <div id="ref-aka-cards">
+    <div class="card">
+      <div class="card-title">軽傷用（むち打ち・打撲・接触等） <span class="chip chip-light">軽傷</span></div>
+      <div class="ref-table-wrap" id="light-table-wrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">重傷用（骨折・脱臼・手術・内臓損傷等） <span class="chip chip-heavy">重傷</span></div>
+      <div class="ref-table-wrap" id="heavy-table-wrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">端数処理の方法（日割り計算）</div>
+      <div class="formula-header">
+        <div class="fh-title">実務標準の端数処理</div>
+        <div class="fh-eq">慰謝料 ＝ 整数月の値 ＋ (次月の値 − 整数月の値) × 端数</div>
+        <div class="fh-vars">
+          手順: ①日数÷30で月数を算出　②整数部分の月の金額と次の月の金額の差を求める　③差額×端数を加算<br>
+          例: 通院72日 ＝ 2.4ヶ月 → 軽傷（入院なし）: 36 + (53−36) × 0.4 ＝ 36 + 6.8 ＝ <strong>42.8万円</strong><br>
+          12ヶ月超の場合: 12ヶ月の値を上限としてそれ以上は1ヶ月あたり軽傷約2万円・重傷約3万円を加算（目安）
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ref-midori-cards" style="display:none">
+    <div class="card">
+      <div class="card-title">通常用（平成17年基準） <span class="chip chip-light">通常</span></div>
+      <div class="ref-table-wrap" id="midori-normal-table-wrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">重傷用（平成17年基準） <span class="chip chip-heavy">重傷</span></div>
+      <div class="ref-table-wrap" id="midori-severe-table-wrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">緑本（大阪基準）の特則</div>
+      <div class="bk-desc">通院期間の算定: 実通院期間（始期〜終期の日数）と実通院日数を3.5倍した日数を比較し、少ない方の日数を通院期間とする。ただし実通院期間が長期・不規則な場合等、事案により通常基準額を増額することがある。</div>
+      <div class="bk-desc">軽度の神経症状（むちうち症）、軽度の打撲・挫創（傷）の場合: 入通院慰謝料は通常表の3分の2程度とする。</div>
+      <div class="fh-vars" style="margin-top:6px">25ヶ月超・12ヶ月超の入力は目安として比例的に加算した概算値になります。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">後遺障害慰謝料（弁護士基準） <span id="koishogai-book-chip"></span></div>
+    <div class="ref-table-wrap">
+      <table class="ref-table" style="min-width:300px">
+        <thead><tr><th>等級</th><th>自賠責基準（万円）</th><th id="koishogai-th-bengoshi">弁護士基準（万円）</th></tr></thead>
+        <tbody id="koishogai-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ライプニッツ係数表 -->
+<div id="panel-leibniz-inner">
+  <div class="info-banner">
+    <p>年利3%の中間利息控除係数です。逸失利益の現在価値換算に使います。</p>
+  </div>
+  <div class="card">
+    <div class="card-title">ライプニッツ係数とは <button class="help-btn" onclick="showHelp('leibniz_what')">詳しく</button></div>
+    <div class="formula-header">
+      <div class="fh-title">逸失利益への適用</div>
+      <div class="fh-eq">逸失利益 ＝ 基礎収入 × 労働能力喪失率 × ライプニッツ係数（就労可能年数）</div>
+      <div class="fh-vars">
+        就労可能年数 ＝ 67歳 − 症状固定時年齢（上限49年）<br>
+        例: 就労可能25年・基礎収入500万・喪失率14% → 500 × 0.14 × 17.413 ＝ 1,218.9万円
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">係数表（年利3%・年金現価係数）</div>
+    <div id="leibniz-table-wrap"></div>
+  </div>
+</div>
+</div><!-- end panel-shiryo -->
+
+<!-- ===== Tab 3: 計算問題 ===== -->
+<div id="panel-quiz" class="panel">
+  <div class="info-banner">
+    <p>ランダムな計算問題・一問一答で実力を試しましょう。<br>計算問題は解答を見る前に自分で計算してみてください。<br>一問一答は○×または3択で素早く知識を確認できます。</p>
+  </div>
+  <div id="jq-mondai-mode-btns" style="display:flex;gap:8px;margin-bottom:14px">
+    <button class="mode-btn active" id="btn-mode-calc" onclick="setJqMode('calc')">計算問題</button>
+    <button class="mode-btn" id="btn-mode-qa" onclick="setJqMode('qa')">一問一答</button>
+  </div>
+
+  <!-- 計算問題セクション -->
+  <div id="jq-calc-section">
+    <div class="card">
+      <button class="btn-calc" onclick="jqNext()" style="margin-bottom:14px">問題を出す / 次の問題</button>
+      <div id="jq-card" style="display:none">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;margin-bottom:8px" id="jq-type-label"></div>
+        <div class="quiz-question" id="jq-question"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn-secondary" onclick="jqShowAnswer()">解答を見る</button>
+          <button class="btn-calc" style="flex:1" onclick="jqNext()">次の問題</button>
+        </div>
+        <div class="quiz-answer" id="jq-answer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 一問一答セクション -->
+  <div id="jq-qa-cat-wrap" style="display:none">
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="qa-cat-filter">
+      <button class="cat-btn active" data-cat="" onclick="setQACat('')">すべて</button>
+      <button class="cat-btn" data-cat="自賠責・任意" onclick="setQACat('自賠責・任意')">自賠責・任意保険</button>
+      <button class="cat-btn" data-cat="健保・労災" onclick="setQACat('健保・労災')">健保・労災</button>
+      <button class="cat-btn" data-cat="積極損害" onclick="setQACat('積極損害')">積極損害</button>
+      <button class="cat-btn" data-cat="消極損害" onclick="setQACat('消極損害')">消極損害</button>
+      <button class="cat-btn" data-cat="その他" onclick="setQACat('その他')">その他</button>
+    </div>
+    <div id="jq-qa-section" class="card">
+    </div>
+  </div>
+</div>
+
+</div><!-- .container -->
+
+<!-- モーダル -->
+<div id="help-modal" class="modal-overlay" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA TABLES
+// ============================================================
+const LEIBNIZ = {
+  1:0.971,2:1.913,3:2.829,4:3.717,5:4.580,
+  6:5.417,7:6.230,8:7.020,9:7.786,10:8.530,
+  11:9.253,12:9.954,13:10.635,14:11.296,15:11.938,
+  16:12.561,17:13.166,18:13.754,19:14.324,20:14.877,
+  21:15.415,22:15.937,23:16.444,24:16.936,25:17.413,
+  26:17.877,27:18.327,28:18.764,29:19.188,30:19.600,
+  31:20.000,32:20.389,33:20.766,34:21.132,35:21.487,
+  36:21.832,37:22.167,38:22.492,39:22.808,40:23.115,
+  41:23.412,42:23.701,43:23.982,44:24.254,45:24.519,
+  46:24.775,47:25.025,48:25.267,49:25.502
+};
+
+function getLeibniz(years){
+  if(years<=0)return 0;
+  const y=Math.min(49,Math.round(years));
+  return LEIBNIZ[y]||0;
+}
+
+// 慰謝料表 [通院index 0-12][入院index 0-6]
+// 通院index 0=なし, 1=1ヶ月, ... 12=12ヶ月
+// 入院index 0=なし, 1=1ヶ月, ... 6=6ヶ月
+const ISHARYO_LIGHT = [
+  [0,35,66,92,116,135,152],   // 通院なし
+  [19,52,83,106,128,145,160], // 1ヶ月
+  [36,69,97,118,138,153,166], // 2ヶ月
+  [53,83,109,128,146,159,172],// 3ヶ月
+  [67,95,119,136,152,165,176],// 4ヶ月
+  [79,105,127,142,158,169,180],// 5ヶ月
+  [89,113,133,148,162,173,182],// 6ヶ月
+  [97,119,139,152,166,175,183],// 7ヶ月
+  [103,125,143,156,168,176,184],// 8ヶ月
+  [109,129,147,158,169,177,185],// 9ヶ月
+  [113,133,149,159,170,178,186],// 10ヶ月
+  [117,135,150,160,171,179,187],// 11ヶ月
+  [119,136,151,161,172,180,188] // 12ヶ月
+];
+
+const ISHARYO_HEAVY = [
+  [0,53,101,145,184,217,244],
+  [28,77,122,162,199,228,252],
+  [52,98,139,177,210,236,260],
+  [73,115,154,188,218,244,267],
+  [90,130,165,196,226,251,273],
+  [105,141,173,204,233,257,278],
+  [116,149,181,211,239,262,282],
+  [124,157,188,217,244,266,286],
+  [132,164,194,222,248,270,290],
+  [139,170,199,226,252,274,292],
+  [145,175,203,230,256,276,294],
+  [150,179,207,234,258,278,296],
+  [154,183,211,236,260,280,298]
+];
+
+// ============================================================
+// 緑本（大阪弁護士会・大阪地裁基準）平成17年基準 入通院慰謝料表
+// 行=通院月数(0-25) / 列=入院月数(0-12)。26ヶ月・13ヶ月超は概算加算。
+// ============================================================
+const GREEN_ISHARYO_NORMAL = [
+  [0,53,101,146,186,220,250,266,277,286,295,303,308],
+  [27,76,121,164,201,228,255,270,282,291,298,306,310],
+  [49,99,141,181,209,236,259,274,286,294,301,308,312],
+  [72,119,159,193,217,244,263,278,290,298,304,311,314],
+  [90,134,165,199,224,249,267,282,294,301,306,313,317],
+  [108,145,175,207,230,254,270,286,298,304,308,316,319],
+  [120,153,183,213,236,259,275,290,300,306,311,318,322],
+  [128,161,193,217,242,263,280,294,302,308,313,320,324],
+  [136,169,198,224,248,267,284,298,305,311,316,323,326],
+  [144,176,204,228,254,271,288,301,307,313,318,325,329],
+  [152,182,210,232,260,274,292,304,310,316,320,328,331],
+  [160,188,216,236,264,277,294,306,312,318,323,330,334],
+  [166,194,220,241,268,281,296,308,314,320,325,332,336],
+  [170,199,224,246,271,284,299,311,317,323,328,335,338],
+  [175,203,228,250,275,287,301,313,319,325,330,337,341],
+  [180,206,232,253,277,289,304,316,322,328,332,340,343],
+  [184,210,235,257,280,292,306,318,324,330,335,342,346],
+  [187,214,239,260,282,294,308,320,326,332,337,344,348],
+  [191,219,244,266,288,300,315,327,333,339,344,351,355],
+  [194,222,248,270,293,305,320,332,338,344,350,357,361],
+  [197,225,252,274,297,310,325,337,343,350,355,362,367],
+  [199,228,254,277,300,313,328,341,347,353,359,366,370],
+  [202,231,258,281,305,318,333,346,352,359,364,372,376],
+  [204,234,261,284,308,321,336,349,356,362,368,375,380],
+  [206,236,263,286,311,324,339,353,359,366,371,379,384],
+  [209,239,267,291,315,329,344,358,364,371,377,385,389]
+];
+
+const GREEN_ISHARYO_SEVERE = [
+  [0,64,121,175,223,264,300,319,332,343,354,364,370],
+  [27,95,151,205,251,285,319,338,353,364,373,383,388],
+  [49,124,176,226,261,295,324,343,358,367,376,385,390],
+  [72,149,199,241,271,305,329,348,363,373,380,389,393],
+  [90,168,206,249,280,311,334,353,368,376,383,391,396],
+  [108,181,219,259,288,318,338,358,373,380,385,395,399],
+  [120,191,229,266,295,324,344,363,375,383,389,398,403],
+  [128,201,241,271,303,329,350,368,378,385,391,400,405],
+  [136,211,248,280,310,334,355,373,381,389,395,404,408],
+  [144,220,255,290,318,339,360,376,384,391,398,406,411],
+  [152,228,263,295,325,343,365,380,388,395,400,410,414],
+  [160,235,270,301,330,346,368,383,390,398,404,413,418],
+  [166,243,275,308,335,351,370,385,393,400,406,415,420],
+  [170,249,280,313,339,355,374,389,396,404,410,419,423],
+  [175,254,285,316,344,359,376,391,399,406,413,421,426],
+  [180,258,290,321,346,361,380,395,403,410,415,425,429],
+  [184,263,294,325,350,365,383,398,405,413,419,428,433],
+  [187,268,299,329,353,368,385,400,408,415,421,430,435],
+  [191,274,306,336,361,376,394,409,417,424,430,440,445],
+  [194,278,310,341,366,382,399,415,423,431,437,446,451],
+  [197,281,314,345,370,386,404,420,428,435,441,451,456],
+  [199,285,318,350,375,391,409,425,434,441,448,457,463],
+  [202,289,322,355,381,397,415,431,440,447,454,464,469],
+  [204,292,326,359,385,401,420,436,445,452,459,469,474],
+  [206,295,329,362,389,405,424,440,449,457,463,473,479],
+  [209,299,334,367,394,410,430,446,455,463,470,480,485]
+];
+
+// 後遺障害慰謝料
+const KOI_ISHARYO = {
+  'kaigo1':{jibaiseki:1650,bengoshi:2800,label:'要介護1級'},
+  'kaigo2':{jibaiseki:1203,bengoshi:2370,label:'要介護2級'},
+  '1':{jibaiseki:1150,bengoshi:2800,label:'第1級'},
+  '2':{jibaiseki:998,bengoshi:2370,label:'第2級'},
+  '3':{jibaiseki:861,bengoshi:1990,label:'第3級'},
+  '4':{jibaiseki:737,bengoshi:1670,label:'第4級'},
+  '5':{jibaiseki:618,bengoshi:1400,label:'第5級'},
+  '6':{jibaiseki:512,bengoshi:1180,label:'第6級'},
+  '7':{jibaiseki:419,bengoshi:1000,label:'第7級'},
+  '8':{jibaiseki:331,bengoshi:830,label:'第8級'},
+  '9':{jibaiseki:249,bengoshi:690,label:'第9級'},
+  '10':{jibaiseki:190,bengoshi:550,label:'第10級'},
+  '11':{jibaiseki:136,bengoshi:420,label:'第11級'},
+  '12':{jibaiseki:94,bengoshi:290,label:'第12級'},
+  '13':{jibaiseki:57,bengoshi:180,label:'第13級'},
+  '14':{jibaiseki:32,bengoshi:110,label:'第14級'}
+};
+
+// 緑本（大阪基準）後遺障害慰謝料（弁護士基準相当）。要介護1・2級は赤本と同額を使用。
+const GREEN_KOI_ISHARYO = {
+  '1':2800,'2':2400,'3':2000,'4':1700,'5':1440,'6':1220,'7':1030,
+  '8':830,'9':670,'10':530,'11':400,'12':280,'13':180,'14':110
+};
+
+// 労働能力喪失率
+const LOSS_RATE = {
+  'kaigo1':100,'kaigo2':100,'1':100,'2':100,'3':100,
+  '4':92,'5':79,'6':67,'7':56,'8':45,'9':35,
+  '10':27,'11':20,'12':14,'13':9,'14':5
+};
+
+// 死亡慰謝料
+const DEATH_ISHARYO = {
+  'pillar':2800,'spouse':2500,'other':2000
+};
+
+// 生活費控除率
+const SEIKATSU_KOJO = {
+  'male_single':50,'female_single':30,'pillar1':40,'pillar2':30,'spouse':30
+};
+
+// 自賠責限度額
+const JIBAISEKI_LIMIT = {injury:120,death:3000};
+
+// ============================================================
+// HELPERS
+// ============================================================
+function v(id){const e=document.getElementById(id);return e?e.value:'';}
+function nv(id){const val=parseFloat(v(id));return isNaN(val)?0:val;}
+function fmtMan(val){return val.toLocaleString('ja-JP',{maximumFractionDigits:2,minimumFractionDigits:0})+'万円';}
+function fmtEn(val){return '約'+Math.round(val*10000).toLocaleString('ja-JP')+'円';}
+function fmt2(val){return val.toLocaleString('ja-JP',{maximumFractionDigits:2,minimumFractionDigits:0});}
+
+// 慰謝料テーブル参照（月数は小数OK）
+function lookupIsharyo(tsuinMonths, nyuinMonths, isLight){
+  const tbl = isLight ? ISHARYO_LIGHT : ISHARYO_HEAVY;
+  // clamp
+  const tMax=12, nMax=6;
+  const extraNyuin = Math.max(0, nyuinMonths - nMax);
+  const extraTsuin = Math.max(0, tsuinMonths - tMax);
+  const nClamped = Math.min(nyuinMonths, nMax);
+  const tClamped = Math.min(tsuinMonths, tMax);
+
+  // bilinear interpolation
+  function interp(t, n){
+    const ti = Math.floor(t), tf = t - ti;
+    const ni = Math.floor(n), nf = n - ni;
+    const ti2 = Math.min(ti+1, tMax), ni2 = Math.min(ni+1, nMax);
+    const v00 = tbl[ti][ni];
+    const v10 = tbl[Math.min(ti+1,tMax)][ni];
+    const v01 = tbl[ti][Math.min(ni+1,nMax)];
+    const v11 = tbl[Math.min(ti+1,tMax)][Math.min(ni+1,nMax)];
+    return v00*(1-tf)*(1-nf) + v10*tf*(1-nf) + v01*(1-tf)*nf + v11*tf*nf;
+  }
+
+  let base = interp(tClamped, nClamped);
+  // Add for extra months
+  if(extraNyuin>0) base += extraNyuin * (isLight ? 4 : 6);
+  if(extraTsuin>0) base += extraTsuin * (isLight ? 2 : 3);
+  return base;
+}
+
+// ============================================================
+// DUAL-MODE INPUT FUNCTIONS
+// ============================================================
+function calcTreatPeriod(){
+  const jiko=document.getElementById('c-jiko-date').value;
+  const kotei=document.getElementById('c-kotei-date').value;
+  const disp=document.getElementById('c-period-display');
+  if(!jiko||!kotei){disp.textContent='';return;}
+  const d1=new Date(jiko),d2=new Date(kotei);
+  const days=Math.round((d2-d1)/(1000*60*60*24));
+  if(days<0){disp.textContent='⚠️ 症状固定日が事故日より前になっています';return;}
+  const months=(days/30).toFixed(1);
+  disp.textContent=`治療期間: ${days}日（約${months}ヶ月）— 通院期間入力の参考にしてください`;
+}
+
+function setTreatMode(mode){
+  document.getElementById('treat-total-mode').style.display=mode==='total'?'block':'none';
+  document.getElementById('treat-monthly-mode').style.display=mode==='monthly'?'block':'none';
+  document.getElementById('t-mode-total').classList.toggle('active',mode==='total');
+  document.getElementById('t-mode-monthly').classList.toggle('active',mode==='monthly');
+}
+
+function addTreatRow(){
+  const tbody=document.getElementById('treat-rows');
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td style="padding:4px 6px"><input type="month" style="width:100%;padding:4px 6px;border:1px solid var(--border);border-radius:5px;font-size:13px" oninput="syncTreatTotal()"></td>
+    <td style="padding:4px 6px"><input type="text" placeholder="病院・医院名" style="width:100%;padding:4px 6px;border:1px solid var(--border);border-radius:5px;font-size:13px"></td>
+    <td style="padding:4px 6px"><input type="number" min="0" step="0.01" placeholder="0" style="width:100%;padding:4px 6px;border:1px solid var(--border);border-radius:5px;font-size:13px;text-align:right" oninput="syncTreatTotal()"></td>
+    <td style="padding:4px"><button onclick="this.closest('tr').remove();syncTreatTotal()" style="background:var(--danger-light);border:1px solid #fca5a5;border-radius:5px;color:var(--danger);cursor:pointer;padding:3px 8px;font-size:12px">削除</button></td>`;
+  tbody.appendChild(tr);
+}
+
+function syncTreatTotal(){
+  let total=0;
+  document.querySelectorAll('#treat-rows tr').forEach(tr=>{
+    const inp=tr.querySelectorAll('input[type=number]')[0];
+    if(inp) total+=parseFloat(inp.value)||0;
+  });
+  document.getElementById('treat-monthly-total').textContent=
+    total.toLocaleString('ja-JP',{maximumFractionDigits:2,minimumFractionDigits:0})+'万円';
+}
+
+function setKotsuMode(mode){
+  document.getElementById('kotsu-total-mode').style.display=mode==='total'?'block':'none';
+  document.getElementById('kotsu-calc-mode').style.display=mode==='calc'?'block':'none';
+  document.getElementById('kt-mode-total').classList.toggle('active',mode==='total');
+  document.getElementById('kt-mode-calc').classList.toggle('active',mode==='calc');
+}
+
+function updateKotsuCalc(){
+  const type=document.getElementById('kt-type').value;
+  const fareGroup=document.getElementById('kt-fare-group');
+  const distGroup=document.getElementById('kt-dist-group');
+  if(type==='car'){
+    fareGroup.style.display='none';
+    distGroup.style.display='block';
+  } else {
+    fareGroup.style.display='block';
+    distGroup.style.display='none';
+  }
+  document.getElementById('kt-fare-label').textContent=
+    type==='taxi'?'タクシー往復料金（円）':'往復運賃（円）';
+  calcKotsuAuto();
+}
+
+function calcKotsuAuto(){
+  const type=document.getElementById('kt-type').value;
+  const days=parseFloat(document.getElementById('kt-days').value)||0;
+  let total=0,formula='';
+  if(type==='car'){
+    const dist=parseFloat(document.getElementById('kt-dist').value)||0;
+    total=(dist*2*15*days)/10000;
+    formula=`片道${dist}km × 2 × 15円/km × ${days}日 = ${Math.round(total*10000).toLocaleString()}円 → ${total.toLocaleString('ja-JP',{maximumFractionDigits:4})}万円`;
+  } else {
+    const fare=parseFloat(document.getElementById('kt-fare').value)||0;
+    total=(fare*days)/10000;
+    const label=type==='taxi'?'タクシー往復':'往復運賃';
+    formula=`${label}${fare.toLocaleString()}円 × ${days}日 = ${Math.round(total*10000).toLocaleString()}円 → ${total.toLocaleString('ja-JP',{maximumFractionDigits:4})}万円`;
+  }
+  document.getElementById('kt-result').textContent=formula;
+  document.getElementById('kt-calc-val').value=total;
+}
+
+// ============================================================
+// UI STATE
+// ============================================================
+let currentCase = 'injury';
+let currentBook = 'aka'; // 'aka'(赤い本・東京基準) | 'midori'(緑本・大阪基準)
+
+function setBook(book){
+  currentBook = book;
+  document.getElementById('book-btn-aka').classList.toggle('active', book==='aka');
+  document.getElementById('book-btn-midori').classList.toggle('active', book==='midori');
+  updateInjuryTypeOptions();
+  const midoriExtra = document.getElementById('midori-tsuin-extra');
+  if(midoriExtra) midoriExtra.style.display = book==='midori' ? 'block' : 'none';
+  const muchiuchiWrap = document.getElementById('muchiuchi-wrap');
+  if(muchiuchiWrap) muchiuchiWrap.style.display = book==='midori' ? 'flex' : 'none';
+
+  const refAka = document.getElementById('ref-aka-cards');
+  const refMidori = document.getElementById('ref-midori-cards');
+  if(refAka) refAka.style.display = book==='aka' ? 'block' : 'none';
+  if(refMidori) refMidori.style.display = book==='midori' ? 'block' : 'none';
+  const banner = document.getElementById('isharyo-book-banner');
+  if(banner) banner.textContent = book==='aka'
+    ? '弁護士基準（赤い本・東京基準）の入通院慰謝料表です。縦が通院期間、横が入院期間（単位：万円）。'
+    : '弁護士基準（緑本・大阪基準）の入通院慰謝料表です。縦が通院期間、横が入院期間（単位：万円）。';
+  const koishogaiChip = document.getElementById('koishogai-book-chip');
+  if(koishogaiChip) koishogaiChip.innerHTML = book==='aka' ? '<span class="chip chip-heavy">赤い本</span>' : '<span class="chip chip-light">緑本</span>';
+  const koishogaiTh = document.getElementById('koishogai-th-bengoshi');
+  if(koishogaiTh) koishogaiTh.textContent = book==='aka' ? '弁護士基準・赤い本（万円）' : '弁護士基準・緑本（万円）';
+
+  updateGradeFields();
+  renderKoishogaiTable();
+}
+
+function updateInjuryTypeOptions(){
+  const sel = document.getElementById('i-injury-type');
+  if(!sel) return;
+  if(currentBook==='midori'){
+    sel.innerHTML = '<option value="normal">通常（骨折等一般的な傷害）</option><option value="severe">重傷（傷害の程度が著しい場合）</option>';
+  } else {
+    sel.innerHTML = '<option value="light">軽傷（むち打ち・打撲・擦過傷等）</option><option value="heavy">重傷（骨折・脱臼・手術・内臓損傷等）</option>';
+  }
+}
+
+// 緑本慰謝料表参照（月数は小数OK）。25ヶ月・12ヶ月超は概算加算。
+function lookupGreenIsharyo(tsuinMonths, nyuinMonths, tbl, extraTsuinInc, extraNyuinInc){
+  const tMax=25, nMax=12;
+  const extraNyuin = Math.max(0, nyuinMonths - nMax);
+  const extraTsuin = Math.max(0, tsuinMonths - tMax);
+  const nClamped = Math.min(nyuinMonths, nMax);
+  const tClamped = Math.min(tsuinMonths, tMax);
+
+  function interp(t, n){
+    const ti = Math.floor(t), tf = t - ti;
+    const ni = Math.floor(n), nf = n - ni;
+    const ti2 = Math.min(ti+1, tMax), ni2 = Math.min(ni+1, nMax);
+    const v00 = tbl[ti][ni];
+    const v10 = tbl[ti2][ni];
+    const v01 = tbl[ti][ni2];
+    const v11 = tbl[ti2][ni2];
+    return v00*(1-tf)*(1-nf) + v10*tf*(1-nf) + v01*(1-tf)*nf + v11*tf*nf;
+  }
+
+  let base = interp(tClamped, nClamped);
+  if(extraNyuin>0) base += extraNyuin * extraNyuinInc;
+  if(extraTsuin>0) base += extraTsuin * extraTsuinInc;
+  return base;
+}
+
+function switchTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function setCaseType(type, btn){
+  currentCase = type;
+  document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const injurySection = document.getElementById('section-injury');
+  const sequelaSection = document.getElementById('section-sequela');
+  const deathSection = document.getElementById('section-death');
+
+  // injury section shows for all types
+  injurySection.classList.add('active');
+  injurySection.style.display='block';
+
+  if(type==='injury'){
+    sequelaSection.style.display='none';
+    deathSection.style.display='none';
+  } else if(type==='sequela'){
+    sequelaSection.style.display='block';
+    deathSection.style.display='none';
+    updateGradeFields();
+  } else {
+    sequelaSection.style.display='none';
+    deathSection.style.display='block';
+    updateDeathFields();
+    // Hide injury cards that don't apply well to death
+  }
+  document.getElementById('keisan-result').style.display='none';
+}
+
+function updateJobFields(){
+  const job = v('i-job');
+  ['employee','self','housewife','other'].forEach(t=>{
+    const el=document.getElementById('i-job-'+t);
+    if(el) el.style.display = (job===t)?'block':'none';
+  });
+}
+
+// 後遺障害慰謝料の金額を算定基準に応じて取得（緑本・弁護士基準の場合はGREEN_KOI_ISHARYOを優先）
+function getKoiAmount(grade, std){
+  const data = KOI_ISHARYO[grade];
+  if(!data) return 0;
+  if(std==='bengoshi'){
+    if(currentBook==='midori' && GREEN_KOI_ISHARYO[grade]!=null) return GREEN_KOI_ISHARYO[grade];
+    return data.bengoshi;
+  }
+  return data.jibaiseki;
+}
+
+function updateGradeFields(){
+  const grade = v('s-grade');
+  const std = v('s-standard');
+  const data = KOI_ISHARYO[grade];
+  if(!data) return;
+  const amt = getKoiAmount(grade, std);
+  const bookLabel = std==='bengoshi' ? (currentBook==='midori'?'弁護士基準・緑本':'弁護士基準・赤い本') : '自賠責基準';
+  document.getElementById('s-grade-display').textContent =
+    data.label + '　' + bookLabel + ': ' + amt + '万円';
+
+  // Auto-fill loss rate
+  const lr = document.getElementById('s-loss-rate');
+  if(lr) lr.value = LOSS_RATE[grade]||'';
+
+  // Update years if age is set
+  const age = nv('s-age');
+  if(age>0) updateSequelaYears();
+
+  // show kaigo section
+  const kaigoSec = document.getElementById('kaigo-section');
+  if(kaigoSec) kaigoSec.style.display = (grade==='kaigo1'||grade==='kaigo2')?'block':'none';
+}
+
+function updateSequelaYears(){
+  const age = nv('s-age');
+  if(!age || age<=0) return;
+  const years = Math.min(49, Math.max(0, 67-age));
+  const el = document.getElementById('s-years');
+  if(el) el.value = years;
+  const lz = getLeibniz(years);
+  const disp = document.getElementById('s-leibniz-display');
+  if(disp) disp.textContent = `就労可能年数: ${years}年　ライプニッツ係数: ${lz}（67 − ${age} = ${years}年）`;
+}
+
+document.addEventListener('change', function(e){
+  if(e.target.id==='s-age'||e.target.id==='s-grade'||e.target.id==='s-standard') updateGradeFields();
+});
+document.addEventListener('input', function(e){
+  if(e.target.id==='s-age') updateSequelaYears();
+  if(e.target.id==='d-age'||e.target.id==='d-family') updateDeathFields();
+});
+
+function updateDeathFields(){
+  const age = nv('d-age');
+  const family = v('d-family');
+  const kr = SEIKATSU_KOJO[family]||50;
+  const el = document.getElementById('d-lossrate');
+  if(el) el.value = kr;
+  if(age>0){
+    const years = Math.min(49, Math.max(0, 67-age));
+    const lz = getLeibniz(years);
+    const disp = document.getElementById('d-leibniz-display');
+    if(disp) disp.textContent = `就労可能年数: ${years}年　ライプニッツ係数: ${lz}（67 − ${age} = ${years}年）`;
+  }
+}
+
+// ============================================================
+// CALCULATION
+// ============================================================
+function calcAll(){
+  const fault = nv('c-fault');
+  const paid = nv('c-paid');
+  let items = [];
+  let totalMan = 0;
+  let html = '';
+  let errors = [];
+
+  // --- 治療費 ---
+  const treatMonthlyMode = document.getElementById('treat-monthly-mode').style.display!=='none';
+  let chiryohi = 0;
+  if(treatMonthlyMode){
+    document.querySelectorAll('#treat-rows tr').forEach(tr=>{
+      const inp=tr.querySelectorAll('input[type=number]')[0];
+      if(inp) chiryohi+=parseFloat(inp.value)||0;
+    });
+  } else {
+    chiryohi = nv('i-chiryohi');
+  }
+  items.push({label:'治療費', val:chiryohi, formula:`実費 ${fmtMan(chiryohi)}`});
+
+  // --- 入院雑費 ---
+  const nyuindays = nv('i-nyuindays');
+  const zappi = nyuindays * 1500 / 10000;
+  items.push({label:'入院雑費', val:zappi, formula:`${nyuindays}日 × 1,500円 ÷ 10,000 = ${fmtMan(zappi)}`});
+
+  // --- 通院交通費 ---
+  const kotsuCalcMode = document.getElementById('kotsu-calc-mode').style.display!=='none';
+  let kotsuhi = 0, kotsuFormula = '';
+  if(kotsuCalcMode){
+    kotsuhi = parseFloat(document.getElementById('kt-calc-val').value)||0;
+    const ktResult = document.getElementById('kt-result').textContent;
+    kotsuFormula = ktResult || `計算値 ${fmtMan(kotsuhi)}`;
+  } else {
+    kotsuhi = nv('i-kotsuhi');
+    kotsuFormula = `実費 ${fmtMan(kotsuhi)}`;
+  }
+  items.push({label:'通院交通費', val:kotsuhi, formula:kotsuFormula});
+
+  // --- 休業損害 ---
+  let kyugyo = 0;
+  let kyugyoFormula = '';
+  const job = v('i-job');
+  if(job==='employee'){
+    const inc3 = nv('i-emp-income');
+    const workdays = nv('i-emp-workdays')||90;
+    const offdays = nv('i-emp-offdays');
+    const nichi = inc3 / workdays;
+    kyugyo = nichi * offdays;
+    kyugyoFormula = `(${fmtMan(inc3)} ÷ ${workdays}日) × ${offdays}日 = ${fmtMan(kyugyo)}`;
+  } else if(job==='self'){
+    const inc = nv('i-self-income');
+    const offdays = nv('i-self-offdays');
+    const nichi = inc / 365;
+    kyugyo = nichi * offdays;
+    kyugyoFormula = `(${fmtMan(inc)} ÷ 365日) × ${offdays}日 = ${fmtMan(kyugyo)}`;
+  } else if(job==='housewife'){
+    const BASE_HW = 410;
+    const offdays = nv('i-hw-offdays');
+    const nichi = BASE_HW / 365;
+    kyugyo = nichi * offdays;
+    kyugyoFormula = `賃金センサス(${fmtMan(BASE_HW)}) ÷ 365日 × ${offdays}日 = ${fmtMan(kyugyo)}`;
+  } else {
+    kyugyo = nv('i-other-kyugyo');
+    kyugyoFormula = `直接入力 ${fmtMan(kyugyo)}`;
+  }
+  items.push({label:'休業損害', val:kyugyo, formula:kyugyoFormula});
+
+  // --- 入通院慰謝料 ---
+  const injType = v('i-injury-type');
+  const nyuinM = nv('i-nyuin-months');
+  let tsuinM = nv('i-tsuin-months');
+  let isharyo, typeName, extraNote = '';
+
+  if(currentBook==='midori'){
+    const jitsuDays = nv('i-jitsu-tsuin-days');
+    let effectiveTsuinM = tsuinM;
+    if(jitsuDays > 0){
+      const calDays = tsuinM * 30;
+      const capDays = jitsuDays * 3.5;
+      const useDays = Math.min(calDays, capDays);
+      effectiveTsuinM = useDays / 30;
+      extraNote += `（実通院${jitsuDays}日×3.5=${capDays.toFixed(1)}日 と 通院期間${calDays.toFixed(0)}日 のうち少ない方 ${useDays.toFixed(1)}日＝${effectiveTsuinM.toFixed(2)}ヶ月で算定）`;
+    }
+    const muchiuchi = document.getElementById('i-muchiuchi') && document.getElementById('i-muchiuchi').checked;
+    const tbl = injType==='severe' ? GREEN_ISHARYO_SEVERE : GREEN_ISHARYO_NORMAL;
+    const incTsuin = injType==='severe' ? 3 : 2;
+    const incNyuin = injType==='severe' ? 6 : 5;
+    let base = lookupGreenIsharyo(effectiveTsuinM, nyuinM, tbl, incTsuin, incNyuin);
+    if(muchiuchi){ base = base * 2/3; extraNote += '（軽度の神経症状・むちうち症等のため通常表の3分の2に減額）'; }
+    isharyo = base;
+    typeName = muchiuchi ? 'むちうち等（通常表×2/3）' : (injType==='severe'?'重傷':'通常');
+  } else {
+    const isLight = injType==='light';
+    isharyo = lookupIsharyo(tsuinM, nyuinM, isLight);
+    typeName = isLight?'軽傷':'重傷';
+  }
+  items.push({label:'入通院慰謝料', val:isharyo,
+    formula:`【${currentBook==='midori'?'緑本':'赤い本'}】${typeName}・通院${tsuinM}ヶ月・入院${nyuinM}ヶ月${extraNote} → 慰謝料表より ${fmtMan(isharyo)}`});
+
+  // --- 付添費 ---
+  const fusoiNyuin = nv('i-fusoi-nyuin');
+  const fusoiTsuin = nv('i-fusoi-tsuin');
+  const fusoiVal = fusoiNyuin * 6500 / 10000 + fusoiTsuin * 3300 / 10000;
+  if(fusoiVal > 0){
+    items.push({label:'付添費', val:fusoiVal,
+      formula:`入院付添${fusoiNyuin}日 × 6,500円 ＋ 通院付添${fusoiTsuin}日 × 3,300円 = ${fmtMan(fusoiVal)}`});
+  }
+
+  // --- 車両損害・代車費用 ---
+  const sharyoRepair = nv('i-sharyo-repair');
+  const sharyoEval = nv('i-sharyo-eval');
+  const sharyoDasha = nv('i-sharyo-dasha');
+  const sharyoTotal = sharyoRepair + sharyoEval + sharyoDasha;
+  if(sharyoTotal > 0){
+    items.push({label:'車両損害・代車費用', val:sharyoTotal,
+      formula:`修理費${fmtMan(sharyoRepair)} ＋ 評価損${fmtMan(sharyoEval)} ＋ 代車費用${fmtMan(sharyoDasha)} = ${fmtMan(sharyoTotal)}`});
+  }
+
+  // --- 損害賠償関係費用 ---
+  const costShindan = nv('i-cost-shindan');
+  const costShomei = nv('i-cost-shomei');
+  const costKoiShindan = nv('i-cost-koi-shindan');
+  const costTotal = costShindan + costShomei + costKoiShindan;
+  if(costTotal > 0){
+    items.push({label:'損害賠償関係費用', val:costTotal,
+      formula:`診断書${fmtMan(costShindan)} ＋ 証明書${fmtMan(costShomei)} ＋ 後遺障害診断書${fmtMan(costKoiShindan)} = ${fmtMan(costTotal)}`});
+  }
+
+  // 後遺障害あり
+  let koiIsh = 0, koiIsshitsu = 0, kaigoHi = 0;
+  if(currentCase==='sequela'){
+    const grade = v('s-grade');
+    const std = v('s-standard');
+    const gradeData = KOI_ISHARYO[grade];
+    koiIsh = getKoiAmount(grade, std);
+    const koiBookLabel = std==='bengoshi' ? (currentBook==='midori'?'弁護士・緑本':'弁護士・赤い本') : '自賠責';
+    items.push({label:`後遺障害慰謝料（${gradeData.label}・${koiBookLabel}基準）`, val:koiIsh,
+      formula:`${gradeData.label} ${koiBookLabel}基準 = ${fmtMan(koiIsh)}`});
+
+    const sIncome = nv('s-income');
+    const sAge = nv('s-age');
+    const lossRate = nv('s-loss-rate');
+    const years = Math.min(49, Math.max(0, 67-sAge));
+    const lz = getLeibniz(years);
+    koiIsshitsu = sIncome * (lossRate/100) * lz;
+    items.push({label:'後遺障害逸失利益', val:koiIsshitsu,
+      formula:`${fmtMan(sIncome)} × ${lossRate}% × ${lz}（${years}年分） = ${fmtMan(koiIsshitsu)}`});
+
+    if(grade==='kaigo1'||grade==='kaigo2'){
+      const daily = nv('s-kaigo-daily');
+      const kaigoYears = nv('s-kaigo-years');
+      const kaigoLz = getLeibniz(kaigoYears);
+      kaigoHi = (daily * 365 / 10000) * kaigoLz;
+      items.push({label:'将来介護費', val:kaigoHi,
+        formula:`${daily.toLocaleString()}円/日 × 365日 × ${kaigoLz}（${kaigoYears}年分） = ${fmtMan(kaigoHi)}`});
+    }
+
+    // 将来治療費
+    const futureTreatAnnual = nv('s-future-treat-annual');
+    const futureTreatYears = nv('s-future-treat-years');
+    if(futureTreatAnnual > 0 && futureTreatYears > 0){
+      const ftLz = getLeibniz(futureTreatYears);
+      const futureTreat = futureTreatAnnual * ftLz;
+      items.push({label:'将来治療費', val:futureTreat,
+        formula:`${fmtMan(futureTreatAnnual)}/年 × ライプニッツ係数${ftLz}（${futureTreatYears}年分） = ${fmtMan(futureTreat)}`});
+    }
+
+    // 器具装具費
+    const kiguVal = nv('s-kigu');
+    if(kiguVal > 0){
+      items.push({label:'器具装具費', val:kiguVal,
+        formula:`実費 ${fmtMan(kiguVal)}`});
+    }
+
+    // 家屋・自動車改造費
+    const kaokuVal = nv('s-kaoku');
+    if(kaokuVal > 0){
+      items.push({label:'家屋・自動車改造費', val:kaokuVal,
+        formula:`実費 ${fmtMan(kaokuVal)}`});
+    }
+  }
+
+  // 死亡事故
+  let deathIsshitsu = 0, deathIsh = 0, sosai = 0;
+  if(currentCase==='death'){
+    const dAge = nv('d-age');
+    const dIncome = nv('d-income');
+    const dFamily = v('d-family');
+    const dLossRate = SEIKATSU_KOJO[dFamily]||50;
+    const dYears = Math.min(49,Math.max(0,67-dAge));
+    const dLz = getLeibniz(dYears);
+    deathIsshitsu = dIncome * (1-dLossRate/100) * dLz;
+    items.push({label:'死亡逸失利益', val:deathIsshitsu,
+      formula:`${fmtMan(dIncome)} × (1−${dLossRate}%) × ${dLz}（${dYears}年分） = ${fmtMan(deathIsshitsu)}`});
+
+    const dPos = v('d-position');
+    deathIsh = DEATH_ISHARYO[dPos]||2000;
+    const dPosName = dPos==='pillar'?'一家の支柱':dPos==='spouse'?'母親・配偶者':'独身・子供・幼児等';
+    items.push({label:`死亡慰謝料（${dPosName}）`, val:deathIsh,
+      formula:`弁護士基準 ${dPosName} = ${fmtMan(deathIsh)}`});
+
+    sosai = Math.min(nv('d-sosai')||150, 150);
+    const actualSosai = nv('d-sosai')||150;
+    items.push({label:'葬祭費', val:Math.min(actualSosai,150),
+      formula:`実費${fmtMan(actualSosai)}（上限150万円） = ${fmtMan(Math.min(actualSosai,150))}`});
+  }
+
+  // 合計
+  const subtotal = items.reduce((s,i)=>s+i.val, 0);
+
+  // 弁護士費用
+  let bengoshiFee = 0;
+  if(v('i-bengoshi')==='yes' && currentCase!=='death'){
+    bengoshiFee = subtotal * 0.10;
+    items.push({label:'弁護士費用（認容額の10%）', val:bengoshiFee,
+      formula:`${fmtMan(subtotal)} × 10% = ${fmtMan(bengoshiFee)}`});
+  } else if(currentCase==='death'){
+    bengoshiFee = (subtotal) * 0.10;
+    items.push({label:'弁護士費用（認容額の10%）', val:bengoshiFee,
+      formula:`${fmtMan(subtotal)} × 10% = ${fmtMan(bengoshiFee)}`});
+  }
+
+  const total = items.reduce((s,i)=>s+i.val, 0);
+
+  // 遅延損害金
+  let chien = 0, chienFormula = '';
+  const accDate = v('i-accident-date');
+  const calcDate = v('i-calc-date');
+  if(accDate && calcDate){
+    const d1 = new Date(accDate), d2 = new Date(calcDate);
+    const years = (d2-d1)/(1000*60*60*24*365.25);
+    if(years>0){
+      chien = total * 0.03 * years;
+      chienFormula = `${fmtMan(total)} × 3% × ${years.toFixed(2)}年 = ${fmtMan(chien)}`;
+    }
+  }
+
+  // 過失相殺後
+  const afterFault = total * (1 - fault/100);
+  const afterFaultChien = (total + chien) * (1 - fault/100);
+
+  // 最終請求額
+  const finalAmt = Math.max(0, afterFaultChien - paid);
+
+  // Build HTML
+  let rowsHtml = items.map(i=>`
+    <div class="bk-row">
+      <span class="bk-key">${i.label}</span>
+      <span class="bk-val">${fmtMan(i.val)}</span>
+    </div>
+    <div class="bk-formula">${i.formula}</div>
+  `).join('');
+
+  let chienRow = '';
+  if(chien>0){
+    chienRow = `<div class="bk-row">
+      <span class="bk-key">遅延損害金</span>
+      <span class="bk-val">${fmtMan(chien)}</span>
+    </div><div class="bk-formula">${chienFormula}</div>`;
+  }
+
+  const limit = currentCase==='death' ? JIBAISEKI_LIMIT.death : JIBAISEKI_LIMIT.injury;
+  const limitNote = currentCase==='death'
+    ? `自賠責保険限度額（死亡）: ${limit}万円`
+    : `自賠責保険限度額（傷害）: ${limit}万円`;
+
+  html = `
+    <div class="result-box">
+      <div class="result-label">最終請求額（過失相殺・既払控除後）</div>
+      <div class="result-amount">${fmtMan(finalAmt)}</div>
+      <div class="result-sub">${fmtEn(finalAmt)}</div>
+    </div>
+    <div class="breakdown">
+      <div class="breakdown-title">損害内訳</div>
+      ${rowsHtml}
+      ${chienRow}
+      <div class="bk-total">
+        <span class="bk-key">損害合計（遅延損害金含む）</span>
+        <span class="bk-val">${fmtMan(total + chien)}</span>
+      </div>
+      <div class="bk-row" style="margin-top:8px">
+        <span class="bk-key">過失相殺（被害者過失${fault}%）</span>
+        <span class="bk-val" style="color:var(--danger)">−${fmtMan((total+chien)*fault/100)}</span>
+      </div>
+      <div class="bk-formula">過失相殺後 = ${fmtMan(total+chien)} × (1 − ${fault}%) = ${fmtMan(afterFaultChien)}</div>
+      <div class="bk-row">
+        <span class="bk-key">既払保険金控除</span>
+        <span class="bk-val" style="color:var(--danger)">−${fmtMan(paid)}</span>
+      </div>
+      <div class="bk-total">
+        <span class="bk-key">最終請求額</span>
+        <span class="bk-val">${fmtMan(finalAmt)}</span>
+      </div>
+    </div>
+    <div class="note"><span class="note-icon">i</span>${limitNote}。超過分は任意保険または加害者本人への請求となります。${finalAmt < limit ? '（今回の計算では自賠責限度額の範囲内です）' : '<strong>今回の計算額は自賠責限度額を超えています。任意保険への請求が必要です。</strong>'}</div>
+  `;
+
+  const el = document.getElementById('keisan-result');
+  el.innerHTML = html;
+  el.style.display = 'block';
+  el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ============================================================
+// TABLE RENDERING
+// ============================================================
+function renderIsharyoTable(tableData, wrapperId){
+  const cols = ['なし','1ヶ月','2ヶ月','3ヶ月','4ヶ月','5ヶ月','6ヶ月'];
+  const rows = ['通院なし','1ヶ月','2ヶ月','3ヶ月','4ヶ月','5ヶ月','6ヶ月','7ヶ月','8ヶ月','9ヶ月','10ヶ月','11ヶ月','12ヶ月'];
+  let th = '<tr><th>通院＼入院</th>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr>';
+  let body = rows.map((r,ri)=>{
+    let tds = tableData[ri].map(v=>`<td>${v}</td>`).join('');
+    return `<tr><td class="row-header">${r}</td>${tds}</tr>`;
+  }).join('');
+  document.getElementById(wrapperId).innerHTML =
+    `<table class="ref-table"><thead>${th}</thead><tbody>${body}</tbody></table>`;
+}
+
+function renderGreenIsharyoTable(tableData, wrapperId){
+  const cols = ['なし','1ヶ月','2ヶ月','3ヶ月','4ヶ月','5ヶ月','6ヶ月','7ヶ月','8ヶ月','9ヶ月','10ヶ月','11ヶ月','12ヶ月'];
+  const rows = ['通院なし','1ヶ月','2ヶ月','3ヶ月','4ヶ月','5ヶ月','6ヶ月','7ヶ月','8ヶ月','9ヶ月','10ヶ月','11ヶ月','12ヶ月',
+    '13ヶ月','14ヶ月','15ヶ月','16ヶ月','17ヶ月','18ヶ月','19ヶ月','20ヶ月','21ヶ月','22ヶ月','23ヶ月','24ヶ月','25ヶ月'];
+  let th = '<tr><th>通院＼入院</th>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr>';
+  let body = rows.map((r,ri)=>{
+    let tds = tableData[ri].map(v=>`<td>${v}</td>`).join('');
+    return `<tr><td class="row-header">${r}</td>${tds}</tr>`;
+  }).join('');
+  document.getElementById(wrapperId).innerHTML =
+    `<table class="ref-table"><thead>${th}</thead><tbody>${body}</tbody></table>`;
+}
+
+function renderKoishogaiTable(){
+  const order=['kaigo1','kaigo2','1','2','3','4','5','6','7','8','9','10','11','12','13','14'];
+  const body = order.map(k=>{
+    const d=KOI_ISHARYO[k];
+    const bengoshiAmt = getKoiAmount(k, 'bengoshi');
+    return `<tr><td class="row-header">${d.label}</td><td>${d.jibaiseki.toLocaleString()}</td><td><strong>${bengoshiAmt.toLocaleString()}</strong></td></tr>`;
+  }).join('');
+  document.getElementById('koishogai-table-body').innerHTML = body;
+}
+
+function renderLeibnizTable(){
+  const years = Object.keys(LEIBNIZ).map(Number).sort((a,b)=>a-b);
+  const rows = [];
+  for(let i=0;i<years.length;i+=3){
+    let cells = '';
+    for(let j=0;j<3;j++){
+      const y = years[i+j];
+      if(y){
+        cells += `<div class="lz-row"><span class="lz-yr">${y}年</span><span class="lz-val">${LEIBNIZ[y]}</span></div>`;
+      }
+    }
+    rows.push(cells);
+  }
+  // Build 3-col layout
+  const col1=[], col2=[], col3=[];
+  years.forEach(y=>{
+    const row = `<div class="lz-row"><span class="lz-yr">${y}年</span><span class="lz-val">${LEIBNIZ[y]}</span></div>`;
+    if(y<=17) col1.push(row);
+    else if(y<=34) col2.push(row);
+    else col3.push(row);
+  });
+  document.getElementById('leibniz-table-wrap').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+      <div>${col1.join('')}</div>
+      <div>${col2.join('')}</div>
+      <div>${col3.join('')}</div>
+    </div>`;
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+let jqCurrent = null;
+let jqMondoMode = 'calc'; // 'calc' | 'qa'
+
+function setJqMode(mode){
+  jqMondoMode = mode;
+  document.getElementById('btn-mode-calc').classList.toggle('active', mode==='calc');
+  document.getElementById('btn-mode-qa').classList.toggle('active', mode==='qa');
+  document.getElementById('jq-calc-section').style.display = mode==='calc' ? 'block' : 'none';
+  document.getElementById('jq-qa-cat-wrap').style.display = mode==='qa' ? 'block' : 'none';
+  if(mode==='qa') buildQA();
+}
+
+function jqNext(){
+  const types = ['A','B','C','D','E','F'];
+  const type = types[Math.floor(Math.random()*types.length)];
+  jqCurrent = buildQuiz(type);
+  const labels = {A:'入通院慰謝料',B:'後遺障害逸失利益',C:'死亡逸失利益',D:'付添費計算',E:'端数処理（日割り計算）',F:'自賠責限度額判定'};
+  document.getElementById('jq-type-label').textContent = labels[type]||'計算問題';
+  document.getElementById('jq-question').innerHTML = jqCurrent.question;
+  document.getElementById('jq-answer').innerHTML = jqCurrent.answer;
+  document.getElementById('jq-answer').classList.remove('open');
+  document.getElementById('jq-card').style.display='block';
+}
+
+function jqShowAnswer(){
+  document.getElementById('jq-answer').classList.add('open');
+}
+
+function rnd(min, max){return Math.floor(Math.random()*(max-min+1))+min;}
+
+function buildQuiz(type){
+  if(type==='A'){
+    const nyuin = rnd(0,3);
+    const tsuin = rnd(1,6);
+    const isLight = Math.random()<0.5;
+    const typeName = isLight?'軽傷（むち打ち）':'重傷（骨折）';
+    const ans = lookupIsharyo(tsuin, nyuin, isLight);
+    const tbl = isLight ? ISHARYO_LIGHT : ISHARYO_HEAVY;
+    return {
+      question: `<strong>【問題A: 入通院慰謝料】</strong><br>被害者（40歳）は追突事故で<span class="chip ${isLight?'chip-light':'chip-heavy'}">${typeName}</span>を負い、<strong>入院${nyuin}ヶ月・通院${tsuin}ヶ月</strong>した。<br>弁護士基準の入通院慰謝料はいくらか。`,
+      answer: `<div class="quiz-step"><strong>解答ステップ:</strong></div>
+        <div class="quiz-step">① 傷病区分: ${typeName} → ${isLight?'軽傷用':'重傷用'}テーブルを使用</div>
+        <div class="quiz-step">② テーブル参照: 通院${tsuin}ヶ月行 × 入院${nyuin}ヶ月列</div>
+        <div class="quiz-formula">テーブル値 = ${tbl[tsuin][nyuin]}万円</div>
+        <div class="quiz-step">③ 端数なし（整数ヶ月のため日割り不要）</div>
+        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fmtMan(ans)}</strong></div>`
+    };
+  } else if(type==='B'){
+    const age = rnd(30,55);
+    const income = rnd(3,8)*100;
+    const gradeNum = rnd(7,12);
+    const grade = String(gradeNum);
+    const lossRate = LOSS_RATE[grade];
+    const years = Math.min(49,67-age);
+    const lz = getLeibniz(years);
+    const result = income * (lossRate/100) * lz;
+    return {
+      question: `<strong>【問題B: 後遺障害逸失利益】</strong><br>被害者（${age}歳・給与所得者・年収${income}万円）が<span class="chip chip-grade">第${gradeNum}級</span>の後遺障害を負った。<br>後遺障害逸失利益を計算せよ。（ライプニッツ係数${years}年分: ${lz}）`,
+      answer: `<div class="quiz-step"><strong>解答ステップ:</strong></div>
+        <div class="quiz-step">① 就労可能年数 = 67 − ${age} = ${years}年</div>
+        <div class="quiz-step">② ライプニッツ係数（${years}年）= ${lz}</div>
+        <div class="quiz-step">③ 労働能力喪失率（第${gradeNum}級）= ${lossRate}%</div>
+        <div class="quiz-formula">逸失利益 = 基礎収入 × 喪失率 × ライプニッツ係数
+= ${income}万円 × ${lossRate}% × ${lz}
+= ${income}万円 × ${lossRate/100} × ${lz}
+= ${fmtMan(result)}</div>
+        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fmtMan(result)}</strong>（${fmtEn(result)}）</div>`
+    };
+  } else if(type==='C'){
+    const age = rnd(35,55);
+    const income = rnd(3,8)*100;
+    const families = [
+      {key:'male_single',name:'独身男性',rate:50},
+      {key:'pillar1',name:'一家の支柱（被扶養者1人）',rate:40},
+      {key:'pillar2',name:'一家の支柱（被扶養者2人以上）',rate:30},
+      {key:'spouse',name:'専業主婦',rate:30}
+    ];
+    const fam = families[Math.floor(Math.random()*families.length)];
+    const years = Math.min(49,67-age);
+    const lz = getLeibniz(years);
+    const result = income * (1-fam.rate/100) * lz;
+    return {
+      question: `<strong>【問題C: 死亡逸失利益】</strong><br>被害者（${age}歳・年収${income}万円・${fam.name}）が死亡した。<br>死亡逸失利益を計算せよ。（ライプニッツ係数${years}年分: ${lz}）`,
+      answer: `<div class="quiz-step"><strong>解答ステップ:</strong></div>
+        <div class="quiz-step">① 就労可能年数 = 67 − ${age} = ${years}年</div>
+        <div class="quiz-step">② ライプニッツ係数（${years}年）= ${lz}</div>
+        <div class="quiz-step">③ 生活費控除率（${fam.name}）= ${fam.rate}%</div>
+        <div class="quiz-formula">死亡逸失利益 = 基礎収入 × (1 − 生活費控除率) × ライプニッツ係数
+= ${income}万円 × (1 − ${fam.rate}%) × ${lz}
+= ${income}万円 × ${(1-fam.rate/100).toFixed(2)} × ${lz}
+= ${fmtMan(result)}</div>
+        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fmtMan(result)}</strong>（${fmtEn(result)}）</div>`
+    };
+  } else if(type==='D'){
+    // 付添費計算
+    const nyuinFusoi = rnd(5,30);
+    const tsuinFusoi = rnd(3,20);
+    const fusoiNyuinAmt = nyuinFusoi * 6500;
+    const fusoiTsuinAmt = tsuinFusoi * 3300;
+    const fusoiTotal = fusoiNyuinAmt + fusoiTsuinAmt;
+    return {
+      question: `<strong>【問題D: 付添費計算】</strong><br>被害者が入院中に近親者が<strong>${nyuinFusoi}日</strong>付き添い、通院時にも<strong>${tsuinFusoi}日</strong>付き添った。<br>弁護士基準（近親者付添費）の付添費合計はいくらか。<br><small>（入院中近親者付添: 1日6,500円、通院付添: 1日3,300円）</small>`,
+      answer: `<div class="quiz-step"><strong>解答ステップ:</strong></div>
+        <div class="quiz-step">① 入院中近親者付添費 = ${nyuinFusoi}日 × 6,500円 = ${fusoiNyuinAmt.toLocaleString()}円</div>
+        <div class="quiz-step">② 通院付添費 = ${tsuinFusoi}日 × 3,300円 = ${fusoiTsuinAmt.toLocaleString()}円</div>
+        <div class="quiz-formula">付添費合計 = ${fusoiNyuinAmt.toLocaleString()}円 ＋ ${fusoiTsuinAmt.toLocaleString()}円
+= ${fusoiTotal.toLocaleString()}円
+= 約${(fusoiTotal/10000).toLocaleString('ja-JP',{maximumFractionDigits:2})}万円</div>
+        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fusoiTotal.toLocaleString()}円（${(fusoiTotal/10000).toLocaleString('ja-JP',{maximumFractionDigits:2})}万円）</strong></div>`
+    };
+  } else if(type==='F'){
+    // 自賠責限度額判定
+    const chiryohi2 = rnd(20,80);
+    const kyugyo2 = rnd(5,40);
+    const isharyo2 = rnd(10,60);
+    const sTotal = chiryohi2 + kyugyo2 + isharyo2;
+    const limit = 120;
+    const over = sTotal > limit;
+    const overAmt = Math.max(0, sTotal - limit);
+    return {
+      question: `<strong>【問題F: 自賠責限度額判定】</strong><br>傷害事故で以下の損害が算定された。<br>・治療費: <strong>${chiryohi2}万円</strong><br>・休業損害: <strong>${kyugyo2}万円</strong><br>・入通院慰謝料: <strong>${isharyo2}万円</strong><br><br>①傷害損害の合計はいくらか。②自賠責保険の傷害限度額（120万円）を超えるか。③超えた場合、超過分はどこに請求するか。`,
+      answer: `<div class="quiz-step"><strong>解答ステップ:</strong></div>
+        <div class="quiz-step">① 傷害損害合計 = ${chiryohi2}万円 ＋ ${kyugyo2}万円 ＋ ${isharyo2}万円 = <strong>${sTotal}万円</strong></div>
+        <div class="quiz-formula">合計 ${sTotal}万円 ${over ? '＞' : '≦'} 自賠責限度額 ${limit}万円</div>
+        <div class="quiz-step">② ${over ? `<strong style="color:var(--danger)">超えます</strong>（超過額: ${overAmt}万円）` : `<strong style="color:var(--success)">超えません</strong>（自賠責の範囲内）`}</div>
+        <div class="quiz-step">③ ${over ? `超過分 <strong>${overAmt}万円</strong>は、加害者側の<strong>任意保険</strong>または<strong>加害者本人</strong>に請求します。` : `全額を自賠責保険に請求できます。`}</div>
+        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: 合計${sTotal}万円・${over?`限度額超過（超過${overAmt}万円→任意保険へ）`:'限度額内（自賠責で全額対応）'}</div>`
+    };
+  } else {
+    // Type E: 端数処理（日割り計算）
+    const nyuin = rnd(0,2);
+    const tsuinInt = rnd(1,10);
+    const tsuinFracDays = rnd(1,28);
+    const tsuin = tsuinInt + tsuinFracDays/30;
+    const isLight = Math.random()<0.5;
+    const typeName = isLight?'軽傷（むち打ち・頸椎捻挫）':'重傷（骨折）';
+    const ans = lookupIsharyo(tsuin, nyuin, isLight);
+    const tbl = isLight ? ISHARYO_LIGHT : ISHARYO_HEAVY;
+    const tsuinFloor = Math.floor(tsuin);
+    const tsuinFrac = tsuinFracDays/30;
+    const v1 = tbl[Math.min(tsuinFloor,12)][Math.min(nyuin,6)];
+    const v2 = tbl[Math.min(tsuinFloor+1,12)][Math.min(nyuin,6)];
+    return {
+      question: `<strong>【問題E: 端数処理・日割り計算】</strong><br>被害者（${rnd(25,55)}歳）は<span class="chip ${isLight?'chip-light':'chip-heavy'}">${typeName}</span>で入院${nyuin}ヶ月・通院${tsuinInt}ヶ月${tsuinFracDays}日（通院期間計${fmt2(tsuin)}ヶ月）した。<br>弁護士基準の入通院慰謝料をいくらか。`,
+      answer: `<div class="quiz-step"><strong>解答ステップ:</strong></div>
+        <div class="quiz-step">① 傷病区分: ${typeName} → ${isLight?'軽傷用':'重傷用'}テーブル</div>
+        <div class="quiz-step">② 通院期間 ${tsuinInt}ヶ月${tsuinFracDays}日 → ${fmt2(tsuin)}ヶ月（整数部分: ${tsuinFloor}ヶ月、端数: ${tsuinFracDays}日 ÷ 30 = ${fmt2(tsuinFrac)}）</div>
+        <div class="quiz-step">③ テーブル参照（入院${nyuin}ヶ月列）</div>
+        <div class="quiz-formula">${tsuinFloor}ヶ月: ${v1}万円　${tsuinFloor+1}ヶ月: ${v2}万円</div>
+        <div class="quiz-step">④ 日割り計算: ${v1} + (${v2} − ${v1}) × ${fmt2(tsuinFrac)} = ${v1} + ${fmt2((v2-v1)*tsuinFrac)} = <strong>${fmt2(ans)}万円</strong></div>
+        <div class="quiz-step" style="font-size:15px;font-weight:700;color:var(--success)">答え: <strong>${fmtMan(ans)}</strong></div>`
+    };
+  }
+}
+
+// ============================================================
+// ONE-QUESTION-ONE-ANSWER (QA)
+// ============================================================
+const QA_BANK = [
+  // ○× 保険知識
+  {q:'自賠責保険は任意加入である。', type:'ox', ans:'×', exp:'自賠責保険（自動車損害賠償責任保険）はすべての自動車・バイクに加入が<strong>義務付けられた強制保険</strong>です。未加入での運転は法律違反（1年以下の懲役または50万円以下の罰金）となります。'},
+  {q:'自賠責保険の傷害による損害の限度額は120万円である。', type:'ox', ans:'○', exp:'傷害による損害（治療費・休業損害・慰謝料の合計）の自賠責保険限度額は<strong>120万円</strong>です。超過分は任意保険または加害者本人に請求します。'},
+  {q:'人身傷害補償保険は、被害者自身の過失部分も補償される。', type:'ox', ans:'○', exp:'人身傷害補償保険は、被害者の過失部分を含めた損害額を実損払いする保険です。過失相殺で減額された分も自分の保険から補償されます。'},
+  {q:'搭乗者傷害保険は、実際の損害額に応じた補償がされる。', type:'ox', ans:'×', exp:'搭乗者傷害保険は<strong>定額払い</strong>です。実際の損害額にかかわらず、契約で決められた金額が支払われます（人身傷害補償保険とは異なります）。'},
+  {q:'弁護士費用特約を使うと、保険の等級が下がる。', type:'ox', ans:'×', exp:'弁護士費用特約を使っても<strong>等級には影響しません</strong>。等級が下がるのは車両保険・対人・対物賠償保険等を使った場合です。弁護士費用特約は積極的に活用しましょう。'},
+  {q:'健康保険を使って交通事故の治療をすることができる。', type:'ox', ans:'○', exp:'可能です。ただし、健康保険組合や協会けんぽに<strong>第三者行為による傷病届</strong>を提出する必要があります。健保が立て替えた費用は加害者へ求償されます。'},
+  {q:'生命保険の入院給付金は、損益相殺の対象となる。', type:'ox', ans:'×', exp:'生命保険の入院給付金は<strong>損益相殺の対象外</strong>です。被害者が自分で保険料を支払って積み立てた給付金は、加害者の賠償額から控除されません。'},
+  {q:'交通事故の治療費を健康保険で支払った場合、健保組合は加害者へ求償できる。', type:'ox', ans:'○', exp:'健康保険組合等は、立て替えた給付分について<strong>加害者に対して求償権（代位）</strong>を持ちます。これが第三者行為届の仕組みです。'},
+  // 3択 書類・手続き
+  {q:'後遺障害等級の認定を行う機関はどれか？\nA. 警察\nB. 自賠責保険損害調査事務所（損害保険料率算出機構）\nC. 弁護士会', type:'abc', ans:'B', exp:'後遺障害等級の認定は<strong>損害保険料率算出機構（自賠責保険損害調査事務所）</strong>が行います。書類を審査し、1〜14級（＋要介護1・2級）の認定を行います。'},
+  {q:'給与所得者が休業損害を請求するために必要な書類は？\nA. 確定申告書\nB. 休業損害証明書（勤務先作成）\nC. 医師の意見書', type:'abc', ans:'B', exp:'給与所得者の休業損害請求には<strong>休業損害証明書（勤務先が作成）</strong>が必要です。給与明細・源泉徴収票も合わせて提出します。確定申告書は自営業者向けです。'},
+  {q:'後遺障害申請の「被害者請求」と「事前認定」の主な違いは？\nA. 申請にかかる費用\nB. 書類収集の主導権（誰が書類を集めるか）\nC. 認定される等級の基準', type:'abc', ans:'B', exp:'最大の違いは<strong>主導権</strong>です。被害者請求は被害者側が書類を集め申請します（証拠をコントロールできる）。事前認定は加害者側保険会社に任せます（楽だが内容確認しにくい）。認定基準は同じです。'},
+  {q:'症状固定後に行うべきことは？\nA. 示談書への署名\nB. 後遺障害等級の申請\nC. 自賠責への一括請求', type:'abc', ans:'B', exp:'症状固定後まずすべきことは<strong>後遺障害等級の申請</strong>です。等級が決まってから慰謝料・逸失利益が確定し、その後示談交渉または訴訟に進みます。示談は等級確定後に行うのが原則です。'},
+  {q:'自家用車で通院した場合の交通費の計算基準は？\nA. 実際のガソリン代（レシートで証明）\nB. 片道距離 × 2 × 15円/km\nC. 近くのタクシー代相当額', type:'abc', ans:'B', exp:'自家用車通院の交通費は<strong>片道距離(km) × 2 × 15円/km × 通院日数</strong>で計算します。ガソリン実費ではなくキロ単価方式が一般的な弁護士基準です。'},
+  {q:'死亡事故の自賠責保険限度額は？\nA. 120万円\nB. 3,000万円\nC. 5,000万円', type:'abc', ans:'B', exp:'死亡による損害の自賠責保険限度額は<strong>3,000万円</strong>です。傷害限度額（120万円）とは別枠です。高額の死亡事故では任意保険への追加請求が必要になります。'},
+  {q:'弁護士費用特約の一般的な補償限度額は？\nA. 100万円\nB. 300万円\nC. 500万円', type:'abc', ans:'B', exp:'弁護士費用特約の一般的な補償限度額は<strong>300万円</strong>（弁護士費用）＋法律相談費用10万円が多いです。保険会社・商品によって異なりますので、証券を確認してください。'},
+  // 治療費・書類
+  {q:'「治療関係費」とは何の費用か？\nA. 症状固定までの病院・整骨院・薬局等にかかった費用\nB. 後遺障害診断書の作成費用\nC. 症状固定後のリハビリ費用', type:'abc', ans:'A', exp:'治療関係費とは<strong>症状固定までの</strong>病院の治療費、整骨院の施術費、薬局の調剤費等のことです。症状固定後の費用は原則として損害賠償の対象外となります。'},
+  {q:'病院（医療機関）に通院した場合に収集すべき書類は？\nA. 自賠責診断書のみ\nB. 自賠責診断書＋自賠責診療報酬明細書\nC. 診断書＋領収書のみ', type:'abc', ans:'B', exp:'病院への通院では<strong>①自賠責診断書と②自賠責診療報酬明細書</strong>の2点を収集します。診療報酬明細書には治療費の内訳と合計が記載されており、損害額の計算に必須です。'},
+  {q:'自賠責診療報酬明細書（入院）の治療費はどこを参照するか？\nA. 表の左上欄\nB. 明細書右下の「上記金額」欄\nC. 別添請求書の合計欄', type:'abc', ans:'B', exp:'自賠責診療報酬明細書の<strong>右下の「上記金額」欄</strong>に記載された合計金額を参照します。この欄に入院中の全治療費が集計されています。'},
+  {q:'整骨院・接骨院に通院した場合に収集する書類は？\nA. 自賠責診断書＋診療報酬明細書\nB. 自賠責施術証明書・施術費明細書\nC. 診断書のみ', type:'abc', ans:'B', exp:'整骨院・接骨院では<strong>自賠責施術証明書・施術費明細書</strong>を収集します。病院の診断書＋診療報酬明細書に相当する書類が一体となっており、施術内容と費用が記載されます。'},
+  {q:'整骨院の施術証明書に病院が診断していない傷病名が記載されていても、その施術費は問題なく請求できる。', type:'ox', ans:'×', exp:'病院が診断していない傷病名に対する施術費は<strong>回収が非常に困難</strong>です。整骨院への通院は医師の指示・同意のもとで行うことが必要であり、医師の診断がない傷病の施術費は認められにくいです。'},
+  {q:'被害者が自ら支払った調剤費が1回5,000円未満の場合に対応できる書類は？\nA. 調剤報酬明細書が必須\nB. 領収書のみで示談交渉可能\nC. 医師の処方箋コピーが必要', type:'abc', ans:'B', exp:'1回の調剤費が<strong>5,000円未満</strong>で院外処方が明細書等で確認できる場合、<strong>領収書のみで示談交渉が可能</strong>です（自賠責の運用）。5,000円以上の場合は調剤報酬明細書を収集します。'},
+  {q:'健康保険を使って治療した場合、健康保険が支払った治療費（7割部分）は損害として計上するか？', type:'ox', ans:'×', exp:'<strong>計上しません</strong>。健康保険が支払った7割部分は損害に計上せず、被害者が窓口で支払った3割部分のみを治療費として計上します。健保分は過失相殺前に控除される扱いが実務上定着しています。'},
+  {q:'労災保険を使って治療した場合、労災保険が支払った治療費は損害として計上するか？', type:'ox', ans:'○', exp:'<strong>計上します</strong>。労災保険が支払った治療費は損害として計上し、後に既払額として過失相殺後の損害額から控除します。健康保険（過失相殺前に控除）と扱いが異なる重要ポイントです。'},
+  {q:'弁護士が代理人として病院に診断書等を請求する場合、依頼者の個人情報に関する同意書は必要か？', type:'ox', ans:'○', exp:'<strong>必ず必要です</strong>。弁護士は病院からすれば第三者であるため、個人情報保護の観点から依頼者の同意書（委任状兼同意書）が必須です。同意書なしでは病院は開示を拒否できます。'},
+  // 保険・お金の流れ
+  {q:'相手方任意保険の「自賠責一括対応」の意味は？\nA. 被害者の全損害を無制限に補償する\nB. 任意保険が自賠責部分も含め一括して治療費を病院に支払う\nC. 被害者と加害者の示談を代行する', type:'abc', ans:'B', exp:'<strong>自賠責一括対応</strong>とは、相手方任意保険が自賠責の部分も含めて一括して治療費等を病院に支払う実務上の取扱いです。その後、任意保険会社は自賠責保険に求償します。被害者の立替負担がなくなる仕組みです。'},
+  {q:'自由診療の場合、患者は治療費の何割を病院に支払うか？\nA. 3割\nB. 7割\nC. 10割（全額）', type:'abc', ans:'C', exp:'自由診療では<strong>10割（全額）</strong>を患者が直接支払います。健康保険を使った場合は3割負担（残り7割は健保が負担）となりますが、自由診療には保険点数の制限がなく、単価が高くなる場合があります。'},
+  {q:'「健保一括」とはどのような取扱いか？\nA. 健康保険が全治療費を一括払い\nB. 健康保険使用時に相手方任意保険が患者の窓口負担（3割）を立替払い\nC. 健康保険と自賠責が共同で支払う', type:'abc', ans:'B', exp:'<strong>健保一括</strong>とは、被害者が健康保険を使って治療している場合に、相手方任意保険が被害者の窓口負担分（3割）を病院に立替払いする取扱いです。被害者の自己負担をなくし、後で示談時に精算します。'},
+  // 健康保険・労災保険
+  {q:'通勤中の交通事故の場合、健康保険は使用できるか？', type:'ox', ans:'×', exp:'<strong>使用できません</strong>。業務災害・通勤災害の場合は<strong>労災保険</strong>を使う必要があります。通勤災害にもかかわらず健康保険で治療すると、後日健康保険への返還問題が生じます。'},
+  {q:'通勤災害であるにもかかわらず健康保険で治療し示談成立後に返金問題が発覚した場合のリスクは？\nA. 治療費が倍額になる\nB. 相手方・労災のどちらにも請求できなくなる可能性がある\nC. 特に問題はない', type:'abc', ans:'B', exp:'通勤災害で健康保険を使った場合、<strong>後日健康保険への返金が必要</strong>になります。示談後に返金問題が発覚すると、相手方への追加請求も既に終了し、労災への切替も困難で、<strong>被害者がどこにも請求できなくなる</strong>深刻なリスクがあります。'},
+  {q:'労災保険は、労災指定外病院を利用した場合どのようなデメリットがあるか？\nA. 給付額が半額になる\nB. 被害者が治療費10割を立替してから請求する\nC. 労災の認定が受けられない', type:'abc', ans:'B', exp:'労災指定外病院では<strong>被害者が一旦10割を立替えてから</strong>労災保険に請求する必要があります（療養費払い）。労災保険を利用する場合は指定病院を選ぶことで立替負担を避けられます。'},
+  {q:'健康保険の傷病手当金の支給期間はどれか？\nA. 最長6か月\nB. 最長1年6か月\nC. 最長3年', type:'abc', ans:'B', exp:'健康保険の傷病手当金は、支給開始日から原則<strong>最長1年6か月</strong>支給されます。支給額は直近12か月の標準報酬月額平均の日額の2/3相当です。交通事故の休業損害計算でも参考にします。'},
+  {q:'国民健康保険には傷病手当金の制度があるか？', type:'ox', ans:'×', exp:'原則として<strong>ありません</strong>。協会けんぽや健康保険組合には傷病手当金がありますが、国民健康保険（自営業者・フリーランス等）には原則として傷病手当金制度がないため、休業損害の計算方法が異なります。'},
+  // 入院雑費・損害関係費
+  {q:'入院雑費（弁護士基準・赤い本）の日額はいくらか？\nA. 1,100円/日\nB. 1,500円/日\nC. 2,000円/日', type:'abc', ans:'B', exp:'弁護士基準（裁判基準・赤い本）の入院雑費は<strong>1,500円/日</strong>です。自賠責基準は1,100円/日です。入院日数が多い場合は金額差が大きくなります。'},
+  {q:'入院雑費を請求するために領収書等の証拠が必要か？', type:'ox', ans:'×', exp:'<strong>不要です</strong>。入院雑費は日額定額であり、入院日数が証明できれば領収書等の証拠なしでも認められます。定額を超える特別な支出がある場合は別途証明が必要です。'},
+  {q:'お見舞いに来た家族へのお茶代・退院後の職場へのお菓子代は入院雑費として損害に含まれるか？', type:'ox', ans:'×', exp:'<strong>含まれません</strong>。入院雑費として認められるのは患者自身が入院に際して直接必要とした費用（病衣代・タオル代・日用品代等）に限られます。見舞客へのお茶代や職場への挨拶品は対象外です。'},
+  {q:'個室（差額ベッド）代を「落ち着かないから」という理由で損害として請求できるか？', type:'ox', ans:'×', exp:'<strong>難しいです</strong>。個室利用の必要性（重傷で安静が必要・感染症のリスク・空室がなくやむを得ない等）と医師の意見書による医学的裏付けが必要です。単なる好みでの個室利用は認められません。'},
+  {q:'私的な医学鑑定・工学鑑定の費用は損害として認められやすいか？', type:'ox', ans:'×', exp:'<strong>認められにくいです</strong>。被害者が自己の主張を有利にするために行った私的鑑定は「通常生じる損害」と認定されない傾向があります。費用が多額になりやすく、被害者負担リスクが高い手段です。'},
+  // 逸失利益
+  {q:'給与所得者の後遺障害逸失利益の基礎収入は源泉徴収票のどの欄か？\nA. 「給与所得控除後の金額」欄\nB. 「支払金額」欄（額面年収）\nC. 「所得控除の額の合計額」欄', type:'abc', ans:'B', exp:'給与所得者の基礎収入は源泉徴収票の<strong>「支払金額」欄</strong>（税引き前の額面年収）を使います。「給与所得控除後の金額」は課税計算用の控除後の金額であり、逸失利益計算では使用しません。'},
+  {q:'自営業者の逸失利益計算で、青色申告特別控除額は基礎収入に含めるか？', type:'ox', ans:'○', exp:'<strong>含めます</strong>。青色申告特別控除は課税目的の控除にすぎず、実際の収入能力とは無関係です。基礎収入は「確定申告書の所得金額 ＋ 青色申告特別控除額」で計算します。'},
+  {q:'配当収入や株式売却益は後遺障害逸失利益の基礎収入に含まれるか？', type:'ox', ans:'×', exp:'<strong>含まれません</strong>。後遺障害逸失利益は「労働能力の低下」を理由とするものです。配当や株式売却益は労働能力とは無関係な財産収入のため、基礎収入には含めません。'},
+  {q:'後遺障害逸失利益の計算の正しい4ステップ順序は？\nA. 等級確認→慰謝料確認→年齢確認→合計\nB. 基礎収入確認→労働能力喪失率確認→喪失期間・係数決定→全て乗算\nC. 喪失率確認→基礎収入確認→係数確認→乗算', type:'abc', ans:'B', exp:'逸失利益の4ステップ：<strong>①基礎収入額の確認 → ②後遺障害等級に応じた労働能力喪失率の確認 → ③喪失期間（症状固定時〜67歳）とライプニッツ係数の決定 → ④基礎収入×喪失率×ライプニッツ係数</strong>で算出します。'},
+  // 既払額
+  {q:'自賠責保険金は遅延損害金と損害元本のどちらに先に充当されるか？\nA. 損害元本に先に充当\nB. 遅延損害金に優先的に充当（最高裁判例）\nC. 按分して両方に充当', type:'abc', ans:'B', exp:'自賠責保険金は<strong>遅延損害金に優先的に充当</strong>されます（最判平成16年12月20日）。充当後の残額が損害元本から控除され、充当翌日から改めて遅延損害金が発生します。示談交渉で重要な論点です。'},
+  {q:'人身傷害保険金は遅延損害金に充当されるか（最高裁判例）？', type:'ox', ans:'×', exp:'充当<strong>されません</strong>（最判平成24年2月20日）。人身傷害保険金は損害元本から控除されます。自賠責保険金が遅延損害金に優先充当されるのとは扱いが異なる重要ポイントです。'},
+  {q:'労災保険の療養給付は、過失相殺後の慰謝料や休業損害からも控除できるか？', type:'ox', ans:'×', exp:'<strong>できません</strong>。労災保険給付は「同一性質の損害項目（費目対応の原則）」からのみ控除されます。療養給付は治療費項目からのみ控除でき、慰謝料や休業損害からは控除されません。'},
+  // 自賠責保険
+  {q:'自賠責保険の通院慰謝料の算出式はどれか？\nA. 通院期間日数 × 4,300円\nB. 実通院日数×2 と 通院期間日数 の少ない方 × 4,300円\nC. 通院期間（月数）× 43,000円', type:'abc', ans:'B', exp:'自賠責基準の通院慰謝料は「<strong>実通院日数×2</strong>」と「<strong>通院期間日数</strong>」のいずれか少ない方に<strong>4,300円</strong>を乗じます。通院が少ない場合は実通院日数×2が使われ、慰謝料が抑えられます。'},
+  {q:'自賠責保険の重過失減額（傷害部分）が適用されるのは被害者過失が何割以上の場合か？\nA. 7割以上\nB. 8割以上\nC. 9割以上', type:'abc', ans:'B', exp:'傷害部分の重過失減額は<strong>被害者過失8割以上</strong>から適用されます（8割以上9割未満：2割減額、9割以上：5割減額）。7割以上8割未満の場合、傷害については減額されません。後遺障害・死亡は7割以上から適用される点が傷害と異なります。'},
+  {q:'自賠責の重過失減額で後遺障害・死亡の場合、被害者過失7割以上8割未満の減額割合は？\nA. 減額なし\nB. 2割減額\nC. 3割減額', type:'abc', ans:'B', exp:'後遺障害・死亡の重過失減額：7割以上8割未満→<strong>2割減額</strong>、8割以上9割未満→<strong>3割減額</strong>、9割以上→<strong>5割減額</strong>。傷害については8割未満は減額なし、8割以上9割未満は2割減額となります。'},
+  {q:'自賠責保険への「被害者請求」と「加害者請求」の違いとして正しいものは？\nA. 被害者請求の方が支払われる金額が高い\nB. 被害者請求は被害者が直接自賠責に請求でき、示談前でも受け取れる\nC. 加害者請求は加害者が費用を立替えて被害者に渡す', type:'abc', ans:'B', exp:'<strong>被害者請求</strong>は被害者が自ら自賠責保険に直接請求する方法で、示談成立前でも仮渡金・被害者請求として受け取れます。<strong>加害者請求</strong>は示談成立後に加害者（任意保険）が自賠責に一括請求する方法です。'},
+  {q:'自賠責保険加入を義務付けている法律の根拠条文はどれか？\nA. 道路交通法65条\nB. 自動車損害賠償保障法（自賠法）5条\nC. 保険業法294条', type:'abc', ans:'B', exp:'自賠責保険の強制加入義務は<strong>自動車損害賠償保障法（自賠法）5条</strong>に基づきます。「自動車損害賠償責任保険又は自動車損害賠償責任共済の契約が締結されているものでなければ、運行の用に供してはならない」と定められています。'},
+  {q:'自賠責保険未加入で自動車を運転した場合の罰則はどれか？\nA. 6か月以下の懲役または30万円以下の罰金\nB. 1年以下の懲役または50万円以下の罰金\nC. 行政指導のみ（刑事罰なし）', type:'abc', ans:'B', exp:'自賠責保険未加入での運転は<strong>1年以下の懲役または50万円以下の罰金</strong>が科されます（自賠法86条の3）。また、無車検運転と重なることも多く、点数付加・免許停止にもなりえます。'},
+  {q:'任意保険（対人賠償保険）は自賠責保険とどのような関係にあるか？\nA. 自賠責と同じ強制保険で補完関係にある\nB. 自賠責では足りない損害に備えて任意で契約する保険\nC. 自賠責の代替保険で両方の加入は不要', type:'abc', ans:'B', exp:'任意保険は<strong>自賠責保険では足りない損害（120万円超の傷害・3,000万円超の死亡等）に備えて任意で契約する保険</strong>です。「任意」とは法律上の加入義務がないという意味で、自賠責との二重加入が一般的です。'},
+  {q:'自賠責基準の損害額は通常、裁判所基準（赤い本）と比べてどうか？\nA. 常に自賠責基準の方が高い\nB. 通常は自賠責基準の方が低いが、一部逆転するケースがある\nC. 全く同じ基準で差はない', type:'abc', ans:'B', exp:'通常は<strong>自賠責基準 ＜ 裁判所基準（赤い本）</strong>です。ただし通院期間が長く月あたり実通院日数が多い場合、自賠責基準（実通院日数×2×4,300円）が裁判所基準を上回ることがあります（上限120万円でキャップ）。'},
+  {q:'被害者XがY車・Z車の2台に衝突された場合、傷害に関する自賠責保険金の合計上限額は？\nA. 120万円（1台分の上限）\nB. 240万円（120万円×2台分）\nC. 無制限', type:'abc', ans:'B', exp:'被害者が複数の車両から傷害を受けた場合、<strong>各車両の自賠責保険金額の合計</strong>が上限となります。2台からの場合は120万円×2＝<strong>240万円</strong>まで自賠責から支払いを受けられます。'},
+  {q:'相手方任意保険が一括対応中に被害者が直接自賠責に被害者請求をするとどうなるか？\nA. 被害者請求額を追加で受け取れる\nB. 一括払いができなくなる（一括不能）可能性があり、その後の立替払いが停止する\nC. 何も変わらず両方から受け取れる', type:'abc', ans:'B', exp:'一括対応中に被害者請求をすると<strong>一括不能</strong>という扱いになり、相手方任意保険はその後の治療費一括払いができなくなる可能性があります。被害者請求を行う際は一括対応の停止リスクを十分検討すべきです。'},
+  // 人身傷害保険
+  {q:'人身傷害補償保険の特徴として正しいものはどれか？\nA. 定額払いで損害額に関係なく固定金額が支払われる\nB. 過失割合にかかわらず約款基準で算出した損害額が支払われる\nC. 相手方の任意保険が代わりに支払う保険', type:'abc', ans:'B', exp:'人身傷害補償保険は<strong>過失割合に関係なく</strong>、保険約款に定める算出基準（人傷基準）で計算した損害額を支払います。ただし人傷基準は裁判所基準より低いことが多く、弁護士介入により差額を補填できる場合があります。'},
+  {q:'人身傷害補償保険と搭乗者傷害保険の主な違いは？\nA. 人身傷害は定額払い、搭乗者傷害は実損払い\nB. 人身傷害は実損払い（約款基準）、搭乗者傷害は定額払い\nC. どちらも実損払いで計算方法だけが異なる', type:'abc', ans:'B', exp:'<strong>人身傷害補償保険</strong>は約款基準による実損払い（損害額に応じて支払い）、<strong>搭乗者傷害保険</strong>は損害額に関係なく契約上の定額が支払われます。混同しやすい重要な違いです。'},
+  {q:'人身傷害補償保険が販売されるようになった背景は？\nA. 1998年の保険料自由化に伴い、被保険者の損害を速やかに補償するため\nB. 2000年の道路交通法改正をきっかけに誕生した\nC. 自賠責保険の限度額引き上げに対応して開発された', type:'abc', ans:'A', exp:'人身傷害補償保険は<strong>1998年の保険料自由化</strong>に伴い導入されました。過失割合にかかわらず被保険者に発生した損害を速やかにてん補するという目的で開発・販売された新しい保険商品です。'},
+  {q:'過失部分払条項がある場合（裁判所基準1,000万・人傷基準700万・被害者過失50%）、回収できる金額は？\nA. 1,000万円（全額回収できる）\nB. 850万円（相手500万＋人傷350万）\nC. 700万円（人傷基準額のみ）', type:'abc', ans:'B', exp:'過失部分払条項がある場合、<strong>相手方から500万円（1,000万×50%）＋人身傷害保険から350万円（700万×50%）＝850万円</strong>しか回収できません。裁判所基準の全額1,000万円には150万円不足します。この差額が弁護士介入の意義の一つです。'},
+  {q:'相手方が任意保険未加入で資力もない場合、自分の人身傷害保険の読替規定を使って裁判所基準の損害額を受け取れるか？', type:'ox', ans:'×', exp:'読替規定が適用されても、<strong>支払保険金は人傷基準で算出した損害額を超えることはありません</strong>（約款に明記）。相手が無資力でも人傷基準の壁は超えられません。弁護士費用特約と組み合わせることが重要です。'},
+  // 健康保険・労災保険 追加
+  {q:'業務災害・通勤災害の場合に選択できる診療方法はどれか？\nA. 健康保険診療または自由診療の2択\nB. 自由診療または労災保険診療の2択（健康保険は使用不可）\nC. 健康保険・労災保険・自由診療の3択', type:'abc', ans:'B', exp:'業務災害・通勤災害の場合は<strong>自由診療または労災保険診療の2択</strong>となります。健康保険は業務災害・通勤災害には適用されません（法律上、労災保険の給付を受けられる場合は健康保険の給付は行われない）。'},
+  {q:'健康保険の傷病手当金の支給要件として正しくないものはどれか？\nA. 業務外の事由による病気・ケガの療養のための休業であること\nB. 連続3日を含む4日以上仕事に就けなかったこと\nC. 休業期間中も給与の50%以上が支払われていること', type:'abc', ans:'C', exp:'傷病手当金の4つの要件：①業務外の事由による療養のための休業、②仕事に就くことができないこと、③<strong>連続する3日間を除き4日以上</strong>仕事に就けなかったこと、④<strong>休業期間について給与の支払いがないこと</strong>（Cは誤り。給与が支払われると傷病手当金は減額・不支給）。'},
+  {q:'健康保険使用時に病院が自賠責診療報酬明細書の作成を断る理由として正しいのは？\nA. 健保使用の場合は交通事故の損害計算ができないから\nB. 健保レセプトを作成して健保に請求しており、それと重ねて自賠責明細書を発行できないとするため\nC. 自賠責診療報酬明細書は労災病院しか作れないから', type:'abc', ans:'B', exp:'健康保険使用時は病院が<strong>健保診療報酬明細書（健保レセプト）を健保に請求しており</strong>、それと重ねて自賠責診療報酬明細書を発行できないとする病院があります。この場合は被害者が受け取った<strong>領収書と診療明細書で代用</strong>します。'},
+  {q:'健康保険と労災保険が支払った治療費の、損害計算上の控除タイミングの違いは？\nA. どちらも過失相殺前に控除する\nB. 健保分は過失相殺前に控除、労災分は原則として過失相殺後に控除\nC. どちらも過失相殺後に控除する', type:'abc', ans:'B', exp:'重要な実務上の違い：<strong>健康保険分は過失相殺前に控除</strong>（損害額から先に引く）、<strong>労災保険分は原則として過失相殺後に控除</strong>（既払額として控除）。この違いにより、被害者過失がある場合に健保使用の方が有利なケースがあります。'},
+  {q:'被害者に過失がある場合、健康保険や労災保険を使用した方がよい理由は？\nA. 治療費が全額無料になるから\nB. 健保・労災が治療費の被害者過失部分の一部または全部を結果的に負担するから\nC. 示談交渉が有利になるから', type:'abc', ans:'B', exp:'被害者に過失がある場合（過失相殺が生じる場合）、健康保険・労災保険を使用すると、<strong>本来は過失分として被害者が負担すべき治療費部分を健保・労災が事実上負担</strong>する結果になります。これが被害者にとっての経済的メリットです。'},
+  {q:'労災保険が支払った治療費の確認が不要な場合はどれか？\nA. 被害者過失なしの場合（全額労災または一部労災いずれも）と、被害者過失ありかつ全額労災の場合\nB. 常に確認が必要\nC. 過失割合が50%未満の場合', type:'abc', ans:'A', exp:'労災保険が支払った治療費の確認が不要なのは：①<strong>被害者過失なし</strong>の場合（全額・一部労災問わず）、②<strong>被害者過失ありかつ全額労災</strong>の場合。<strong>被害者過失ありかつ一部労災</strong>（自由診療分もある）の場合のみ確認が必要です。'},
+  // 治療関係費 追加
+  {q:'相手方任意保険が一括対応している場合、診断書等の書類はどこから収集するか？\nA. 直接病院に作成依頼する\nB. 相手方任意保険から「原本に相違ない」旨の原本照合をしてもらった写しを取り寄せる\nC. 自賠責保険から取り寄せる', type:'abc', ans:'B', exp:'一括対応中は相手方任意保険が原本を保有しているため、<strong>相手方任意保険から「原本に相違ない」証明（原本照合）をしてもらった写しを取り寄せる</strong>のが実務的な方法です。原本照合は損害計算自体には不要ですが、後遺障害申請前には必要になります。'},
+  {q:'原本照合（書類の原本を確認してもらい写しを取り寄せること）は、損害額の計算に必要か？', type:'ox', ans:'×', exp:'損害額の計算自体には<strong>不要です</strong>。ただし、<strong>後遺障害申請が控えている場合</strong>は原本照合が必要になります。原本照合は書類の真正性を担保するもので、申請書類に写しを添付する際に求められます。'},
+  {q:'薬局での調剤費について、相手方任意保険が一括対応している場合に収集する書類は？\nA. 領収書のみ\nB. 調剤報酬明細書が添付された請求書\nC. 医師の処方箋のコピー', type:'abc', ans:'B', exp:'相手方任意保険が一括対応している場合は薬局から<strong>調剤報酬明細書が添付された請求書</strong>を収集します。一括対応がない場合は被害者が直接支払い、領収書（5,000円未満なら領収書のみで可）を保管します。'},
+  {q:'治療関係費の計算方法として正しいのはどれか？\nA. 入院日数×日額単価の定額計算\nB. 自賠責診療報酬明細書・施術証明書・薬局請求書等の治療費総額を合計する\nC. 裁判基準の単価表を使って算出する', type:'abc', ans:'B', exp:'治療関係費は<strong>①自賠責診療報酬明細書（病院）、②施術証明書（整骨院等）、③薬局の請求書または領収書</strong>に記載された治療費の実額の合計です。日額定額計算ではなく実費計算が原則です。'},
+  {q:'自賠責保険から直接病院へ治療費を支払うことはできるか？', type:'ox', ans:'○', exp:'<strong>できます</strong>。相手方に任意保険がない場合や被害者に治療費の立替資力がない場合などに、自賠責から直接病院に支払ってもらう方法があります。自賠責の傷害限度額（120万円）の範囲内での対応となります。'},
+  {q:'労災保険使用時の自賠責診療報酬明細書に記載された金額は常に正確か？', type:'ox', ans:'×', exp:'<strong>必ずしも正確ではありません</strong>。労災保険が病院の請求額を審査・修正した上で支払うため、自賠責診療報酬明細書の請求額と実際の労災支払額がずれることがあります。確定的な治療費は<strong>労災レセプト（労働局への開示請求）</strong>で確認する必要があります。'},
+  {q:'施術証明書（整骨院）の治療関係費はどこで確認するか？\nA. 証明書の右上欄\nB. 右下の「合計」欄または「別 施術料」欄\nC. 証明書の左側の日付一覧', type:'abc', ans:'B', exp:'施術証明書の治療費（施術費）は<strong>右下の「合計」欄または「別 施術料」欄</strong>の金額を参照します。病院の自賠責診療報酬明細書の「上記金額」欄に相当する部分です。'},
+  // 既払額 追加
+  {q:'既払額とは何か？\nA. 被害者が事故前に積み立てた保険金\nB. 治療費や休業補償など相手方や第三者から支払われた金額のうち、賠償請求額から控除される金額\nC. 被害者が加害者に請求できる金額の上限', type:'abc', ans:'B', exp:'<strong>既払額</strong>とは、治療費・休業補償など相手方や第三者（労災保険等）から支払われた金額のうち、<strong>相手方への賠償請求額から控除される金額</strong>のことです。「過失相殺後の損害額－既払額」が最終的な請求額となります。'},
+  {q:'相手方への賠償請求額の計算式として正しいのはどれか？\nA. 損害総額－過失相殺額\nB. 過失相殺後の損害額－既払額\nC. 損害総額－既払額', type:'abc', ans:'B', exp:'賠償請求額は<strong>「過失相殺後の損害額 ― 既払額」</strong>で計算します。過失相殺前に既払額を差し引くのではなく、過失相殺後の損害額から控除することに注意が必要です（労災保険給付等は費目ごとに控除）。'},
+  {q:'相手方任意保険からの支払額を確認するために収集する書類はどれか？\nA. 対物賠償保険金支払通知\nB. 対人賠償保険金支払履歴\nC. 自賠責保険金支払通知', type:'abc', ans:'B', exp:'相手方任意保険からの支払額確認には<strong>対人賠償保険金支払履歴</strong>を収集します。この書類で相手方任意保険がこれまでに支払った金額（治療費・休業損害等の内訳）を確認できます。'},
+  {q:'自賠責保険からの支払額を確認するために収集する書類はどれか（2種類）？\nA. 自賠責保険金支払通知または自賠責保険金支払額証明書\nB. 対人賠償保険金支払履歴または労災保険求償資料\nC. 自賠責診断書または自賠責診療報酬明細書', type:'abc', ans:'A', exp:'自賠責からの支払額確認には<strong>①自賠責保険金支払通知</strong>（被害者請求時に請求者に届く）、または紛失時は<strong>②自賠責保険金支払額証明書</strong>（実印押印の委任状等が必要）を収集します。代理人が被害者請求した場合は代理人宛に届きます。'},
+  {q:'人身傷害保険金の支払履歴を保険会社に発行してもらう際、何がわかるように記載を求めるべきか？\nA. 合計額のみ\nB. 内訳（治療費○円・休業損害○円等）がわかるように記載\nC. 支払日のみ', type:'abc', ans:'B', exp:'人身傷害保険金の支払履歴は<strong>内訳（例：治療費○円、休業損害○円等）がわかるように記載してもらう</strong>ことが重要です。内訳がわからないと既払額の費目別控除が適切にできません。合計額だけでは不十分です。'},
+  {q:'労災保険からの求償資料（任意保険が受け取るもの）には何が記載されているか？\nA. 被害者の過失割合の認定結果\nB. 賠償に関係する労災保険給付（治療費を含む現物給付）の網羅的な内容\nC. 労災保険の認定を否定する資料', type:'abc', ans:'B', exp:'労災保険からの求償資料には<strong>賠償に関係する全ての労災保険給付</strong>（現物給付の治療費、休業補償給付等）が網羅的に記載されています。通常は相手方任意保険から取り付けます。取得できない場合は労働局への保有個人情報開示請求で労災レセプトを入手します。'},
+  // 逸失利益 追加
+  {q:'後遺障害逸失利益と休業損害の違いは何か？\nA. 計算方法が異なるだけで、どちらも現実に生じた収入の喪失\nB. 休業損害は現実に生じた収入喪失、逸失利益は将来発生する収入喪失\nC. 逸失利益は傷害の場合、休業損害は後遺障害の場合に使う', type:'abc', ans:'B', exp:'<strong>休業損害</strong>は症状固定までの間、実際に生じた収入の喪失。<strong>逸失利益</strong>は後遺障害により将来発生するであろう収入の減少（労働能力の低下に対する補償）。症状固定を境に区別されます。'},
+  {q:'給与所得者の後遺障害逸失利益算定のために収集する証拠書類はどれか？\nA. 確定申告書と収支内訳書\nB. 事故前年分の源泉徴収票または課税証明書（所得証明書）\nC. 休業損害証明書と給与明細3か月分', type:'abc', ans:'B', exp:'給与所得者の逸失利益算定には<strong>事故前年分の源泉徴収票または課税証明書（所得証明書）</strong>を収集します。源泉徴収票がない場合（1年分に満たない等）は、1年換算・雇用契約書・賃金センサス参照等の方法で対応します。'},
+  {q:'事業所得者（自営業者）の後遺障害逸失利益算定のために収集する証拠書類はどれか？\nA. 事故前年の源泉徴収票\nB. 確定申告書と青色申告決算書（または収支内訳書）\nC. 休業損害証明書と事業収支一覧', type:'abc', ans:'B', exp:'事業所得者の逸失利益算定には<strong>①確定申告書、②青色申告決算書</strong>（青色申告の場合）または<strong>収支内訳書</strong>（白色申告の場合）を収集します。確定申告書の所得金額に青色申告特別控除・専従者給与を加算して基礎収入を算出します。'},
+  {q:'課税証明書（所得証明書）はどこから入手するか？\nA. 税務署\nB. その年の1月1日時点で住民登録のある市（区）役所等\nC. 勤務先の人事部', type:'abc', ans:'B', exp:'課税証明書は<strong>その年の1月1日時点で住民登録のある住所地の市（区）役所等</strong>から入手します。委任状があれば代理人でも取得可能です。なお、令和2年度の課税証明書には令和1年分（2019年1月〜12月）の所得が証明されます。'},
+  {q:'課税証明書（所得証明書）の給与欄において、逸失利益の基礎収入となるのはどの金額か？\nA. 「給与所得」欄の金額\nB. 「給与収入金額」欄の金額\nC. 「給与所得控除後の金額」欄の金額', type:'abc', ans:'B', exp:'課税証明書では<strong>「給与収入金額」欄の金額</strong>（= 源泉徴収票の「支払金額」に対応）が基礎収入となります。「給与所得」欄は給与収入から給与所得控除を引いた後の課税計算用の金額なので使いません。'},
+  // 通院交通費
+  {q:'公共交通機関で通院した場合の通院交通費の計算式は？\nA. 片道運賃 × 通院日数\nB. 片道運賃 × 2（往復）× 通院日数（入退院日を含む）\nC. 定期券の日割額 × 通院日数', type:'abc', ans:'B', exp:'公共交通機関の通院交通費は<strong>片道運賃 × 2（往復分）× 通院日数（入退院日を含む）</strong>で計算します。定期券を使っている場合でも往復の実費を基準とし、追加コストがあれば請求できます。'},
+  {q:'タクシーで通院した場合に請求できる条件はどれか？\nA. 被害者が希望すれば常に全額請求できる\nB. 他の通院手段がなかった場合（骨折・入退院時等）に請求できる\nC. 相手方保険会社が事前に許可した場合のみ', type:'abc', ans:'B', exp:'タクシー通院費が認められるのは<strong>他の通院手段がなかった場合</strong>（足を骨折して安静が必要・入退院時・公共交通機関がない等）です。相手方保険会社が「タクシー使っていい」と言った場合も、電車代を超える長期利用は被害者負担リスクがあります。'},
+  {q:'救急搬送時に家族が自家用車で病院まで迎えに来た場合のガソリン代は損害として請求できるか？', type:'ox', ans:'○', exp:'<strong>請求できます</strong>。自賠責は救急搬送時の往復ガソリン代を損害として認めています。また入退院時に家族が送迎した場合も往復分のガソリン代が損害として認められます（距離×2×15円/km）。'},
+  {q:'夫婦2人が同乗中の事故で、同日に2人で自家用車通院した場合、2人分のガソリン代を請求できるか？', type:'ox', ans:'×', exp:'<strong>1人分しか請求できません</strong>。2人が同じ日に同一の自家用車で通院した場合、実際に発生したガソリン代は1台分であるため、どちらか一方のみ請求できます。'},
+  // 入院雑費 追加
+  {q:'入院雑費の自賠責基準の日額はいくらか？\nA. 800円/日\nB. 1,100円/日\nC. 1,500円/日', type:'abc', ans:'B', exp:'<strong>自賠責基準の入院雑費は1,100円/日</strong>です。弁護士基準（赤い本）は1,500円/日です。入院が長期になるほど両者の差額が大きくなるため、弁護士基準での交渉・訴訟の実益が高まります。'},
+  {q:'損害賠償関係費用（損害賠償請求のためにかかった費用）には何が含まれるか？\nA. 治療費・交通費・休業損害のこと\nB. 診断書取得費・交通事故証明書代・23条照会費用・謄写代等、損害額算定に必要な費用\nC. 弁護士費用全額', type:'abc', ans:'B', exp:'損害賠償関係費用とは<strong>損害額の算定のために必要になった費用</strong>です。具体的には①警察提出用診断書や後遺障害診断書等の文書料、②印鑑証明書代・交通事故証明書代、③弁護士法23条照会費用（刑事記録取得等）、④謄写代などが含まれます。証拠として領収書が必要です。'},
+  {q:'刑事事件記録の取得費用（23条照会費用・謄写代等）は裁判で損害として認められやすいか？', type:'ox', ans:'○', exp:'<strong>認められやすいです</strong>。刑事事件記録は民事裁判の重要な証拠資料となっているため、<strong>被害者に通常生じる損害</strong>として認定される傾向にあります。示談交渉段階では相手方保険が支払わないケースもありますが、裁判では請求が通ることが多いです。'},
+  {q:'傷害保険の保険金請求のために取得した診断書の文書料は加害者への賠償請求できるか？', type:'ox', ans:'×', exp:'<strong>請求できません</strong>。損害賠償請求のためにかかった費用は請求できますが、<strong>傷害保険（自分の保険）の保険金請求のためにかかった費用は対象外</strong>です。その費用は加害者への賠償ではなく、傷害保険会社に確認するよう案内します。'},
+  // 書類・記載内容
+  {q:'自賠責診断書には何が記載されているか？\nA. 治療費の合計金額\nB. 事故日・傷病名・治療経過・入院期間等\nC. 後遺障害の等級認定結果', type:'abc', ans:'B', exp:'自賠責診断書には<strong>事故日、傷病名、治療経過、入院期間等</strong>が記載されています。治療費の金額は記載されず、それは自賠責診療報酬明細書に記載されます。両書類をセットで収集します。'},
+  {q:'自賠責診療報酬明細書には何が記載されているか？\nA. 医師の後遺障害に関する意見\nB. 診療内容の内訳と治療費（金額）\nC. 被害者の過失割合の認定', type:'abc', ans:'B', exp:'自賠責診療報酬明細書には<strong>診療内容の内訳と治療費の合計金額</strong>が記載されており、治療関係費の算出に必須の書類です。自賠責診断書とセットで収集します。'},
+  {q:'自賠責診療報酬明細書に自賠責診断書代金が含まれている場合はどう扱うか？\nA. 損害賠償関係費用として別計上する\nB. 特段の事情がない限り治療関係費として扱う\nC. 自賠責への請求では認められない費用', type:'abc', ans:'B', exp:'自賠責診断書代金が診療報酬明細書に含まれている場合は<strong>特段の事情がない限り実務上「治療関係費」として扱います</strong>。別途「文書料」として損害賠償関係費用に計上する必要はありません。'},
+  {q:'整骨院の施術証明書には何が記載されているか？\nA. 医師の診断書と同じ内容\nB. 事故日・傷病名・施術経過・施術期間・施術内容の内訳と施術費\nC. 施術師の資格証明のみ', type:'abc', ans:'B', exp:'施術証明書には<strong>事故日、傷病名、施術経過、施術期間、施術内容の内訳と施術費</strong>が記載されています。病院の自賠責診断書＋診療報酬明細書の機能を一枚にまとめた書類です。'},
+  // 一括払いの流れ
+  {q:'事故当日に相手方任意保険から病院への一括対応連絡が届かなかった場合、どうなるか？\nA. 病院が全額無料で治療してくれる\nB. 病院が被害者自身に治療費の支払いまたは預託を求める\nC. 自賠責が直接病院に支払う', type:'abc', ans:'B', exp:'一括対応の連絡が届かない場合、<strong>病院は被害者自身に治療費の支払いを求めるか、相手方保険会社から連絡があるまで預託を求めます</strong>。早急に相手方保険会社に一括対応の連絡を入れるよう被害者に伝える必要があります。'},
+  {q:'治療途中で転院する場合、代理人が行うべき対応は？\nA. 転院先が独自に対応するため特に何もしなくてよい\nB. 依頼者から転院先を聞き、すぐに相手方任意保険へ連絡する\nC. 先に転院先と費用交渉してから連絡する', type:'abc', ans:'B', exp:'転院時は<strong>依頼者から転院先の医療機関名を確認し、すぐに相手方任意保険へ連絡</strong>します。連絡が遅れると転院先への一括対応が遅れ、被害者が治療費を立替払いする事態になるためです。'},
+  // 健康保険・労災 追加
+  {q:'通勤災害にもかかわらず誤って健康保険で治療していた場合、是正するには？\nA. 示談成立後に健保から精算すればよい\nB. 早急に健康保険診療から労災保険診療へ切り替える\nC. 健康保険を使い続け、示談時に調整する', type:'abc', ans:'B', exp:'誤って健康保険を使用していた場合は<strong>早急に健康保険診療から労災保険診療へ切り替える</strong>必要があります。放置すると健康保険への返還義務が生じ、示談後に発覚すると追加請求も労災申請も困難になります。'},
+  {q:'労働局への労災レセプトの保有個人情報開示請求は弁護士などの任意代理人が行えるか？', type:'ox', ans:'×', exp:'<strong>行えません</strong>。保有個人情報の開示請求は<strong>本人または法定代理人のみ</strong>が行えます。弁護士等の任意代理人は請求できないため、依頼者本人が行う必要があります。開示まで約1か月かかります。'},
+  {q:'労災レセプトの保有個人情報開示請求から開示まで通常どのくらいかかるか？\nA. 1週間程度\nB. 約1か月\nC. 3か月以上', type:'abc', ans:'B', exp:'労災レセプトの開示は<strong>約1か月の期間</strong>を要します。任意代理人は請求できず本人のみが請求可能です。必要と判断したら早めに依頼者に開示請求してもらいましょう。'},
+  {q:'健保使用時に被害者が領収書・診療明細書を紛失した場合の対処法は？\nA. 請求を諦めるしかない\nB. 病院に領収書の再発行を依頼し、保険者に診療明細書の開示請求をする\nC. 自賠責診療報酬明細書で代用できる', type:'abc', ans:'B', exp:'紛失した場合は<strong>①病院に領収書の再発行（または「領収額証明書」）を依頼、②健保の保険者に個人情報開示手続きを経て診療明細書を開示してもらう</strong>という対処法があります。'},
+  {q:'交通事故の治療をした医師には、自賠責様式の診断書を交付する義務があるか？', type:'ox', ans:'○', exp:'<strong>あると解釈されています</strong>。交通事故の治療を前提とする診療契約の内容として自賠責様式の診断書交付も含まれると解釈されるため、医師に発行義務があります。健康保険・労災保険の使用有無にかかわらずこの義務は変わりません。'},
+  // 自賠責 追加
+  {q:'自賠責保険へ治療費を直接請求するために必要な書類はどれか？\nA. 領収書と診断書のみ\nB. 自賠責診断書と自賠責診療報酬明細書\nC. 課税証明書と源泉徴収票', type:'abc', ans:'B', exp:'自賠責への治療費請求には<strong>①自賠責診断書と②自賠責診療報酬明細書</strong>が必要です。この2点が自賠責請求の基本書類で、病院から取得します。'},
+  {q:'症状固定まで任意保険の一括払い後に傷害慰謝料の被害者請求をする際の注意点は？\nA. 早急に請求しないと時効になる\nB. 支払われる自賠責保険金は限度額から任意保険の既払額を差し引いた残金に限られる\nC. 被害者請求すると等級認定が有利になる', type:'abc', ans:'B', exp:'症状固定後の被害者請求は<strong>自賠責限度額（120万円）から相手方任意保険が既に一括払いした金額を差し引いた残金が上限</strong>です。既に120万円超の一括払いがされていれば、自賠責からの追加払いはありません。'},
+  // 既払額 追加
+  {q:'既払額の控除は本来誰が主張すべきか？\nA. 被害者（原告）が自ら申告する\nB. 相手方（被告）が主張すべきもの\nC. 裁判所が職権で判断する', type:'abc', ans:'B', exp:'既払額の控除は本来<strong>相手方（被告）が主張すべき</strong>ものです。ただし被害者側が積極的に既払額を控除した金額を提示することで、①過剰請求を避ける、②訴訟時の無用な印紙代節約、というメリットがあります。'},
+  {q:'既払額を確認する過程で副次的に確認できることは？\nA. 相手方の過失割合\nB. 損害計算書から漏れた損害費目がないかのチェック\nC. 後遺障害等級の妥当性', type:'abc', ans:'B', exp:'既払額を確認する過程で<strong>損害計算書から漏れた損害費目がないかをチェックできる</strong>副次的な効果があります。保険会社からの支払履歴を確認することで、計上漏れを発見できることがあります。'},
+  {q:'労災保険からの求償資料が相手方任意保険から取得できない場合の代替手段は？\nA. 労災保険給付を既払額から外す\nB. 労災保険支給決定通知＋労災レセプト、または労災保険給付等支払証明書＋労災レセプトを収集する\nC. 依頼者に労災保険に電話してもらう', type:'abc', ans:'B', exp:'求償資料が取得できない場合は<strong>①労災保険支給決定通知＋労災レセプト、または②労災保険給付等支払証明書＋労災レセプト</strong>で代替します。労災レセプトは本人による労働局への開示請求（約1か月）が必要です。'},
+  // 逸失利益 追加
+  {q:'後遺障害逸失利益と休業損害の違いは何か？\nA. どちらも現実に生じた収入の喪失で計算方法だけが異なる\nB. 休業損害は現実の収入喪失、逸失利益は将来発生する収入の喪失\nC. 逸失利益は傷害事案、休業損害は後遺障害事案に使う', type:'abc', ans:'B', exp:'<strong>休業損害</strong>は症状固定までの間、実際に生じた収入の喪失。<strong>逸失利益</strong>は後遺障害により将来発生するであろう収入の減少（労働能力の低下に対する補償）。症状固定を境に区別されます。'},
+  {q:'給与所得者の後遺障害逸失利益算定のために収集する証拠書類はどれか？\nA. 確定申告書と収支内訳書\nB. 事故前年分の源泉徴収票または課税証明書（所得証明書）\nC. 休業損害証明書と給与明細3か月分', type:'abc', ans:'B', exp:'給与所得者の逸失利益算定には<strong>事故前年分の源泉徴収票または課税証明書（所得証明書）</strong>を収集します。源泉徴収票が1年分に満たない場合（途中入社等）は、1年換算・雇用契約書・賃金センサス参照等で対応します。'},
+  {q:'事業所得者（自営業者）の後遺障害逸失利益算定のために収集する証拠書類はどれか？\nA. 事故前年の源泉徴収票\nB. 確定申告書と青色申告決算書（または収支内訳書）\nC. 休業損害証明書と事業収支一覧', type:'abc', ans:'B', exp:'事業所得者の逸失利益算定には<strong>①確定申告書、②青色申告決算書</strong>（青色申告）または<strong>収支内訳書</strong>（白色申告）を収集します。所得金額に青色申告特別控除・専従者給与を加算して基礎収入を算出します。'},
+  {q:'事業所得者が副業でアルバイトもしている場合、逸失利益の基礎収入はどう計算するか？\nA. 事業収入のみを基礎収入とする\nB. 確定申告書の給与欄の収入金額（税前支給額）を事業所得の基礎収入に加算する\nC. 給与収入のみを基礎収入とする', type:'abc', ans:'B', exp:'事業所得者が副業アルバイトをしている場合、<strong>確定申告書の給与欄の収入金額（税引き前の支給額）</strong>を事業所得による基礎収入に加算します。「給与所得」（控除後）ではなく「収入金額」を使います。'},
+  {q:'給与所得者の源泉徴収票が1年分に満たない（途中入社等）場合の基礎収入の算定方法は？\nA. 実際の金額をそのまま使う\nB. 1年換算・雇用契約書で予定給与を算出・賃金センサスを参照等の方法をとる\nC. 直前1か月分を12倍する', type:'abc', ans:'B', exp:'1年分に満たない場合の対処法：①<strong>1年分に換算</strong>（例：6か月分なら×2）、②<strong>雇用契約書等で1年分の予定給与（賞与含む）を算出</strong>、③<strong>賃金センサス（年齢・学歴別の平均賃金）を参照</strong>、などの方法があります。'},
+  {q:'後遺障害逸失利益の労働能力喪失期間の終期は一般的に何歳か？\nA. 60歳（定年年齢）\nB. 65歳（年金支給開始年齢）\nC. 67歳（就労可能年数の終期）', type:'abc', ans:'C', exp:'労働能力喪失期間の終期は一般的に<strong>67歳</strong>（就労可能年数の終期）です。高齢者の場合は「症状固定時から67歳まで」または「平均余命の2分の1」のいずれか長い方を採用することもあります。'},
+  {q:'交通事故訴訟で損害として認められる弁護士費用の相場は損害額の何割程度か？\nA. 既払額控除後の損害額の約1割\nB. 既払額控除後の損害額の約3割\nC. 実際にかかった弁護士費用の全額', type:'abc', ans:'A', exp:'交通事故訴訟で損害として認められる弁護士費用は<strong>既払額控除後の損害額の約1割</strong>が相当とされることが多いです。弁護士費用特約の補償限度額300万円とは異なる概念で、実費全額が認められるわけではありません。'},
+  // ── 治療関係費（追加）──
+  {q:'労災保険を使用して治療している場合、自賠責診断書・自賠責診療報酬明細書の文書料はどう扱うか？\nA. 治療関係費に含めて計算する\nB. 便宜上、別途「文書料」として計上することがある\nC. 損害として請求できない', type:'abc', ans:'B', exp:'労災保険使用時は、自賠責診断書・診療報酬明細書の代金を<strong>便宜上「文書料」として別途計上する</strong>ことがあります（治療費は労災が支払うため）。損害賠償関係費用の一種として扱います。'},
+  {q:'病院の診断書様式と異なる書式（例：病院独自の用紙）でも、損害証拠として有効か？\nA. 自賠責様式でなければ無効\nB. 傷病名・受傷日・治療期間等の記載があれば、証拠としても自賠責手続でも支障ない\nC. 領収書が別途必要', type:'abc', ans:'B', exp:'<strong>傷病名・受傷日・治療期間等の必要事項が記載されていれば</strong>、様式が異なっていても治療費の証拠としても自賠責手続においても支障ありません。'},
+  {q:'整骨院では、病院でいう「診断書」と「診療報酬明細書」はどのように作成されるか？\nA. 病院と同じく2枚別々に作成される\nB. 施術証明書として1枚に一体化して作成される\nC. 整骨院では書類作成義務がない', type:'abc', ans:'B', exp:'整骨院・接骨院では、病院の「自賠責診断書＋自賠責診療報酬明細書」に相当する内容が<strong>施術証明書として一枚に一体化</strong>して作成されます。'},
+  {q:'薬局の調剤費が1回5,000円未満なら領収書のみで対応できる理由は？\nA. 法律で5,000円未満は領収書のみと定められているから\nB. 自賠責が5,000円未満の調剤費は領収書だけで支払いに応じる運用をしているから\nC. 薬局は調剤報酬明細書を発行する義務がないから', type:'abc', ans:'B', exp:'<strong>自賠責の運用として、1回の調剤費が5,000円未満であれば領収書だけで支払いに応じる</strong>ためです。5,000円以上になると調剤報酬明細書が必要になります。'},
+  {q:'相手方任意保険が一括対応していない場合、治療費等の書類はどこから収集するか？\nA. 自賠責保険に申請する\nB. 病院・整骨院等へ作成依頼するか、調剤費は依頼者から領収書を提供してもらう\nC. 相手方本人に請求する', type:'abc', ans:'B', exp:'一括対応がない場合は<strong>病院・整骨院等へ直接作成依頼</strong>するか、薬局の調剤費については<strong>依頼者から領収書を提供してもらう</strong>形で収集します。'},
+  {q:'薬局の調剤費請求書から治療費の金額を確認するとき、どこを参照するか？\nA. 各薬の単価欄\nB. 請求書の「合計」欄\nC. 処方箋の右上欄', type:'abc', ans:'B', exp:'薬局の調剤費請求書は<strong>「合計」欄の金額</strong>を参照します。病院の自賠責診療報酬明細書の「上記金額」欄、整骨院の施術証明書の「合計」欄と同様に、それぞれ右側の合計欄を見ます。'},
+  {q:'労災保険が治療費を修正した上で支払うことがある原因は何か？\nA. 労災保険は任意に金額を変更できるから\nB. 病院が計算した治療費の額に誤り等があった場合に、労災保険が修正した上で支払うため\nC. 労災保険には上限額があるから', type:'abc', ans:'B', exp:'<strong>病院が計算した治療費に誤り等があった場合</strong>、労災保険がその額を修正した上で支払います。そのため自賠責診療報酬明細書の請求額と実際の労災支払額がずれることがあります。確定額は労災レセプトで確認します。'},
+  {q:'労災保険使用時に確定的な治療費額を確認するにはどうすればよいか？\nA. 自賠責診療報酬明細書の金額を使う\nB. 労災保険からの求償資料や労災レセプトで確認する\nC. 病院の請求書を使う', type:'abc', ans:'B', exp:'労災使用時の確定的な治療費は<strong>労災保険からの求償資料</strong>や<strong>労災レセプト（労働局への開示請求）</strong>で確認します。自賠責診療報酬明細書の金額は必ずしも正確でないため注意が必要です。'},
+  // ── 保険のお金の流れ（追加）──
+  {q:'健康保険を使って治療した場合の病院・健保・被害者のお金の流れは？\nA. 病院が10割を被害者に請求し、被害者が全額支払う\nB. 病院が3割を被害者に・7割を健保に請求し、被害者が3割・健保が7割を支払う\nC. 健保が全額を病院に支払い、後で被害者に請求する', type:'abc', ans:'B', exp:'健保使用時：<strong>病院が3割を被害者（窓口負担）に、7割を健康保険（保険者）に請求</strong>し、被害者が3割・健保が7割をそれぞれ病院に支払います（後期高齢者は1割・9割）。'},
+  {q:'労災保険（労災指定病院）を使って治療した場合のお金の流れは？\nA. 被害者が10割を立替えてから労災に請求する\nB. 病院が労災保険に10割を請求し、労災保険が10割を病院へ直接支払う\nC. 病院が自賠責保険に直接請求する', type:'abc', ans:'B', exp:'労災指定病院では<strong>病院が労災保険に治療費10割を請求し、労災保険が直接病院へ10割支払います</strong>。被害者の窓口負担は0円です（指定外病院は被害者が10割立替）。'},
+  {q:'労災保険（労災指定外病院）を使って治療した場合のお金の流れは？\nA. 病院が労災保険に直接請求する\nB. 病院が被害者に10割請求→被害者が10割支払い→被害者が労災に10割請求→労災が被害者に10割支払う\nC. 被害者が3割だけ立替えればよい', type:'abc', ans:'B', exp:'労災指定外病院では<strong>①病院が被害者に10割請求→②被害者が10割支払い→③被害者が労災保険に10割請求→④労災が被害者に10割支払う</strong>という流れになります。被害者が一時的に全額立替える負担があります。'},
+  {q:'健康保険は交通事故が原因の治療でも使用できるか？', type:'ox', ans:'○', exp:'<strong>使用できます</strong>。ただし健保組合等への「第三者行為による傷病届」の提出が必要です。また<strong>業務災害や通勤災害で労災保険の療養給付を受けられる場合は健康保険を使用できない</strong>ため、事故の状況の確認が必要です。'},
+  {q:'業務災害・通勤災害ではない通常の交通事故の場合、選択できる診療方法はどれか？\nA. 自由診療のみ\nB. 自由診療または健康保険診療の2択\nC. 自由診療・健康保険・労災保険の3択', type:'abc', ans:'B', exp:'通常の交通事故（業務外・通勤外）では<strong>自由診療または健康保険診療の2択</strong>となります。労災保険は業務災害・通勤災害の場合のみ使用できます。'},
+  // ── 健康保険・労災保険（追加）──
+  {q:'労災保険が支払った治療費の額は、開示された労災レセプトで確認できるか？', type:'ox', ans:'○', exp:'<strong>確認できます</strong>。開示された労災診療報酬明細書（労災レセプト）には労災保険が支払った治療費の内容と金額が記載されており、確定的な治療費額を確認することができます。'},
+  {q:'健康保険・労災保険を使用しているかどうかは、医師の自賠責診断書交付義務に影響するか？', type:'ox', ans:'×', exp:'<strong>影響しません</strong>。交通事故の治療を前提とする診療契約には自賠責様式の診断書交付も含まれると解釈されるため、医師の発行義務は健康保険・労災保険の使用有無にかかわらず変わりません。'},
+  {q:'健康保険や労災保険使用時に、医療機関が「自賠責診断書を発行しない旨の同意」を求めることがあるか？', type:'ox', ans:'○', exp:'<strong>あり得ます</strong>。健保・労災を使用する場合、一部の医療機関が「自賠責診断書は発行しない」旨の同意書への署名を求めることがあります。このような場合は注意が必要で、発行義務があることを説明する必要があります。'},
+  {q:'健康保険が支払った治療費の額を、損害額の計算上で確認する必要があるか？', type:'ox', ans:'×', exp:'<strong>不要です</strong>。健康保険が支払った治療費は<strong>過失相殺前に控除する扱いが実務上定着しており</strong>、損害賠償請求額に影響しません。被害者が窓口負担した3割部分（または任意保険が立替払いした3割部分）のみを治療費として計上します。'},
+  {q:'健康保険使用時の実務における治療費の計上方法として正しいのはどれか？\nA. 健保が支払った7割も含めて10割全額を計上する\nB. 被害者が窓口負担した3割部分のみを治療費として計上する\nC. 健保の支払額を確認した上で損害に計上する', type:'abc', ans:'B', exp:'健保使用時は<strong>被害者が窓口負担した治療費3割部分（相手方任意保険が一括払いした場合も含む）のみを治療費として計上</strong>します。健保が支払った7割部分は損害として計上しません。'},
+  {q:'労災保険を使って治療した場合、労災保険が支払った治療費の額を損害計算上確認する必要があるか？', type:'ox', ans:'○', exp:'<strong>確認の必要があります</strong>。確認した上で治療費として損害に計上し、後に労災保険が支払った治療費の全額または一部を<strong>既払額として過失相殺後の損害額から控除</strong>します（健保分は過失相殺前に控除する点と異なります）。'},
+  {q:'健康保険の傷病手当金の支給額の計算式はどれか？\nA. 給与の2/3 × 休業日数\nB. 直近12か月の標準報酬月額平均額 ÷ 30日 × 2/3\nC. 日給 × 休業日数', type:'abc', ans:'B', exp:'傷病手当金の支給額は<strong>支給開始日以前の継続した12か月間の各月の標準報酬月額を平均した額 ÷ 30日 × 2/3</strong>です。支給期間は原則最長1年6か月です。'},
+  {q:'労災保険の休業（補償）給付が支給されるのは休業何日目からか？\nA. 休業1日目から\nB. 休業3日目から\nC. 休業4日目から', type:'abc', ans:'C', exp:'労災保険の休業（補償）給付は<strong>休業4日目から</strong>支給されます（最初の3日間は「待期期間」として支給なし）。支給額は1日につき<strong>給付基礎日額の60%相当額</strong>です。'},
+  {q:'労災保険の休業（補償）給付の支給額はどれか？\nA. 給付基礎日額の80%\nB. 給付基礎日額の60%\nC. 給付基礎日額の100%', type:'abc', ans:'B', exp:'労災保険の休業（補償）給付は<strong>休業1日につき給付基礎日額の60%相当額</strong>が支払われます。さらに別途、社会復帰促進等事業として休業特別支給金（20%）が加算されます。'},
+  {q:'労災保険の「療養（補償）給付」と「療養の費用請求」の違いは何か？\nA. 補償される金額が異なる\nB. 療養（補償）給付は労災指定病院等での療養、療養の費用請求は労災指定外病院での療養費\nC. 業務災害か通勤災害かによって異なる名称', type:'abc', ans:'B', exp:'<strong>療養（補償）給付</strong>は労災指定病院等での治療のための現物給付（患者の窓口負担なし）。<strong>療養の費用請求</strong>は労災指定外病院等で治療した場合の費用の払い戻し請求です。'},
+  {q:'労災保険の給付名称に「補償」という言葉が付くかどうかの違いは？\nA. 補償の有無で給付額が異なる\nB. 業務災害（補償あり）か通勤災害（補償なし）かの違い\nC. 保険期間の長短による違い', type:'abc', ans:'B', exp:'給付名称の「補償」の有無は<strong>業務災害か通勤災害かの違い</strong>です。業務災害（仕事中の事故）の場合は「療養<strong>補償</strong>給付」「休業<strong>補償</strong>給付」、通勤災害（通勤途中の事故）の場合は「療養給付」「休業給付」となります。'},
+  {q:'労災保険を使用できる場合（業務災害・通勤災害）、健康保険は使用できるか？', type:'ox', ans:'×', exp:'<strong>使用できません</strong>。労災保険を使用できる場合（業務災害・通勤災害）は、労災保険を<strong>実際に使用しているか否かにかかわらず</strong>、法律上健康保険の給付は行われません。誤って健保を使用すると後日返還問題が生じます。'},
+  {q:'労災保険はどのような場合にのみ給付されるか？\nA. 交通事故全般\nB. 業務災害または通勤災害の場合のみ\nC. 被害者が申請すれば常に給付される', type:'abc', ans:'B', exp:'労災保険は<strong>業務災害（仕事中の事故）または通勤災害（通勤途中の事故）の場合のみ</strong>給付されます。プライベートの移動中の交通事故には原則として適用されません。'},
+  {q:'交通事故での治療に健康保険の療養給付を受けるにはどうすればよいか？\nA. 医療機関に交通事故証明書を提出する\nB. 健康保険証を医療機関に提示し、窓口で一部負担することで現物給付を受ける\nC. 健保組合の事前承認を得る', type:'abc', ans:'B', exp:'健康保険を使うには<strong>健康保険証を医療機関に提示するだけ</strong>です。窓口で一部の療養費（多くの場合3割）を負担することで現物給付（治療）を受けられます。別途、健保組合等への<strong>第三者行為による傷病届の提出</strong>が必要です。'},
+  // ── 入院雑費（追加）──
+  {q:'紙おむつ代は入院雑費（1,500円/日）を超える費用として認められるか？\nA. 認められない\nB. 認められた裁判例はあるが極めて稀で、ほとんどの場合1,500円を超えて認められない\nC. 常に実費が認められる', type:'abc', ans:'B', exp:'紙おむつ代については<strong>1,500円を超える雑費として認めた裁判例（神戸地判H16年）</strong>がありますが、極めて稀なケースです。ほとんどの場合、1,500円の日額定額内での処理となります。'},
+  {q:'損害賠償関係費用のうち「文書料（医療機関関係）」とは具体的にどんなものか？\nA. 治療費の総額\nB. 警察提出用診断書・後遺障害診断書・後遺障害等級申請に必要な検査画像コピー等の発行費用\nC. 弁護士費用', type:'abc', ans:'B', exp:'文書料（医療機関関係）とは<strong>①警察提出用診断書、②後遺障害診断書、③後遺障害等級申請に必要な検査画像のコピー等を発行してもらうためにかかる費用</strong>です。領収書を証拠として保管する必要があります。'},
+  {q:'自賠責診断書・自賠責診療報酬明細書の文書料は損害賠償関係費用として別途計上するか？', type:'ox', ans:'×', exp:'<strong>通常は治療関係費に含んで計算します</strong>。これらの文書料は診療費の中に含まれており、別途「文書料」として計上する必要はありません（労災保険使用時は別途計上することがあります）。'},
+  {q:'文書料（その他）として損害賠償関係費用に含まれるものはどれか？\nA. 弁護士費用・交通費・宿泊費\nB. 印鑑証明書代・交通事故証明書代・23条照会費用・謄写代等\nC. 自賠責診断書・診療報酬明細書の文書料', type:'abc', ans:'B', exp:'文書料（その他）には<strong>①後遺障害等級申請に必要な印鑑証明書代・交通事故証明書代、②過失割合検討に必要な刑事事件記録取得の弁護士法23条照会費用・謄写代等</strong>が含まれます。いずれも領収書が必要です。'},
+  // ── 通院交通費（追加）──
+  {q:'「通院交通費」とは何を指すか？\nA. 自家用車のガソリン代のみ\nB. 通院・入退院のための交通費（電車・バス・ガソリン代・タクシー代等の実損害）\nC. 通院にかかった時間の損害', type:'abc', ans:'B', exp:'通院交通費とは<strong>通院・入退院のための交通費</strong>として、電車・バス等の公共交通機関の費用、自家用車のガソリン代（距離×15円/km）、タクシー代など<strong>実際に支出した交通費（実損害）</strong>のことです。'},
+  {q:'通院交通費の証拠収集として依頼者から何を聴取するか？\nA. 通院した日数のみ\nB. 医療機関ごとに通院・入退院の際の交通手段を聴き取る\nC. かかった費用の合計額', type:'abc', ans:'B', exp:'<strong>医療機関ごとに、通院や入退院の際の交通手段を聴き取ります</strong>。複数の医療機関に通院している場合や、途中で交通手段が変わった場合などは各々確認が必要です。'},
+  {q:'自家用車で通院した場合に確認すべき事項は何か？\nA. 車種とナンバープレート\nB. ①病院の駐車場料金を負担していないか ②有料道路を使っていないか\nC. 燃費と走行距離', type:'abc', ans:'B', exp:'自家用車通院の確認事項は<strong>①病院の駐車場料金を自分で負担しているか、②有料道路（高速道路等）を使用しているか</strong>の2点です。駐車場料金や有料道路代は別途請求できる場合があります。'},
+  {q:'通院交通費の計算に使う証拠書類として「通院交通費明細書」とは何か？\nA. 自賠責保険が発行する書類\nB. いつ、どの病院に、何を使って通院したかを記録する書類\nC. 医師が作成する通院証明書', type:'abc', ans:'B', exp:'通院交通費明細書とは<strong>「いつ（通院日）、どの病院に（医療機関名）、何を使って（交通手段）通院したか」を記録する書類</strong>です。依頼者が保管していれば預かり、任意保険に提出済みの場合はコピーを取り寄せます。'},
+  {q:'通院交通費明細書に書式の指定はあるか？\nA. 自賠責保険所定の様式でなければならない\nB. 通院方法・金額・医療機関名・通院日がわかれば書式は問わない\nC. 弁護士が作成したものでなければならない', type:'abc', ans:'B', exp:'<strong>通院方法・金額・医療機関名・通院日がわかれば書式は問いません</strong>。特定の様式はなく、手書きのものでも認められます。'},
+  {q:'通院交通費の証拠収集でインターネット検索を使って調べるものは何か？\nA. 病院の評判や口コミ\nB. 自宅最寄り駅から医療機関最寄り駅までの運賃・自宅から医療機関までの距離\nC. タクシー会社の電話番号', type:'abc', ans:'B', exp:'インターネット検索では<strong>①公共交通機関利用の場合：自宅最寄り駅から各医療機関最寄り駅までの運賃、②自家用車利用の場合：自宅と各医療機関の距離</strong>を調べます。'},
+  {q:'タクシーで通院した場合の証拠書類は何か？\nA. タクシー会社の証明書\nB. タクシー領収書（日付・金額が記載されたもの）\nC. 医師の乗車許可書', type:'abc', ans:'B', exp:'タクシー通院の証拠は<strong>タクシー領収書</strong>です。領収書の日付が通院日・入退院日と一致しているか確認します。領収書がない場合は請求が難しくなります。'},
+  {q:'タクシー領収書の確認事項は何か？\nA. タクシー会社名と車両番号\nB. 領収書の日付が通院日・入退院日と一致しているか\nC. 走行距離', type:'abc', ans:'B', exp:'タクシー領収書では<strong>領収書の日付が通院日・入退院日と一致しているか</strong>を確認します。日付が一致しない場合、その通院日のタクシー利用として認められない可能性があります。'},
+  {q:'治療関係費資料から通院日・入退院日を確認するにはどこを見るか？\nA. 診断書の「病名」欄\nB. 自賠責診療報酬明細書や施術証明書の通院欄の○印が通院日、診断書の「自」が入院日・「至」が退院日\nC. 領収書の日付', type:'abc', ans:'B', exp:'通院日は<strong>自賠責診療報酬明細書や自賠責施術証明書の通院欄の「○（丸印）」</strong>で確認します。入退院日は<strong>診断書の入院治療欄の「自（じ）」が入院日、「至（し）」が退院日</strong>です。'},
+  {q:'診断書が複数ある場合の入院日・退院日の確認方法は？\nA. 最後の診断書の「自」が入院日、最初の「至」が退院日\nB. 最初の診断書の「自」が入院日、最後の診断書の「至」が退院日\nC. 全診断書の平均を取る', type:'abc', ans:'B', exp:'診断書が複数ある場合は<strong>最初の診断書の「自（入院開始日）」が入院日、最後の診断書の「至（退院日）」が退院日</strong>です。複数枚をつなげて確認します。'},
+  {q:'自家用車通院のガソリン代の計算に使うkm単価はいくらか？\nA. 実際のガソリン価格から計算する（変動あり）\nB. 1kmあたり15円（自賠責・任意保険・裁判すべてに共通）\nC. 1kmあたり25円（高速道路込み）', type:'abc', ans:'B', exp:'自家用車通院のガソリン代は<strong>1kmあたり15円</strong>を前提に計算します（自賠責・任意保険・裁判所いずれも共通）。計算式は「距離(km) × 2（往復）× 通院日数 × 15円」です。'},
+  {q:'タクシー利用の通院交通費の計算式はどれか？\nA. 距離(km) × 2 × 15円 × 通院日数\nB. タクシー領収書の金額を合計した実費\nC. 近隣のタクシー会社の初乗り料金 × 通院日数', type:'abc', ans:'B', exp:'タクシー通院の交通費は<strong>タクシー領収書の金額を合計した実費</strong>です（km単価の計算はしません）。領収書を保管しておく必要があります。'},
+  {q:'職場の近くの病院に通院している場合、自宅から病院までの交通費を請求できるか？', type:'ox', ans:'×', exp:'<strong>請求できません</strong>。通院交通費は実損害であり、<strong>実際に支出した交通費</strong>（職場から医療機関まで）しか請求できません。自宅から職場、職場から病院という実際の動線で計算します。'},
+  // ── 逸失利益（追加）──
+  {q:'課税証明書（所得証明書）は代理人（弁護士等）でも取得できるか？', type:'ox', ans:'○', exp:'<strong>委任状があれば代理人でも取得可能</strong>です。ただし市区町村役所によっては手続きが異なる場合があります。依頼者本人が取得する場合より手間がかかることもあるため、依頼者に直接取得してもらう方が簡便なことも多いです。'},
+  {q:'令和2年度の課税証明書（所得証明書）には何年分の所得が証明されるか？\nA. 令和2年分（2020年）\nB. 令和1年分（2019年1月〜12月）\nC. 平成30年分（2018年）', type:'abc', ans:'B', exp:'課税証明書は<strong>前年の所得</strong>を証明するものです。「令和2年度」の課税証明書には<strong>令和1年分（平成31年1月〜令和1年12月）</strong>の所得が証明されます（年度と年のずれに注意）。'},
+  {q:'給与所得控除とは何か？逸失利益・休業損害算定の際に考慮されるか？\nA. 実費経費の控除で、逸失利益算定では考慮される\nB. 課税目的の控除にすぎず、逸失利益・休業損害算定では考慮されない\nC. 事業所得者のみに適用される控除', type:'abc', ans:'B', exp:'給与所得控除とは<strong>所得税等の計算の基礎となる給与所得額を算出する際に一定額が控除されるもの</strong>です。課税対象金額を算出する上での控除に過ぎないため、<strong>逸失利益・休業損害算定の際には考慮されません</strong>（基礎収入は「支払金額」欄を使用）。'},
+  {q:'青色申告決算書から事業所得者の基礎収入を算出する手順は？\nA. 申告書の収入金額をそのまま使う\nB. ①所得金額 ＋ ②青色申告特別控除額 ＋ ③専従者給与額を合計し、本人の寄与率を乗じる\nC. 売上から必要経費を引いた金額をそのまま使う', type:'abc', ans:'B', exp:'事業所得者の基礎収入算出：<strong>①確定申告書の所得金額 ＋ ②青色申告特別控除額 ＋ ③専従者給与額</strong>を合計します（これで実質的な収入能力を表す金額になる）。次に事業者本人の寄与率を乗じて基礎収入を確定します。'},
+  // ── 既払額（追加）──
+  {q:'既払額が賠償請求額から控除される法的性質は2種類ある。それはどれか？\nA. 損益相殺と過失相殺\nB. 弁済（相手方が支払った場合）と、第三者が賠償請求権に代位する結果（労災・健保の求償等）\nC. 時効と相殺', type:'abc', ans:'B', exp:'既払額が控除される法的性質は<strong>①弁済</strong>（相手方任意保険が賠償金を支払った場合等）と、<strong>②第三者（労災保険・健保等）が賠償請求権に代位する結果</strong>（損益相殺的調整）の2種類です。'},
+  {q:'依頼者が既払額を正確に把握できない場合はどうするか？\nA. 既払額ゼロとして計算する\nB. 可能な限り把握するように努める\nC. 相手方保険会社に一任する', type:'abc', ans:'B', exp:'依頼者が正確な既払額を把握できない場合も<strong>可能な限り把握するように努める</strong>必要があります。既払額を確認する書類（支払履歴・支払通知等）を収集し、過剰請求にならないよう適切な損害計算を行います。'},
+  {q:'自賠責保険金支払通知が届くのはいつか？\nA. 事故後3か月が経過したとき\nB. 自賠責に被害者請求を行ったとき、保険金支払と同時に請求者に届く\nC. 示談成立後に届く', type:'abc', ans:'B', exp:'自賠責保険金支払通知は<strong>被害者請求を行ったときに、自賠責保険金の支払と同時に請求者に届きます</strong>。代理人が被害者請求を行った場合は代理人宛に届きます。紛失した場合は支払額証明書を取り寄せます。'},
+  {q:'代理人が被害者請求を行った場合、自賠責保険金支払通知はどこに届くか？\nA. 依頼者（被害者）本人宛に届く\nB. 代理人（弁護士等）宛に届く\nC. 自賠責損害調査事務所に届く', type:'abc', ans:'B', exp:'代理人が被害者請求を行った場合、自賠責保険金支払通知は<strong>代理人宛に届きます</strong>。依頼者本人宛には届かないため、代理人が管理・保管する必要があります。'},
+  {q:'自賠責保険金支払額証明書の発行依頼を代理人が行う場合に必要な書類は？\nA. 依頼者の印鑑のみ\nB. 実印で押印された委任状・依頼者の印鑑証明書等（通例）\nC. 弁護士資格証明書のみ', type:'abc', ans:'B', exp:'自賠責保険金支払額証明書の発行依頼を代理人が行う場合、通例として<strong>実印で押印された委任状・依頼者の印鑑証明書等の書類</strong>が必要です。依頼者経由で取り寄せる方が手続き上簡単なことが多いです。'},
+  {q:'自賠責保険金支払額証明書の発行は依頼者経由と代理人直接のどちらが簡単か？\nA. 代理人直接の方が簡単\nB. 依頼者経由で取り寄せる方が簡単\nC. 変わらない', type:'abc', ans:'B', exp:'自賠責保険金支払額証明書の取り寄せは<strong>依頼者経由の方が簡単</strong>です。代理人が直接行う場合は実印の委任状・印鑑証明書等が必要となり手続きが煩雑になるためです。'},
+  {q:'労災保険の支払額を確認するために最優先で収集する書類は何か？\nA. 労災保険支給決定通知\nB. 労災保険から相手方任意保険への求償資料（相手方任意保険から取り付ける）\nC. 労災レセプト', type:'abc', ans:'B', exp:'労災保険の支払額確認に最優先で収集するのは<strong>労災保険から相手方任意保険への求償資料</strong>です（通常は相手方任意保険から取り付けます）。求償資料には賠償に関係する労災保険給付が網羅されています。'},
+  // ── 自賠責保険（追加）──
+  {q:'自賠責保険を「強制保険」と呼ぶ理由は何か？\nA. 保険料が高いから\nB. 法律上、車を運転する場合はその車について自賠責保険の契約が強制されているから\nC. 保険会社が強制的に加入させるから', type:'abc', ans:'B', exp:'自賠責保険を「強制保険」と呼ぶのは<strong>自賠法上、車を運転する際にはその車について自賠責保険の契約が義務付けられている</strong>ためです（任意保険は法律上の加入義務がなく「任意保険」と呼ばれます）。'},
+  {q:'自賠責保険が強制加入とされる社会的理由は何か？\nA. 保険会社の経営安定のため\nB. 交通事故の被害者が加害者に資力がなくても補償を受けられるよう、最低限の資力を確保するため\nC. 道路財源の確保のため', type:'abc', ans:'B', exp:'自賠責保険が強制される理由は<strong>交通事故の被害者が損害賠償を求めても加害者に資力がなければ補償を受けられない事態を防ぎ、損害賠償に関する最低限の資力を確保するため</strong>です（被害者保護が目的）。'},
+  {q:'任意保険が「任意保険」と呼ばれる理由は何か？\nA. 保険金額を任意に決められるから\nB. 自賠責保険（強制保険）と対比して、法律上加入義務がなく任意で契約する保険だから\nC. 保険会社が任意に引き受けを決定するから', type:'abc', ans:'B', exp:'「任意保険」と呼ばれるのは<strong>自賠責保険（強制保険）と対比して、法律上の加入義務がなく任意で契約する保険</strong>であるためです。ただし自賠責の補償では不足する損害に備えるため、実務上は加入が強く推奨されています。'},
+  {q:'自賠責一括対応の後、任意保険会社はどのように処理するか？\nA. 支払額全額を損失として計上する\nB. 自賠責部分については自賠責へ求償（自賠法15条請求）し、最終的に自社分のみを負担する\nC. 保険会社間で按分する', type:'abc', ans:'B', exp:'一括払いを行った後、任意保険会社は<strong>自賠責部分について自賠責保険へ求償（自賠法15条請求）を行い</strong>、最終的に任意保険会社は自社が支払うべき部分のみを負担したことになります。'},
+  {q:'加害者請求権（自賠法15条請求権）とはどのような権利か？\nA. 被害者が直接自賠責に請求できる権利\nB. 交通事故で第三者を死傷させ賠償金を支払った加害者が、自賠責保険に求償できる権利\nC. 相手方任意保険が自賠責に求償できる権利のみ', type:'abc', ans:'B', exp:'<strong>加害者請求権（15条請求権）</strong>は自賠法15条を根拠とし、<strong>交通事故において第三者を死傷させ損害賠償義務を履行した（賠償金を支払った）加害者が、加害車両の自賠責保険に求償できる権利</strong>です。'},
+  {q:'被害者請求権（自賠法16条請求権）とはどのような権利か？\nA. 加害者が自賠責に請求できる権利\nB. 交通事故の被害者が損害を受けた場合に、相手方車両の自賠責保険に直接請求できる権利\nC. 健保組合が加害者に求償できる権利', type:'abc', ans:'B', exp:'<strong>被害者請求権（16条請求権・直接請求権）</strong>は自賠法16条を根拠とし、<strong>交通事故の被害に遭った被害者が相手方車両の自賠責保険に直接請求できる権利</strong>です。示談成立前でも行使でき、被害者保護に重要な権利です。'},
+  {q:'【計算問題】通院10か月・実通院日数150日の場合、自賠責基準の通院慰謝料はいくらか？\nA. 4,300円×150日=64万5,000円\nB. 4,300円×(150日×2)=129万円だが上限120万円が適用\nC. 4,300円×300日(通院期間)=129万円', type:'abc', ans:'B', exp:'自賠責の通院慰謝料：「実通院日数×2」（150×2=300日）と「通院期間日数」（約300日）を比較→小さい方に4,300円を乗じる。4,300円×300日=<strong>129万円だが傷害限度額120万円でキャップされるため120万円</strong>が上限となります。'},
+  {q:'自賠責の重過失減額とはどのような制度か？\nA. 加害者に重大な過失がある場合に被害者へ割増支払をする制度\nB. 被害者に重過失がある場合に、被害者保護の観点から段階的に支払額を減額する制度\nC. 保険会社が任意に適用できる減額制度', type:'abc', ans:'B', exp:'重過失減額は<strong>被害者に重過失（7割以上の過失）がある場合に、被害者保護の観点から過失割合に応じて段階的に支払額を減額する制度</strong>です。7割未満の過失では減額なしという点が、通常の過失相殺とは異なります。'},
+  {q:'債務不存在確認訴訟が提起された場合、自賠責への被害者請求はできるか？', type:'ox', ans:'×', exp:'基本的に<strong>被害者請求はできなくなります</strong>。訴訟で治療期間・休業損害・後遺障害の有無等が争われている場合は、訴訟終了まで自賠責の損害調査が留保されます（一括不能）。'},
+  // ── 人身傷害保険（追加）──
+  {q:'人身傷害保険の3つの特徴として正しいものはどれか？\nA. ①定額払い ②相手方が全額負担 ③示談後のみ支払い\nB. ①過失割合を考慮せず支払い ②約款の人傷基準で算出 ③人傷基準は通常裁判所基準を下回る\nC. ①過失割合で減額 ②裁判所基準で算出 ③相手方保険と連動', type:'abc', ans:'B', exp:'人身傷害保険の3つの特徴：<strong>①過失割合を考慮せずに支払われる、②保険約款に定められた人傷基準に従って損害額が算出される、③人傷基準で算出される損害額は基本的に裁判所基準を下回る</strong>。この違いを弁護士が詰めることで差額を回収できます。'},
+  {q:'自賠責保険金を先に受領している場合、不法行為（交通事故）による損害賠償の遅延損害金の起算日はどうなるか？\nA. 事故日（不法行為時）から変わらず起算\nB. 自賠責保険金受領日の翌日から起算\nC. 示談成立日から起算', type:'abc', ans:'B', exp:'自賠責保険金を先に受領している場合、その部分の遅延損害金の起算日は<strong>事故日（不法行為時）ではなく、自賠責保険金受領日の翌日</strong>となります。訴訟では計算が複雑になるため注意が必要です。'},
+  {q:'依頼者に過失がない場合、人身傷害保険金は損害額元本からどのように控除するか？\nA. 遅延損害金に優先充当する\nB. 支払われた人身傷害保険金全額を損害額元本から控除する（傷害一時金は除く）\nC. 過失割合に応じた部分のみ控除する', type:'abc', ans:'B', exp:'依頼者に過失がない場合、<strong>支払われた人身傷害保険金全額を損害額元本から控除します</strong>（ただし傷害一時金については既払額とならない）。自賠責保険金が遅延損害金に優先充当される点と区別して理解する必要があります。'},
+  {q:'依頼者に過失がある場合、人身傷害保険金の既払控除額はどう算出するか（訴訟基準差額説）？\nA. 支払われた人身傷害保険金の全額を控除する\nB. 支払われた人身傷害保険金のうち、裁判基準損害額での依頼者の過失部分相当額を上回る金額のみ控除\nC. 人傷基準損害額の全額を控除する', type:'abc', ans:'B', exp:'訴訟基準差額説では<strong>「支払われた人身傷害保険金のうち、裁判基準損害額を前提とした依頼者の過失部分相当額を上回る金額だけを損害額から控除する」</strong>という方法をとります。これにより被害者に有利な結果となります。'},
+  {q:'訴訟物の価額（印紙額の計算基礎）に遅延損害金は含まれるか？', type:'ox', ans:'×', exp:'<strong>含まれません</strong>。遅延損害金は訴訟物の価額から除外されます。遅延損害金を含めた額と混同して印紙を多く貼付しないよう注意が必要です。'},
+  {q:'自賠責保険金受領後、損害額元本から差し引いた翌日から遅延損害金はどうなるか？\nA. 遅延損害金の発生は終了する\nB. 充当翌日から改めて損害元本の残額に対して遅延損害金が発生する\nC. 遅延損害金は自賠責が引き続き支払う', type:'abc', ans:'B', exp:'自賠責保険金が遅延損害金に充当された後、残額が損害額元本から控除されます。<strong>充当翌日から改めて損害元本の残額に対して遅延損害金が発生します</strong>（遅延損害金の計算が二段階に分かれる）。'},
+
+  // ── 自賠責保険（追加②）──
+  {q:'自賠責保険なしで車を運転した場合の罰則はどれか？\nA. 3年以下の懲役または100万円以下の罰金\nB. 1年以下の懲役または50万円以下の罰金\nC. 行政罰のみで刑事罰はない', type:'abc', ans:'B', exp:'自賠責保険未加入での運転には<strong>1年以下の懲役または50万円以下の罰金</strong>が科されます（自動車損害賠償保障法86条の3）。いわゆる「無保険」は重大な法律違反です。'},
+  {q:'自賠責保険から支払われる保険金は、裁判所基準と比べてどうか？', type:'ox', ans:'×', exp:'自賠責保険金は通常<strong>裁判所基準（赤い本等）より低い</strong>です。ただし、通院が長期でかつ月あたりの実通院日数が多い場合などは自賠責基準が上回ることもあります。'},
+  {q:'対人賠償保険（任意保険）は自賠責とどのような関係にあるか？\nA. 自賠責と全く独立した別個の保険\nB. 自賠責では補えない損害を填補するための上乗せ保険\nC. 自賠責に代わる強制保険', type:'abc', ans:'B', exp:'任意保険（対人賠償）は<strong>自賠責からの支払いでは足りない部分を補う上乗せ保険</strong>です。通常、対物賠償保険等とセットで「自動車保険」として販売されています。'},
+  {q:'「自賠責一括対応」とはどのような実務上の取扱いか？\nA. 自賠責と任意保険が同率で分担して支払う\nB. 相手方任意保険が自賠責部分も含めて一括して対応し、後で自賠責に求償する実務上の取扱い\nC. 被害者が両社へ同時に請求すること', type:'abc', ans:'B', exp:'自賠責一括対応とは、<strong>被害者に直接請求の負担をかけないよう、相手方任意保険が自賠責部分も含めて一括対応し、後から自賠責へ求償（15条請求）する</strong>実務上の慣行です。'},
+  {q:'自賠責への保険金の請求方法は何種類あるか？\nA. 被害者請求の1種類のみ\nB. 被害者請求（16条）と加害者請求（15条）の2種類\nC. 任意保険会社のみが請求できる', type:'abc', ans:'B', exp:'自賠責への請求方法は<strong>①被害者から行う被害者請求（16条請求権）と②加害者から行う加害者請求（15条請求権）の2種類</strong>があります。実務では被害者請求が広く使われます。'},
+  {q:'自賠責基準による通院慰謝料の算出式はどれか？\nA. 4,300円×通院日数\nB. 4,300円×【実通院日数×2】と【通院期間日数】のいずれか少ない方\nC. 4,300円×通院期間月数×10日', type:'abc', ans:'B', exp:'自賠責の通院慰謝料は<strong>4,300円×【実通院日数×2倍】または【通院期間日数】の少ない方</strong>です。実通院日数が少ない場合は実通院日数×2が基準になりやすいです。'},
+  {q:'自賠責が複数ある場合（例：Y車とZ車の2台から被害を受けた場合）、傷害による損害の上限はどうなるか？\nA. 120万円のまま変わらない\nB. 各自賠責の限度額の合計（120万円×2＝240万円）まで支払われる\nC. 最も高い方の1社分のみ', type:'abc', ans:'B', exp:'複数の自賠責がある場合、<strong>各自賠責の保険金額の合計まで請求できます</strong>（120万円×2台分＝240万円）。複数台の車から被害を受けた場合は有効な手段です。'},
+  {q:'自賠責の重過失減額における被害者過失7割以上8割未満の場合、傷害損害は何割減額されるか？\nA. 減額なし（7割以上でも傷害は減額なし）\nB. 2割減額\nC. 3割減額', type:'abc', ans:'A', exp:'重過失減額では<strong>被害者過失7割未満は全損害種別で減額なし、7割以上8割未満は後遺障害・死亡のみ2割減額（傷害は減額なし）</strong>です。傷害の減額が始まるのは8割以上からです。'},
+  {q:'一括対応中（症状固定前）に被害者が自賠責へ被害者請求するとどうなるか？\nA. 追加で保険金が受け取れる\nB. 一括不能扱いとなり、その後の任意保険の一括払いが停止する可能性がある\nC. 任意保険の支払いには影響しない', type:'abc', ans:'B', exp:'一括対応中に被害者請求すると<strong>「一括不能」扱いとなり、相手方任意保険が治療費の一括払いができなくなる可能性</strong>があります。その後の一括払いが停止するリスクがあるため注意が必要です。'},
+  {q:'症状固定まで一括払いがなされた後に傷害慰謝料の被害者請求をする際の注意点は？\nA. 症状固定前に請求しなければならない\nB. 支払われる自賠責保険金は限度額から既払い分を控除した残金に限られる\nC. 後遺障害等級を先に申請しなければならない', type:'abc', ans:'B', exp:'一括払い後の被害者請求では、<strong>被害者請求で支払われる額は自賠責の保険金額（120万円）から任意保険が既に一括払いした金額を控除した残金に限られます</strong>。既に120万円を超えていれば支払われません。'},
+  {q:'自賠責基準で算出された損害額が裁判所基準を上回っても実際に問題とならない理由は？\nA. 被害者が差額を受け取れるから\nB. 傷害の損害は上限120万円でキャップされるため、上回る部分は支払われないから\nC. 自賠責と裁判所基準が連動しているから', type:'abc', ans:'B', exp:'自賠責の傷害損害には<strong>上限120万円のキャップ</strong>がかかります。仮に自賠責基準の計算額が裁判所基準を上回っても、実際の支払いは120万円を超えないため実害はありません。'},
+
+  // ── 人身傷害保険（追加②）──
+  {q:'人身傷害保険が開発・販売された背景と目的は何か？\nA. 任意保険の普及率を上げるため\nB. 1998年の保険料自由化に伴い、被保険者たる被害者の損害を速やかに填補するため\nC. 自賠責保険の代替として義務化された', type:'abc', ans:'B', exp:'人身傷害保険は<strong>1998年の保険料自由化に伴い、被保険者（被害者）に生じた損害を過失割合に関わらず速やかに填補できるよう</strong>各保険会社が開発・販売したものです。'},
+  {q:'過失部分払条項がある場合（裁判所基準1000万円・人傷基準700万円・被害者過失50%）、被害者は全損害を回収できるか？', type:'ox', ans:'×', exp:'回収できません。相手方から500万円（1000万×50%）＋人傷保険金700万円×50%＝350万円の合計<strong>850万円しか受け取れず</strong>、裁判所基準の1000万円には届きません。過失部分払条項の限界です。'},
+  {q:'相手方が任意保険未加入で資力もない場合、人身傷害保険の「読替規定」を使えば裁判所基準の損害額を受け取れるか？', type:'ox', ans:'×', exp:'受け取れません。読替規定が適用されても、<strong>支払保険金は人傷基準で算出した損害額を超えることはない</strong>と約款に明記されています。裁判所基準への読替えはされません。'},
+  {q:'人身傷害保険金は遅延損害金に優先充当されるか？', type:'ox', ans:'×', exp:'<strong>充当されません</strong>（最判平成24年2月20日）。人身傷害保険金は損害額元本から控除します。自賠責保険金が遅延損害金に優先充当されるのとは異なります。'},
+
+  // ── 逸失利益（追加②）──
+  {q:'「後遺障害による逸失利益」とは何か？\nA. 事故による治療費の将来分\nB. 後遺障害が残ることで将来生じる収入の減少\nC. 事故前に失った収入', type:'abc', ans:'B', exp:'後遺障害による逸失利益とは<strong>後遺障害が残ることで労働能力が減少し、将来発生するであろう収入の喪失</strong>のことです。症状固定後の損害として請求します。'},
+  {q:'逸失利益と休業損害の違いはどれか？\nA. 両者とも将来の損害\nB. 休業損害は現実に生じた収入の喪失、逸失利益は将来生じるであろう収入の喪失\nC. 逸失利益は精神的損害、休業損害は財産的損害', type:'abc', ans:'B', exp:'<strong>休業損害は症状固定前に現実に生じた収入の喪失</strong>であり、<strong>逸失利益は症状固定後（後遺障害確定後）に将来発生する収入の喪失</strong>です。時期と性質が異なります。'},
+  {q:'給与所得者の逸失利益算定のために収集する主な証拠書類はどれか？\nA. 確定申告書Bと青色申告決算書\nB. 事故前年分の源泉徴収票または課税証明書（所得証明書）\nC. 給与明細書（直近3か月分）のみ', type:'abc', ans:'B', exp:'給与所得者の逸失利益証拠書類は<strong>事故前年分の源泉徴収票または課税証明書（所得証明書）</strong>です。源泉徴収票の「支払金額」欄が基礎収入になります。'},
+  {q:'事故前年の源泉徴収票が1年分に満たない場合の対処法として誤っているものはどれか？\nA. 1年換算する\nB. 雇用契約書等で1年分の予定給与額を算出する\nC. 課税証明書を使わず通院費用の実費だけで計算する', type:'abc', ans:'C', exp:'1年分に満たない場合は<strong>①1年換算、②雇用契約書等による予定給与額の算出、③賃金センサス参照</strong>といった方法をとります。課税証明書に切り替えることも有効で、「通院費実費だけで計算」という選択肢はありません。'},
+  {q:'課税証明書（所得証明書）はどこから入手するか？\nA. 税務署（国税局）\nB. 事故日時点の住民登録のある市（区）役所等\nC. 勤務先の人事部', type:'abc', ans:'B', exp:'課税証明書は<strong>その年の1月1日時点で住民登録のある住所地の市（区）役所等</strong>から入手します。マイナンバーカードがあればコンビニでも取得できます。'},
+  {q:'事業所得者の逸失利益算定のために収集する証拠書類はどれか？\nA. 源泉徴収票のみ\nB. 確定申告書＋収支内訳書（白色）または青色申告決算書（青色）\nC. 法人税申告書', type:'abc', ans:'B', exp:'事業所得者の証拠書類は<strong>①確定申告書、②収支内訳書（白色申告の場合）または③青色申告決算書（青色申告の場合）</strong>です。所得金額＋青色申告特別控除＋専従者給与から基礎収入を算出します。'},
+  {q:'逸失利益の計算手順（4ステップ）の正しい順序はどれか？\nA. 喪失率→基礎収入→喪失期間→係数\nB. 基礎収入確認→労働能力喪失率確認→喪失期間決定→基礎収入×喪失率×ライプニッツ係数\nC. 等級確認→慰謝料計算→逸失利益→合計', type:'abc', ans:'B', exp:'逸失利益の4ステップ：<strong>①基礎収入額の確認→②労働能力喪失率の確認→③労働能力喪失期間の決定→④基礎収入×喪失率×ライプニッツ係数（中間利息控除係数）</strong>で算出します。'},
+  {q:'給与所得者の源泉徴収票から基礎収入を算出する際、使用する欄はどれか？\nA. 「給与所得控除後の金額」欄\nB. 「支払金額」欄\nC. 「源泉徴収税額」欄', type:'abc', ans:'B', exp:'基礎収入は源泉徴収票の<strong>「支払金額」欄</strong>（総支給額）を用います。「給与所得控除後の金額」欄は課税計算用であり、逸失利益の算定には用いません。'},
+  {q:'課税証明書（所得証明書）から基礎収入として使用する欄はどれか？\nA. 「給与所得」の欄の金額\nB. 「給与収入金額」欄の金額\nC. 「課税所得金額」欄の金額', type:'abc', ans:'B', exp:'課税証明書では<strong>「給与収入金額」欄</strong>の金額を基礎収入として用います。「給与所得」欄の金額は給与所得控除後の金額であり使用しません。'},
+  {q:'事業所得者が副業としてアルバイトをしている場合、逸失利益の基礎収入はどう扱うか？\nA. 事業所得だけで計算する\nB. 確定申告書Bの給与欄に記載の給与支給金額（収入金額）を事業の基礎収入に加算して評価する\nC. アルバイト収入は基礎収入から除外する', type:'abc', ans:'B', exp:'副業アルバイトがある場合、<strong>確定申告書Bの給与欄に記載された給与支給金額（収入金額欄）を事業による基礎収入に加算</strong>して評価します（給与所得額ではなく収入金額を使用する点に注意）。'},
+  {q:'配当収入・不動産収入など労働能力と関係のない収入は、逸失利益の基礎収入に含まれるか？', type:'ox', ans:'×', exp:'<strong>含まれません</strong>。逸失利益の基礎収入は<strong>後遺障害による労働能力の減少で失う収入</strong>を対象とするため、労働能力と関係のない配当・不動産収入等は算入されません。'},
+  {q:'青色申告特別控除は逸失利益・休業損害の算定に考慮されるか？', type:'ox', ans:'×', exp:'<strong>考慮されません</strong>。青色申告特別控除は課税対象の事業所得額を算出する際の控除に過ぎないため、給与所得控除と同様に<strong>逸失利益・休業損害の基礎収入算定では加算して元に戻して計算</strong>します。'},
+  {q:'逸失利益算定における労働能力喪失期間の終期は一般的に何歳か？\nA. 60歳\nB. 65歳\nC. 67歳', type:'abc', ans:'C', exp:'労働能力喪失期間の終期は一般的に<strong>67歳（就労可能年数の終期）</strong>とされます。症状固定時の年齢から67歳までの期間に対応するライプニッツ係数を用います。'},
+
+  // ── 入院雑費・損害賠償請求費用（追加）──
+  {q:'入院雑費（1日あたり）の「赤い本」基準はいくらか？\nA. 1,100円\nB. 1,500円\nC. 2,000円', type:'abc', ans:'B', exp:'入院雑費の「赤い本（弁護士基準）」は<strong>1日あたり1,500円</strong>です（証拠不要）。自賠責基準は1,100円/日。より高い赤い本基準を使うのが弁護士交渉・訴訟の実務です。'},
+  {q:'入院雑費を請求する際、領収書などの証拠は必要か？', type:'ox', ans:'×', exp:'入院雑費は<strong>通常証拠不要</strong>です。入院の事実があれば、病衣代・タオル代等の雑費が発生するのは社会通念上当然として定額（1,500円/日）が認められます。'},
+  {q:'お見舞いに来た人へのお茶代は損害として認められるか？', type:'ox', ans:'×', exp:'<strong>認められません</strong>。損害賠償の対象は交通事故によって生じた損害です。お見舞い来客へのお茶代は入院によって必要となった費用とはいえず、損害として認定されません。'},
+  {q:'退院後に職場へ持参したお菓子代は損害として認められるか？', type:'ox', ans:'×', exp:'<strong>認められません</strong>。職場への手土産代は交通事故による法律上の損害とは認められません。社会的な慣習に基づく支出であり、損害賠償の対象外です。'},
+  {q:'示談交渉段階で、相手方任意保険が刑事事件記録の取得費用を払うことはあるか？', type:'ox', ans:'×', exp:'<strong>まずありません</strong>。刑事事件記録（実況見分調書等）の取得費用は、示談交渉段階では相手方任意保険が負担することはほとんどありません。訴訟段階で損害として認められる傾向があります。'},
+  {q:'裁判では刑事事件記録の取得費用（23条照会費用・謄写代等）は損害として認められるか？', type:'ox', ans:'○', exp:'<strong>認められる傾向があります</strong>。刑事記録は民事裁判の重要な証拠資料であり、被害者に通常生じる損害として認定される傾向にあります（弁護士法23条照会費用・謄写代等）。'},
+  {q:'私的な工学鑑定・医学鑑定の費用は損害として認められるか？', type:'ox', ans:'×', exp:'<strong>認められない傾向があります</strong>。私的鑑定は被害者が自己の主張を有利に裏付けるために作成するものとして、被害者に通常生じる損害とは認定されない傾向があります。費用が多額になるリスクも高いです。'},
+  {q:'「落ち着かないから」という理由で個室（差額ベッド代）を請求できるか？', type:'ox', ans:'×', exp:'<strong>難しいです</strong>。差額ベッド代（個室）が認められるには、怪我が重篤だった・空き部屋がなくやむを得なかったなど<strong>個室利用の必要性</strong>があり、カルテや医師の意見書による裏付けが必要です。'},
+  {q:'傷害保険の保険金請求のために取得した診断書の文書料は加害者に請求できるか？', type:'ox', ans:'×', exp:'<strong>請求できません</strong>。損害賠償請求のために必要な費用ではなく、傷害保険の保険金請求という別目的のための費用だからです。傷害保険の保険会社が負担するか確認するよう依頼者に伝えましょう。'},
+
+  // ── 訴状編──
+  {q:'訴状に必ず記載しなければならない事項はどれか？\nA. 事故状況と相手方の氏名のみ\nB. 当事者・法定代理人・請求の趣旨・請求の原因\nC. 示談交渉の経緯と相手方の反論', type:'abc', ans:'B', exp:'訴状の必須記載事項は<strong>①当事者及び法定代理人、②請求の趣旨、③請求の原因</strong>です（民事訴訟法133条2項、民事訴訟規則53条1項）。'},
+  {q:'訴状における「請求の趣旨」とは何か？\nA. 事故の詳細な経緯\nB. 原告の主張の結論部分（勝訴した場合の判決主文に相当）\nC. 損害額の内訳計算書', type:'abc', ans:'B', exp:'請求の趣旨とは<strong>訴訟における原告の主張の結論部分で、原告が勝訴した場合の判決主文に相当するもの</strong>です。法的性質や理由づけは記載せず、「○○円を支払え」等の結論を記載します。'},
+  {q:'請求の趣旨に記載する3つの事項として正しいものはどれか？\nA. ①事故日時 ②損害額 ③署名捺印\nB. ①主たる請求 ②附帯請求（遅延損害金） ③付随的申立て（訴訟費用・仮執行宣言）\nC. ①当事者 ②証拠 ③弁護士費用', type:'abc', ans:'B', exp:'請求の趣旨の3つの記載事項は<strong>①主たる請求（請求額）、②附帯請求（遅延損害金）、③付随的申立て（訴訟費用負担の申立て・仮執行宣言の申立て）</strong>です。'},
+  {q:'不法行為（交通事故）に基づく損害賠償の遅延損害金は、いつから起算されるか？\nA. 示談交渉開始日から\nB. 不法行為時（事故日）から\nC. 訴訟提起日から', type:'abc', ans:'B', exp:'不法行為に基づく損害賠償債務は損害発生と同時に遅滞に陥るとされており、<strong>不法行為時（事故日）から遅延損害金が発生</strong>します（最昭37年9月4日判決）。'},
+  {q:'「訴訟費用」（民事訴訟法上）とは何が含まれるか？\nA. 弁護士費用・印紙代・交通費の全て\nB. 印紙代・証人への旅費日当・検証鑑定費用等（弁護士費用は含まない）\nC. 弁護士費用と印紙代のみ', type:'abc', ans:'B', exp:'訴訟費用とは<strong>訴訟追行に必要として当事者・裁判所が支出した費用（印紙代、証人・鑑定人の旅費日当、検証・鑑定費用等）</strong>です。弁護士費用は訴訟費用には含まれません（別途損害として請求）。'},
+  {q:'訴訟費用負担の裁判は、申立てが必要か？', type:'ox', ans:'×', exp:'訴訟費用負担は<strong>裁判所が職権で行います</strong>（民事訴訟法67条1項）。申立ては不要ですが、訴状の請求の趣旨に「訴訟費用は被告の負担とする」と記載するのが実務上の慣例です。'},
+  {q:'「仮執行宣言」とは何か？\nA. 訴訟提起前に財産保全するための手続\nB. 未確定の終局判決に対し確定判決と同一の執行力を付与する裁判\nC. 被告が強制執行を申立てる手続', type:'abc', ans:'B', exp:'仮執行宣言とは<strong>未確定の終局判決に対し確定判決と同内容の執行力を付与する裁判</strong>（民事訴訟法259条）です。判決が確定する前でも強制執行が可能となり、被告の財産を速やかに回収できます。'},
+  {q:'仮執行宣言の申立ては必須か？', type:'ox', ans:'○', exp:'<strong>必ず申立てるべきです</strong>。原告として訴訟目的の早期実現を望む場合、仮執行宣言の申立ては必要です。申立てがなければ判決確定まで強制執行できず、被告の資産散逸リスクがあります。'},
+  {q:'訴状の「請求の原因」には何を記載するか？\nA. 相手方への怒りや感情的な経緯\nB. 原告の権利を発生させるために必要な法律要件に該当する具体的事実（要件事実）\nC. 示談交渉の失敗経緯', type:'abc', ans:'B', exp:'請求の原因には<strong>原告の主張する権利・法律関係を発生させるために必要な法律要件に該当する具体的事実（要件事実）</strong>を記載します（民事訴訟規則53条1項）。'},
+  {q:'訴状の「関連事実」とは何か？\nA. 法律要件に該当する具体的事実そのもの\nB. 要件事実以外の重要な間接事実や紛争の経緯・背景事情等\nC. 被告の反論事実', type:'abc', ans:'B', exp:'関連事実とは<strong>法律要件に直接該当する事実（要件事実）以外の重要な事実、間接事実、紛争に至った経緯や背景事情等</strong>を請求の原因とは別に記載するものです（民事訴訟規則53条2項）。'},
+  {q:'民法709条（不法行為）に基づく損害賠償請求の法律要件は何個あるか？\nA. 3つ\nB. 5つ\nC. 7つ', type:'abc', ans:'B', exp:'民法709条の法律要件は<strong>5つ</strong>：①原告の権利・法益の存在、②被告がそれを侵害したこと、③侵害についての被告の故意または過失、④原告の損害発生とその額、⑤侵害行為と損害の因果関係。'},
+  {q:'訴状の「よって書き（結語）」とは何か？\nA. 証拠の提出一覧\nB. 請求の原因の最後に記載する、原告の請求の法的性質を要約した結論部分\nC. 裁判官への挨拶文', type:'abc', ans:'B', exp:'よって書きとは<strong>請求の原因の最後に記載する、原告がどのような権利・法律関係に基づいてどのような請求をするかを示す結論部分</strong>です。結語の内容を被告主体で書き換えると請求の趣旨になります。'},
+  {q:'訴状の「当事者の表示」には何を記載するか？\nA. 証人の氏名と住所のみ\nB. 原告・被告の住所氏名（法人は所在地・商号・代表者）と原告訴訟代理人弁護士の氏名・事務所情報\nC. 事故発生場所の住所', type:'abc', ans:'B', exp:'当事者の表示には<strong>①原告・被告の住所・氏名（法人の場合は所在地・商号・代表者）、②原告訴訟代理人弁護士の氏名・事務所住所・電話・FAX</strong>を記載します。'},
+  {q:'訴訟物価額と貼用印紙額の関係はどうなっているか？\nA. 訴訟物価額に関係なく一律\nB. 訴訟物価額（請求額、遅延損害金を除く）に応じて民訴費用法で定める印紙額が決まる\nC. 弁護士が任意に決定する', type:'abc', ans:'B', exp:'貼用印紙額は<strong>訴訟物の価額（遅延損害金を含まない請求額）に応じて民事訴訟費用等に関する法律で決まります</strong>。遅延損害金を含めた額で計算すると印紙を余分に貼付してしまうので注意が必要です。'},
+  {q:'訴状の逸失利益算定における基礎収入（日額）の算出方法はどれか？\nA. 年収÷365日\nB. 事故前3か月の総支給金額÷同期間の全日数（または稼働日数）\nC. 最低賃金から算出', type:'abc', ans:'B', exp:'訴状サンプルでは<strong>本件事故前3か月間の総支給金額を同期間の全日数または稼働日数で除した金額</strong>を日額基礎収入とします（例：90万円÷90日＝1万円）。'},
+  {q:'弁護士費用として損害賠償に認められる相場はいくらか？\nA. 弁護士報酬全額\nB. 既払額控除後の損害額の約1割\nC. 依頼時に支払った着手金のみ', type:'abc', ans:'B', exp:'弁護士費用として損害賠償に認められる金額は<strong>既払額控除後の損害額の約1割</strong>が相当とされることが多いです（判例の相場）。実際の弁護士費用全額ではありません。'},
+  {q:'相手方任意保険の内払金は、過失相殺後の損害額からどのように控除するか？\nA. 遅延損害金に優先充当してから元本を控除\nB. 過失相殺後の損害額から内払金をそのまま控除するのが一般的\nC. 元本から控除後に遅延損害金を再計算', type:'abc', ans:'B', exp:'相手方任意保険の内払金は<strong>過失相殺後の損害額から内払金をそのまま（遅延損害金の充当計算なしで）控除するのが一般的</strong>です。自賠責保険金のような遅延損害金への優先充当は行いません。'},
+  {q:'自賠責保険金は遅延損害金と損害額元本のどちらに優先的に充当されるか？', type:'ox', ans:'○', exp:'<strong>遅延損害金に優先的に充当されます</strong>（最判平成16年12月20日）。民法489条1項の規定と整合する解釈です。自賠責保険金を受領した場合の遅延損害金計算は複雑になります。'},
+  {q:'自賠責保険金が遅延損害金を上回る場合、残額はどうなるか？\nA. 残額も遅延損害金として処理する\nB. 遅延損害金充当後の残額が損害額元本から控除され、その翌日から改めて損害元本残額に遅延損害金が発生する\nC. 残額は返還される', type:'abc', ans:'B', exp:'自賠責保険金が遅延損害金を上回る場合、<strong>遅延損害金充当後の残額を損害額元本から控除し、その翌日から損害額元本の残額に対して遅延損害金が再発生します</strong>（遅延損害金計算が二段階になる）。'},
+  {q:'閏年において1年に満たない期間の遅延損害金を計算する場合の除数は何日か？\nA. 365日\nB. 366日\nC. どちらでもよい', type:'abc', ans:'B', exp:'閏年を含む期間の遅延損害金計算では<strong>366日で除して計算します</strong>。通常年は365日で計算しますが、閏年を含む期間は366日が正確な除数です。'},
+  {q:'労災保険給付の既払控除における「費目間控除の制限」とはどういう意味か？\nA. 労災給付は損害額全体から自由に控除できる\nB. 労災給付は同性質の費目（例：療養給付→治療費）の範囲内でのみ控除でき、他費目（慰謝料等）からは控除できない\nC. 労災給付は一切控除されない', type:'abc', ans:'B', exp:'費目間控除の制限とは<strong>労災保険給付（例：療養給付）は同性質で相互補完性を有する損害（治療費）の過失相殺後の額を限度として既払額となり、他費目（慰謝料・逸失利益等）からは控除されない</strong>ルールです。'},
+  {q:'結語（よって書き）の記載内容と請求の趣旨の関係はどうなっているか？\nA. 全く別の内容を記載する\nB. 結語の内容を被告を主体として書き換えると請求の趣旨になる\nC. 結語は請求の趣旨のコピーである', type:'abc', ans:'B', exp:'結語は<strong>既払控除後の損害額・弁護士費用・遅延損害金の請求をまとめて記載するもので、その内容を被告を主体として書き換えると（根拠条文等を除くと）請求の趣旨になります</strong>。両者は整合している必要があります。'},
+  {q:'既払額が相手方任意保険の内払金のみの場合、遅延損害金の起算日はいつか？\nA. 内払金受領日の翌日\nB. 本件事故日（不法行為時）\nC. 示談交渉開始日', type:'abc', ans:'B', exp:'既払額が相手方任意保険の内払金のみの場合（自賠責受領なし）、遅延損害金の起算日は<strong>本件事故日（不法行為時）</strong>です。自賠責受領日の翌日起算となるのは自賠責保険金を受領した場合だけです。'},
+  {q:'既払額に内払金と自賠責保険金の両方がある場合、弁護士費用の遅延損害金の起算日はいつか？\nA. 自賠責保険金受領日の翌日（内払金と同じ起算日）\nB. 不法行為時（事故日）から起算される\nC. 弁護士委任日から起算される', type:'abc', ans:'B', exp:'弁護士費用の遅延損害金は<strong>不法行為時（事故日）から起算されます</strong>。損害元本のうち自賠責充当分は自賠責受領日翌日起算になりますが、弁護士費用は不法行為時から全期間の遅延損害金が発生します。'},
+
+  // ── 治療関係費・健保労災（追加③）──
+  {q:'被害者に過失がある場合、健康保険や労災保険を使用したほうがよい理由はどれか？\nA. 保険会社が払ってくれるので手続きが楽\nB. 保険が治療費の被害者過失部分の一部または全部を結果的に負担し経済的メリットがある\nC. 自賠責の限度額が上がるから', type:'abc', ans:'B', exp:'被害者に過失がある場合、<strong>健保・労災を使うと保険が治療費の被害者過失部分を結果的に負担することになり、被害者の経済的負担が減る</strong>メリットがあります（自由診療では過失相殺で負担が大きくなる）。'},
+  {q:'治療途中で転院する場合、代理人はまず何をすべきか？\nA. 転院先の診断書を先に取り寄せる\nB. 依頼者から転院先の医療機関名を聞き、すぐに相手方任意保険へ連絡する\nC. 転院先の一括払いを自分で交渉する', type:'abc', ans:'B', exp:'転院する場合は<strong>依頼者から転院先の医療機関名を聞いたら、すぐに相手方任意保険へ連絡</strong>します。連絡が遅れると転院先への一括払い対応が遅れ、被害者が治療費を自己負担するリスクがあります。'},
+  {q:'事故当日に一括払いの連絡が病院に届かなかった場合、どうなるか？\nA. 病院は治療を断る\nB. 病院は被害者自身に治療費の支払いを求めるか、保険会社から連絡があるまで預託を求める\nC. 自動的に健康保険が適用される', type:'abc', ans:'B', exp:'一括払いの連絡が病院に届いていない場合、<strong>病院は被害者自身に治療費の支払いを求めるか、少なくとも相手方保険から連絡があるまで預託を求める</strong>ことになります。速やかに保険会社へ連絡が必要です。'},
+  {q:'通勤災害にもかかわらず間違って健康保険で治療していた場合の最大のリスクは？\nA. 後遺障害の認定が遅くなる\nB. 示談成立後に健保から返金を求められても追加請求や労災請求が困難になり被害者がどこにも請求できなくなる\nC. 自賠責の限度額が増える', type:'abc', ans:'B', exp:'通勤災害での誤った健保使用では<strong>示談成立後に健保から返金を求められた際、相手方への追加請求も労災への請求も困難になり、被害者がどこにも請求できない事態</strong>になりかねません。早期の労災への切替えが重要です。'},
+  {q:'健康保険使用時に病院が自賠責診療報酬明細書の作成を拒否することがあるが、その理由は？\nA. 自賠責の審査が厳しいため\nB. 健保レセプトを健康保険に請求しており、それと重ねて自賠責診療報酬明細書を発行できないとするため\nC. 弁護士への開示は法律上禁止されているため', type:'abc', ans:'B', exp:'健保使用時に病院が自賠責書類発行を拒む理由は、<strong>健康保険診療報酬明細書（健保レセプト）を健保へ請求しており、重複して自賠責診療報酬明細書を作成できないとする</strong>ためです。その場合は領収書・診療明細書で代用します。'},
+  {q:'労災保険に対する保有個人情報開示請求（労災レセプト開示）は任意代理人が行えるか？', type:'ox', ans:'×', exp:'<strong>行えません</strong>。労災保険の保有個人情報開示請求は<strong>本人または法定代理人のみ</strong>が可能です。弁護士等の任意代理人は行うことができず、開示されるまで約1か月かかります。'},
+  {q:'健康保険と労災保険で、保険が支払った治療費の既払控除のタイミングの違いはどれか？\nA. 両者とも過失相殺前に控除\nB. 健保分は過失相殺前に控除、労災分は原則として過失相殺後に控除\nC. 両者とも過失相殺後に控除', type:'abc', ans:'B', exp:'<strong>健康保険が支払った治療費は過失相殺前に控除</strong>（損害賠償請求額に影響しない）、<strong>労災保険が支払った治療費は原則として過失相殺後の損害額から控除</strong>されます。この違いが実務上重要です。'},
+  {q:'労災保険が支払った治療費の確認が不要なのはどのような場合か？\nA. 全ての労災使用ケース\nB. 被害者過失なしの場合（全額・一部労災問わず）、および被害者過失ありかつ治療費全額が労災の場合\nC. 被害者過失があり一部だけ労災を使った場合', type:'abc', ans:'B', exp:'労災支払額の確認が不要なのは<strong>①被害者過失なしの場合（全額・一部労災問わず）、②被害者過失ありかつ治療費全額が労災の場合</strong>です。被害者過失ありかつ一部のみ労災の場合のみ確認が必要です。'},
+  {q:'国民健康保険には傷病手当金の制度があるか？', type:'ox', ans:'×', exp:'<strong>原則ありません</strong>。傷病手当金は主に健康保険（協会けんぽ・組合健保）に設けられた制度です。国民健康保険には傷病手当金の制度はありません（土木建設国保・医師国保等の一部例外を除く）。'},
+  {q:'健康保険の傷病手当金の支給要件として正しいものはどれか（4つ）？\nA. ①労働災害であること ②入院していること ③2日以上休業 ④給与の支払いがないこと\nB. ①業務外の事由による療養のための休業 ②仕事に就けないこと ③連続3日を除き4日以上就業不能 ④休業期間の給与支払いがないこと\nC. ①交通事故であること ②3か月以上治療していること ③医師の指示があること ④雇用保険に加入していること', type:'abc', ans:'B', exp:'健康保険の傷病手当金の支給要件は<strong>①業務外の事由による療養のための休業、②仕事に就くことができないこと、③連続する3日間を除き4日以上就業不能（待期期間3日）、④休業期間中の給与支払いがないこと</strong>の4つです。'},
+  {q:'健康保険の傷病手当金の支給額と支給期間はどれか？\nA. 給付基礎日額の60%・最長1年\nB. 直近12か月の標準報酬月額平均÷30×2/3・原則最長1年6か月\nC. 基本給の100%・症状固定まで', type:'abc', ans:'B', exp:'傷病手当金は<strong>支給開始日以前の継続した12か月間の各月の標準報酬月額を平均した額÷30日×2/3（約67%）</strong>で計算し、<strong>原則最長1年6か月</strong>支給されます。'},
+  {q:'自賠責への被害者請求にあたり必要な主な書類はどれか？\nA. 後遺障害診断書のみ\nB. 自賠責診断書と自賠責診療報酬明細書\nC. 領収書と医師の意見書', type:'abc', ans:'B', exp:'自賠責への被害者請求には<strong>自賠責診断書と自賠責診療報酬明細書</strong>が必要です（後遺障害申請の場合はさらに後遺障害診断書等が必要）。'},
+  {q:'自賠責から直接病院へ治療費を支払ってもらうことはできるか？', type:'ox', ans:'○', exp:'<strong>可能です</strong>。相手方に任意保険がない場合や被害者に支払い資力がない場合などに、自賠責が直接病院へ治療費を支払う方法をとることがあります（病院との調整が必要）。'},
+  {q:'人身傷害保険金支払履歴の発行依頼時、内訳はどのように記載してもらうか？\nA. 合計額のみで十分\nB. 治療費○円・休業損害○円等の内訳がわかるよう記載してもらう\nC. 事故番号のみ記載してもらう', type:'abc', ans:'B', exp:'人身傷害保険金支払履歴は<strong>「治療費○円、休業損害○円」等の内訳がわかるよう記載してもらいます</strong>。内訳によって費目別の既払控除額を正確に計算できます。'},
+  {q:'求償資料が取得できない場合に収集する書類は何か？\nA. 依頼者の確定申告書と源泉徴収票\nB. ①労災保険支給決定通知＋労災レセプト、または②労災保険給付等支払証明書＋労災レセプト\nC. 健保の支払通知書のみ', type:'abc', ans:'B', exp:'労災の求償資料が取得できない場合は<strong>①労災保険支給決定通知＋労災レセプト、または②労災保険給付等支払証明書＋労災レセプト</strong>を収集します。労災レセプトで期間ごとの支払額を確認します。'},
+  {q:'既払額を確認する過程で副次的にできることは何か？\nA. 後遺障害等級の申請\nB. 損害計算書から漏れた損害費目がないかチェック\nC. 相手方保険会社への連絡', type:'abc', ans:'B', exp:'既払額を確認する過程では<strong>損害計算書から漏れた損害費目がないかチェック</strong>できるという副次的メリットがあります。既払額確認は単なる控除計算だけでなく損害項目の網羅性確認にも有用です。'},
+  {q:'既払額を損害額から控除して請求することで得られるメリットは何か（2つ）？\nA. ①慰謝料が増額する ②弁護士費用が不要になる\nB. ①過剰な請求を避けられる ②訴訟提起時の印紙代を抑えられる\nC. ①示談がスムーズになる ②後遺障害認定が有利になる', type:'abc', ans:'B', exp:'既払額控除のメリットは<strong>①過剰請求を避けられる、②訴訟提起時に不要な印紙代を払わずに済む</strong>の2点です。訴訟物の価額を正確に計算することは費用面でも重要です。'},
+
+  // ── 傷害慰謝料（入通院慰謝料）──
+  {cat:'慰謝料', q:'入通院慰謝料（傷害慰謝料）は何を補償するものか？\nA. 治療費の総額\nB. 入院・通院によって生じた精神的苦痛に対する賠償\nC. 症状固定後の後遺症による精神的苦痛', type:'abc', ans:'B', exp:'入通院慰謝料とは<strong>交通事故による入院・通院で生じた精神的苦痛に対する賠償</strong>です。治療費とは別に請求できます。症状固定後の後遺症に対する慰謝料は「後遺障害慰謝料」として別途請求します。'},
+  {cat:'慰謝料', q:'「赤い本」（弁護士基準）で入通院慰謝料を計算する際に参照する表はどれか？\nA. ライプニッツ係数表\nB. 別表Ⅰ（むちうちなし）または別表Ⅱ（むちうち等）\nC. 労働能力喪失率表', type:'abc', ans:'B', exp:'赤い本の入通院慰謝料は<strong>別表Ⅰ（骨折等の重傷用）</strong>または<strong>別表Ⅱ（むちうち症等の軽傷用）</strong>を使って、入院期間と通院期間の交点の金額を読み取ります。むちうちは別表Ⅱで計算します。'},
+  {cat:'慰謝料', q:'むちうちや軽い打撲（他覚所見なし）の場合、慰謝料の計算に使う表はどれか？\nA. 別表Ⅰ（重傷用）\nB. 別表Ⅱ（軽傷用）\nC. 自賠責基準の表', type:'abc', ans:'B', exp:'むちうちや軽い打撲で他覚所見（レントゲン・MRI等での異常）がない場合は<strong>別表Ⅱ（軽傷用）</strong>を使います。別表Ⅰより低い金額になります。骨折・手術等を伴う重傷は別表Ⅰを使います。'},
+  {cat:'慰謝料', q:'入院3か月・通院6か月（別表Ⅰ）の場合の赤い本基準慰謝料の概算はどれか？\nA. 約100万円\nB. 約173万円\nC. 約250万円', type:'abc', ans:'B', exp:'別表Ⅰで<strong>入院3か月・通院6か月</strong>の交点は<strong>約173万円</strong>です（赤い本基準）。自賠責基準より大幅に高く、弁護士が交渉・訴訟することで差額を回収できます。'},
+  {cat:'慰謝料', q:'自賠責基準の慰謝料（通院分）と赤い本基準はどちらが高いか？', type:'ox', ans:'×', exp:'通常は<strong>赤い本基準が高く</strong>なります。ただし通院期間が長く月あたりの実通院日数が多い場合は自賠責基準が赤い本基準を上回ることもあります。弁護士は原則として赤い本基準（または裁判所基準）を使って交渉します。'},
+  {cat:'慰謝料', q:'通院が長期にわたり、月1〜2回程度の通院しかない場合、慰謝料の計算方法はどうなるか？\nA. 通院期間全体で計算する\nB. 実態に合わせ、実通院日数×3.5か月程度を通院期間とみなすことがある\nC. 慰謝料の請求はできない', type:'abc', ans:'B', exp:'長期通院でも<strong>月1〜2回程度の通院しかない場合は通院期間全体は認められず、実通院日数×3.5か月程度を実質的な通院期間</strong>として慰謝料を計算することがあります（裁判例の傾向）。'},
+  {cat:'慰謝料', q:'後遺障害慰謝料は何等級まであるか？\nA. 7等級\nB. 14等級（＋要介護2等級）\nC. 20等級', type:'abc', ans:'B', exp:'後遺障害等級は<strong>1〜14級（＋要介護1・2級）</strong>の計16段階あります。1級が最重症（要介護）で14級が最軽症です。等級ごとに定められた慰謝料・逸失利益額が異なります。'},
+  {cat:'慰謝料', q:'赤い本基準の後遺障害慰謝料で14級（むちうち等の最軽微）の金額はいくらか？\nA. 32万円\nB. 110万円\nC. 290万円', type:'abc', ans:'B', exp:'赤い本基準の後遺障害慰謝料は<strong>14級：110万円</strong>（最軽症）、12級：290万円、9級：690万円、1級（要介護）：2,800万円が目安です。自賠責基準（32万円）より大幅に高くなります。'},
+  {cat:'慰謝料', q:'後遺障害慰謝料の自賠責基準と赤い本基準（弁護士基準）では、どちらが高いか？', type:'ox', ans:'×', exp:'<strong>赤い本基準（弁護士基準）の方が大幅に高い</strong>です。例えば14級の場合、自賠責32万円に対し赤い本は110万円です。弁護士が交渉・訴訟することで差額分を追加回収できます。'},
+  {cat:'慰謝料', q:'近親者慰謝料はどのような場合に認められるか？\nA. 被害者が軽傷の場合\nB. 被害者が死亡または重篤な後遺障害が残り、近親者にも精神的苦痛が生じた場合\nC. 常に認められる', type:'abc', ans:'B', exp:'近親者（父母・配偶者・子等）の慰謝料は<strong>被害者が死亡した場合または重篤な後遺障害（概ね1〜2級相当）が残った場合に認められます</strong>（民法711条、または類推適用）。軽傷では認められません。'},
+  {cat:'慰謝料', q:'入通院慰謝料の計算で「入院期間」とはどの期間を指すか？\nA. 事故日から退院日まで\nB. 医師が認めた入院開始日から退院日まで\nC. 症状固定日まで', type:'abc', ans:'B', exp:'入院期間は<strong>医師が認めた入院開始日（診断書の「自」）から退院日（診断書の「至」）まで</strong>の期間です。自宅療養期間は入院期間ではなく通院期間として計算します。'},
+
+  // ── 休業損害 ──
+  {cat:'休業損害', q:'休業損害とはどのような損害か？\nA. 症状固定後の将来収入の減少\nB. 受傷から症状固定までの間、事故がなければ得られた収入の喪失\nC. 治療費のうち保険でまかなえない部分', type:'abc', ans:'B', exp:'休業損害とは<strong>受傷から症状固定までの間、怪我のために働けなかった（または収入が減少した）ことによる損害</strong>です。逸失利益（症状固定後の将来収入の減少）とは期間が異なります。'},
+  {cat:'休業損害', q:'給与所得者の休業損害を算定する際に必要な書類はどれか？\nA. 確定申告書と青色申告決算書\nB. 休業損害証明書（勤務先作成）と源泉徴収票または給与明細\nC. 医師の意見書のみ', type:'abc', ans:'B', exp:'給与所得者の休業損害算定に必要な書類は<strong>①休業損害証明書（勤務先が作成し、実際の休業日数・減収額を証明）と②源泉徴収票または事故前の給与明細</strong>です。'},
+  {cat:'休業損害', q:'休業損害証明書には何を記載してもらうか？\nA. 怪我の状況と治療内容\nB. 事故前の基本給・手当・休業日数・実際の減収額等\nC. 会社の売上と利益', type:'abc', ans:'B', exp:'休業損害証明書には<strong>事故前の給与（基本給・諸手当・残業代等）、休業した日付・日数、その間の給与支払の有無と実際の支払額（減収額）</strong>を勤務先に記入・押印してもらいます。'},
+  {cat:'休業損害', q:'有給休暇を使って休業した場合、休業損害を請求できるか？', type:'ox', ans:'○', exp:'<strong>請求できます</strong>。有給休暇は本来他の目的に使えた権利であり、事故がなければ失わなかったものです。有給休暇を使って休業した場合も、休業損害として請求できます（実務・裁判例で認められています）。'},
+  {cat:'休業損害', q:'専業主婦（主夫）に休業損害は認められるか？', type:'ox', ans:'○', exp:'<strong>認められます</strong>。専業主婦（主夫）は家事労働によって家庭に貢献しており、家事が行えなくなった場合の損害として<strong>賃金センサスの女性（または男性）平均賃金を基礎収入</strong>として休業損害が算定されます。'},
+  {cat:'休業損害', q:'給与所得者の休業損害1日あたりの計算式はどれか？\nA. 年収 ÷ 365日\nB. 事故前3か月の総支給額 ÷ 同期間の全日数（または稼働日数）\nC. 最低賃金 × 労働時間', type:'abc', ans:'B', exp:'休業損害の1日あたり基礎収入は<strong>事故前3か月の総支給額（基本給＋諸手当＋残業代等）÷同期間の全日数または稼働日数</strong>で算出します（日割計算）。その額×実休業日数が休業損害額です。'},
+  {cat:'休業損害', q:'事業所得者（自営業者）の休業損害の算定に使う証拠書類はどれか？\nA. 休業損害証明書\nB. 確定申告書（収支内訳書または青色申告決算書を含む）\nC. 売上帳簿のみ', type:'abc', ans:'B', exp:'事業所得者の休業損害は<strong>確定申告書（収支内訳書・青色申告決算書等）を基礎</strong>として算定します。休業損害証明書は給与所得者向けの書類です。事故後の売上減少の証明も有用です。'},
+  {cat:'休業損害', q:'休業損害と後遺障害逸失利益の計算期間の違いはどれか？\nA. 両者とも事故日から67歳まで\nB. 休業損害：事故日〜症状固定日、逸失利益：症状固定日〜就労可能年数終期\nC. 休業損害：入院期間のみ、逸失利益：退院後〜症状固定日', type:'abc', ans:'B', exp:'<strong>休業損害は事故日から症状固定日まで</strong>の期間の収入喪失、<strong>逸失利益は症状固定日以降の将来的な収入喪失</strong>を対象とします。症状固定日が両者の分岐点です。'},
+  {cat:'休業損害', q:'会社員が育児休業中に交通事故に遭った場合、休業損害は認められるか？\nA. 認められない（収入がないため）\nB. 育休中でも就労能力の喪失は認められ、将来の逸失利益として認定されることがある\nC. 常に認められる', type:'abc', ans:'B', exp:'育休中は実際の収入喪失はありませんが、<strong>就労能力の喪失という観点から、将来の収入喪失として逸失利益・休業損害が認定されることがあります</strong>。育休終了後の復職を前提とした収入を基礎とします。'},
+  {cat:'休業損害', q:'傷病手当金を受け取った場合、休業損害との関係はどうなるか？\nA. 傷病手当金の分だけ休業損害から控除される\nB. 傷病手当金は損益相殺の対象外であり、休業損害から控除されない\nC. 傷病手当金は健保から全額回収される', type:'abc', ans:'A', exp:'<strong>傷病手当金は健保が支払うものであり、健保は加害者に求償します</strong>。実務上は傷病手当金相当額が休業損害から控除されます（損益相殺）。最終的に健保が加害者に求償するためです。'},
+  {cat:'休業損害', q:'休業損害の証拠として診断書はなぜ重要か？\nA. 休業損害の金額が診断書に記載されているから\nB. 医師の診断書に記載された受傷内容・治療経過が「労働できない」根拠となるから\nC. 診断書がないと保険会社が支払いを拒否するから', type:'abc', ans:'B', exp:'休業損害の請求では<strong>「いつからいつまで、なぜ働けなかったか」の医学的根拠が必要</strong>です。診断書や診療録の治療内容・安静指示等が休業の必要性を裏付けます。自己申告だけでは認められにくい場合があります。'},
+
+  // ── 後遺障害 ──
+  {cat:'後遺障害', q:'後遺障害とは何か？\nA. 事故直後に現れる重篤な症状\nB. 症状固定後も残存する身体的・精神的な障害\nC. 入院中のみ現れる障害', type:'abc', ans:'B', exp:'後遺障害とは<strong>交通事故による傷害が治療を続けても改善しない状態（症状固定）に達した後も残存する身体的・精神的障害</strong>のことです。後遺障害が認定されると慰謝料・逸失利益の請求が可能になります。'},
+  {cat:'後遺障害', q:'後遺障害等級の認定機関はどこか？\nA. 警察署\nB. 損害保険料率算出機構（自賠責保険損害調査事務所）\nC. 労働基準監督署', type:'abc', ans:'B', exp:'後遺障害等級の認定は<strong>損害保険料率算出機構（自賠責保険損害調査事務所）</strong>が行います。医療記録・後遺障害診断書等を審査して1〜14級（＋要介護1・2級）の等級を認定します。'},
+  {cat:'後遺障害', q:'後遺障害申請の「被害者請求」と「事前認定」の違いはどれか？\nA. 申請費用の違い\nB. 書類収集の主導権（被害者側か加害者側保険会社か）\nC. 認定等級の基準の違い', type:'abc', ans:'B', exp:'被害者請求は<strong>被害者側が書類を収集・管理して申請する方法</strong>（証拠をコントロールできる利点がある）。事前認定は<strong>加害者側保険会社が書類を収集・申請する方法</strong>（手間が省けるが内容を把握しにくい）。認定基準は同じです。'},
+  {cat:'後遺障害', q:'後遺障害診断書を作成するのは誰か？\nA. 弁護士\nB. 損害調査事務所の担当者\nC. 担当医師（症状固定時に診察した医師）', type:'abc', ans:'C', exp:'後遺障害診断書は<strong>症状固定時に診察している担当医師が作成</strong>します。書式は自賠責所定のもの（「自動車損害賠償責任保険後遺障害診断書」）を用います。弁護士が書く書類ではありません。'},
+  {cat:'後遺障害', q:'後遺障害等級が認定される法律上の根拠はどれか？\nA. 民法709条\nB. 自動車損害賠償保障法施行令別表（1〜14級・要介護1・2級）\nC. 健康保険法', type:'abc', ans:'B', exp:'後遺障害等級は<strong>自動車損害賠償保障法施行令別表第一・第二</strong>に定められた1〜14級（＋要介護1・2級）の基準によって認定されます（自賠法施行令2条）。'},
+  {cat:'後遺障害', q:'14級9号（局部に神経症状を残すもの）とはどのような状態か？\nA. 四肢の完全麻痺\nB. むちうち症等で残存する痛みやしびれで、他覚所見がないもの\nC. 1眼の失明', type:'abc', ans:'B', exp:'14級9号は<strong>むちうち症等で残存する痛み・しびれ等の神経症状で、レントゲン・MRI等による他覚所見がないもの</strong>が典型です。最も認定頻度が高い等級です。12級13号は他覚所見があるものです。'},
+  {cat:'後遺障害', q:'後遺障害の認定に異議申立てはできるか？', type:'ox', ans:'○', exp:'<strong>できます</strong>。初回認定に不服がある場合、損害保険料率算出機構への異議申立て（1〜2回）、さらに「自賠責保険審査会」への申立て、最終的には訴訟による争いも可能です。追加資料（新たなMRI画像・医師意見書等）の提出が有効です。'},
+  {cat:'後遺障害', q:'後遺障害の「労働能力喪失率」14級の場合は何%か？\nA. 3%\nB. 5%\nC. 10%', type:'abc', ans:'B', exp:'労働能力喪失率は後遺障害等級に対応した割合です。<strong>14級：5%、12級：14%、10級：27%、7級：56%、1級（要介護）：100%</strong>が目安です（労働省労働基準局長通達の別表）。逸失利益の計算に使います。'},
+  {cat:'後遺障害', q:'症状固定後に新たに症状が悪化した場合、後遺障害の再申請（再認定申請）はできるか？', type:'ox', ans:'○', exp:'<strong>できます</strong>。症状固定後に後遺障害の内容や程度が変化した場合（悪化・新たな後遺症の発現等）は、異議申立てまたは新たな後遺障害申請が可能です。ただし「症状固定日」の医学的根拠が必要です。'},
+  {cat:'後遺障害', q:'後遺障害申請に必要な書類として最重要なものはどれか？\nA. 事故証明書のみ\nB. 後遺障害診断書・画像資料（MRI・レントゲン等）・自賠責診断書等\nC. 示談書の写し', type:'abc', ans:'B', exp:'後遺障害申請の最重要書類は<strong>①後遺障害診断書（担当医師作成）、②画像資料（MRI・CT・レントゲン等）、③自賠責診断書・診療報酬明細書</strong>です。特に画像資料は等級認定の客観的根拠として非常に重要です。'},
+
+  // ── 過失相殺 ──
+  {cat:'過失', q:'過失相殺とはどのような法律制度か？\nA. 加害者の過失がある場合に被害者へ増額する制度\nB. 被害者にも過失がある場合、その割合に応じて損害賠償額を減額する制度\nC. 保険会社が独自に設ける免責制度', type:'abc', ans:'B', exp:'過失相殺とは<strong>被害者にも過失（注意義務違反）がある場合、その過失割合に応じて損害賠償額を減額する制度</strong>です（民法722条2項）。例えば被害者の過失が30%なら損害額の70%しか請求できません。'},
+  {cat:'過失', q:'過失割合の決め方として最も一般的に参照されるものはどれか？\nA. 保険会社の独自マニュアル\nB. 「判例タイムズ」（判タ）の交通事故における過失相殺率の認定基準\nC. 警察の調書', type:'abc', ans:'B', exp:'過失割合は実務上<strong>「判例タイムズ38号（交通事故における過失相殺率の認定基準）」</strong>を参照して決めることが多いです。各事故類型ごとの基本過失割合と修正要因が掲載されています。'},
+  {cat:'過失', q:'過失相殺は損害項目ごとに行われるか？それとも損害合計額に対して一括で行われるか？', type:'ox', ans:'×', exp:'過失相殺は<strong>損害合計額（慰謝料・治療費・休業損害・逸失利益等の合計）に対して一括で行われます</strong>。項目ごとに別々の過失割合を適用するわけではありません（損益相殺の順序とは異なります）。'},
+  {cat:'過失', q:'被害者の過失割合が100%の場合、損害賠償を請求できるか？', type:'ox', ans:'×', exp:'<strong>請求できません</strong>。被害者の過失が100%（全過失）の場合、加害者の行為と損害の間に法的な因果関係が認められないとして損害賠償請求は認められません。ただし過失100%のケースは現実には稀で、双方の過失が絡むことが多いです。'},
+  {cat:'過失', q:'素因減額とはどのような制度か？\nA. 被害者の年齢が高い場合の減額\nB. 被害者の既往症や心因的要因が損害拡大に寄与した場合、その寄与度に応じて賠償額を減額する制度\nC. 天災等の不可抗力による減額', type:'abc', ans:'B', exp:'素因減額とは<strong>被害者の既往症（頸椎の変性等）や心因的要因が損害の発生・拡大に寄与した場合に、その寄与度に応じて賠償額を減額する制度</strong>です（民法722条2項の類推適用）。過失相殺とは異なります。'},
+  {cat:'過失', q:'過失相殺の計算において、治療費（健保使用）はどのタイミングで控除されるか？\nA. 過失相殺後に控除\nB. 過失相殺前に損害額から控除（損益相殺的調整）\nC. 慰謝料の後に控除', type:'abc', ans:'B', exp:'健康保険が支払った治療費は<strong>過失相殺前に損害額から控除します</strong>。これは「過失相殺前に損益相殺的調整を行う」という実務の確立した処理方法です（損益相殺と過失相殺の順序の問題）。'},
+  {cat:'過失', q:'過失相殺の主張は誰がするものか？\nA. 裁判所が職権で行う\nB. 加害者（被告）が主張すべきものだが、裁判所は職権でも考慮できる\nC. 被害者（原告）が自ら申告する', type:'abc', ans:'B', exp:'過失相殺は<strong>加害者側（被告）が主張することが多い</strong>ですが、裁判所は当事者の主張がなくても<strong>職権で過失相殺を考慮できます</strong>（民法722条2項）。示談交渉段階では相手方保険会社が主張します。'},
+  {cat:'過失', q:'信号機のある交差点で青信号の直進車と赤信号の右折車が衝突した場合の基本過失割合はどれか（直進車：右折車）？\nA. 0：100\nB. 10：90\nC. 30：70', type:'abc', ans:'A', exp:'青信号の直進車と赤信号の右折車の衝突では<strong>直進車0：右折車100</strong>が基本です（判例タイムズ基準）。右折車の信号無視という重大な過失があるため、直進車に過失はないとされます。'},
+  {cat:'過失', q:'夜間の無灯火運転中の被害者に、過失割合として修正がなされることがあるか？', type:'ox', ans:'○', exp:'<strong>あります</strong>。夜間の無灯火運転は事故発見を遅らせる要因となり、過失割合の修正要因（被害者の過失割合増加）として考慮されることがあります（判例タイムズの修正要因）。ヘルメット未着用も同様です。'},
+
+  // ── 死亡事故 ──
+  {cat:'死亡', q:'死亡事故の損害項目として請求できるものはどれか（3つ挙げよ）？\nA. 葬儀費用・死亡慰謝料・死亡逸失利益\nB. 入院雑費・後遺障害慰謝料・通院交通費\nC. 治療費・弁護士費用・傷病手当金', type:'abc', ans:'A', exp:'死亡事故の主な損害項目は<strong>①葬儀費用（実費、赤い本基準150万円程度）、②死亡慰謝料（近親者慰謝料含む）、③死亡逸失利益（就労可能年数分の収入喪失）</strong>です。さらに死亡前の治療費・入通院慰謝料も請求できます。'},
+  {cat:'死亡', q:'死亡慰謝料（本人分）の赤い本基準はいくらか（一家の支柱の場合）？\nA. 500万円\nB. 2,800万円\nC. 1,000万円', type:'abc', ans:'B', exp:'赤い本基準の死亡慰謝料（本人分）は<strong>一家の支柱：2,800万円、配偶者・母親：2,400万円、その他（独身・子ども等）：2,000〜2,400万円</strong>が目安です。近親者固有の慰謝料も別途請求できます。'},
+  {cat:'死亡', q:'死亡逸失利益の計算式はどれか？\nA. 基礎収入 × 労働能力喪失率 × ライプニッツ係数\nB. 基礎収入 × (1 − 生活費控除率) × ライプニッツ係数（就労可能年数）\nC. 年収 × 残存就労年数', type:'abc', ans:'B', exp:'死亡逸失利益は<strong>基礎収入 × (1 − 生活費控除率) × ライプニッツ係数（就労可能年数）</strong>で算出します。生活費控除率は一家の支柱35%・女性30%・独身男性50%等が目安です（赤い本基準）。'},
+  {cat:'死亡', q:'死亡事故で請求できる葬儀費用の赤い本基準はいくらか？\nA. 実費のみ\nB. 150万円程度（実費が高ければ実費）\nC. 50万円', type:'abc', ans:'B', exp:'葬儀費用は<strong>150万円を目安として認めることが多い</strong>です（赤い本）。実際の費用が150万円を超える場合は実費が認められます。香典返しや墓石代等は原則として含まれません。'},
+  {cat:'死亡', q:'死亡事故の損害賠償請求権を相続人が請求する場合、本人の慰謝料請求権は相続されるか？', type:'ox', ans:'○', exp:'<strong>相続されます</strong>。死亡した被害者本人の慰謝料請求権は相続人（配偶者・子・親等）が相続します。さらに近親者固有の慰謝料（民法711条）も別途請求できます。両者を合算して請求するのが実務です。'},
+
+  // ── 自賠責（追加③）──
+  {cat:'自賠責', q:'自賠責保険が適用されない事故はどれか？\nA. 相手が自転車の場合\nB. 飲酒運転による事故\nC. 自損事故（単独事故で他者に損害を与えない場合）', type:'abc', ans:'C', exp:'自賠責保険は<strong>他者（第三者）への人身損害を補償するもの</strong>なので、<strong>自損事故（自分だけが怪我をした場合）は原則として自賠責の補償対象外</strong>です。飲酒運転でも他者への損害は補償されます（加害者への免責はなし）。'},
+  {cat:'自賠責', q:'自賠責保険の後遺障害保険金の限度額（最重症・要介護1級）はいくらか？\nA. 3,000万円\nB. 4,000万円\nC. 1億円', type:'abc', ans:'B', exp:'自賠責保険の後遺障害による損害の限度額は<strong>要介護1級：4,000万円（要介護2級：3,000万円）</strong>です。一般の後遺障害では1〜3級：3,000万円（1・2級要介護含む上位）〜14級：75万円です。'},
+  {cat:'自賠責', q:'自賠責の損害調査は被害者請求・加害者請求どちらでも同じ調査機関が行うか？', type:'ox', ans:'○', exp:'<strong>同じです</strong>。自賠責の損害調査は<strong>損害保険料率算出機構（自賠責損害調査事務所）</strong>が、被害者請求・加害者請求いずれの場合も行います。調査の公平性・中立性のためです。'},
+  {cat:'自賠責', q:'自賠責保険の時効（消滅時効）は何年か？\nA. 1年\nB. 3年（後遺障害については症状固定日から3年）\nC. 5年', type:'abc', ans:'B', exp:'自賠責保険の請求権の消滅時効は<strong>3年</strong>です（自賠法19条）。傷害については事故日から、後遺障害については症状固定日から、死亡については死亡日から3年以内に請求しなければなりません。'},
+
+  // ── 基礎知識（追加）──
+  {cat:'基礎', q:'弁護士費用特約（弁特）とはどのような保険か？\nA. 弁護士への依頼が禁止される特約\nB. 交通事故等の示談交渉・訴訟で弁護士に依頼した費用を保険会社が負担する特約\nC. 法人専用の保険特約', type:'abc', ans:'B', exp:'弁護士費用特約とは<strong>交通事故等で弁護士に示談交渉や訴訟を依頼した際の弁護士費用（通常300万円上限＋法律相談費用10万円）を保険会社が負担する特約</strong>です。自分の任意保険・家族の保険等から使えます。'},
+  {cat:'基礎', q:'弁護士費用特約を使うと、等級が下がるか？', type:'ox', ans:'×', exp:'<strong>下がりません</strong>。弁護士費用特約の使用は等級（ノンフリート等級）に影響しません。等級に影響するのは車両保険・対人・対物賠償保険等の使用です。弁護士費用特約は積極的に活用すべきです。'},
+  {cat:'基礎', q:'交通事故の示談書（合意書）に署名した後、追加で損害賠償を請求できるか？', type:'ox', ans:'×', exp:'原則として<strong>できません</strong>。示談書に「本件に関する一切の損害賠償を解決した」旨の清算条項がある場合、後から新たな損害（後遺症の悪化等）が判明しても追加請求は極めて困難です。示談前に後遺障害等級を確定させることが重要です。'},
+  {cat:'基礎', q:'交通事故の物損と人損の時効期間は同じか？\nA. 同じ（3年）\nB. 異なる（物損：3年、人損：5年）\nC. 異なる（物損：3年、人損・後遺障害：20年が上限）', type:'abc', ans:'C', exp:'<strong>物損（財物の損害）：3年（民法724条の2）、人身損害（傷害・後遺障害）：5年（民法724条の2・724条）、死亡・重大な後遺障害：加害者特定時から5年または不法行為から20年（除斥期間）</strong>です（2020年改正民法）。'},
+  {cat:'基礎', q:'物損事故を人身事故に切り替えるとどのようなメリットがあるか？\nA. 保険金が2倍になる\nB. 自賠責保険による補償を受けられるようになり、慰謝料等の人身損害が請求できる\nC. 示談が早くなる', type:'abc', ans:'B', exp:'物損事故のままでは<strong>自賠責保険による人身損害（慰謝料・休業損害等）の補償が受けられません</strong>。警察へ人身事故に切り替える手続きをすることで、自賠責保険の適用を受け、慰謝料・休業損害等の請求が可能になります。'},
+  {cat:'基礎', q:'後遺障害等級の認定結果が出る前に示談してはいけない主な理由はどれか？\nA. 自賠責が取り消されるから\nB. 後遺障害の等級・金額が確定していない状態で示談すると後遺障害の損害が適正に反映されないから\nC. 法律で禁止されているから', type:'abc', ans:'B', exp:'後遺障害等級が未確定の状態で示談すると<strong>後遺障害慰謝料・逸失利益が適正に計算されず、著しく不利な金額で示談してしまうリスク</strong>があります。必ず等級認定後に示談交渉を始めるべきです。'},
+  {cat:'基礎', q:'交通事故証明書はどこから入手するか？\nA. 警察署の窓口のみ\nB. 自動車安全運転センター（窓口・郵送・コンビニ等）\nC. 自賠責保険会社', type:'abc', ans:'B', exp:'交通事故証明書は<strong>自動車安全運転センター</strong>から入手します（窓口申請・郵送申請・コンビニ端末等）。事故後に警察への届出（交通事故の届出）が前提です。物損のみの届出では人身事故証明書入手不能の場合があります。'},
+
+  // ── 訴状（追加②）──
+  {cat:'訴状', q:'不法行為による損害賠償請求の消滅時効は何年か（2020年改正民法適用後）？\nA. 3年（知った日から）\nB. 5年（知った日から）または20年（行為時から）\nC. 1年（事故日から）', type:'abc', ans:'B', exp:'2020年改正民法では不法行為の時効は<strong>①損害及び加害者を知った日から5年、または②不法行為の時から20年（除斥期間）のいずれか早い方</strong>です（民法724条の2）。改正前は「知った日から3年」でした。'},
+  {cat:'訴状', q:'訴状に貼る印紙（訴訟物の価額に対応）の計算から遅延損害金を除く理由は？\nA. 遅延損害金は実費ではないから\nB. 遅延損害金は附帯請求であり、訴訟物の価額から法律上除外されるから\nC. 保険会社が別途支払うから', type:'abc', ans:'B', exp:'遅延損害金は<strong>附帯請求</strong>として訴訟物の価額から除外されます（民事訴訟法9条2項）。訴訟物の価額（印紙計算の基礎）は<strong>元本請求額のみ</strong>で計算します。遅延損害金込みで計算すると印紙を余分に貼ることになります。'},
+  {cat:'訴状', q:'民法709条の「故意または過失」の立証責任は誰が負うか？\nA. 被告（加害者）が自己の無過失を立証する\nB. 原告（被害者）が被告の故意または過失を立証する\nC. 裁判所が職権で調査する', type:'abc', ans:'B', exp:'民法709条に基づく不法行為請求では<strong>原告（被害者）側が被告（加害者）の故意または過失を立証する責任を負います</strong>。ただし自賠法3条に基づく自動車の「運行供用者責任」では加害者側が免責事由を立証する責任があり、立証責任が逆転します。'},
+  {cat:'訴状', q:'自賠法3条に基づく請求と民法709条に基づく請求の大きな違いはどれか？\nA. 賠償額の上限が異なる\nB. 自賠法3条は運行供用者の免責要件（立証責任の転換）が定められており、被害者保護に有利\nC. 民法709条は交通事故にのみ適用される', type:'abc', ans:'B', exp:'自賠法3条（運行供用者責任）では<strong>加害者側が①自己及び運転者の無過失、②被害者または第三者の過失、③自動車の構造上の欠陥または機能障害の不存在の3つ全てを立証しなければ免責されません</strong>。民法709条より被害者に有利な立証責任の転換があります。'},
+  {cat:'訴状', q:'損害賠償請求訴訟において弁護士費用は損害として認められるか？', type:'ox', ans:'○', exp:'<strong>認められます</strong>。弁護士費用は一般的に<strong>認容された損害額の10%程度</strong>が相当として損害に含まれます（最判昭44年2月27日）。ただし実際の弁護士費用全額ではなく、相当因果関係のある範囲（概ね10%）です。'},
+  {cat:'訴状', q:'「一部請求」とはどのような訴訟方法か？\nA. 損害の一部費目のみを請求すること\nB. 損害全額のうち一部の金額のみを訴訟物として請求すること\nC. 仮執行宣言を申立てないこと', type:'abc', ans:'B', exp:'一部請求とは<strong>損害賠償額の合計がX円であっても、そのうちY円（Y＜X）のみを訴訟物として請求する方法</strong>です。印紙代を抑えたい場合や時効中断を目的とする場合等に使われます。残額は別訴または追加請求が可能です。'},
+  {cat:'訴状', q:'既払額控除後の損害額が0円以下になった場合（既払額が損害額を超える場合）、訴訟はどうなるか？\nA. 自動的に棄却される\nB. 請求棄却（又は請求が認められない）の判決になる可能性が高い\nC. 過払い分は被害者が返還しなければならない', type:'abc', ans:'B', exp:'既払額が損害額を上回る場合、残損害額はゼロとなり<strong>原告（被害者）の請求は認められない（請求棄却）</strong>可能性が高いです。ただし費目間控除の制限（労災給付等）により実際の控除額は変わる場合があります。'},
+];
+
+
+let qaCurrentIdx = -1;
+let qaAnswered = false;
+let qaFilteredList = [];
+let qaPosition = 0;
+let selectedCat = '';
+let qaCurrentOptMap = null; // display letter → original letter
+
+function getQACat(idx){
+  const q = QA_BANK[idx];
+  if(!q) return 'その他';
+
+  // cat フィールドがある問題（新規追加分）はそのまま分類
+  if(q.cat){
+    const MERGE={
+      '自賠責':'自賠責・任意','人身傷害':'自賠責・任意','基礎':'自賠責・任意',
+      '健保労災':'健保・労災',
+      '治療費':'積極損害','交通費':'積極損害','入院費':'積極損害','慰謝料':'積極損害','死亡':'積極損害',
+      '既払額':'その他','過失':'その他',
+      '休業損害':'消極損害','逸失利益':'消極損害','後遺障害':'消極損害',
+      '訴状':'その他',
+    };
+    return MERGE[q.cat] || 'その他';
+  }
+
+  // cat フィールドなしの問題はテキスト内容で判定
+  const t = q.q + ' ' + (q.exp || '');
+
+  // ── 消極損害（優先） ──
+  if(/休業損害/.test(t)) return '消極損害';
+  if(/逸失利益/.test(t)) return '消極損害';
+  if(/労働能力喪失/.test(t)) return '消極損害';
+  if(/ライプニッツ/.test(t)) return '消極損害';
+  if(/後遺障害(?:等級|診断書|申請|認定|慰謝料|逸失|喪失率|による)/.test(t)) return '消極損害';
+  if(/症状固定後に行うべき/.test(t)) return '消極損害';
+  if(/就労可能年数|67歳.*就労/.test(t)) return '消極損害';
+
+  // ── その他（訴状・過失相殺・既払額） ──
+  if(/訴状|請求の趣旨|請求の原因|仮執行宣言|訴訟費用|民事訴訟法|よって書き/.test(t)) return 'その他';
+  if(/遅延損害金|消滅時効|不法行為.*起算|民法709条|自賠法3条/.test(t)) return 'その他';
+  if(/過失相殺|過失割合|素因減額|判例タイムズ|判タ/.test(t)) return 'その他';
+  if(/既払額|内払金/.test(t)) return 'その他';
+
+  // ── 健保・労災 ──
+  if(/傷病手当金/.test(t)) return '健保・労災';
+  if(/休業.*補償.*給付|療養.*補償.*給付/.test(t)) return '健保・労災';
+  if(/労災指定病院|労災保険.*使用|健康保険.*使用|健保.*使用/.test(t)) return '健保・労災';
+  if(/第三者行為.*傷病届/.test(t)) return '健保・労災';
+  if(/国民健康保険|健保.*一括|健保レセプト|労災レセプト/.test(t)) return '健保・労災';
+  if(/通勤災害.*健康保険|健康保険.*通勤災害/.test(t)) return '健保・労災';
+
+  // ── 自賠責・任意保険 ──
+  if(/自賠責保険(?!診断書|診療報酬|施術証明)/.test(t)) return '自賠責・任意';
+  if(/強制保険|任意保険.*法律上|加入.*義務/.test(t)) return '自賠責・任意';
+  if(/人身傷害保険/.test(t)) return '自賠責・任意';
+  if(/弁護士費用特約/.test(t)) return '自賠責・任意';
+  if(/搭乗者傷害/.test(t)) return '自賠責・任意';
+  if(/被害者請求権|加害者請求権|16条請求|15条請求/.test(t)) return '自賠責・任意';
+  if(/自賠責一括|一括対応|一括払い/.test(t)) return '自賠責・任意';
+  if(/重過失減額/.test(t)) return '自賠責・任意';
+  if(/読替規定|過失部分払条項|人傷基準/.test(t)) return '自賠責・任意';
+  if(/損益相殺.*対象外|等級.*下が/.test(t)) return '自賠責・任意';
+
+  // ── 積極損害 ──
+  if(/治療関係費|治療費|自賠責診断書|自賠責診療報酬|施術証明|調剤|整骨院|薬局/.test(t)) return '積極損害';
+  if(/通院交通費|ガソリン代|15円.*km|km.*15円|タクシー.*通院/.test(t)) return '積極損害';
+  if(/入院雑費|差額ベッド|紙おむつ/.test(t)) return '積極損害';
+  if(/慰謝料/.test(t)) return '積極損害';
+  if(/葬儀費用|文書料|損害賠償請求関係費用/.test(t)) return '積極損害';
+
+  return '保険';
+}
+
+function setQACat(cat){
+  selectedCat=cat;
+  document.querySelectorAll('.cat-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.cat===cat);
+  });
+  qaFilteredList = Array.from({length:QA_BANK.length},(_,i)=>i)
+    .filter(i=> !selectedCat || getQACat(i)===selectedCat);
+  qaPosition = 0;
+  buildQA();
+}
+
+function qaJump(val){
+  const n = parseInt(val);
+  if(!isNaN(n) && n >= 1 && n <= qaFilteredList.length){
+    qaPosition = n - 1;
+    buildQA();
+  }
+}
+
+function buildQA(pos){
+  if(qaFilteredList.length === 0){
+    qaFilteredList = Array.from({length:QA_BANK.length},(_,i)=>i)
+      .filter(i=> !selectedCat || getQACat(i)===selectedCat);
+  }
+  if(pos !== undefined) qaPosition = pos;
+  if(qaPosition >= qaFilteredList.length) qaPosition = 0;
+  if(qaPosition < 0) qaPosition = qaFilteredList.length - 1;
+  qaCurrentIdx = qaFilteredList[qaPosition];
+  qaAnswered = false;
+  const q = QA_BANK[qaCurrentIdx];
+  const total = qaFilteredList.length;
+  const num = qaPosition + 1;
+  let btnHtml = '';
+  let displayQ = q.q;
+  qaCurrentOptMap = null;
+  if(q.type==='ox'){
+    btnHtml = `<button class="btn-secondary" style="min-width:60px;font-size:18px;font-weight:800" onclick="answerQA('○')">○</button>
+               <button class="btn-secondary" style="min-width:60px;font-size:18px;font-weight:800" onclick="answerQA('×')">×</button>`;
+  } else {
+    // Parse stem + options, shuffle display order
+    const optRe = /^([\s\S]*?)\nA\. ([\s\S]*?)\nB\. ([\s\S]*?)\nC\. ([\s\S]*)$/;
+    const pm = q.q.match(optRe);
+    if(pm){
+      const stem = pm[1];
+      const origOpts = {A: pm[2], B: pm[3], C: pm[4]};
+      const letters = ['A','B','C'];
+      // Fisher-Yates shuffle
+      for(let i=letters.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[letters[i],letters[j]]=[letters[j],letters[i]];}
+      // letters[0..2] = display A,B,C → origOpts[letters[i]]
+      qaCurrentOptMap = {A:letters[0], B:letters[1], C:letters[2]};
+      displayQ = stem + '\nA. ' + origOpts[letters[0]] + '\nB. ' + origOpts[letters[1]] + '\nC. ' + origOpts[letters[2]];
+    }
+    btnHtml = `<button class="btn-secondary" onclick="answerQA('A')">A</button>
+               <button class="btn-secondary" onclick="answerQA('B')">B</button>
+               <button class="btn-secondary" onclick="answerQA('C')">C</button>`;
+  }
+  document.getElementById('jq-qa-section').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <span style="font-size:13px;font-weight:700;color:var(--text-muted)">Q.${num} / ${total}</span>
+      <input type="number" min="1" max="${total}" value="${num}"
+        style="width:64px;padding:3px 6px;border:1.5px solid #ccc;border-radius:6px;font-size:13px;text-align:center"
+        onchange="qaJump(this.value)" onkeydown="if(event.key==='Enter')qaJump(this.value)">
+      <span style="font-size:12px;color:var(--text-muted)">問にジャンプ</span>
+    </div>
+    <div class="quiz-question" style="white-space:pre-line">${displayQ}</div>
+    <div style="display:flex;gap:10px;margin:12px 0;flex-wrap:wrap" id="qa-btn-area">${btnHtml}</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn-secondary" onclick="buildQA(${qaPosition-1})"${qaPosition===0?' disabled':''} style="min-width:80px">◀ 前へ</button>
+      <button class="btn-calc" style="flex:1" onclick="buildQA(${qaPosition+1})">次へ ▶</button>
+    </div>
+    <div id="qa-feedback" style="display:none"></div>`;
+}
+
+function answerQA(choice){
+  if(qaAnswered) return;
+  qaAnswered = true;
+  const q = QA_BANK[qaCurrentIdx];
+  // For abc questions, map display letter → original letter to check answer
+  const origChoice = (qaCurrentOptMap && q.type==='abc') ? qaCurrentOptMap[choice] : choice;
+  const correct = origChoice === q.ans;
+  // Find which display letter corresponds to the correct original answer
+  let correctDisplay = q.ans;
+  if(qaCurrentOptMap && q.type==='abc'){
+    correctDisplay = Object.keys(qaCurrentOptMap).find(k => qaCurrentOptMap[k] === q.ans) || q.ans;
+  }
+  const fb = document.getElementById('qa-feedback');
+  fb.style.display = 'block';
+  fb.innerHTML = `
+    <div class="quiz-answer open" style="margin-top:0">
+      <div style="font-size:20px;font-weight:800;margin-bottom:8px;color:${correct?'var(--success)':'var(--danger)'}">
+        ${correct ? '✓ 正解！' : `✗ 不正解（正解: ${correctDisplay}）`}
+      </div>
+      <div class="quiz-step">${q.exp}</div>
+    </div>`;
+  // disable buttons, highlight correct display letter
+  document.querySelectorAll('#qa-btn-area button').forEach(b=>{
+    b.disabled = true;
+    if(b.textContent.trim()===correctDisplay){ b.style.background='#4D7C5A'; b.style.color='#fff'; b.style.borderColor='#4D7C5A'; }
+    else { b.style.background='#eee'; b.style.color='#aaa'; }
+  });
+}
+
+// ============================================================
+// GLOSSARY
+// ============================================================
+const GLOSSARY = [
+  {term:'症状固定',body:`<p><strong>症状固定</strong>とは、これ以上治療を続けても回復が見込めない状態と医師が判断した時点のことです。</p>
+  <p>この日を基準として:</p><ul>
+  <li>後遺障害等級の申請（自賠責保険への申請）が始まります</li>
+  <li>後遺障害逸失利益の計算の起点となります</li>
+  <li>入通院慰謝料の計算もこの時点で終了します</li>
+  </ul>
+  <div class="help-note">医師が症状固定と判断するまでの治療費・慰謝料は「入通院損害」として計上し、固定後は「後遺障害損害」として計上します。</div>`},
+  {term:'後遺障害等級',body:`<p><strong>後遺障害等級</strong>とは、労働省令（自動車損害賠償保障法施行令）で定める1〜14級（＋要介護1・2級）の障害認定です。</p>
+  <p>等級によって慰謝料・逸失利益が大きく変わります。</p>
+  <table><tr><th>等級</th><th>弁護士基準慰謝料</th><th>労働能力喪失率</th></tr>
+  <tr><td>第1〜3級</td><td>1,990〜2,800万円</td><td>100%</td></tr>
+  <tr><td>第7級</td><td>1,000万円</td><td>56%</td></tr>
+  <tr><td>第12級</td><td>290万円</td><td>14%</td></tr>
+  <tr><td>第14級</td><td>110万円</td><td>5%</td></tr>
+  </table>
+  <h4>申請方法</h4><ul>
+  <li><strong>事前認定</strong>: 加害者側の自賠責保険会社に申請を任せる方法（書類準備が楽だが、被害者が内容を確認しにくい）</li>
+  <li><strong>被害者請求</strong>: 被害者自身が資料を揃えて申請する方法（証拠を自分でコントロールできる）</li>
+  </ul>`},
+  {term:'基礎収入',body:`<p><strong>基礎収入</strong>とは、逸失利益計算の基礎となる年収のことです。</p>
+  <h4>職業別の基礎収入の算定方法</h4>
+  <table><tr><th>職業</th><th>算定方法</th></tr>
+  <tr><td>給与所得者</td><td>源泉徴収票の「支払金額」欄（額面年収）</td></tr>
+  <tr><td>自営業者</td><td>確定申告書の「所得金額」＋「青色申告特別控除額」</td></tr>
+  <tr><td>専業主婦・主夫</td><td>賃金センサス（賃金構造基本統計調査）の女性全年齢平均賃金（約410万円）</td></tr>
+  <tr><td>若年者・学生</td><td>賃金センサスの平均賃金を使う場合がある</td></tr>
+  </table>
+  <div class="help-note">実際の年収が賃金センサスを下回る場合でも、若年者や回復見込みがある場合はセンサスを使う裁判例があります。弁護士に相談してください。</div>`},
+  {term:'ライプニッツ係数',body:`<p><strong>ライプニッツ係数</strong>とは、将来の収入の損失を現在価値に換算するための係数です。</p>
+  <p>考え方: 今すぐもらえる100万円と10年後にもらえる100万円は、利息がつく分、今の100万円の方が価値が高い。<br>そこで「将来受け取るべきだった収入」を現在の金額に割り引く（中間利息を控除する）必要があります。</p>
+  <div class="help-note">計算式: 年利3%の複利現価係数<br>n年後の1円の現在価値 = 1 ÷ (1.03)^n<br>n年分の合計 = Σ 1÷(1.03)^k （k=1〜n）</div>
+  <h4>具体例</h4><p>25年間・年100万円の損失の現在価値:</p>
+  <p>100万円 × 17.413（25年のライプニッツ係数）= 1,741万円</p>
+  <p>（単純合計25年×100万=2,500万円より約758万円少なくなります）</p>`},
+  {term:'過失相殺',body:`<p><strong>過失相殺</strong>とは、交通事故において被害者にも過失（不注意）があった場合、その割合に応じて損害賠償額を減額する制度です（民法722条2項）。</p>
+  <h4>計算方法</h4>
+  <div class="help-note">過失相殺後の金額 = 損害合計 × (1 − 被害者過失割合)</div>
+  <p>例: 損害500万円・被害者過失30% → 500万 × 70% = 350万円</p>
+  <h4>過失割合の例（目安）</h4>
+  <table><tr><th>事故態様</th><th>被害者過失（目安）</th></tr>
+  <tr><td>信号無視の加害者に追突された</td><td>0〜10%</td></tr>
+  <tr><td>青信号で横断中に轢かれた</td><td>0〜20%</td></tr>
+  <tr><td>飛び出し（歩行者）</td><td>30〜50%</td></tr>
+  </table>
+  <div class="help-note">過失割合は事故の状況・道路状況・信号の有無などによって決まります。「別冊判例タイムズ」が標準的な基準として使われます。</div>`},
+  {term:'自賠責保険',body:`<p><strong>自賠責保険</strong>（自動車損害賠償責任保険）とは、全ての自動車・バイクに加入が義務付けられた強制保険です。</p>
+  <h4>支払限度額</h4>
+  <table><tr><th>損害の種類</th><th>限度額</th></tr>
+  <tr><td>傷害による損害</td><td>120万円</td></tr>
+  <tr><td>後遺障害（14級）</td><td>75万円</td></tr>
+  <tr><td>後遺障害（12級）</td><td>224万円</td></tr>
+  <tr><td>後遺障害（9級）</td><td>616万円</td></tr>
+  <tr><td>後遺障害（7級）</td><td>1,051万円</td></tr>
+  <tr><td>後遺障害（1級・要介護）</td><td>4,000万円</td></tr>
+  <tr><td>死亡による損害</td><td>3,000万円</td></tr>
+  </table>
+  <div class="help-note">自賠責の限度額を超える損害は、加害者側の任意保険または加害者本人に請求します。自賠責は最低限の補償であり、重大な事故では大幅に不足することがあります。</div>`},
+  {term:'弁護士基準（裁判基準）',body:`<p><strong>弁護士基準（裁判基準）</strong>とは、裁判所が過去の判例を集積して定めた損害算定の基準です。</p>
+  <h4>3つの基準の比較</h4>
+  <table><tr><th>基準</th><th>慰謝料水準</th><th>特徴</th></tr>
+  <tr><td>自賠責基準</td><td>最低</td><td>法律で定められた最低限の基準</td></tr>
+  <tr><td>任意保険基準</td><td>中程度</td><td>各保険会社が独自に設定</td></tr>
+  <tr><td>弁護士基準（裁判基準）</td><td>最高</td><td>判例に基づく。訴訟・弁護士介入で実現しやすい</td></tr>
+  </table>
+  <div class="help-note">「赤い本」（民事交通事故訴訟損害賠償額算定基準・東京地裁）や「青い本」（交通損害関係訴訟・大阪地裁）が実務の基準書として使われています。</div>
+  <p>弁護士に依頼すると、自賠責・任意保険基準より高額の賠償が認められることが多く、弁護士費用を差し引いても手取りが増えるケースが少なくありません。</p>`},
+  {term:'遅延損害金',body:`<p><strong>遅延損害金</strong>とは、交通事故日（不法行為日）から損害賠償金の支払いが完了するまでの間に発生する法定利息（利息相当）のことです。</p>
+  <h4>法定利率</h4>
+  <table><tr><th>事故日</th><th>法定利率</th></tr>
+  <tr><td>令和2年（2020年）4月1日以降</td><td>年3%</td></tr>
+  <tr><td>平成29年（2017年）4月1日〜令和2年3月31日</td><td>年5%（改正前）</td></tr>
+  </table>
+  <div class="help-note">計算式: 損害額 × 3% × 事故日から支払日までの年数<br>例: 損害1,000万円・事故から2年後に解決 → 1,000万 × 3% × 2 = 60万円</div>
+  <p>訴訟になった場合、判決で認容された損害額だけでなく、遅延損害金も一緒に認められます。解決が長引くほど遅延損害金が積み上がるため、加害者側に早期解決のインセンティブがあります。</p>`},
+  {term:'死亡慰謝料と遺族固有慰謝料',body:`<p>死亡事故の慰謝料は、<strong>本人分の慰謝料</strong>と<strong>遺族固有の慰謝料</strong>に分かれます。</p>
+  <h4>本人分（弁護士基準）</h4>
+  <table><tr><th>被害者の立場</th><th>目安金額</th></tr>
+  <tr><td>一家の支柱</td><td>2,800万円</td></tr>
+  <tr><td>母親・配偶者</td><td>2,500万円</td></tr>
+  <tr><td>独身・子供・幼児等</td><td>2,000〜2,500万円</td></tr>
+  </table>
+  <h4>遺族固有分（参考）</h4>
+  <p>父母・配偶者・子は固有の慰謝料請求権を持ちます（民法711条）。実務では本人分の金額に遺族分を含めて計上することが多いです。</p>
+  <ul>
+  <li>配偶者: 200万円程度</li>
+  <li>父母（各）: 100万円程度</li>
+  <li>子（各）: 100万円程度</li>
+  </ul>
+  <div class="help-note">上記の「弁護士基準」の金額は、実務上、遺族固有分を含んだ合計として請求されることが多いです。</div>`},
+  {term:'労働能力喪失率',body:`<p><strong>労働能力喪失率</strong>とは、後遺障害により失われた労働能力の割合を示す数値です。</p>
+  <p>逸失利益の計算に用います: 基礎収入 × <strong>喪失率</strong> × ライプニッツ係数</p>
+  <table><tr><th>等級</th><th>喪失率</th></tr>
+  <tr><td>第1〜3級・要介護1〜2級</td><td>100%（全部喪失）</td></tr>
+  <tr><td>第4級</td><td>92%</td></tr>
+  <tr><td>第7級</td><td>56%</td></tr>
+  <tr><td>第9級</td><td>35%</td></tr>
+  <tr><td>第12級</td><td>14%</td></tr>
+  <tr><td>第14級</td><td>5%</td></tr>
+  </table>
+  <div class="help-note">この割合はあくまで目安であり、具体的な職業・業務内容によって異なる判断がされることがあります。例えば、ピアニストが指の障害（第12級）を負った場合、14%を超える喪失率が認められることもあります。</div>`}
+];
+
+function renderGlossary(){
+  const container = document.getElementById('glossary-list');
+  container.innerHTML = GLOSSARY.map((item,i)=>`
+    <div class="gloss-item">
+      <div class="gloss-header" onclick="toggleGloss(${i})">
+        <span>${item.term}</span>
+        <span id="gloss-arrow-${i}" style="font-size:18px;color:var(--text-muted)">+</span>
+      </div>
+      <div class="gloss-body" id="gloss-body-${i}">
+        ${item.body}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleGloss(i){
+  const body = document.getElementById('gloss-body-'+i);
+  const arrow = document.getElementById('gloss-arrow-'+i);
+  const open = body.classList.toggle('open');
+  arrow.textContent = open ? '−' : '+';
+}
+
+// ============================================================
+// MODALS
+// ============================================================
+const HELP = {
+  shojoKotei:{title:'症状固定日とは',body:`<p><strong>症状固定</strong>とは、これ以上治療を続けても回復が見込めない状態と医師が判断した時点です。</p>
+  <h4>症状固定の重要性</h4>
+  <ul>
+  <li>入通院慰謝料・治療費・休業損害の計算はこの日で終了します</li>
+  <li>症状固定後の残存症状が「後遺障害」として認定の対象になります</li>
+  <li>後遺障害逸失利益の就労可能年数の起点となります（67歳−症状固定時年齢）</li>
+  </ul>
+  <div class="help-note">医師の判断で決まるため、保険会社から一方的に「症状固定」を通告された場合は弁護士に相談してください。実際の症状固定日と異なる場合があります。</div>
+  <h4>事故発生日との関係</h4>
+  <p>事故発生日から症状固定日までの期間が「治療期間」となり、入通院慰謝料表に用いる通院ヶ月数の上限目安となります。</p>`},
+  overview:{title:'交通事故損害計算について',body:`<p>交通事故の損害賠償額は、<strong>弁護士基準（裁判基準）</strong>で計算するのが最も高額になります。</p>
+  <h4>3つの算定基準</h4>
+  <ol><li>自賠責基準（最低）: 法律で定められた最低限</li><li>任意保険基準（中程度）: 保険会社の独自基準</li><li>弁護士基準（最高）: 判例に基づく裁判所の基準</li></ol>
+  <p>このツールは弁護士基準で計算します。実際の事件では個別の事情によって金額が変わります。</p>`},
+  kashitsu:{title:'過失相殺とは',body:`<p>被害者にも過失がある場合、その割合分だけ損害賠償額が減額されます（民法722条2項）。</p>
+  <p>例: 損害500万円・被害者過失30% → 500万 × (1−30%) = 350万円</p>
+  <div class="help-note">過失割合が0%でも、自分の損害を軽減する努力義務（安全帯・ヘルメット等）を怠った場合に減額されることがあります。</div>`},
+  kiharai:{title:'既払保険金とは',body:`<p>事故後に自賠責保険や任意保険からすでに受け取った金額です。</p>
+  <p>最終請求額 = 過失相殺後の損害額 − 既払保険金</p>
+  <div class="help-note">仮払いを受けた場合や自賠責から直接支払いを受けた場合は、ここに入力してください。</div>`},
+  chiryohi:{title:'治療費について',body:`<p>病院・整骨院・薬局などでかかった費用の実費です。</p>
+  <h4>証拠書類</h4><ul><li>診療費（診療報酬明細書・領収書）</li><li>薬代の領収書</li><li>整骨院の通院証明書・領収書</li></ul>
+  <div class="help-note">健康保険を使って治療した場合、健保が立て替えた3割分（実際に支払った自己負担額ではなく全額）が損害として認められる場合があります。弁護士に相談してください。</div>`},
+  nyuinzappi:{title:'入院雑費について',body:`<p>入院中に必要となる雑費（タオル・日用品・通信費等）です。</p>
+  <table><tr><th>基準</th><th>金額</th></tr>
+  <tr><td>弁護士基準</td><td>1,500円/日</td></tr>
+  <tr><td>自賠責基準</td><td>1,100円/日</td></tr>
+  </table>
+  <div class="help-note">領収書がなくても認められます（定額）。実費が日額を超える場合は実費を主張することもあります。</div>`},
+  kotsuhi:{title:'通院交通費について',body:`<p>通院にかかった交通費の実費です。</p>
+  <h4>交通手段別の計算</h4>
+  <ul>
+  <li>公共交通機関: 往復の実費 × 通院日数</li>
+  <li>自家用車: 片道距離(km) × 2 × 15円 × 通院日数（ガソリン代目安）</li>
+  <li>タクシー: 原則として認められない（やむを得ない事情がある場合を除く）</li>
+  </ul>
+  <div class="help-note">交通費の領収書・IC乗車履歴・走行距離の記録を保存しておきましょう。</div>`},
+  kyugyо:{title:'休業損害について',body:`<p>交通事故の怪我のために働けなかった期間の収入損害です。</p>
+  <h4>給与所得者の計算</h4>
+  <p>日額 = 事故前3ヶ月の収入 ÷ 稼働日数（または ÷ 90）<br>休業損害 = 日額 × 休業日数</p>
+  <h4>自営業者の計算</h4>
+  <p>日額 = （所得金額 + 青色申告特別控除額）÷ 365<br>休業損害 = 日額 × 休業日数</p>
+  <h4>家事従事者（専業主婦・主夫）の計算</h4>
+  <p>賃金センサス（女性全年齢平均賃金）を基礎に認められます。実際の収入がなくても請求できます。</p>
+  <div class="help-note">証拠: 給与所得者は給与明細・源泉徴収票。自営業は確定申告書・帳簿。主婦は医師の診断書・家事不能期間の証明。</div>`},
+  fusoihi:{title:'付添費について',body:`<p>入院中または通院時に家族（近親者）が付き添った場合の費用です。</p>
+  <h4>弁護士基準の日額</h4>
+  <table><tr><th>区分</th><th>日額</th></tr>
+  <tr><td>入院中の近親者付添</td><td>6,500円/日</td></tr>
+  <tr><td>通院時の近親者付添</td><td>3,300円/日</td></tr>
+  <tr><td>職業的付添人（ヘルパー等）</td><td>実費相当額</td></tr>
+  </table>
+  <h4>認められる条件</h4>
+  <ul>
+  <li>医師が付添の必要性を認めていること（診断書・意見書）</li>
+  <li>実際に付添がなされた事実の証明</li>
+  </ul>
+  <div class="help-note">重傷・術後・高齢者・小児等の場合に認められやすいです。付添日誌・写真・証明書を用意しましょう。</div>`},
+  nyutsuin_isharyo:{title:'入通院慰謝料について',body:`<p>入院・通院したことによる精神的苦痛に対する慰謝料です。</p>
+  <h4>傷病区分（赤い本・東京基準）</h4>
+  <ul>
+  <li>軽傷: むち打ち（頸椎捻挫）・打撲・擦過傷など</li>
+  <li>重傷: 骨折・脱臼・手術・内臓損傷・頭部外傷など</li>
+  </ul>
+  <h4>傷病区分（緑本・大阪基準）</h4>
+  <ul>
+  <li>通常: 骨折等、一般的な傷害</li>
+  <li>重傷: 傷害の程度・部位が著しく重大な場合</li>
+  <li>軽度の神経症状（むちうち症）・軽度の打撲/挫創（傷）: 通常表の3分の2程度に減額</li>
+  </ul>
+  <h4>端数処理</h4>
+  <p>通院72日（2.4ヶ月）の場合（軽傷・入院なし）:</p>
+  <p>36万 + (53−36)万 × 0.4 = 36 + 6.8 = 42.8万円</p>
+  <div class="help-note">通院実日数と通院期間（開始〜終了の月数）は別物です。月2〜3回しか通院していない場合、実通院日数で按分される場合があります。緑本では、実通院期間と実通院日数×3.5倍した日数を比較し、少ない方を通院期間とするルールがあります（「実通院日数」欄に入力すると自動計算されます）。</div>`},
+  koi_isharyo:{title:'後遺障害慰謝料について',body:`<p>症状固定後に残った後遺症の精神的苦痛に対する慰謝料です。</p>
+  <p>後遺障害等級（1〜14級・要介護1〜2級）によって金額が決まります。赤い本（東京基準）・緑本（大阪基準）で金額がわずかに異なります（1級・8級・13級・14級はほぼ同額、他は数十万円程度の差があります）。</p>
+  <div class="help-note">弁護士基準は自賠責基準の2〜3倍になることが多く、弁護士に依頼することで大幅に増額できる場合があります。</div>`},
+  book_choice:{title:'赤い本・緑本（弁護士基準の地域差）について',body:`<p>弁護士基準（裁判基準）の慰謝料額は、全国共通の一つの表があるわけではなく、地域の弁護士会・裁判所が公表する目安表（本）によって多少異なります。</p>
+  <h4>赤い本（東京）</h4>
+  <p>日弁連交通事故相談センター東京支部が発行する「民事交通事故訴訟　損害賠償額算定基準」の通称です。全国的にもっとも広く参照されます。</p>
+  <h4>緑本（大阪）</h4>
+  <p>大阪弁護士会が発行する「交通事故損害賠償の実務」の通称です。近畿地方の裁判・示談交渉でよく参照されます。入通院慰謝料表の区分（通常・重傷・むちうち等の扱い）や後遺障害慰謝料の金額が赤い本と一部異なります。</p>
+  <div class="help-note">このアプリでは入通院慰謝料表と後遺障害慰謝料（弁護士基準）のみが赤い本／緑本で切り替わります。治療費・休業損害・逸失利益等その他の項目の計算方法は共通です。実際に使う基準は、事故が起きた地域の弁護士にご確認ください。</div>`},
+  koi_isshitsu:{title:'後遺障害逸失利益について',body:`<p>後遺障害により将来の労働能力が低下した分の損害です。</p>
+  <div class="help-note">計算式: 基礎収入 × 労働能力喪失率 × ライプニッツ係数（就労可能年数）</div>
+  <p>就労可能年数 = 67歳（定年）− 症状固定時年齢（上限49年）</p>
+  <p>67歳を超えて就労していた場合や平均余命まで就労実績がある場合は、例外的に長い期間が認められることもあります。</p>`},
+  kisoshunyuu:{title:'基礎収入の確認方法',body:`<h4>給与所得者</h4><p>源泉徴収票の「支払金額」欄（額面年収）を使います。税引き前の総支給額です。</p>
+  <h4>自営業者</h4><p>確定申告書の「所得金額」①欄 ＋「青色申告特別控除額」④欄を合計します。</p>
+  <h4>主婦・若年者</h4><p>賃金センサス（国が毎年公表する統計）の平均賃金を使います。実際の収入が平均を下回る場合でも認められることがあります。</p>`},
+  kaigo:{title:'将来介護費について',body:`<p>要介護状態（後遺障害1・2級相当）の場合、将来にわたって必要な介護費用を損害として請求できます。</p>
+  <h4>計算式</h4>
+  <p>将来介護費 = 日額介護費 × 365日 × ライプニッツ係数（平均余命年数）</p>
+  <h4>日額の目安</h4>
+  <ul>
+  <li>職業的介護人（施設・ヘルパー等）: 実費相当</li>
+  <li>近親者による介護: 日額8,000円程度（裁判例の目安）</li>
+  </ul>`},
+  death_isshitsu:{title:'死亡逸失利益について',body:`<p>被害者が生存していれば将来稼いだはずの収入から、生活費を差し引いた損害です。</p>
+  <div class="help-note">死亡逸失利益 = 基礎収入 × (1 − 生活費控除率) × ライプニッツ係数</div>
+  <h4>生活費控除率</h4>
+  <table><tr><th>属性</th><th>控除率</th></tr>
+  <tr><td>一家の支柱（被扶養者2人以上）</td><td>30%</td></tr>
+  <tr><td>一家の支柱（被扶養者1人）</td><td>40%</td></tr>
+  <tr><td>専業主婦・女性</td><td>30%</td></tr>
+  <tr><td>独身男性</td><td>50%</td></tr>
+  </table>
+  <p>被扶養者が多いほど控除率が低く（逸失利益が高く）なります。</p>`},
+  death_isharyo:{title:'死亡慰謝料について',body:`<p>被害者が死亡したことによる精神的苦痛（本人分＋遺族固有分）に対する慰謝料です。</p>
+  <table><tr><th>被害者の立場</th><th>弁護士基準</th></tr>
+  <tr><td>一家の支柱</td><td>2,800万円</td></tr>
+  <tr><td>母親・配偶者</td><td>2,500万円</td></tr>
+  <tr><td>独身・子供・幼児等</td><td>2,000〜2,500万円</td></tr>
+  </table>
+  <div class="help-note">実務上は本人分の慰謝料に遺族固有の慰謝料（配偶者200万・父母各100万・子各100万）を含めて計上することが多いです。上記の弁護士基準額はその合計額を含みます。</div>`},
+  sosai:{title:'葬祭費について',body:`<p>葬儀・告別式・納骨などにかかった費用です。</p>
+  <p>弁護士基準の目安: <strong>150万円</strong></p>
+  <p>実費が150万円を超える場合は、実費相当額が認められることもありますが、通常150万円が上限の目安とされます。</p>
+  <div class="help-note">領収書・見積書を証拠として保存してください。</div>`},
+  bengoshi:{title:'弁護士費用（損害として請求）について',body:`<p>訴訟となった場合、認容された損害額（認容額）の約10%を弁護士費用として損害に計上することができます（最高裁判例）。</p>
+  <div class="help-note">示談段階では認められないことがほとんどです。訴訟（裁判）になった場合のみ請求できます。</div>
+  <h4>注意点</h4><ul>
+  <li>10%はあくまで目安。裁判所が事案に応じて決定します</li>
+  <li>実際の弁護士費用とは別（弁護士との契約で定める報酬は別途発生します）</li>
+  <li>弁護士費用特約（任意保険）がある場合は保険から支払われます</li>
+  </ul>`},
+  chien:{title:'遅延損害金について',body:`<p>不法行為（事故日）から支払完了まで、損害額に対して年率3%の法定利率で計算される利息相当額です。</p>
+  <div class="help-note">令和2年（2020年）4月1日以降の事故: 年3%<br>改正前（令和2年3月31日以前）: 年5%</div>
+  <h4>計算式</h4>
+  <p>遅延損害金 = 損害額 × 3% × 事故日からの年数</p>
+  <p>例: 損害1,000万円・3年かかった場合 → 1,000万 × 3% × 3 = 90万円</p>
+  <p>交渉が長引けば長引くほど遅延損害金が増えるため、加害者側には早期解決のインセンティブが生まれます。</p>`},
+  leibniz_what:{title:'ライプニッツ係数とは',body:`<p>将来受け取るべきだった収入を、「現在価値」に割り引くための係数です。</p>
+  <p>例: 今すぐもらえる100万円と1年後にもらえる100万円は価値が違います（銀行に預ければ利息がつく）。</p>
+  <p>裁判所は年利3%複利で割り引くことを採用しています。</p>
+  <div class="help-note">n年分のライプニッツ係数 = Σ 1/(1.03)^k （k=1〜n）<br>例: 25年 → 17.413</div>
+  <h4>具体例</h4>
+  <p>年収500万円の人が25年間働けなくなった場合:</p>
+  <ul>
+  <li>単純合計: 500万 × 25年 = 12,500万円</li>
+  <li>ライプニッツ係数適用: 500万 × 17.413 = 8,706.5万円（差額3,793.5万円が中間利息）</li>
+  </ul>`}
+};
+
+function showHelp(key){
+  const data = HELP[key];
+  if(!data) return;
+  document.getElementById('modal-title').textContent = data.title;
+  document.getElementById('modal-body').innerHTML = data.body;
+  document.getElementById('help-modal').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('help-modal').classList.remove('open');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', function(){
+  renderIsharyoTable(ISHARYO_LIGHT, 'light-table-wrap');
+  renderIsharyoTable(ISHARYO_HEAVY, 'heavy-table-wrap');
+  renderGreenIsharyoTable(GREEN_ISHARYO_NORMAL, 'midori-normal-table-wrap');
+  renderGreenIsharyoTable(GREEN_ISHARYO_SEVERE, 'midori-severe-table-wrap');
+  updateInjuryTypeOptions();
+  renderKoishogaiTable();
+  renderLeibnizTable();
+  updateJobFields();
+  updateDeathFields();
+  const today = new Date().toISOString().slice(0,10);
+  const calcDateEl = document.getElementById('i-calc-date');
+  if(calcDateEl) calcDateEl.value = today;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>案件管理</title>
+<meta name="theme-color" content="#7C5C3E">
+<link rel="manifest" href="manifest.case.json">
+<link rel="icon" href="case-icon-192.png">
+<link rel="apple-touch-icon" href="case-icon-192.png">
+<style>
+:root{
+  --primary:#7C5C3E;--primary-hover:#5D4230;--primary-light:#FAF3EC;
+  --success:#4D7C5A;--success-light:#EEF7F1;--success-border:#95C4A4;
+  --warning:#B07A3C;--warning-light:#FBF5EC;--warning-border:#F0C070;
+  --danger:#B84040;--danger-light:#FEF2F2;--danger-border:#fca5a5;
+  --info:#2D6CA8;--info-light:#EAF2FA;--info-border:#a8c9e6;
+  --border:#DDD5C8;--bg:#F2EDE4;--card:#FEFCF9;--text:#2C1F14;--text-muted:#7A6555;
+  --radius:10px;--shadow:0 1px 4px rgba(100,60,20,.10);--sidebar-w:216px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+
+/* ---------- layout ---------- */
+#app{min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:linear-gradient(180deg,#3D2B1F,#4F3826);color:#fff;display:flex;flex-direction:column;z-index:20}
+.sidebar .brand{padding:18px 16px;font-size:16px;font-weight:800;border-bottom:1px solid rgba(255,255,255,.12);display:flex;align-items:center;gap:8px}
+.sidebar .brand-mark{width:26px;height:26px;border-radius:7px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+.nav-list{list-style:none;padding:10px 8px;flex:1}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.78);margin-bottom:2px;transition:all .15s;position:relative}
+.nav-item .nav-ic{font-size:16px;width:20px;text-align:center}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.14);color:#fff}
+.nav-item.active::before{content:'';position:absolute;left:-8px;top:8px;bottom:8px;width:3px;background:#E8C989;border-radius:2px}
+.nav-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:10px;font-weight:800;padding:1px 6px;border-radius:10px}
+.sidebar-foot{padding:12px;border-top:1px solid rgba(255,255,255,.12);font-size:10.5px;color:rgba(255,255,255,.5)}
+
+.main-wrap{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:15;background:var(--card);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.topbar-title{font-size:15px;font-weight:800;color:var(--primary);white-space:nowrap}
+.search-wrap{flex:1;min-width:160px;position:relative}
+.search-wrap input{width:100%;padding:8px 12px 8px 32px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-size:13px}
+.search-wrap input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(124,92,62,.12)}
+.search-wrap::before{content:'🔍';position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:12px;opacity:.6}
+.topbar-actions{display:flex;gap:8px;flex-shrink:0}
+.icon-btn{border:1.5px solid var(--border);background:#fff;border-radius:8px;padding:7px 11px;font-size:12px;font-weight:700;color:var(--text-muted);white-space:nowrap}
+.icon-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+
+.view-root{flex:1;max-width:1180px;width:100%;margin:0 auto;padding:18px;padding-bottom:40px}
+
+.bottom-tabs{display:none}
+
+@media (max-width:900px){
+  .sidebar{display:none}
+  .main-wrap{margin-left:0}
+  .view-root{padding:12px;padding-bottom:84px}
+  .bottom-tabs{display:flex;position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--border);z-index:20;padding:4px 2px calc(4px + env(safe-area-inset-bottom))}
+  .bottom-tabs .bt-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;border-radius:8px;color:var(--text-muted);font-size:10px;font-weight:700;position:relative}
+  .bottom-tabs .bt-item .bt-ic{font-size:18px}
+  .bottom-tabs .bt-item.active{color:var(--primary)}
+  .bottom-tabs .bt-badge{position:absolute;top:2px;right:calc(50% - 20px);background:var(--danger);color:#fff;font-size:9px;font-weight:800;padding:0 4px;border-radius:8px;line-height:1.4}
+  .topbar-title{display:none}
+}
+
+/* ---------- shared components ---------- */
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card-title{font-size:14.5px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.card-title .ct-sub{font-size:11.5px;font-weight:600;color:var(--text-muted);margin-left:auto}
+.sec-title{font-size:11.5px;font-weight:700;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase;margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.btn{border:1.5px solid var(--border);background:#fff;border-radius:8px;padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--text-muted)}
+.btn:hover{border-color:var(--primary);color:var(--primary)}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);color:#fff}
+.btn-danger{background:#fff;border-color:var(--danger-border);color:var(--danger)}
+.btn-danger:hover{background:var(--danger-light)}
+.btn-sm{padding:5px 10px;font-size:11.5px;border-radius:6px}
+.btn-block{width:100%}
+.btn-add{width:100%;padding:9px;border:1.5px dashed var(--border);background:none;border-radius:8px;font-size:12.5px;font-weight:700;color:var(--primary);display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-add:hover{background:var(--primary-light);border-color:var(--primary)}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:520px){.form-row{grid-template-columns:1fr}}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:11.5px;font-weight:700;color:var(--text-muted)}
+input[type=text],input[type=date],input[type=number],select,textarea{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;background:#fff;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(124,92,62,.12)}
+textarea{resize:vertical;min-height:64px}
+label.chk{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--text-muted);cursor:pointer}
+
+.badge{display:inline-flex;align-items:center;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.badge-stage{background:var(--primary-light);color:var(--primary);border:1px solid #C8A882}
+.badge-ball{background:var(--info-light);color:var(--info);border:1px solid var(--info-border)}
+.badge-warn{background:var(--warning-light);color:var(--warning);border:1px solid var(--warning-border)}
+.badge-danger{background:var(--danger-light);color:var(--danger);border:1px solid var(--danger-border)}
+.badge-muted{background:#F2EDE4;color:var(--text-muted);border:1px solid var(--border)}
+
+.empty{padding:26px 14px;text-align:center;color:var(--text-muted);font-size:12.5px}
+.empty .empty-ic{font-size:28px;margin-bottom:8px}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(30,20,10,.5);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--card);border-radius:14px;padding:20px;max-width:520px;width:100%;margin:auto;position:relative;border:1px solid var(--border)}
+.modal-close{position:absolute;top:10px;right:10px;background:none;border:none;font-size:20px;color:var(--text-muted);padding:4px}
+.modal-title{font-size:15px;font-weight:800;margin-bottom:14px;padding-right:26px;color:var(--primary)}
+.modal-actions{display:flex;gap:8px;margin-top:14px}
+.modal-actions .btn{flex:1}
+
+/* ---------- Today view ---------- */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);text-align:center}
+.kpi-num{font-size:26px;font-weight:800;color:var(--primary);line-height:1.1}
+.kpi-num.danger{color:var(--danger)}
+.kpi-label{font-size:10.5px;color:var(--text-muted);font-weight:700;margin-top:4px}
+
+.pep{border-radius:var(--radius);border:1.5px solid var(--success-border);background:var(--success-light);padding:16px 18px;margin-bottom:16px}
+.pep-block{margin-bottom:12px}
+.pep-block:last-child{margin-bottom:0}
+.pep-msg{font-size:14.5px;font-weight:800;color:#2D5E3A;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.pep.has-alert{border-color:var(--warning-border);background:var(--warning-light)}
+.pep.has-alert .pep-msg{color:#7A4A1E}
+.pep-chips{display:flex;flex-wrap:wrap;gap:6px}
+.pep-chip{background:#fff;border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.pep-chip .pc-check{width:15px;height:15px;flex-shrink:0}
+.pep-cta{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12.5px}
+.pep-cta b{color:var(--primary)}
+
+.gantt-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--card)}
+.gantt-head{display:flex;border-bottom:1.5px solid var(--border);position:sticky;top:0;background:var(--card);z-index:3}
+.gantt-label-col{width:168px;flex-shrink:0;padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-muted);position:sticky;left:0;background:var(--card);z-index:4;border-right:1px solid var(--border)}
+.gantt-day{flex-shrink:0;text-align:center;font-size:10.5px;font-weight:700;color:var(--text-muted);padding:6px 0;border-right:1px dashed var(--border)}
+.gantt-day.weekend{background:#F7F0E8}
+.gantt-day.today{color:var(--primary);background:var(--primary-light)}
+.gantt-day .gd-dow{font-size:9px;font-weight:600;opacity:.7}
+.gantt-row{display:flex;border-bottom:1px solid var(--border);position:relative}
+.gantt-row:last-child{border-bottom:none}
+.gantt-label{width:168px;flex-shrink:0;padding:8px 10px;font-size:12px;font-weight:700;position:sticky;left:0;background:var(--card);z-index:2;border-right:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.gantt-label .gl-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gantt-track{position:relative;flex-shrink:0}
+.gantt-track .gt-col{position:absolute;top:0;bottom:0;border-right:1px dashed var(--border)}
+.gantt-track .gt-col.weekend{background:#F7F0E8}
+.gantt-track .gt-today{position:absolute;top:0;bottom:0;width:0;border-left:2px solid #E8A93C;z-index:2}
+.gbar{position:absolute;height:20px;border-radius:5px;background:var(--primary);cursor:grab;display:flex;align-items:center;padding:0 4px;overflow:hidden}
+.gbar:active{cursor:grabbing}
+.gbar.overdue{background:var(--danger)}
+.gbar .gbar-txt{color:#fff;font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.gbar .gh{position:absolute;top:0;bottom:0;width:7px;cursor:ew-resize}
+.gbar .gh-l{left:0}.gbar .gh-r{right:0}
+.gmark{position:absolute;width:13px;height:13px;transform:translate(-50%,-50%);cursor:pointer}
+.gmark.deadline{background:#8B5CF6;transform:translate(-50%,-50%) rotate(45deg);top:50%}
+.gmark.meeting{background:var(--info);border-radius:50%;top:50%}
+.gmark.overdue-mark{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:12px solid var(--danger);background:none;top:60%}
+.gantt-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:var(--text-muted);padding:8px 4px 2px}
+.gantt-legend span{display:inline-flex;align-items:center;gap:5px}
+.leg-swatch{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+.mobile-timeline-item{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px dashed var(--border)}
+.mobile-timeline-item:last-child{border-bottom:none}
+.mti-date{width:52px;flex-shrink:0;text-align:center;font-size:11px;font-weight:800;color:var(--primary);background:var(--primary-light);border-radius:8px;padding:4px 2px}
+.mti-date.overdue{color:var(--danger);background:var(--danger-light)}
+.mti-body{flex:1;min-width:0}
+.mti-title{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mti-sub{font-size:11px;color:var(--text-muted)}
+
+.single-task-row{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px dashed var(--border)}
+.single-task-row:last-child{border-bottom:none}
+.single-task-row input[type=checkbox]{width:17px;height:17px;flex-shrink:0}
+.single-task-row .stt{flex:1;font-size:13px}
+.single-task-row .stt.done{text-decoration:line-through;color:var(--text-muted)}
+.single-task-row .std{font-size:11px;color:var(--text-muted);flex-shrink:0}
+.quick-add-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.quick-add-row input[type=text]{flex:1;min-width:160px}
+.quick-add-row input[type=date]{width:150px}
+
+.deadline-row{display:flex;align-items:flex-start;gap:12px;padding:12px 4px;border-bottom:1px dashed var(--border)}
+.deadline-row:last-child{border-bottom:none}
+.dl-days{width:58px;flex-shrink:0;text-align:center;font-size:11px;font-weight:800;color:var(--danger);background:var(--danger-light);border-radius:8px;padding:6px 2px}
+.dl-days.safe{color:var(--warning);background:var(--warning-light)}
+.dl-body{flex:1;min-width:0}
+.dl-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px}
+.dl-label{font-weight:700;font-size:13px}
+.dl-meta{font-size:11.5px;color:var(--text-muted)}
+.dl-note{font-size:11.5px;color:var(--text);margin-top:4px;background:#F7F0E8;padding:5px 8px;border-radius:6px}
+
+/* ---------- Task list view ---------- */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.filter-bar select{width:auto;padding:7px 26px 7px 10px}
+.task-row{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid var(--border)}
+.task-row:last-child{border-bottom:none}
+.task-row input[type=checkbox]{width:18px;height:18px;flex-shrink:0}
+.task-main{flex:1;min-width:0}
+.task-title{font-size:13.5px;font-weight:700}
+.task-title.done{text-decoration:line-through;color:var(--text-muted)}
+.task-meta{font-size:11.5px;color:var(--text-muted);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+.task-due{font-size:11.5px;font-weight:700;flex-shrink:0;color:var(--text-muted)}
+.task-due.overdue{color:var(--danger)}
+.row-del{background:none;border:none;color:#B0A392;font-size:16px;padding:4px;flex-shrink:0}
+.row-del:hover{color:var(--danger)}
+
+/* ---------- Pipeline view ---------- */
+.pipeline-board{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px}
+.pipe-col{width:240px;flex-shrink:0;background:#EDE5D8;border-radius:var(--radius);padding:10px;min-height:120px}
+.pipe-col.drag-over{background:#E3D6C2}
+.pipe-col-head{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 10px;font-size:12.5px;font-weight:800;color:var(--text-muted)}
+.pipe-count{background:#fff;border-radius:20px;padding:1px 8px;font-size:11px}
+.pipe-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:10px;margin-bottom:8px;box-shadow:var(--shadow);cursor:grab}
+.pipe-card:active{cursor:grabbing}
+.pipe-card-title{font-size:13px;font-weight:800;margin-bottom:5px}
+.pipe-card-meta{font-size:11px;color:var(--text-muted);display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+
+/* ---------- Cases view ---------- */
+.case-table-row{display:flex;align-items:center;gap:12px;padding:12px 6px;border-bottom:1px solid var(--border);cursor:pointer}
+.case-table-row:hover{background:var(--primary-light)}
+.case-table-row:last-child{border-bottom:none}
+.ct-main{flex:1;min-width:0}
+.ct-name{font-size:13.5px;font-weight:800}
+.ct-meta{font-size:11.5px;color:var(--text-muted);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ct-side{flex-shrink:0;text-align:right;font-size:11px;color:var(--text-muted)}
+
+/* ---------- Karte view ---------- */
+.karte-layout{display:flex;gap:16px}
+@media(max-width:800px){.karte-layout{flex-direction:column}}
+.karte-list{width:260px;flex-shrink:0}
+@media(max-width:800px){.karte-list{width:100%}}
+.karte-case-item{padding:10px 12px;border-radius:8px;cursor:pointer;margin-bottom:4px;border:1px solid transparent}
+.karte-case-item:hover{background:var(--primary-light)}
+.karte-case-item.active{background:var(--primary-light);border-color:#C8A882}
+.karte-case-item .kc-name{font-size:12.5px;font-weight:700}
+.karte-case-item .kc-meta{font-size:10.5px;color:var(--text-muted)}
+.karte-detail{flex:1;min-width:0}
+.note-entry{padding:12px 0;border-bottom:1px dashed var(--border)}
+.note-entry:last-child{border-bottom:none}
+.note-date{font-size:11px;color:var(--text-muted);font-weight:700;margin-bottom:4px}
+.note-text{font-size:13px;white-space:pre-wrap}
+
+.hidden{display:none !important}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">案</span>案件管理</div>
+    <ul class="nav-list" id="nav-list"></ul>
+    <div class="sidebar-foot">データはこの端末に保存されます</div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <div class="topbar-title">案件管理</div>
+      <div class="search-wrap"><input id="global-search" type="text" placeholder="案件名・依頼者名で検索"></div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="btn-export">⬇ 書き出し</button>
+        <label class="icon-btn" style="display:inline-flex;align-items:center">⬆ 読み込み<input type="file" id="import-file" accept="application/json" style="display:none"></label>
+      </div>
+    </header>
+    <main id="view-root" class="view-root"></main>
+  </div>
+
+  <nav class="bottom-tabs" id="bottom-tabs"></nav>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box" id="modal-box"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ============ constants ============ */
+var VIEWS = [
+  {id:'today', label:'今日', ic:'🏠'},
+  {id:'tasks', label:'タスク', ic:'✅'},
+  {id:'pipeline', label:'パイプライン', ic:'📋'},
+  {id:'cases', label:'案件', ic:'📁'},
+  {id:'karte', label:'カルテ', ic:'📝'}
+];
+var STAGES = ['相談中','受任','進行中','最終段階','保留','完了'];
+var BALL_OPTIONS = ['自分','先生','事務','依頼者','相手方','裁判所','その他'];
+var CATEGORY_OPTIONS = ['相続','離婚','債務整理','交通事故','刑事','会社設立','契約書作成','許認可','家事','その他'];
+
+var STORE_KEY = 'caseAppV1';
+var state = {view:'today', search:'', karteCaseId:null};
+
+/* ============ data layer ============ */
+function uid(){ return 'id' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function loadDB(){
+  try{
+    var raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return {cases:[],tasks:[],deadlines:[],notes:[]};
+    var db = JSON.parse(raw);
+    db.cases = db.cases || []; db.tasks = db.tasks || []; db.deadlines = db.deadlines || []; db.notes = db.notes || [];
+    return db;
+  }catch(e){ return {cases:[],tasks:[],deadlines:[],notes:[]}; }
+}
+var DB = loadDB();
+function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+
+/* ============ date helpers ============ */
+function pad(n){ return String(n).padStart(2,'0'); }
+function fmt(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function todayStr(){ return fmt(new Date()); }
+function parseD(s){ return new Date(s+'T00:00:00'); }
+function addDays(s,n){ var d=parseD(s); d.setDate(d.getDate()+n); return fmt(d); }
+function diffDays(a,b){ return Math.round((parseD(b)-parseD(a))/86400000); }
+function dispDate(s){ if(!s) return ''; var d=parseD(s); return (d.getMonth()+1)+'/'+d.getDate(); }
+var DOW = ['日','月','火','水','木','金','土'];
+function startOfWeek(s){ var d=parseD(s); var day=d.getDay(); d.setDate(d.getDate()-day); return fmt(d); }
+function endOfWeek(s){ return addDays(startOfWeek(s),6); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+/* ============ derived data ============ */
+function caseById(id){ return DB.cases.find(function(c){return c.id===id;}); }
+function caseName(id){ var c=caseById(id); return c? c.name : '(単発)'; }
+function activeCases(){ return DB.cases.filter(function(c){ return c.status!=='完了'; }); }
+function isOverdueTask(t){ return !t.done && t.due && t.due < todayStr(); }
+function isOverdueDeadline(dl){ return !dl.resolved && dl.dueDate && dl.dueDate < todayStr(); }
+
+function computeKPI(){
+  var today = todayStr();
+  var weekStart = startOfWeek(today), weekEnd = endOfWeek(today);
+  var uketachu = DB.cases.filter(function(c){ return ['受任','進行中','最終段階','保留'].indexOf(c.status)>=0; }).length;
+  var thisWeek = 0;
+  DB.tasks.forEach(function(t){ if(t.due && t.due>=weekStart && t.due<=weekEnd) thisWeek++; });
+  DB.deadlines.forEach(function(dl){ if(!dl.resolved && dl.dueDate && dl.dueDate>=weekStart && dl.dueDate<=weekEnd) thisWeek++; });
+  var overdue = DB.tasks.filter(isOverdueTask).length + DB.deadlines.filter(isOverdueDeadline).length;
+  var ball = DB.cases.filter(function(c){ return c.status!=='完了' && c.ball==='自分'; }).length;
+  var noNext = DB.cases.filter(function(c){ return c.status!=='完了' && !c.nextAction; }).length;
+  return {uketachu:uketachu, thisWeek:thisWeek, overdue:overdue, ball:ball, noNext:noNext};
+}
+
+/* ============ sample data ============ */
+function seedSampleData(){
+  var today = todayStr();
+  var c1 = {id:uid(), name:'山田太郎様 相続', category:'相続', client:'山田太郎', status:'進行中', ball:'自分', nextAction:'戸籍収集を依頼', createdAt:addDays(today,-12)};
+  var c2 = {id:uid(), name:'佐藤花子様 離婚', category:'離婚', client:'佐藤花子', status:'受任', ball:'先生', nextAction:'', createdAt:addDays(today,-8)};
+  var c3 = {id:uid(), name:'鈴木一郎様 交通事故', category:'交通事故', client:'鈴木一郎', status:'相談中', ball:'依頼者', nextAction:'資料の提出待ち', createdAt:addDays(today,-3)};
+  var c4 = {id:uid(), name:'高橋商事様 債務整理', category:'債務整理', client:'高橋商事', status:'最終段階', ball:'事務', nextAction:'和解書の最終確認', createdAt:addDays(today,-40)};
+  var c5 = {id:uid(), name:'田中次郎様 刑事事件', category:'刑事', client:'田中次郎', status:'進行中', ball:'先生', nextAction:'控訴理由書の準備', createdAt:addDays(today,-20)};
+  DB.cases.push(c1,c2,c3,c4,c5);
+
+  DB.tasks.push(
+    {id:uid(), caseId:c1.id, title:'遺産分割協議書の起案', start:addDays(today,-3), due:today, type:'task', assignee:'自分', done:false, createdAt:today},
+    {id:uid(), caseId:c1.id, title:'固定資産税の按分確認', start:addDays(today,-10), due:addDays(today,-2), type:'task', assignee:'事務', done:false, createdAt:today},
+    {id:uid(), caseId:c2.id, title:'相手方代理人との打合せ', start:addDays(today,1), due:addDays(today,1), type:'meeting', assignee:'先生', done:false, createdAt:today},
+    {id:uid(), caseId:c3.id, title:'診断書・修理見積の受領', start:today, due:addDays(today,5), type:'task', assignee:'依頼者', done:false, createdAt:today},
+    {id:uid(), caseId:c4.id, title:'和解書ドラフトのチェック', start:addDays(today,-1), due:addDays(today,3), type:'task', assignee:'事務', done:false, createdAt:today},
+    {id:uid(), caseId:null, title:'コピー機トナー注文', start:null, due:addDays(today,1), type:'task', assignee:'', done:false, createdAt:today},
+    {id:uid(), caseId:null, title:'〇〇先生に紹介の御礼状', start:null, due:null, type:'task', assignee:'', done:false, createdAt:today}
+  );
+
+  DB.deadlines.push(
+    {id:uid(), caseId:c1.id, label:'相続放棄申述期限', dueDate:addDays(today,30), basis:'民法915条', note:'', tentative:false, resolved:false, createdAt:today},
+    {id:uid(), caseId:c5.id, label:'刑事控訴期限', dueDate:addDays(today,19), basis:'刑訴法373条', note:'判決宣告日から起算。宣告日確定後に本登録し直す', tentative:true, resolved:false, createdAt:today},
+    {id:uid(), caseId:c2.id, label:'家事審判即時抗告期限', dueDate:addDays(today,21), basis:'家事事件手続法86条', note:'送達日未確定のため仮登録', tentative:true, resolved:false, createdAt:today}
+  );
+
+  DB.notes.push(
+    {id:uid(), caseId:c1.id, text:'初回面談を実施。相続人は3名、不動産1件、預金2件を確認。', createdAt:addDays(today,-12)},
+    {id:uid(), caseId:c1.id, text:'戸籍の収集を開始。あと2通で揃う見込み。', createdAt:addDays(today,-4)}
+  );
+
+  save();
+}
+
+/* ============ modal ============ */
+function openModal(html){
+  document.getElementById('modal-box').innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('open'); }
+document.getElementById('modal-overlay').addEventListener('click', function(e){ if(e.target.id==='modal-overlay') closeModal(); });
+
+/* ============ nav render ============ */
+function renderNav(){
+  var counts = computeKPI();
+  var badgeFor = function(id){
+    if(id==='today') return counts.overdue>0 ? counts.overdue : 0;
+    return 0;
+  };
+  var navHtml = VIEWS.map(function(v){
+    var b = badgeFor(v.id);
+    return '<li class="nav-item'+(state.view===v.id?' active':'')+'" data-view="'+v.id+'">'+
+      '<span class="nav-ic">'+v.ic+'</span>'+esc(v.label)+
+      (b>0?'<span class="nav-badge">'+b+'</span>':'')+'</li>';
+  }).join('');
+  document.getElementById('nav-list').innerHTML = navHtml;
+  var bottomHtml = VIEWS.map(function(v){
+    var b = badgeFor(v.id);
+    return '<div class="bt-item'+(state.view===v.id?' active':'')+'" data-view="'+v.id+'">'+
+      (b>0?'<span class="bt-badge">'+b+'</span>':'')+
+      '<span class="bt-ic">'+v.ic+'</span>'+esc(v.label)+'</div>';
+  }).join('');
+  document.getElementById('bottom-tabs').innerHTML = bottomHtml;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-view]'), function(el){
+    el.addEventListener('click', function(){ state.view = el.getAttribute('data-view'); state.search=''; document.getElementById('global-search').value=''; render(); });
+  });
+}
+
+/* ============ TODAY VIEW ============ */
+function renderToday(){
+  var today = todayStr();
+  var kpi = computeKPI();
+  var html = '';
+  html += '<div class="kpi-grid">'+
+    kpiCard(kpi.uketachu,'受任中案件')+
+    kpiCard(kpi.thisWeek,'今週の期日')+
+    kpiCard(kpi.overdue,'期限超過', kpi.overdue>0)+
+    kpiCard(kpi.ball,'ボール：自分')+
+    kpiCard(kpi.noNext,'次アクション未設定')+
+    '</div>';
+
+  html += renderPep(today);
+  html += renderTimeline(today);
+  html += renderSingleTasks();
+  html += renderDeadlines(today);
+
+  document.getElementById('view-root').innerHTML = html;
+  bindPepActions();
+  bindTimeline(today);
+  bindSingleTasks();
+  bindDeadlines();
+}
+function kpiCard(num,label,danger){
+  return '<div class="kpi-card"><div class="kpi-num'+(danger?' danger':'')+'">'+num+'</div><div class="kpi-label">'+esc(label)+'</div></div>';
+}
+
+function renderPep(today){
+  var todaysTasks = DB.tasks.filter(function(t){ return !t.done && t.due===today; });
+  var overdueTasks = DB.tasks.filter(isOverdueTask);
+  var noNextCases = DB.cases.filter(function(c){ return c.status!=='完了' && !c.nextAction; });
+  var hasAlert = overdueTasks.length>0;
+  var blocks = '';
+
+  if(todaysTasks.length>0){
+    blocks += '<div class="pep-block"><div class="pep-msg">📌 今日の仕事はこれです。頑張れ！</div><div class="pep-chips">'+
+      todaysTasks.map(function(t){
+        return '<span class="pep-chip"><input type="checkbox" class="pc-check" data-done-task="'+t.id+'"> '+esc(t.title)+(t.caseId?' <span style="color:var(--text-muted)">／'+esc(caseName(t.caseId))+'</span>':'')+'</span>';
+      }).join('')+'</div></div>';
+  }
+  if(overdueTasks.length>0){
+    blocks += '<div class="pep-block"><div class="pep-msg">⏰ この仕事、終わった？（期限超過）</div><div class="pep-chips">'+
+      overdueTasks.map(function(t){
+        return '<span class="pep-chip" style="border-color:var(--danger-border)"><input type="checkbox" class="pc-check" data-done-task="'+t.id+'"> '+esc(t.title)+' <span style="color:var(--danger)">（'+dispDate(t.due)+'まで）</span></span>';
+      }).join('')+'</div></div>';
+  }
+  if(noNextCases.length>0){
+    var pick = noNextCases[0];
+    blocks += '<div class="pep-block"><div class="pep-msg">👉 次は○○をしましょう</div>'+
+      '<div class="pep-cta">「<b>'+esc(pick.name)+'</b>」の次のアクションが未設定です。'+
+      '<button class="btn btn-sm btn-primary" style="margin-left:auto" data-set-next="'+pick.id+'">次のアクションを設定</button></div></div>';
+  }
+  if(!blocks && DB.cases.length===0){
+    blocks = '<div class="pep-block"><div class="pep-msg">👋 はじめまして。まだ案件が登録されていません</div>'+
+      '<div class="pep-cta">「案件」から新規登録するか、まずはサンプルデータで使い心地を確かめられます。'+
+      '<button class="btn btn-sm btn-primary" style="margin-left:auto" id="pep-seed-btn">サンプルデータを入れる</button></div></div>';
+  }
+  if(!blocks){
+    blocks = '<div class="pep-block"><div class="pep-msg">✨ 今日やることはありません。素晴らしい状態です！</div></div>';
+  }
+  return '<div class="pep'+(hasAlert?' has-alert':'')+'">'+blocks+'</div>';
+}
+function bindPepActions(){
+  Array.prototype.forEach.call(document.querySelectorAll('[data-done-task]'), function(el){
+    el.addEventListener('change', function(){
+      var t = DB.tasks.find(function(x){return x.id===el.getAttribute('data-done-task');});
+      if(t){ t.done = el.checked; save(); render(); }
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-set-next]'), function(el){
+    el.addEventListener('click', function(){ openCaseModal(el.getAttribute('data-set-next')); });
+  });
+  var pepSeedBtn = document.getElementById('pep-seed-btn');
+  if(pepSeedBtn) pepSeedBtn.addEventListener('click', function(){ seedSampleData(); render(); });
+}
+
+function renderTimeline(today){
+  var isMobile = window.innerWidth < 900;
+  var start = addDays(today, -3);
+  var days = [];
+  for(var i=0;i<28;i++) days.push(addDays(start,i));
+  var end = days[days.length-1];
+
+  var itemsByCase = {};
+  DB.tasks.forEach(function(t){
+    var s = t.start || (t.due ? addDays(t.due,-14) : null);
+    var e = t.due || s;
+    if(!s || !e) return;
+    if(e < start || s > end) return;
+    var key = t.caseId || '__single__';
+    (itemsByCase[key] = itemsByCase[key] || []).push({kind:t.type==='meeting'?'meeting':'task', s:s, e:e, title:t.title, overdue:isOverdueTask(t), raw:t});
+  });
+  DB.deadlines.forEach(function(dl){
+    if(!dl.dueDate || dl.dueDate<start || dl.dueDate>end) return;
+    var key = dl.caseId || '__single__';
+    (itemsByCase[key] = itemsByCase[key] || []).push({kind:'deadline', s:dl.dueDate, e:dl.dueDate, title:dl.label, overdue:isOverdueDeadline(dl), raw:dl});
+  });
+
+  var caseKeys = Object.keys(itemsByCase);
+  if(caseKeys.length===0){
+    return '<div class="card"><div class="card-title">📊 タスクタイムライン（4週間）</div><div class="empty"><div class="empty-ic">🗓️</div>この期間に予定されているタスク・期日はありません</div></div>';
+  }
+
+  if(isMobile){
+    var allItems = [];
+    caseKeys.forEach(function(k){
+      itemsByCase[k].forEach(function(it){ allItems.push(Object.assign({caseKey:k}, it)); });
+    });
+    allItems.sort(function(a,b){ return a.e<b.e?-1:1; });
+    var rows = allItems.map(function(it){
+      var icon = it.kind==='deadline' ? '◆' : (it.kind==='meeting' ? '●' : '▬');
+      return '<div class="mobile-timeline-item"><div class="mti-date'+(it.overdue?' overdue':'')+'">'+dispDate(it.e)+'</div>'+
+        '<div class="mti-body"><div class="mti-title">'+icon+' '+esc(it.title)+'</div><div class="mti-sub">'+esc(it.caseKey==='__single__'?'単発':caseName(it.caseKey))+'</div></div></div>';
+    }).join('');
+    return '<div class="card"><div class="card-title">📊 直近の予定<span class="ct-sub">'+allItems.length+'件</span></div>'+rows+'</div>';
+  }
+
+  var dayW = 42;
+  var trackW = dayW*28;
+  var headDays = days.map(function(d){
+    var dt = parseD(d); var isW = dt.getDay()===0||dt.getDay()===6; var isToday = d===today;
+    return '<div class="gantt-day'+(isW?' weekend':'')+(isToday?' today':'')+'" style="width:'+dayW+'px">'+(dt.getMonth()+1)+'/'+dt.getDate()+'<div class="gd-dow">'+DOW[dt.getDay()]+'</div></div>';
+  }).join('');
+
+  var rowsHtml = caseKeys.map(function(key){
+    var items = itemsByCase[key];
+    var lanes = [];
+    items.forEach(function(it){
+      var lane = 0;
+      while(lanes[lane] && lanes[lane] >= it.s) lane++;
+      it.lane = lane; lanes[lane] = it.e;
+    });
+    var maxLane = Math.max.apply(null, items.map(function(it){return it.lane;}));
+    var rowH = (maxLane+1)*26 + 6;
+    var cols = days.map(function(d,i){
+      var dt=parseD(d); var isW=dt.getDay()===0||dt.getDay()===6;
+      return '<div class="gt-col'+(isW?' weekend':'')+'" style="left:'+(i*dayW)+'px;width:'+dayW+'px"></div>';
+    }).join('');
+    var todayIdx = diffDays(start, today);
+    var todayLine = '<div class="gt-today" style="left:'+(todayIdx*dayW+dayW/2)+'px"></div>';
+    var marks = items.map(function(it){
+      var left = Math.max(0, diffDays(start,it.s))*dayW;
+      var top = 6 + it.lane*26;
+      if(it.kind==='task'){
+        var s0 = it.s<start?start:it.s, e0=it.e>end?end:it.e;
+        var l = diffDays(start,s0)*dayW;
+        var w = Math.max(dayW*0.6, (diffDays(s0,e0)+1)*dayW - 6);
+        return '<div class="gbar'+(it.overdue?' overdue':'')+'" style="left:'+(l+3)+'px;width:'+w+'px;top:'+top+'px" data-task-id="'+it.raw.id+'" data-orig-start="'+it.s+'" data-orig-due="'+it.e+'">'+
+          '<span class="gh gh-l" data-edge="l"></span><span class="gbar-txt">'+esc(it.title)+'</span><span class="gh gh-r" data-edge="r"></span></div>';
+      }
+      var cx = left + dayW/2, cy = top+10;
+      var cls = it.kind==='deadline' ? 'deadline' : 'meeting';
+      var overdueMark = it.overdue ? '<div class="gmark overdue-mark" style="left:'+cx+'px;top:'+(top+18)+'px" title="期限超過"></div>' : '';
+      return '<div class="gmark '+cls+'" style="left:'+cx+'px;top:'+cy+'px" title="'+esc(it.title)+'"></div>'+overdueMark;
+    }).join('');
+    var label = key==='__single__' ? '単発タスク' : caseName(key);
+    var ball = key==='__single__' ? '' : (caseById(key)&&caseById(key).ball ? '<span class="badge badge-ball" style="font-size:9px;padding:1px 5px">'+esc(caseById(key).ball)+'</span>' : '');
+    return '<div class="gantt-row" style="height:'+rowH+'px">'+
+      '<div class="gantt-label" style="height:'+rowH+'px"><span class="gl-name">'+esc(label)+'</span>'+ball+'</div>'+
+      '<div class="gantt-track" style="width:'+trackW+'px;height:'+rowH+'px">'+cols+todayLine+marks+'</div></div>';
+  }).join('');
+
+  return '<div class="card" style="padding:0;overflow:hidden">'+
+    '<div style="padding:16px 16px 0"><div class="card-title" style="margin-bottom:4px">📊 タスクタイムライン（4週間）<span class="ct-sub">バーをドラッグして期間変更・端をつまんで開始/終了を調整</span></div></div>'+
+    '<div class="gantt-wrap"><div style="min-width:'+(168+trackW)+'px">'+
+    '<div class="gantt-head"><div class="gantt-label-col">案件</div>'+headDays+'</div>'+rowsHtml+
+    '</div></div>'+
+    '<div class="gantt-legend" style="padding:10px 16px 14px">'+
+    '<span><i class="leg-swatch" style="background:var(--primary)"></i>タスク期間</span>'+
+    '<span><i class="leg-swatch" style="background:var(--danger)"></i>期限超過</span>'+
+    '<span><i class="leg-swatch" style="background:#8B5CF6;transform:rotate(45deg)"></i>期日</span>'+
+    '<span><i class="leg-swatch" style="background:var(--info);border-radius:50%"></i>打合せ</span>'+
+    '</div></div>';
+}
+var dragState = null;
+function bindTimeline(today){
+  var wrap = document.querySelector('.gantt-wrap');
+  if(!wrap) return;
+  wrap.addEventListener('pointerdown', function(e){
+    var bar = e.target.closest('.gbar');
+    if(!bar) return;
+    var edge = e.target.classList.contains('gh') ? e.target.getAttribute('data-edge') : null;
+    var task = DB.tasks.find(function(t){return t.id===bar.getAttribute('data-task-id');});
+    if(!task) return;
+    dragState = {
+      taskId:task.id, edge:edge, startX:e.clientX, dayW:42,
+      origStart: task.start || addDays(task.due,-14), origDue: task.due
+    };
+    e.preventDefault();
+  });
+  document.addEventListener('pointermove', function(e){
+    if(!dragState) return;
+    var dx = e.clientX - dragState.startX;
+    var dayDelta = Math.round(dx / dragState.dayW);
+    var task = DB.tasks.find(function(t){return t.id===dragState.taskId;});
+    if(!task) return;
+    if(dragState.edge==='l'){
+      var ns = addDays(dragState.origStart, dayDelta);
+      if(ns <= (task.due||dragState.origDue)) task.start = ns;
+    } else if(dragState.edge==='r'){
+      var nd = addDays(dragState.origDue, dayDelta);
+      if(nd >= (task.start||dragState.origStart)) task.due = nd;
+    } else {
+      task.start = addDays(dragState.origStart, dayDelta);
+      task.due = addDays(dragState.origDue, dayDelta);
+    }
+  });
+  document.addEventListener('pointerup', function(){
+    if(dragState){ save(); dragState=null; render(); }
+  });
+}
+
+function renderSingleTasks(){
+  var singles = DB.tasks.filter(function(t){ return !t.caseId; }).sort(function(a,b){ return (a.done?1:0)-(b.done?1:0) || (a.due||'9999').localeCompare(b.due||'9999'); });
+  var rows = singles.map(function(t){
+    return '<div class="single-task-row"><input type="checkbox" data-single-toggle="'+t.id+'" '+(t.done?'checked':'')+'>'+
+      '<span class="stt'+(t.done?' done':'')+'">'+esc(t.title)+'</span>'+
+      '<span class="std">'+(t.due?dispDate(t.due):'')+'</span>'+
+      '<button class="row-del" data-single-del="'+t.id+'">✕</button></div>';
+  }).join('') || '<div class="empty" style="padding:14px">単発タスクはありません</div>';
+  return '<div class="card"><div class="card-title">📎 単発タスク<span class="ct-sub">'+singles.filter(function(t){return !t.done;}).length+'件</span></div>'+
+    '<div class="quick-add-row"><input type="text" id="single-title" placeholder="「これやらないと」を1行で（例：○○先生に紹介の礼状／コピー機トナー注文）">'+
+    '<input type="date" id="single-due"><button class="btn btn-primary" id="single-add">追加</button></div>'+
+    rows+'</div>';
+}
+function bindSingleTasks(){
+  var btn = document.getElementById('single-add');
+  if(btn) btn.addEventListener('click', function(){
+    var title = document.getElementById('single-title').value.trim();
+    if(!title) return;
+    var due = document.getElementById('single-due').value || null;
+    DB.tasks.push({id:uid(), caseId:null, title:title, start:null, due:due, type:'task', assignee:'', done:false, createdAt:todayStr()});
+    save(); render();
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-single-toggle]'), function(el){
+    el.addEventListener('change', function(){
+      var t = DB.tasks.find(function(x){return x.id===el.getAttribute('data-single-toggle');});
+      if(t){ t.done = el.checked; save(); render(); }
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-single-del]'), function(el){
+    el.addEventListener('click', function(){
+      DB.tasks = DB.tasks.filter(function(t){return t.id!==el.getAttribute('data-single-del');});
+      save(); render();
+    });
+  });
+}
+
+function renderDeadlines(today){
+  var list = DB.deadlines.filter(function(dl){ return !dl.resolved && dl.dueDate && diffDays(today,dl.dueDate) <= 90; })
+    .sort(function(a,b){ return a.dueDate.localeCompare(b.dueDate); });
+  var rows = list.map(function(dl){
+    var remain = diffDays(today, dl.dueDate);
+    var overdue = remain < 0;
+    return '<div class="deadline-row"><div class="dl-days'+(overdue?'':' safe')+'">'+(overdue?'超過'+Math.abs(remain)+'日':'残'+remain+'日')+'</div>'+
+      '<div class="dl-body"><div class="dl-top"><span class="dl-label">'+esc(dl.label)+'</span>'+
+      (dl.tentative?'<span class="badge badge-warn">仮</span>':'')+
+      (dl.caseId?'<span class="badge badge-muted">'+esc(caseName(dl.caseId))+'</span>':'')+'</div>'+
+      '<div class="dl-meta">期限 '+esc(dl.dueDate)+(dl.basis?' ／ '+esc(dl.basis):'')+'</div>'+
+      (dl.note?'<div class="dl-note">'+esc(dl.note)+'</div>':'')+'</div>'+
+      '<button class="btn btn-sm" data-dl-resolve="'+dl.id+'">対応済み</button></div>';
+  }).join('') || '<div class="empty" style="padding:14px">90日以内の法定期限はありません</div>';
+  return '<div class="card"><div class="card-title">⚖️ 法定期限（90日以内）<button class="btn btn-sm" id="dl-add-btn" style="margin-left:auto">＋登録</button></div>'+rows+'</div>';
+}
+function bindDeadlines(){
+  var btn = document.getElementById('dl-add-btn');
+  if(btn) btn.addEventListener('click', openDeadlineModal);
+  Array.prototype.forEach.call(document.querySelectorAll('[data-dl-resolve]'), function(el){
+    el.addEventListener('click', function(){
+      var dl = DB.deadlines.find(function(x){return x.id===el.getAttribute('data-dl-resolve');});
+      if(dl){ dl.resolved = true; save(); render(); }
+    });
+  });
+}
+function openDeadlineModal(){
+  var caseOpts = DB.cases.map(function(c){ return '<option value="'+c.id+'">'+esc(c.name)+'</option>'; }).join('');
+  openModal('<button class="modal-close" data-close>✕</button><div class="modal-title">法定期限を登録</div>'+
+    '<div class="form-group" style="margin-bottom:10px"><label>案件（任意）</label><select id="dl-case"><option value="">（なし）</option>'+caseOpts+'</select></div>'+
+    '<div class="form-group" style="margin-bottom:10px"><label>期限の内容</label><input type="text" id="dl-label" placeholder="例：刑事控訴"></div>'+
+    '<div class="form-row"><div class="form-group"><label>期限日</label><input type="date" id="dl-date"></div>'+
+    '<div class="form-group"><label>根拠条文</label><input type="text" id="dl-basis" placeholder="例：刑訴法373条"></div></div>'+
+    '<div class="form-group" style="margin-bottom:10px"><label>メモ</label><textarea id="dl-note"></textarea></div>'+
+    '<label class="chk" style="margin-bottom:10px"><input type="checkbox" id="dl-tentative"> 仮の期限（未確定）</label>'+
+    '<div class="modal-actions"><button class="btn" data-close>キャンセル</button><button class="btn btn-primary" id="dl-save">登録</button></div>');
+  bindModalClose();
+  document.getElementById('dl-save').addEventListener('click', function(){
+    var label = document.getElementById('dl-label').value.trim();
+    var date = document.getElementById('dl-date').value;
+    if(!label || !date) return;
+    DB.deadlines.push({id:uid(), caseId:document.getElementById('dl-case').value||null, label:label, dueDate:date,
+      basis:document.getElementById('dl-basis').value.trim(), note:document.getElementById('dl-note').value.trim(),
+      tentative:document.getElementById('dl-tentative').checked, resolved:false, createdAt:todayStr()});
+    save(); closeModal(); render();
+  });
+}
+function bindModalClose(){
+  Array.prototype.forEach.call(document.querySelectorAll('[data-close]'), function(el){ el.addEventListener('click', closeModal); });
+}
+
+/* ============ TASKS VIEW ============ */
+function renderTasks(){
+  var q = state.search.trim();
+  var filter = state.taskFilter || 'open';
+  var caseFilter = state.taskCaseFilter || '';
+  var list = DB.tasks.slice();
+  if(filter==='open') list = list.filter(function(t){return !t.done;});
+  if(filter==='done') list = list.filter(function(t){return t.done;});
+  if(caseFilter) list = list.filter(function(t){return t.caseId===caseFilter;});
+  if(q) list = list.filter(function(t){ return (t.title+caseName(t.caseId)).toLowerCase().indexOf(q.toLowerCase())>=0; });
+  list.sort(function(a,b){ return (a.due||'9999').localeCompare(b.due||'9999'); });
+
+  var caseOpts = '<option value="">すべての案件</option>' + DB.cases.map(function(c){return '<option value="'+c.id+'">'+esc(c.name)+'</option>';}).join('');
+  var rows = list.map(function(t){
+    var overdue = isOverdueTask(t);
+    return '<div class="task-row"><input type="checkbox" data-task-toggle="'+t.id+'" '+(t.done?'checked':'')+'>'+
+      '<div class="task-main"><div class="task-title'+(t.done?' done':'')+'">'+esc(t.title)+'</div>'+
+      '<div class="task-meta">'+(t.caseId?'<span>'+esc(caseName(t.caseId))+'</span>':'<span>単発</span>')+(t.assignee?'<span>担当: '+esc(t.assignee)+'</span>':'')+(t.type==='meeting'?'<span>🤝 打合せ</span>':'')+'</div></div>'+
+      '<div class="task-due'+(overdue?' overdue':'')+'">'+(t.due?dispDate(t.due):'期限なし')+'</div>'+
+      '<button class="row-del" data-task-del="'+t.id+'">✕</button></div>';
+  }).join('') || '<div class="empty"><div class="empty-ic">✅</div>該当するタスクはありません</div>';
+
+  document.getElementById('view-root').innerHTML =
+    '<div class="card"><div class="card-title">✅ タスク一覧<button class="btn btn-sm btn-primary" id="task-new-btn" style="margin-left:auto">＋ 新規タスク</button></div>'+
+    '<div class="filter-bar">'+
+    '<select id="task-filter"><option value="open"'+(filter==='open'?' selected':'')+'>未完了のみ</option><option value="all"'+(filter==='all'?' selected':'')+'>すべて</option><option value="done"'+(filter==='done'?' selected':'')+'>完了のみ</option></select>'+
+    '<select id="task-case-filter">'+caseOpts.replace('value="'+caseFilter+'"','value="'+caseFilter+'" selected')+'</select>'+
+    '</div>'+rows+'</div>';
+
+  document.getElementById('task-filter').value = filter;
+  document.getElementById('task-case-filter').value = caseFilter;
+  document.getElementById('task-filter').addEventListener('change', function(e){ state.taskFilter = e.target.value; renderTasks(); });
+  document.getElementById('task-case-filter').addEventListener('change', function(e){ state.taskCaseFilter = e.target.value; renderTasks(); });
+  document.getElementById('task-new-btn').addEventListener('click', openTaskModal);
+  Array.prototype.forEach.call(document.querySelectorAll('[data-task-toggle]'), function(el){
+    el.addEventListener('change', function(){
+      var t = DB.tasks.find(function(x){return x.id===el.getAttribute('data-task-toggle');});
+      if(t){ t.done = el.checked; save(); renderTasks(); renderNav(); }
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-task-del]'), function(el){
+    el.addEventListener('click', function(){
+      DB.tasks = DB.tasks.filter(function(t){return t.id!==el.getAttribute('data-task-del');});
+      save(); renderTasks(); renderNav();
+    });
+  });
+}
+function openTaskModal(){
+  var caseOpts = DB.cases.map(function(c){ return '<option value="'+c.id+'">'+esc(c.name)+'</option>'; }).join('');
+  openModal('<button class="modal-close" data-close>✕</button><div class="modal-title">新規タスク</div>'+
+    '<div class="form-group" style="margin-bottom:10px"><label>内容</label><input type="text" id="tk-title"></div>'+
+    '<div class="form-group" style="margin-bottom:10px"><label>案件（任意）</label><select id="tk-case"><option value="">（単発）</option>'+caseOpts+'</select></div>'+
+    '<div class="form-row"><div class="form-group"><label>開始日（任意）</label><input type="date" id="tk-start"></div>'+
+    '<div class="form-group"><label>期限日</label><input type="date" id="tk-due"></div></div>'+
+    '<div class="form-row"><div class="form-group"><label>種別</label><select id="tk-type"><option value="task">タスク</option><option value="meeting">打合せ</option></select></div>'+
+    '<div class="form-group"><label>担当</label><input type="text" id="tk-assignee" placeholder="例：事務"></div></div>'+
+    '<div class="modal-actions"><button class="btn" data-close>キャンセル</button><button class="btn btn-primary" id="tk-save">保存</button></div>');
+  bindModalClose();
+  document.getElementById('tk-save').addEventListener('click', function(){
+    var title = document.getElementById('tk-title').value.trim();
+    if(!title) return;
+    DB.tasks.push({id:uid(), caseId:document.getElementById('tk-case').value||null, title:title,
+      start:document.getElementById('tk-start').value||null, due:document.getElementById('tk-due').value||null,
+      type:document.getElementById('tk-type').value, assignee:document.getElementById('tk-assignee').value.trim(), done:false, createdAt:todayStr()});
+    save(); closeModal(); render();
+  });
+}
+
+/* ============ PIPELINE VIEW ============ */
+function renderPipeline(){
+  var showDone = !!state.pipelineShowDone;
+  var stages = showDone ? STAGES : STAGES.filter(function(s){return s!=='完了';});
+  var q = state.search.trim().toLowerCase();
+  var cols = stages.map(function(stage){
+    var cases = DB.cases.filter(function(c){ return c.status===stage && (!q || (c.name+c.client).toLowerCase().indexOf(q)>=0); });
+    var cards = cases.map(function(c){
+      var soonest = DB.deadlines.filter(function(dl){return dl.caseId===c.id && !dl.resolved;}).sort(function(a,b){return a.dueDate.localeCompare(b.dueDate);})[0];
+      return '<div class="pipe-card" draggable="true" data-case-id="'+c.id+'">'+
+        '<div class="pipe-card-title">'+esc(c.name)+'</div>'+
+        '<div class="pipe-card-meta">'+(c.client?'<span>👤 '+esc(c.client)+'</span>':'')+(c.ball?'<span class="badge badge-ball">'+esc(c.ball)+'</span>':'')+(soonest?'<span class="badge badge-warn">'+dispDate(soonest.dueDate)+'</span>':'')+'</div>'+
+        (c.nextAction?'<div style="font-size:11px;color:var(--text-muted);margin-top:5px">👉 '+esc(c.nextAction)+'</div>':'<div style="font-size:11px;color:var(--danger);margin-top:5px">次アクション未設定</div>')+
+        '</div>';
+    }).join('');
+    return '<div class="pipe-col" data-stage="'+esc(stage)+'"><div class="pipe-col-head">'+esc(stage)+'<span class="pipe-count">'+cases.length+'</span></div>'+cards+'</div>';
+  }).join('');
+
+  document.getElementById('view-root').innerHTML =
+    '<div class="card"><div class="card-title">📋 パイプライン<label class="chk" style="margin-left:auto"><input type="checkbox" id="pipe-show-done" '+(showDone?'checked':'')+'> 完了を表示</label></div>'+
+    '<div class="pipeline-board">'+cols+'</div></div>';
+
+  document.getElementById('pipe-show-done').addEventListener('change', function(e){ state.pipelineShowDone = e.target.checked; renderPipeline(); });
+  Array.prototype.forEach.call(document.querySelectorAll('.pipe-card'), function(el){
+    el.addEventListener('dragstart', function(e){ e.dataTransfer.setData('text/plain', el.getAttribute('data-case-id')); });
+    el.addEventListener('click', function(){ openCaseModal(el.getAttribute('data-case-id')); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.pipe-col'), function(el){
+    el.addEventListener('dragover', function(e){ e.preventDefault(); el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', function(){ el.classList.remove('drag-over'); });
+    el.addEventListener('drop', function(e){
+      e.preventDefault(); el.classList.remove('drag-over');
+      var id = e.dataTransfer.getData('text/plain');
+      var c = caseById(id);
+      if(c){ c.status = el.getAttribute('data-stage'); save(); renderPipeline(); renderNav(); }
+    });
+  });
+}
+
+/* ============ CASES VIEW ============ */
+function renderCases(){
+  var q = state.search.trim().toLowerCase();
+  var list = DB.cases.filter(function(c){ return !q || (c.name+' '+c.client+' '+c.category).toLowerCase().indexOf(q)>=0; });
+  list.sort(function(a,b){ return (a.createdAt||'').localeCompare(b.createdAt||'')*-1; });
+  var rows = list.map(function(c){
+    var soonest = DB.deadlines.filter(function(dl){return dl.caseId===c.id && !dl.resolved;}).sort(function(a,b){return a.dueDate.localeCompare(b.dueDate);})[0];
+    var openTasks = DB.tasks.filter(function(t){return t.caseId===c.id && !t.done;}).length;
+    return '<div class="case-table-row" data-open-case="'+c.id+'">'+
+      '<div class="ct-main"><div class="ct-name">'+esc(c.name)+'</div>'+
+      '<div class="ct-meta"><span class="badge badge-stage">'+esc(c.status)+'</span>'+(c.category?'<span class="badge badge-muted">'+esc(c.category)+'</span>':'')+(c.client?'<span>👤 '+esc(c.client)+'</span>':'')+(c.ball?'<span class="badge badge-ball">'+esc(c.ball)+'</span>':'')+'</div></div>'+
+      '<div class="ct-side">'+(soonest?'次の期限 '+dispDate(soonest.dueDate):'')+'<br>未完了 '+openTasks+'件</div></div>';
+  }).join('') || '<div class="empty"><div class="empty-ic">📁</div>案件がまだありません。まず1件登録しましょう<div style="margin-top:12px"><button class="btn btn-sm" id="seed-btn">サンプルデータを入れる</button></div></div>';
+
+  document.getElementById('view-root').innerHTML =
+    '<div class="card"><div class="card-title">📁 案件一覧<span class="ct-sub">'+list.length+'件</span><button class="btn btn-sm btn-primary" id="case-new-btn" style="margin-left:10px">＋ 新規案件</button></div>'+rows+'</div>';
+
+  document.getElementById('case-new-btn').addEventListener('click', function(){ openCaseModal(null); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-open-case]'), function(el){
+    el.addEventListener('click', function(){ openCaseModal(el.getAttribute('data-open-case')); });
+  });
+  var seedBtn = document.getElementById('seed-btn');
+  if(seedBtn) seedBtn.addEventListener('click', function(){ seedSampleData(); render(); });
+}
+function openCaseModal(id){
+  var c = id ? caseById(id) : {id:null,name:'',category:'',status:'相談中',client:'',ball:'自分',nextAction:''};
+  var catOpts = CATEGORY_OPTIONS.map(function(x){return '<option value="'+x+'">';}).join('');
+  var ballOpts = BALL_OPTIONS.map(function(x){return '<option value="'+x+'">';}).join('');
+  var stageOpts = STAGES.map(function(s){return '<option value="'+s+'"'+(c.status===s?' selected':'')+'>'+s+'</option>';}).join('');
+  var relatedTasks = id ? DB.tasks.filter(function(t){return t.caseId===id;}) : [];
+  var relatedDeadlines = id ? DB.deadlines.filter(function(dl){return dl.caseId===id;}) : [];
+
+  var relHtml = '';
+  if(id){
+    relHtml += '<div class="sec-title">関連タスク</div>' +
+      (relatedTasks.length ? relatedTasks.map(function(t){return '<div class="single-task-row"><span class="stt'+(t.done?' done':'')+'">'+esc(t.title)+'</span><span class="std">'+(t.due?dispDate(t.due):'')+'</span></div>';}).join('') : '<div class="empty" style="padding:8px">なし</div>');
+    relHtml += '<div class="sec-title">関連期限</div>' +
+      (relatedDeadlines.length ? relatedDeadlines.map(function(dl){return '<div class="single-task-row"><span class="stt">'+esc(dl.label)+(dl.resolved?'（対応済み）':'')+'</span><span class="std">'+dispDate(dl.dueDate)+'</span></div>';}).join('') : '<div class="empty" style="padding:8px">なし</div>');
+  }
+
+  openModal('<button class="modal-close" data-close>✕</button><div class="modal-title">'+(id?'案件を編集':'新規案件')+'</div>'+
+    '<div class="form-group" style="margin-bottom:10px"><label>案件名</label><input type="text" id="cs-name" value="'+esc(c.name)+'" placeholder="例：〇〇様 相続"></div>'+
+    '<div class="form-row"><div class="form-group"><label>種別</label><input type="text" id="cs-category" list="cat-list" value="'+esc(c.category)+'"><datalist id="cat-list">'+catOpts+'</datalist></div>'+
+    '<div class="form-group"><label>依頼者</label><input type="text" id="cs-client" value="'+esc(c.client)+'"></div></div>'+
+    '<div class="form-row"><div class="form-group"><label>ステータス</label><select id="cs-status">'+stageOpts+'</select></div>'+
+    '<div class="form-group"><label>ボール（対応待ち）</label><input type="text" id="cs-ball" list="ball-list" value="'+esc(c.ball)+'"><datalist id="ball-list">'+ballOpts+'</datalist></div></div>'+
+    '<div class="form-group" style="margin-bottom:10px"><label>次のアクション</label><input type="text" id="cs-next" value="'+esc(c.nextAction)+'" placeholder="例：戸籍収集を依頼"></div>'+
+    relHtml+
+    '<div class="modal-actions">'+(id?'<button class="btn btn-danger" id="cs-delete">削除</button>':'')+'<button class="btn" data-close>キャンセル</button><button class="btn btn-primary" id="cs-save">保存</button></div>');
+  bindModalClose();
+  document.getElementById('cs-save').addEventListener('click', function(){
+    var name = document.getElementById('cs-name').value.trim();
+    if(!name) return;
+    var data = {
+      name:name, category:document.getElementById('cs-category').value.trim(), client:document.getElementById('cs-client').value.trim(),
+      status:document.getElementById('cs-status').value, ball:document.getElementById('cs-ball').value.trim(), nextAction:document.getElementById('cs-next').value.trim()
+    };
+    if(id){ Object.assign(c, data); }
+    else { data.id = uid(); data.createdAt = todayStr(); DB.cases.push(data); }
+    save(); closeModal(); render();
+  });
+  if(id){
+    document.getElementById('cs-delete').addEventListener('click', function(){
+      if(!confirm('この案件を削除しますか？関連するタスク・期限・カルテも削除されます。')) return;
+      DB.cases = DB.cases.filter(function(x){return x.id!==id;});
+      DB.tasks = DB.tasks.filter(function(t){return t.caseId!==id;});
+      DB.deadlines = DB.deadlines.filter(function(dl){return dl.caseId!==id;});
+      DB.notes = DB.notes.filter(function(n){return n.caseId!==id;});
+      save(); closeModal(); render();
+    });
+  }
+}
+
+/* ============ KARTE VIEW ============ */
+function renderKarte(){
+  var q = state.search.trim().toLowerCase();
+  var cases = DB.cases.filter(function(c){ return !q || (c.name+' '+c.client).toLowerCase().indexOf(q)>=0; });
+  if(!state.karteCaseId && cases.length) state.karteCaseId = cases[0].id;
+  var listHtml = cases.map(function(c){
+    return '<div class="karte-case-item'+(state.karteCaseId===c.id?' active':'')+'" data-karte-case="'+c.id+'">'+
+      '<div class="kc-name">'+esc(c.name)+'</div><div class="kc-meta">'+esc(c.client||'')+'</div></div>';
+  }).join('') || '<div class="empty">案件がありません</div>';
+
+  var current = caseById(state.karteCaseId);
+  var detailHtml;
+  if(!current){
+    detailHtml = '<div class="empty"><div class="empty-ic">📝</div>左の一覧から案件を選択してください</div>';
+  } else {
+    var notes = DB.notes.filter(function(n){return n.caseId===current.id;}).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');});
+    var notesHtml = notes.map(function(n){
+      return '<div class="note-entry"><div class="note-date">'+esc(n.createdAt)+'</div><div class="note-text">'+esc(n.text)+'</div></div>';
+    }).join('') || '<div class="empty" style="padding:14px">まだ記録がありません</div>';
+    detailHtml = '<div class="card-title" style="margin-bottom:14px">'+esc(current.name)+'<span class="badge badge-stage" style="margin-left:8px">'+esc(current.status)+'</span></div>'+
+      '<div class="quick-add-row"><textarea id="karte-text" placeholder="面談内容・経過を記録..." style="flex:1"></textarea></div>'+
+      '<button class="btn btn-primary btn-sm" id="karte-add" style="margin-bottom:14px">記録を追加</button>'+
+      '<div class="sec-title">経過記録</div>'+notesHtml;
+  }
+
+  document.getElementById('view-root').innerHTML =
+    '<div class="card"><div class="card-title">📝 カルテ</div><div class="karte-layout">'+
+    '<div class="karte-list">'+listHtml+'</div><div class="karte-detail">'+detailHtml+'</div></div></div>';
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-karte-case]'), function(el){
+    el.addEventListener('click', function(){ state.karteCaseId = el.getAttribute('data-karte-case'); renderKarte(); });
+  });
+  var addBtn = document.getElementById('karte-add');
+  if(addBtn) addBtn.addEventListener('click', function(){
+    var text = document.getElementById('karte-text').value.trim();
+    if(!text) return;
+    DB.notes.push({id:uid(), caseId:current.id, text:text, createdAt:todayStr()});
+    save(); renderKarte();
+  });
+}
+
+/* ============ export / import ============ */
+document.getElementById('btn-export').addEventListener('click', function(){
+  var blob = new Blob([JSON.stringify(DB, null, 2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'case-app-backup-' + todayStr() + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+document.getElementById('import-file').addEventListener('change', function(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var data = JSON.parse(reader.result);
+      if(!confirm('現在のデータを、読み込んだバックアップで置き換えます。よろしいですか？')) return;
+      DB = {cases:data.cases||[], tasks:data.tasks||[], deadlines:data.deadlines||[], notes:data.notes||[]};
+      save(); render();
+      alert('データを復元しました');
+    }catch(err){ alert('ファイルを読み込めませんでした'); }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+/* ============ search ============ */
+document.getElementById('global-search').addEventListener('input', function(e){ state.search = e.target.value; renderView(); });
+
+/* ============ render dispatch ============ */
+function renderView(){
+  if(state.view==='today') renderToday();
+  else if(state.view==='tasks') renderTasks();
+  else if(state.view==='pipeline') renderPipeline();
+  else if(state.view==='cases') renderCases();
+  else if(state.view==='karte') renderKarte();
+}
+function render(){ renderNav(); renderView(); }
+
+var resizeTimer;
+window.addEventListener('resize', function(){
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function(){ if(state.view==='today') renderToday(); }, 200);
+});
+
+render();
+
+if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('case-sw.js').catch(function(){});
+  });
+}
+})();
+</script>
+</body>
+</html>
