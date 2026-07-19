@@ -140,6 +140,15 @@
 
   <!-- 共通入力 -->
   <div class="card">
+    <div class="card-title">算定基準（弁護士基準の地域差） <button class="help-btn" onclick="showHelp('book_choice')">詳しく</button></div>
+    <div class="section-toggle">
+      <button class="toggle-btn active" id="book-btn-aka" onclick="setBook('aka')">赤い本（東京基準）</button>
+      <button class="toggle-btn" id="book-btn-midori" onclick="setBook('midori')">緑本（大阪基準）</button>
+    </div>
+    <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>入通院慰謝料・後遺障害慰謝料（弁護士基準）の金額表を切り替えます。それ以外の計算は共通です。</div>
+  </div>
+
+  <div class="card">
     <div class="card-title">事故種別・基本情報</div>
     <div class="section-toggle">
       <button class="toggle-btn active" onclick="setCaseType('injury',this)">傷害のみ（後遺障害なし）</button>
@@ -330,6 +339,10 @@
           <option value="heavy">重傷（骨折・脱臼・手術・内臓損傷等）</option>
         </select>
       </div>
+      <div id="muchiuchi-wrap" style="display:none;align-items:flex-start;gap:8px;margin-bottom:10px;background:#F7F0E8;border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+        <input type="checkbox" id="i-muchiuchi" style="margin-top:3px">
+        <label for="i-muchiuchi" style="font-size:12px;font-weight:600;color:var(--text);cursor:pointer">軽度の神経症状（むちうち症）・軽度の打撲/挫創（傷）の場合 → 通常慰謝料の3分の2程度に減額して計算する</label>
+      </div>
       <div class="form-row">
         <div class="form-group">
           <label>入院期間（ヶ月）— 日数の場合: 日数÷30</label>
@@ -339,6 +352,13 @@
           <label>通院期間（ヶ月）— 日数の場合: 日数÷30</label>
           <div class="input-wrap"><input type="number" id="i-tsuin-months" placeholder="0" min="0" step="0.1"><span class="unit">ヶ月</span></div>
         </div>
+      </div>
+      <div id="midori-tsuin-extra" style="display:none">
+        <div class="form-group" style="margin-bottom:4px">
+          <label>実通院日数（実際に通院した日数・任意）</label>
+          <div class="input-wrap"><input type="number" id="i-jitsu-tsuin-days" placeholder="例：40" min="0"><span class="unit">日</span></div>
+        </div>
+        <div class="note" style="margin-top:2px;margin-bottom:10px"><span class="note-icon">ℹ️</span>緑本（大阪基準）では、実通院期間（始期〜終期の日数）と実通院日数を3.5倍した日数を比較し、少ない方を通院期間として計算します。不規則・長期の通院の場合に用います。空欄の場合は入力した通院期間（ヶ月）をそのまま使用します。</div>
       </div>
       <div class="formula-header">
         <div class="fh-title">入通院慰謝料の計算式</div>
@@ -609,37 +629,58 @@
 <!-- 慰謝料表 -->
 <div id="panel-isharyo-inner">
   <div class="info-banner">
-    <p>弁護士基準（赤い本）の入通院慰謝料表です。縦が通院期間、横が入院期間（単位：万円）。</p>
+    <p id="isharyo-book-banner">弁護士基準（赤い本）の入通院慰謝料表です。縦が通院期間、横が入院期間（単位：万円）。</p>
   </div>
 
-  <div class="card">
-    <div class="card-title">軽傷用（むち打ち・打撲・接触等） <span class="chip chip-light">軽傷</span></div>
-    <div class="ref-table-wrap" id="light-table-wrap"></div>
-  </div>
+  <div id="ref-aka-cards">
+    <div class="card">
+      <div class="card-title">軽傷用（むち打ち・打撲・接触等） <span class="chip chip-light">軽傷</span></div>
+      <div class="ref-table-wrap" id="light-table-wrap"></div>
+    </div>
 
-  <div class="card">
-    <div class="card-title">重傷用（骨折・脱臼・手術・内臓損傷等） <span class="chip chip-heavy">重傷</span></div>
-    <div class="ref-table-wrap" id="heavy-table-wrap"></div>
-  </div>
+    <div class="card">
+      <div class="card-title">重傷用（骨折・脱臼・手術・内臓損傷等） <span class="chip chip-heavy">重傷</span></div>
+      <div class="ref-table-wrap" id="heavy-table-wrap"></div>
+    </div>
 
-  <div class="card">
-    <div class="card-title">端数処理の方法（日割り計算）</div>
-    <div class="formula-header">
-      <div class="fh-title">実務標準の端数処理</div>
-      <div class="fh-eq">慰謝料 ＝ 整数月の値 ＋ (次月の値 − 整数月の値) × 端数</div>
-      <div class="fh-vars">
-        手順: ①日数÷30で月数を算出　②整数部分の月の金額と次の月の金額の差を求める　③差額×端数を加算<br>
-        例: 通院72日 ＝ 2.4ヶ月 → 軽傷（入院なし）: 36 + (53−36) × 0.4 ＝ 36 + 6.8 ＝ <strong>42.8万円</strong><br>
-        12ヶ月超の場合: 12ヶ月の値を上限としてそれ以上は1ヶ月あたり軽傷約2万円・重傷約3万円を加算（目安）
+    <div class="card">
+      <div class="card-title">端数処理の方法（日割り計算）</div>
+      <div class="formula-header">
+        <div class="fh-title">実務標準の端数処理</div>
+        <div class="fh-eq">慰謝料 ＝ 整数月の値 ＋ (次月の値 − 整数月の値) × 端数</div>
+        <div class="fh-vars">
+          手順: ①日数÷30で月数を算出　②整数部分の月の金額と次の月の金額の差を求める　③差額×端数を加算<br>
+          例: 通院72日 ＝ 2.4ヶ月 → 軽傷（入院なし）: 36 + (53−36) × 0.4 ＝ 36 + 6.8 ＝ <strong>42.8万円</strong><br>
+          12ヶ月超の場合: 12ヶ月の値を上限としてそれ以上は1ヶ月あたり軽傷約2万円・重傷約3万円を加算（目安）
+        </div>
       </div>
     </div>
   </div>
 
+  <div id="ref-midori-cards" style="display:none">
+    <div class="card">
+      <div class="card-title">通常用（平成17年基準） <span class="chip chip-light">通常</span></div>
+      <div class="ref-table-wrap" id="midori-normal-table-wrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">重傷用（平成17年基準） <span class="chip chip-heavy">重傷</span></div>
+      <div class="ref-table-wrap" id="midori-severe-table-wrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">緑本（大阪基準）の特則</div>
+      <div class="bk-desc">通院期間の算定: 実通院期間（始期〜終期の日数）と実通院日数を3.5倍した日数を比較し、少ない方の日数を通院期間とする。ただし実通院期間が長期・不規則な場合等、事案により通常基準額を増額することがある。</div>
+      <div class="bk-desc">軽度の神経症状（むちうち症）、軽度の打撲・挫創（傷）の場合: 入通院慰謝料は通常表の3分の2程度とする。</div>
+      <div class="fh-vars" style="margin-top:6px">25ヶ月超・12ヶ月超の入力は目安として比例的に加算した概算値になります。</div>
+    </div>
+  </div>
+
   <div class="card">
-    <div class="card-title">後遺障害慰謝料（弁護士基準）</div>
+    <div class="card-title">後遺障害慰謝料（弁護士基準） <span id="koishogai-book-chip"></span></div>
     <div class="ref-table-wrap">
       <table class="ref-table" style="min-width:300px">
-        <thead><tr><th>等級</th><th>自賠責基準（万円）</th><th>弁護士基準（万円）</th></tr></thead>
+        <thead><tr><th>等級</th><th>自賠責基準（万円）</th><th id="koishogai-th-bengoshi">弁護士基準（万円）</th></tr></thead>
         <tbody id="koishogai-table-body"></tbody>
       </table>
     </div>
@@ -779,6 +820,68 @@ const ISHARYO_HEAVY = [
   [154,183,211,236,260,280,298]
 ];
 
+// ============================================================
+// 緑本（大阪弁護士会・大阪地裁基準）平成17年基準 入通院慰謝料表
+// 行=通院月数(0-25) / 列=入院月数(0-12)。26ヶ月・13ヶ月超は概算加算。
+// ============================================================
+const GREEN_ISHARYO_NORMAL = [
+  [0,53,101,146,186,220,250,266,277,286,295,303,308],
+  [27,76,121,164,201,228,255,270,282,291,298,306,310],
+  [49,99,141,181,209,236,259,274,286,294,301,308,312],
+  [72,119,159,193,217,244,263,278,290,298,304,311,314],
+  [90,134,165,199,224,249,267,282,294,301,306,313,317],
+  [108,145,175,207,230,254,270,286,298,304,308,316,319],
+  [120,153,183,213,236,259,275,290,300,306,311,318,322],
+  [128,161,193,217,242,263,280,294,302,308,313,320,324],
+  [136,169,198,224,248,267,284,298,305,311,316,323,326],
+  [144,176,204,228,254,271,288,301,307,313,318,325,329],
+  [152,182,210,232,260,274,292,304,310,316,320,328,331],
+  [160,188,216,236,264,277,294,306,312,318,323,330,334],
+  [166,194,220,241,268,281,296,308,314,320,325,332,336],
+  [170,199,224,246,271,284,299,311,317,323,328,335,338],
+  [175,203,228,250,275,287,301,313,319,325,330,337,341],
+  [180,206,232,253,277,289,304,316,322,328,332,340,343],
+  [184,210,235,257,280,292,306,318,324,330,335,342,346],
+  [187,214,239,260,282,294,308,320,326,332,337,344,348],
+  [191,219,244,266,288,300,315,327,333,339,344,351,355],
+  [194,222,248,270,293,305,320,332,338,344,350,357,361],
+  [197,225,252,274,297,310,325,337,343,350,355,362,367],
+  [199,228,254,277,300,313,328,341,347,353,359,366,370],
+  [202,231,258,281,305,318,333,346,352,359,364,372,376],
+  [204,234,261,284,308,321,336,349,356,362,368,375,380],
+  [206,236,263,286,311,324,339,353,359,366,371,379,384],
+  [209,239,267,291,315,329,344,358,364,371,377,385,389]
+];
+
+const GREEN_ISHARYO_SEVERE = [
+  [0,64,121,175,223,264,300,319,332,343,354,364,370],
+  [27,95,151,205,251,285,319,338,353,364,373,383,388],
+  [49,124,176,226,261,295,324,343,358,367,376,385,390],
+  [72,149,199,241,271,305,329,348,363,373,380,389,393],
+  [90,168,206,249,280,311,334,353,368,376,383,391,396],
+  [108,181,219,259,288,318,338,358,373,380,385,395,399],
+  [120,191,229,266,295,324,344,363,375,383,389,398,403],
+  [128,201,241,271,303,329,350,368,378,385,391,400,405],
+  [136,211,248,280,310,334,355,373,381,389,395,404,408],
+  [144,220,255,290,318,339,360,376,384,391,398,406,411],
+  [152,228,263,295,325,343,365,380,388,395,400,410,414],
+  [160,235,270,301,330,346,368,383,390,398,404,413,418],
+  [166,243,275,308,335,351,370,385,393,400,406,415,420],
+  [170,249,280,313,339,355,374,389,396,404,410,419,423],
+  [175,254,285,316,344,359,376,391,399,406,413,421,426],
+  [180,258,290,321,346,361,380,395,403,410,415,425,429],
+  [184,263,294,325,350,365,383,398,405,413,419,428,433],
+  [187,268,299,329,353,368,385,400,408,415,421,430,435],
+  [191,274,306,336,361,376,394,409,417,424,430,440,445],
+  [194,278,310,341,366,382,399,415,423,431,437,446,451],
+  [197,281,314,345,370,386,404,420,428,435,441,451,456],
+  [199,285,318,350,375,391,409,425,434,441,448,457,463],
+  [202,289,322,355,381,397,415,431,440,447,454,464,469],
+  [204,292,326,359,385,401,420,436,445,452,459,469,474],
+  [206,295,329,362,389,405,424,440,449,457,463,473,479],
+  [209,299,334,367,394,410,430,446,455,463,470,480,485]
+];
+
 // 後遺障害慰謝料
 const KOI_ISHARYO = {
   'kaigo1':{jibaiseki:1650,bengoshi:2800,label:'要介護1級'},
@@ -797,6 +900,12 @@ const KOI_ISHARYO = {
   '12':{jibaiseki:94,bengoshi:290,label:'第12級'},
   '13':{jibaiseki:57,bengoshi:180,label:'第13級'},
   '14':{jibaiseki:32,bengoshi:110,label:'第14級'}
+};
+
+// 緑本（大阪基準）後遺障害慰謝料（弁護士基準相当）。要介護1・2級は赤本と同額を使用。
+const GREEN_KOI_ISHARYO = {
+  '1':2800,'2':2400,'3':2000,'4':1700,'5':1440,'6':1220,'7':1030,
+  '8':830,'9':670,'10':530,'11':400,'12':280,'13':180,'14':110
 };
 
 // 労働能力喪失率
@@ -944,6 +1053,69 @@ function calcKotsuAuto(){
 // UI STATE
 // ============================================================
 let currentCase = 'injury';
+let currentBook = 'aka'; // 'aka'(赤い本・東京基準) | 'midori'(緑本・大阪基準)
+
+function setBook(book){
+  currentBook = book;
+  document.getElementById('book-btn-aka').classList.toggle('active', book==='aka');
+  document.getElementById('book-btn-midori').classList.toggle('active', book==='midori');
+  updateInjuryTypeOptions();
+  const midoriExtra = document.getElementById('midori-tsuin-extra');
+  if(midoriExtra) midoriExtra.style.display = book==='midori' ? 'block' : 'none';
+  const muchiuchiWrap = document.getElementById('muchiuchi-wrap');
+  if(muchiuchiWrap) muchiuchiWrap.style.display = book==='midori' ? 'flex' : 'none';
+
+  const refAka = document.getElementById('ref-aka-cards');
+  const refMidori = document.getElementById('ref-midori-cards');
+  if(refAka) refAka.style.display = book==='aka' ? 'block' : 'none';
+  if(refMidori) refMidori.style.display = book==='midori' ? 'block' : 'none';
+  const banner = document.getElementById('isharyo-book-banner');
+  if(banner) banner.textContent = book==='aka'
+    ? '弁護士基準（赤い本・東京基準）の入通院慰謝料表です。縦が通院期間、横が入院期間（単位：万円）。'
+    : '弁護士基準（緑本・大阪基準）の入通院慰謝料表です。縦が通院期間、横が入院期間（単位：万円）。';
+  const koishogaiChip = document.getElementById('koishogai-book-chip');
+  if(koishogaiChip) koishogaiChip.innerHTML = book==='aka' ? '<span class="chip chip-heavy">赤い本</span>' : '<span class="chip chip-light">緑本</span>';
+  const koishogaiTh = document.getElementById('koishogai-th-bengoshi');
+  if(koishogaiTh) koishogaiTh.textContent = book==='aka' ? '弁護士基準・赤い本（万円）' : '弁護士基準・緑本（万円）';
+
+  updateGradeFields();
+  renderKoishogaiTable();
+}
+
+function updateInjuryTypeOptions(){
+  const sel = document.getElementById('i-injury-type');
+  if(!sel) return;
+  if(currentBook==='midori'){
+    sel.innerHTML = '<option value="normal">通常（骨折等一般的な傷害）</option><option value="severe">重傷（傷害の程度が著しい場合）</option>';
+  } else {
+    sel.innerHTML = '<option value="light">軽傷（むち打ち・打撲・擦過傷等）</option><option value="heavy">重傷（骨折・脱臼・手術・内臓損傷等）</option>';
+  }
+}
+
+// 緑本慰謝料表参照（月数は小数OK）。25ヶ月・12ヶ月超は概算加算。
+function lookupGreenIsharyo(tsuinMonths, nyuinMonths, tbl, extraTsuinInc, extraNyuinInc){
+  const tMax=25, nMax=12;
+  const extraNyuin = Math.max(0, nyuinMonths - nMax);
+  const extraTsuin = Math.max(0, tsuinMonths - tMax);
+  const nClamped = Math.min(nyuinMonths, nMax);
+  const tClamped = Math.min(tsuinMonths, tMax);
+
+  function interp(t, n){
+    const ti = Math.floor(t), tf = t - ti;
+    const ni = Math.floor(n), nf = n - ni;
+    const ti2 = Math.min(ti+1, tMax), ni2 = Math.min(ni+1, nMax);
+    const v00 = tbl[ti][ni];
+    const v10 = tbl[ti2][ni];
+    const v01 = tbl[ti][ni2];
+    const v11 = tbl[ti2][ni2];
+    return v00*(1-tf)*(1-nf) + v10*tf*(1-nf) + v01*(1-tf)*nf + v11*tf*nf;
+  }
+
+  let base = interp(tClamped, nClamped);
+  if(extraNyuin>0) base += extraNyuin * extraNyuinInc;
+  if(extraTsuin>0) base += extraTsuin * extraTsuinInc;
+  return base;
+}
 
 function switchTab(id,btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
@@ -989,14 +1161,26 @@ function updateJobFields(){
   });
 }
 
+// 後遺障害慰謝料の金額を算定基準に応じて取得（緑本・弁護士基準の場合はGREEN_KOI_ISHARYOを優先）
+function getKoiAmount(grade, std){
+  const data = KOI_ISHARYO[grade];
+  if(!data) return 0;
+  if(std==='bengoshi'){
+    if(currentBook==='midori' && GREEN_KOI_ISHARYO[grade]!=null) return GREEN_KOI_ISHARYO[grade];
+    return data.bengoshi;
+  }
+  return data.jibaiseki;
+}
+
 function updateGradeFields(){
   const grade = v('s-grade');
   const std = v('s-standard');
   const data = KOI_ISHARYO[grade];
   if(!data) return;
-  const amt = std==='bengoshi' ? data.bengoshi : data.jibaiseki;
+  const amt = getKoiAmount(grade, std);
+  const bookLabel = std==='bengoshi' ? (currentBook==='midori'?'弁護士基準・緑本':'弁護士基準・赤い本') : '自賠責基準';
   document.getElementById('s-grade-display').textContent =
-    data.label + '　' + (std==='bengoshi'?'弁護士基準':'自賠責基準') + ': ' + amt + '万円';
+    data.label + '　' + bookLabel + ': ' + amt + '万円';
 
   // Auto-fill loss rate
   const lr = document.getElementById('s-loss-rate');
@@ -1118,12 +1302,34 @@ function calcAll(){
   // --- 入通院慰謝料 ---
   const injType = v('i-injury-type');
   const nyuinM = nv('i-nyuin-months');
-  const tsuinM = nv('i-tsuin-months');
-  const isLight = injType==='light';
-  const isharyo = lookupIsharyo(tsuinM, nyuinM, isLight);
-  const typeName = isLight?'軽傷':'重傷';
+  let tsuinM = nv('i-tsuin-months');
+  let isharyo, typeName, extraNote = '';
+
+  if(currentBook==='midori'){
+    const jitsuDays = nv('i-jitsu-tsuin-days');
+    let effectiveTsuinM = tsuinM;
+    if(jitsuDays > 0){
+      const calDays = tsuinM * 30;
+      const capDays = jitsuDays * 3.5;
+      const useDays = Math.min(calDays, capDays);
+      effectiveTsuinM = useDays / 30;
+      extraNote += `（実通院${jitsuDays}日×3.5=${capDays.toFixed(1)}日 と 通院期間${calDays.toFixed(0)}日 のうち少ない方 ${useDays.toFixed(1)}日＝${effectiveTsuinM.toFixed(2)}ヶ月で算定）`;
+    }
+    const muchiuchi = document.getElementById('i-muchiuchi') && document.getElementById('i-muchiuchi').checked;
+    const tbl = injType==='severe' ? GREEN_ISHARYO_SEVERE : GREEN_ISHARYO_NORMAL;
+    const incTsuin = injType==='severe' ? 3 : 2;
+    const incNyuin = injType==='severe' ? 6 : 5;
+    let base = lookupGreenIsharyo(effectiveTsuinM, nyuinM, tbl, incTsuin, incNyuin);
+    if(muchiuchi){ base = base * 2/3; extraNote += '（軽度の神経症状・むちうち症等のため通常表の3分の2に減額）'; }
+    isharyo = base;
+    typeName = muchiuchi ? 'むちうち等（通常表×2/3）' : (injType==='severe'?'重傷':'通常');
+  } else {
+    const isLight = injType==='light';
+    isharyo = lookupIsharyo(tsuinM, nyuinM, isLight);
+    typeName = isLight?'軽傷':'重傷';
+  }
   items.push({label:'入通院慰謝料', val:isharyo,
-    formula:`${typeName}・通院${tsuinM}ヶ月・入院${nyuinM}ヶ月 → 慰謝料表より ${fmtMan(isharyo)}`});
+    formula:`【${currentBook==='midori'?'緑本':'赤い本'}】${typeName}・通院${tsuinM}ヶ月・入院${nyuinM}ヶ月${extraNote} → 慰謝料表より ${fmtMan(isharyo)}`});
 
   // --- 付添費 ---
   const fusoiNyuin = nv('i-fusoi-nyuin');
@@ -1160,9 +1366,10 @@ function calcAll(){
     const grade = v('s-grade');
     const std = v('s-standard');
     const gradeData = KOI_ISHARYO[grade];
-    koiIsh = std==='bengoshi' ? gradeData.bengoshi : gradeData.jibaiseki;
-    items.push({label:`後遺障害慰謝料（${gradeData.label}・${std==='bengoshi'?'弁護士':'自賠責'}基準）`, val:koiIsh,
-      formula:`${gradeData.label} ${std==='bengoshi'?'弁護士':'自賠責'}基準 = ${fmtMan(koiIsh)}`});
+    koiIsh = getKoiAmount(grade, std);
+    const koiBookLabel = std==='bengoshi' ? (currentBook==='midori'?'弁護士・緑本':'弁護士・赤い本') : '自賠責';
+    items.push({label:`後遺障害慰謝料（${gradeData.label}・${koiBookLabel}基準）`, val:koiIsh,
+      formula:`${gradeData.label} ${koiBookLabel}基準 = ${fmtMan(koiIsh)}`});
 
     const sIncome = nv('s-income');
     const sAge = nv('s-age');
@@ -1343,11 +1550,25 @@ function renderIsharyoTable(tableData, wrapperId){
     `<table class="ref-table"><thead>${th}</thead><tbody>${body}</tbody></table>`;
 }
 
+function renderGreenIsharyoTable(tableData, wrapperId){
+  const cols = ['なし','1ヶ月','2ヶ月','3ヶ月','4ヶ月','5ヶ月','6ヶ月','7ヶ月','8ヶ月','9ヶ月','10ヶ月','11ヶ月','12ヶ月'];
+  const rows = ['通院なし','1ヶ月','2ヶ月','3ヶ月','4ヶ月','5ヶ月','6ヶ月','7ヶ月','8ヶ月','9ヶ月','10ヶ月','11ヶ月','12ヶ月',
+    '13ヶ月','14ヶ月','15ヶ月','16ヶ月','17ヶ月','18ヶ月','19ヶ月','20ヶ月','21ヶ月','22ヶ月','23ヶ月','24ヶ月','25ヶ月'];
+  let th = '<tr><th>通院＼入院</th>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr>';
+  let body = rows.map((r,ri)=>{
+    let tds = tableData[ri].map(v=>`<td>${v}</td>`).join('');
+    return `<tr><td class="row-header">${r}</td>${tds}</tr>`;
+  }).join('');
+  document.getElementById(wrapperId).innerHTML =
+    `<table class="ref-table"><thead>${th}</thead><tbody>${body}</tbody></table>`;
+}
+
 function renderKoishogaiTable(){
   const order=['kaigo1','kaigo2','1','2','3','4','5','6','7','8','9','10','11','12','13','14'];
   const body = order.map(k=>{
     const d=KOI_ISHARYO[k];
-    return `<tr><td class="row-header">${d.label}</td><td>${d.jibaiseki.toLocaleString()}</td><td><strong>${d.bengoshi.toLocaleString()}</strong></td></tr>`;
+    const bengoshiAmt = getKoiAmount(k, 'bengoshi');
+    return `<tr><td class="row-header">${d.label}</td><td>${d.jibaiseki.toLocaleString()}</td><td><strong>${bengoshiAmt.toLocaleString()}</strong></td></tr>`;
   }).join('');
   document.getElementById('koishogai-table-body').innerHTML = body;
 }
@@ -2296,18 +2517,30 @@ const HELP = {
   </ul>
   <div class="help-note">重傷・術後・高齢者・小児等の場合に認められやすいです。付添日誌・写真・証明書を用意しましょう。</div>`},
   nyutsuin_isharyo:{title:'入通院慰謝料について',body:`<p>入院・通院したことによる精神的苦痛に対する慰謝料です。</p>
-  <h4>傷病区分</h4>
+  <h4>傷病区分（赤い本・東京基準）</h4>
   <ul>
   <li>軽傷: むち打ち（頸椎捻挫）・打撲・擦過傷など</li>
   <li>重傷: 骨折・脱臼・手術・内臓損傷・頭部外傷など</li>
   </ul>
+  <h4>傷病区分（緑本・大阪基準）</h4>
+  <ul>
+  <li>通常: 骨折等、一般的な傷害</li>
+  <li>重傷: 傷害の程度・部位が著しく重大な場合</li>
+  <li>軽度の神経症状（むちうち症）・軽度の打撲/挫創（傷）: 通常表の3分の2程度に減額</li>
+  </ul>
   <h4>端数処理</h4>
   <p>通院72日（2.4ヶ月）の場合（軽傷・入院なし）:</p>
   <p>36万 + (53−36)万 × 0.4 = 36 + 6.8 = 42.8万円</p>
-  <div class="help-note">通院実日数と通院期間（開始〜終了の月数）は別物です。月2〜3回しか通院していない場合、実通院日数で按分される場合があります。</div>`},
+  <div class="help-note">通院実日数と通院期間（開始〜終了の月数）は別物です。月2〜3回しか通院していない場合、実通院日数で按分される場合があります。緑本では、実通院期間と実通院日数×3.5倍した日数を比較し、少ない方を通院期間とするルールがあります（「実通院日数」欄に入力すると自動計算されます）。</div>`},
   koi_isharyo:{title:'後遺障害慰謝料について',body:`<p>症状固定後に残った後遺症の精神的苦痛に対する慰謝料です。</p>
-  <p>後遺障害等級（1〜14級・要介護1〜2級）によって金額が決まります。</p>
+  <p>後遺障害等級（1〜14級・要介護1〜2級）によって金額が決まります。赤い本（東京基準）・緑本（大阪基準）で金額がわずかに異なります（1級・8級・13級・14級はほぼ同額、他は数十万円程度の差があります）。</p>
   <div class="help-note">弁護士基準は自賠責基準の2〜3倍になることが多く、弁護士に依頼することで大幅に増額できる場合があります。</div>`},
+  book_choice:{title:'赤い本・緑本（弁護士基準の地域差）について',body:`<p>弁護士基準（裁判基準）の慰謝料額は、全国共通の一つの表があるわけではなく、地域の弁護士会・裁判所が公表する目安表（本）によって多少異なります。</p>
+  <h4>赤い本（東京）</h4>
+  <p>日弁連交通事故相談センター東京支部が発行する「民事交通事故訴訟　損害賠償額算定基準」の通称です。全国的にもっとも広く参照されます。</p>
+  <h4>緑本（大阪）</h4>
+  <p>大阪弁護士会が発行する「交通事故損害賠償の実務」の通称です。近畿地方の裁判・示談交渉でよく参照されます。入通院慰謝料表の区分（通常・重傷・むちうち等の扱い）や後遺障害慰謝料の金額が赤い本と一部異なります。</p>
+  <div class="help-note">このアプリでは入通院慰謝料表と後遺障害慰謝料（弁護士基準）のみが赤い本／緑本で切り替わります。治療費・休業損害・逸失利益等その他の項目の計算方法は共通です。実際に使う基準は、事故が起きた地域の弁護士にご確認ください。</div>`},
   koi_isshitsu:{title:'後遺障害逸失利益について',body:`<p>後遺障害により将来の労働能力が低下した分の損害です。</p>
   <div class="help-note">計算式: 基礎収入 × 労働能力喪失率 × ライプニッツ係数（就労可能年数）</div>
   <p>就労可能年数 = 67歳（定年）− 症状固定時年齢（上限49年）</p>
@@ -2387,6 +2620,9 @@ function closeModal(){
 document.addEventListener('DOMContentLoaded', function(){
   renderIsharyoTable(ISHARYO_LIGHT, 'light-table-wrap');
   renderIsharyoTable(ISHARYO_HEAVY, 'heavy-table-wrap');
+  renderGreenIsharyoTable(GREEN_ISHARYO_NORMAL, 'midori-normal-table-wrap');
+  renderGreenIsharyoTable(GREEN_ISHARYO_SEVERE, 'midori-severe-table-wrap');
+  updateInjuryTypeOptions();
   renderKoishogaiTable();
   renderLeibnizTable();
   updateJobFields();
