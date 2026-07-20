@@ -118,7 +118,7 @@
 <nav class="tabs">
   <button class="tab-btn active" onclick="switchTab('keisan',this)">損害計算</button>
   <button class="tab-btn" onclick="switchTab('shiryo',this)">資料</button>
-  <button class="tab-btn" onclick="switchTab('sample',this)">サンプル</button>
+  <button class="tab-btn" onclick="switchTab('sample',this);regenerateSample()">サンプル</button>
 </nav>
 <div class="container">
 
@@ -707,18 +707,14 @@
 <!-- ===== Tab 3: サンプル ===== -->
 <div id="panel-sample" class="panel">
   <div class="info-banner">
-    <p>下の事例を読んで、ボタンを押すだけで「損害計算」タブに数字が入力された状態を体験できます。実際の計算のイメージをつかむのにお使いください。</p>
+    <p>下の事例を読んで、ボタンを押すだけで「損害計算」タブに数字が入力された状態を体験できます。事例はタブを開くたびにランダムに変わります。実際の計算のイメージをつかむのにお使いください。</p>
   </div>
 
   <div class="card">
-    <div class="card-title">事例：追突事故によるむちうち症（後遺障害なし）</div>
-    <div class="bk-desc" style="font-size:13px;line-height:1.9">
-      会社員のAさん（35歳・男性、給与所得者）は、信号待ちで停止していたところ、後ろから来た車に追突され、むちうち症（頸椎捻挫）を負いました。<br><br>
-      入院はせず、整形外科に<strong>3ヶ月間（実際に通院した日数は40日）</strong>通いました。この間、仕事を<strong>10日間</strong>休みました（事故前3ヶ月間の給料の合計は90万円）。<br><br>
-      信号待ち中に追突されたため、Aさんに事故の原因となるような落ち度はなく、<strong>過失割合は0%</strong>です。後遺症は残りませんでした。<br><br>
-      治療費は<strong>45万円</strong>、通院のための交通費は<strong>3万円</strong>かかりました。車の修理費は<strong>25万円</strong>、修理期間中の代車費用は<strong>2万円</strong>、診断書代など書類費用は<strong>0.6万円</strong>でした。
-    </div>
-    <div class="note"><span class="note-icon">ℹ️</span>下のボタンを押すと、この事例の数字が「損害計算」タブの各項目に自動で入力され、画面が「損害計算」タブに切り替わります。あとは「損害計算」タブの一番下にある「計算する」ボタンを押すだけで、結果が表示されます。</div>
+    <div class="card-title" id="sample-scenario-title">事例：追突事故によるケガ（後遺障害なし）</div>
+    <div class="bk-desc" style="font-size:13px;line-height:1.9" id="sample-scenario-text"></div>
+    <button class="btn-secondary" onclick="regenerateSample()" style="margin-top:4px">🔄 別の事例に変える</button>
+    <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>下のボタンを押すと、この事例の数字が「損害計算」タブの各項目に自動で入力され、画面が「損害計算」タブに切り替わります。あとは「損害計算」タブの一番下にある「計算する」ボタンを押すだけで、結果が表示されます。</div>
   </div>
 
   <div class="card">
@@ -1056,55 +1052,150 @@ function updateInjuryTypeOptions(){
   }
 }
 
+// ============================================================
+// サンプル事例（ランダム生成・毎回内容が変わる／端数のある数字のみ使用）
+// ============================================================
+const SAMPLE_NAMES = ['佐藤さん','鈴木さん','高橋さん','伊藤さん','渡辺さん','山本さん','中村さん','小林さん'];
+let currentSample = null;
+
+function randInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+// 5の倍数（きりの良い整数）を避けて整数を生成する
+function randNonRoundInt(min, max){
+  let n, tries=0;
+  do { n = randInt(min, max); tries++; } while(n % 5 === 0 && tries < 60);
+  return n;
+}
+
+// 整数（きりの良い数）を避けて小数を生成する
+function randNonRoundDecimal(min, max, decimals){
+  let n, tries=0;
+  do {
+    const raw = Math.random()*(max-min)+min;
+    n = Math.round(raw*Math.pow(10,decimals))/Math.pow(10,decimals);
+    tries++;
+  } while(Number.isInteger(n) && tries < 60);
+  return n;
+}
+
+function addDaysToDate(dateStr, days){
+  const d = new Date(dateStr);
+  d.setDate(d.getDate()+Math.round(days));
+  return d.toISOString().slice(0,10);
+}
+
+function generateSample(){
+  const isFracture = Math.random() < 0.5;
+  const name = SAMPLE_NAMES[randInt(0, SAMPLE_NAMES.length-1)];
+  const age = randNonRoundInt(24, 58);
+  const gender = Math.random() < 0.5 ? '男性' : '女性';
+
+  const hasHospital = isFracture ? true : Math.random() < 0.3;
+  const nyuinDays = hasHospital ? (isFracture ? randNonRoundInt(6, 33) : randNonRoundInt(2, 11)) : 0;
+  const nyuinMonths = hasHospital ? Math.round((nyuinDays/30)*10)/10 : 0;
+
+  const tsuinMonths = randNonRoundDecimal(1.2, isFracture ? 8.4 : 6.7, 1);
+  const jitsuTsuinDays = randNonRoundInt(9, Math.max(13, Math.round(tsuinMonths*30*0.55)));
+
+  const fault = randNonRoundInt(1, 28);
+  const chiryohi = randNonRoundDecimal(isFracture?58:16, isFracture?165:72, 1);
+  const kotsuhi = randNonRoundDecimal(0.7, 7.8, 1);
+  const empIncome = randNonRoundDecimal(46, 138, 1);
+  const empWorkdays = randNonRoundInt(58, 89);
+  const empOffdays = randNonRoundInt(2, Math.min(42, empWorkdays-3));
+  const sharyoRepair = randNonRoundDecimal(6, 59, 1);
+  const sharyoEval = Math.random() < 0.35 ? 0 : randNonRoundDecimal(1.1, 9.7, 1);
+  const sharyoDasha = randNonRoundDecimal(0.5, 6.6, 1);
+  const costShindan = randNonRoundDecimal(0.22, 1.38, 2);
+  const costShomei = randNonRoundDecimal(0.06, 0.34, 2);
+
+  const jikoDate = `2025-${String(randInt(1,11)).padStart(2,'0')}-${String(randInt(1,27)).padStart(2,'0')}`;
+  const koteiDate = addDaysToDate(jikoDate, tsuinMonths*30);
+  const calcDate = addDaysToDate(jikoDate, randNonRoundInt(190, 540));
+
+  return {
+    isFracture, name, age, gender, hasHospital, nyuinDays, nyuinMonths,
+    tsuinMonths, jitsuTsuinDays, fault, chiryohi, kotsuhi,
+    empIncome, empWorkdays, empOffdays,
+    sharyoRepair, sharyoEval, sharyoDasha, costShindan, costShomei,
+    jikoDate, koteiDate, calcDate
+  };
+}
+
+function sampleScenarioHtml(s){
+  const injuryName = s.isFracture ? '肋骨の骨折' : 'むちうち症（頸椎捻挫）';
+  const nyuinText = s.hasHospital
+    ? `<strong>入院${s.nyuinDays}日</strong>のあと、整形外科に<strong>通院${s.tsuinMonths}ヶ月間（実際に通院した日数は${s.jitsuTsuinDays}日）</strong>通いました。`
+    : `入院はせず、整形外科に<strong>通院${s.tsuinMonths}ヶ月間（実際に通院した日数は${s.jitsuTsuinDays}日）</strong>通いました。`;
+  const shindanTotal = Math.round((s.costShindan + s.costShomei)*100)/100;
+  return `
+    ${s.name}（${s.age}歳・${s.gender}、給与所得者）は、信号待ちで停止していたところ、後ろから来た車に追突され、${injuryName}を負いました。<br><br>
+    ${nyuinText}この間、仕事を<strong>${s.empOffdays}日間</strong>休みました（事故前3ヶ月間の給料の合計は${fmtMan(s.empIncome)}）。<br><br>
+    今回の事故については、${s.name}にも<strong>過失割合${s.fault}%</strong>があるものとします。後遺症は残りませんでした。<br><br>
+    治療費は${fmtMan(s.chiryohi)}、通院のための交通費は${fmtMan(s.kotsuhi)}かかりました。車の修理費は${fmtMan(s.sharyoRepair)}${s.sharyoEval>0?`、評価損${fmtMan(s.sharyoEval)}`:''}、修理期間中の代車費用は${fmtMan(s.sharyoDasha)}、診断書代など書類費用は${fmtMan(shindanTotal)}でした。
+  `;
+}
+
+function regenerateSample(){
+  currentSample = generateSample();
+  const textEl = document.getElementById('sample-scenario-text');
+  if(textEl) textEl.innerHTML = sampleScenarioHtml(currentSample);
+  const titleEl = document.getElementById('sample-scenario-title');
+  if(titleEl) titleEl.textContent = `事例：追突事故による${currentSample.isFracture?'骨折':'むちうち症'}（後遺障害なし）`;
+}
+
 // サンプル事例のデータを「損害計算」タブに入力する
 function loadSample(book){
+  if(!currentSample) regenerateSample();
+  const s = currentSample;
+
   const injuryBtn = document.querySelector('.toggle-btn[onclick*="setCaseType(\'injury\'"]');
   if(injuryBtn) setCaseType('injury', injuryBtn);
   setBook(book);
 
   setTreatMode('total');
-  document.getElementById('i-chiryohi').value = 45;
+  document.getElementById('i-chiryohi').value = s.chiryohi;
 
-  document.getElementById('i-nyuindays').value = 0;
+  document.getElementById('i-nyuindays').value = s.nyuinDays;
 
   setKotsuMode('total');
-  document.getElementById('i-kotsuhi').value = 3;
+  document.getElementById('i-kotsuhi').value = s.kotsuhi;
 
   document.getElementById('i-job').value = 'employee';
   updateJobFields();
-  document.getElementById('i-emp-income').value = 90;
-  document.getElementById('i-emp-workdays').value = 90;
-  document.getElementById('i-emp-offdays').value = 10;
+  document.getElementById('i-emp-income').value = s.empIncome;
+  document.getElementById('i-emp-workdays').value = s.empWorkdays;
+  document.getElementById('i-emp-offdays').value = s.empOffdays;
 
   document.getElementById('i-fusoi-nyuin').value = 0;
   document.getElementById('i-fusoi-tsuin').value = 0;
 
-  document.getElementById('i-injury-type').value = book==='midori' ? 'normal' : 'light';
+  document.getElementById('i-injury-type').value = book==='midori' ? (s.isFracture?'severe':'normal') : (s.isFracture?'heavy':'light');
   const muchiuchiEl = document.getElementById('i-muchiuchi');
-  if(muchiuchiEl) muchiuchiEl.checked = (book==='midori');
-  document.getElementById('i-nyuin-months').value = 0;
-  document.getElementById('i-tsuin-months').value = 3;
+  if(muchiuchiEl) muchiuchiEl.checked = (book==='midori' && !s.isFracture);
+  document.getElementById('i-nyuin-months').value = s.nyuinMonths;
+  document.getElementById('i-tsuin-months').value = s.tsuinMonths;
   const jitsuEl = document.getElementById('i-jitsu-tsuin-days');
-  if(jitsuEl) jitsuEl.value = 40;
+  if(jitsuEl) jitsuEl.value = s.jitsuTsuinDays;
 
-  document.getElementById('i-sharyo-repair').value = 25;
-  document.getElementById('i-sharyo-eval').value = 0;
-  document.getElementById('i-sharyo-dasha').value = 2;
+  document.getElementById('i-sharyo-repair').value = s.sharyoRepair;
+  document.getElementById('i-sharyo-eval').value = s.sharyoEval;
+  document.getElementById('i-sharyo-dasha').value = s.sharyoDasha;
 
-  document.getElementById('i-cost-shindan').value = 0.5;
-  document.getElementById('i-cost-shomei').value = 0.1;
+  document.getElementById('i-cost-shindan').value = s.costShindan;
+  document.getElementById('i-cost-shomei').value = s.costShomei;
   document.getElementById('i-cost-koi-shindan').value = 0;
 
   document.getElementById('i-bengoshi').value = 'yes';
 
-  document.getElementById('c-jiko-date').value = '2025-04-10';
-  document.getElementById('c-kotei-date').value = '2025-07-10';
+  document.getElementById('c-jiko-date').value = s.jikoDate;
+  document.getElementById('c-kotei-date').value = s.koteiDate;
   calcTreatPeriod();
-  document.getElementById('c-fault').value = 0;
+  document.getElementById('c-fault').value = s.fault;
   document.getElementById('c-paid').value = 0;
 
-  document.getElementById('i-accident-date').value = '2025-04-10';
-  document.getElementById('i-calc-date').value = '2026-04-10';
+  document.getElementById('i-accident-date').value = s.jikoDate;
+  document.getElementById('i-calc-date').value = s.calcDate;
 
   const result = document.getElementById('keisan-result');
   if(result){ result.style.display='none'; result.innerHTML=''; }
@@ -1957,6 +2048,7 @@ document.addEventListener('DOMContentLoaded', function(){
   renderLeibnizTable();
   updateJobFields();
   updateDeathFields();
+  regenerateSample();
   const today = new Date().toISOString().slice(0,10);
   const calcDateEl = document.getElementById('i-calc-date');
   if(calcDateEl) calcDateEl.value = today;
