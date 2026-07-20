@@ -620,9 +620,10 @@
 <!-- 慰謝料表 -->
 <div id="panel-isharyo-inner">
   <div class="info-banner">
-    <p id="isharyo-book-banner">弁護士基準（赤い本）の入通院慰謝料表です。縦が通院期間、横が入院期間（単位：万円）。</p>
+    <p>入通院慰謝料表・後遺障害慰謝料表を、赤い本（東京基準）・緑本（大阪基準）の両方掲載しています。縦が通院期間、横が入院期間（単位：万円）。</p>
   </div>
 
+  <div class="sec-title">赤い本（東京基準）</div>
   <div id="ref-aka-cards">
     <div class="card">
       <div class="card-title">軽傷用（むち打ち・打撲・接触等） <span class="chip chip-light">軽傷</span></div>
@@ -648,7 +649,8 @@
     </div>
   </div>
 
-  <div id="ref-midori-cards" style="display:none">
+  <div class="sec-title">緑本（大阪基準）</div>
+  <div id="ref-midori-cards">
     <div class="card">
       <div class="card-title">通常用（平成17年基準） <span class="chip chip-light">通常</span></div>
       <div class="ref-table-wrap" id="midori-normal-table-wrap"></div>
@@ -667,11 +669,12 @@
     </div>
   </div>
 
+  <div class="sec-title">後遺障害慰謝料（等級別）</div>
   <div class="card">
-    <div class="card-title">後遺障害慰謝料（弁護士基準） <span id="koishogai-book-chip"></span></div>
+    <div class="card-title">後遺障害慰謝料（自賠責基準／弁護士基準：赤い本・緑本）</div>
     <div class="ref-table-wrap">
-      <table class="ref-table" style="min-width:300px">
-        <thead><tr><th>等級</th><th>自賠責基準（万円）</th><th id="koishogai-th-bengoshi">弁護士基準（万円）</th></tr></thead>
+      <table class="ref-table" style="min-width:400px">
+        <thead><tr><th>等級</th><th>自賠責基準（万円）</th><th>弁護士基準・赤い本（万円）</th><th>弁護士基準・緑本（万円）</th></tr></thead>
         <tbody id="koishogai-table-body"></tbody>
       </table>
     </div>
@@ -1015,21 +1018,7 @@ function setBook(book){
   const muchiuchiWrap = document.getElementById('muchiuchi-wrap');
   if(muchiuchiWrap) muchiuchiWrap.style.display = book==='midori' ? 'flex' : 'none';
 
-  const refAka = document.getElementById('ref-aka-cards');
-  const refMidori = document.getElementById('ref-midori-cards');
-  if(refAka) refAka.style.display = book==='aka' ? 'block' : 'none';
-  if(refMidori) refMidori.style.display = book==='midori' ? 'block' : 'none';
-  const banner = document.getElementById('isharyo-book-banner');
-  if(banner) banner.textContent = book==='aka'
-    ? '弁護士基準（赤い本・東京基準）の入通院慰謝料表です。縦が通院期間、横が入院期間（単位：万円）。'
-    : '弁護士基準（緑本・大阪基準）の入通院慰謝料表です。縦が通院期間、横が入院期間（単位：万円）。';
-  const koishogaiChip = document.getElementById('koishogai-book-chip');
-  if(koishogaiChip) koishogaiChip.innerHTML = book==='aka' ? '<span class="chip chip-heavy">赤い本</span>' : '<span class="chip chip-light">緑本</span>';
-  const koishogaiTh = document.getElementById('koishogai-th-bengoshi');
-  if(koishogaiTh) koishogaiTh.textContent = book==='aka' ? '弁護士基準・赤い本（万円）' : '弁護士基準・緑本（万円）';
-
   updateGradeFields();
-  renderKoishogaiTable();
 }
 
 function updateInjuryTypeOptions(){
@@ -1517,8 +1506,8 @@ function renderKoishogaiTable(){
   const order=['kaigo1','kaigo2','1','2','3','4','5','6','7','8','9','10','11','12','13','14'];
   const body = order.map(k=>{
     const d=KOI_ISHARYO[k];
-    const bengoshiAmt = getKoiAmount(k, 'bengoshi');
-    return `<tr><td class="row-header">${d.label}</td><td>${d.jibaiseki.toLocaleString()}</td><td><strong>${bengoshiAmt.toLocaleString()}</strong></td></tr>`;
+    const midoriAmt = GREEN_KOI_ISHARYO[k]!=null ? GREEN_KOI_ISHARYO[k] : d.bengoshi;
+    return `<tr><td class="row-header">${d.label}</td><td>${d.jibaiseki.toLocaleString()}</td><td><strong>${d.bengoshi.toLocaleString()}</strong></td><td><strong>${midoriAmt.toLocaleString()}</strong></td></tr>`;
   }).join('');
   document.getElementById('koishogai-table-body').innerHTML = body;
 }
