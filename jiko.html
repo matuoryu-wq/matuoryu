@@ -114,11 +114,11 @@
 <body>
 <header class="header">
   <h1>交通事故 損害計算ツール</h1>
-  <p>弁護士基準（裁判基準）による損害賠償額算定 — 新人弁護士・一般の方向け教育ツール</p>
 </header>
 <nav class="tabs">
   <button class="tab-btn active" onclick="switchTab('keisan',this)">損害計算</button>
   <button class="tab-btn" onclick="switchTab('shiryo',this)">資料</button>
+  <button class="tab-btn" onclick="switchTab('sample',this)">サンプル</button>
 </nav>
 <div class="container">
 
@@ -704,6 +704,31 @@
 </div>
 </div><!-- end panel-shiryo -->
 
+<!-- ===== Tab 3: サンプル ===== -->
+<div id="panel-sample" class="panel">
+  <div class="info-banner">
+    <p>下の事例を読んで、ボタンを押すだけで「損害計算」タブに数字が入力された状態を体験できます。実際の計算のイメージをつかむのにお使いください。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">事例：追突事故によるむちうち症（後遺障害なし）</div>
+    <div class="bk-desc" style="font-size:13px;line-height:1.9">
+      会社員のAさん（35歳・男性、給与所得者）は、信号待ちで停止していたところ、後ろから来た車に追突され、むちうち症（頸椎捻挫）を負いました。<br><br>
+      入院はせず、整形外科に<strong>3ヶ月間（実際に通院した日数は40日）</strong>通いました。この間、仕事を<strong>10日間</strong>休みました（事故前3ヶ月間の給料の合計は90万円）。<br><br>
+      信号待ち中に追突されたため、Aさんに事故の原因となるような落ち度はなく、<strong>過失割合は0%</strong>です。後遺症は残りませんでした。<br><br>
+      治療費は<strong>45万円</strong>、通院のための交通費は<strong>3万円</strong>かかりました。車の修理費は<strong>25万円</strong>、修理期間中の代車費用は<strong>2万円</strong>、診断書代など書類費用は<strong>0.6万円</strong>でした。
+    </div>
+    <div class="note"><span class="note-icon">ℹ️</span>下のボタンを押すと、この事例の数字が「損害計算」タブの各項目に自動で入力され、画面が「損害計算」タブに切り替わります。あとは「損害計算」タブの一番下にある「計算する」ボタンを押すだけで、結果が表示されます。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">この事例を計算してみる</div>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">入通院慰謝料・後遺障害慰謝料の算定基準（赤い本／緑本）を選んで、数字を入力してみましょう。</p>
+    <button class="btn-calc" onclick="loadSample('aka')">赤い本（東京基準）でこの事例を入力する</button>
+    <button class="btn-calc" style="margin-top:10px;background:var(--success)" onclick="loadSample('midori')">緑本（大阪基準）でこの事例を入力する</button>
+  </div>
+</div><!-- end panel-sample -->
+
 </div><!-- .container -->
 
 <!-- モーダル -->
@@ -1031,6 +1056,64 @@ function updateInjuryTypeOptions(){
   }
 }
 
+// サンプル事例のデータを「損害計算」タブに入力する
+function loadSample(book){
+  const injuryBtn = document.querySelector('.toggle-btn[onclick*="setCaseType(\'injury\'"]');
+  if(injuryBtn) setCaseType('injury', injuryBtn);
+  setBook(book);
+
+  setTreatMode('total');
+  document.getElementById('i-chiryohi').value = 45;
+
+  document.getElementById('i-nyuindays').value = 0;
+
+  setKotsuMode('total');
+  document.getElementById('i-kotsuhi').value = 3;
+
+  document.getElementById('i-job').value = 'employee';
+  updateJobFields();
+  document.getElementById('i-emp-income').value = 90;
+  document.getElementById('i-emp-workdays').value = 90;
+  document.getElementById('i-emp-offdays').value = 10;
+
+  document.getElementById('i-fusoi-nyuin').value = 0;
+  document.getElementById('i-fusoi-tsuin').value = 0;
+
+  document.getElementById('i-injury-type').value = book==='midori' ? 'normal' : 'light';
+  const muchiuchiEl = document.getElementById('i-muchiuchi');
+  if(muchiuchiEl) muchiuchiEl.checked = (book==='midori');
+  document.getElementById('i-nyuin-months').value = 0;
+  document.getElementById('i-tsuin-months').value = 3;
+  const jitsuEl = document.getElementById('i-jitsu-tsuin-days');
+  if(jitsuEl) jitsuEl.value = 40;
+
+  document.getElementById('i-sharyo-repair').value = 25;
+  document.getElementById('i-sharyo-eval').value = 0;
+  document.getElementById('i-sharyo-dasha').value = 2;
+
+  document.getElementById('i-cost-shindan').value = 0.5;
+  document.getElementById('i-cost-shomei').value = 0.1;
+  document.getElementById('i-cost-koi-shindan').value = 0;
+
+  document.getElementById('i-bengoshi').value = 'yes';
+
+  document.getElementById('c-jiko-date').value = '2025-04-10';
+  document.getElementById('c-kotei-date').value = '2025-07-10';
+  calcTreatPeriod();
+  document.getElementById('c-fault').value = 0;
+  document.getElementById('c-paid').value = 0;
+
+  document.getElementById('i-accident-date').value = '2025-04-10';
+  document.getElementById('i-calc-date').value = '2026-04-10';
+
+  const result = document.getElementById('keisan-result');
+  if(result){ result.style.display='none'; result.innerHTML=''; }
+
+  const keisanTabBtn = document.querySelector('.tab-btn[onclick*="switchTab(\'keisan\'"]');
+  if(keisanTabBtn) switchTab('keisan', keisanTabBtn);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
 // 緑本慰謝料表参照（月数は小数OK）。25ヶ月・12ヶ月超は概算加算。
 function lookupGreenIsharyo(tsuinMonths, nyuinMonths, tbl, extraTsuinInc, extraNyuinInc){
   const tMax=25, nMax=12;
@@ -1189,12 +1272,16 @@ function calcAll(){
   } else {
     chiryohi = nv('i-chiryohi');
   }
-  items.push({label:'治療費', val:chiryohi, formula:`実費 ${fmtMan(chiryohi)}`});
+  items.push({label:'治療費', val:chiryohi,
+    desc:'病院や整骨院に実際に支払った治療費です。領収書の金額をそのまま合計します。',
+    formula:`実費の合計 ＝ ${fmtMan(chiryohi)}`});
 
   // --- 入院雑費 ---
   const nyuindays = nv('i-nyuindays');
   const zappi = nyuindays * 1500 / 10000;
-  items.push({label:'入院雑費', val:zappi, formula:`${nyuindays}日 × 1,500円 ÷ 10,000 = ${fmtMan(zappi)}`});
+  items.push({label:'入院雑費', val:zappi,
+    desc:'入院中に必要な洗面用具・栄養費などの細かい出費を、1日あたり1,500円として計算したものです。',
+    formula:`入院日数 ${nyuindays}日 × 1,500円 ＝ ${Math.round(zappi*10000).toLocaleString()}円 ＝ ${fmtMan(zappi)}`});
 
   // --- 通院交通費 ---
   const kotsuCalcMode = document.getElementById('kotsu-calc-mode').style.display!=='none';
@@ -1205,13 +1292,15 @@ function calcAll(){
     kotsuFormula = ktResult || `計算値 ${fmtMan(kotsuhi)}`;
   } else {
     kotsuhi = nv('i-kotsuhi');
-    kotsuFormula = `実費 ${fmtMan(kotsuhi)}`;
+    kotsuFormula = `実費の合計 ＝ ${fmtMan(kotsuhi)}`;
   }
-  items.push({label:'通院交通費', val:kotsuhi, formula:kotsuFormula});
+  items.push({label:'通院交通費', val:kotsuhi,
+    desc:'病院に通うためにかかった電車代・バス代・ガソリン代などの交通費です。',
+    formula:kotsuFormula});
 
   // --- 休業損害 ---
   let kyugyo = 0;
-  let kyugyoFormula = '';
+  let kyugyoFormula = '', kyugyoDesc = '';
   const job = v('i-job');
   if(job==='employee'){
     const inc3 = nv('i-emp-income');
@@ -1219,24 +1308,28 @@ function calcAll(){
     const offdays = nv('i-emp-offdays');
     const nichi = inc3 / workdays;
     kyugyo = nichi * offdays;
-    kyugyoFormula = `(${fmtMan(inc3)} ÷ ${workdays}日) × ${offdays}日 = ${fmtMan(kyugyo)}`;
+    kyugyoDesc = '事故でケガをして仕事を休んだために減ってしまった収入です。事故前3ヶ月分の給料を働いた日数で割って「1日あたりの収入」を求め、それに休んだ日数をかけて計算します。';
+    kyugyoFormula = `1日あたりの収入 ＝ ${fmtMan(inc3)} ÷ ${workdays}日 ＝ ${fmtMan(nichi)}<br>休業損害 ＝ ${fmtMan(nichi)} × 休んだ${offdays}日 ＝ ${fmtMan(kyugyo)}`;
   } else if(job==='self'){
     const inc = nv('i-self-income');
     const offdays = nv('i-self-offdays');
     const nichi = inc / 365;
     kyugyo = nichi * offdays;
-    kyugyoFormula = `(${fmtMan(inc)} ÷ 365日) × ${offdays}日 = ${fmtMan(kyugyo)}`;
+    kyugyoDesc = '自営業の方が、ケガで仕事を休んだために減ってしまった収入です。1年間の所得を365日で割って「1日あたりの収入」を求め、それに休んだ日数をかけて計算します。';
+    kyugyoFormula = `1日あたりの収入 ＝ ${fmtMan(inc)} ÷ 365日 ＝ ${fmtMan(nichi)}<br>休業損害 ＝ ${fmtMan(nichi)} × 休んだ${offdays}日 ＝ ${fmtMan(kyugyo)}`;
   } else if(job==='housewife'){
     const BASE_HW = 410;
     const offdays = nv('i-hw-offdays');
     const nichi = BASE_HW / 365;
     kyugyo = nichi * offdays;
-    kyugyoFormula = `賃金センサス(${fmtMan(BASE_HW)}) ÷ 365日 × ${offdays}日 = ${fmtMan(kyugyo)}`;
+    kyugyoDesc = '家事ができなかった期間についての補償です。主婦・主夫の家事労働にも収入と同じ価値があるとみなし、国の統計（賃金センサス）による平均的な年収を基準に「1日あたりの金額」を求めて計算します。';
+    kyugyoFormula = `1日あたりの金額 ＝ 賃金センサス${fmtMan(BASE_HW)} ÷ 365日 ＝ ${fmtMan(nichi)}<br>休業損害 ＝ ${fmtMan(nichi)} × 休んだ${offdays}日 ＝ ${fmtMan(kyugyo)}`;
   } else {
     kyugyo = nv('i-other-kyugyo');
-    kyugyoFormula = `直接入力 ${fmtMan(kyugyo)}`;
+    kyugyoDesc = '休業による損害額を、金額を直接入力したものです。';
+    kyugyoFormula = `入力した金額 ＝ ${fmtMan(kyugyo)}`;
   }
-  items.push({label:'休業損害', val:kyugyo, formula:kyugyoFormula});
+  items.push({label:'休業損害', val:kyugyo, desc:kyugyoDesc, formula:kyugyoFormula});
 
   // --- 入通院慰謝料 ---
   const injType = v('i-injury-type');
@@ -1268,7 +1361,8 @@ function calcAll(){
     typeName = isLight?'軽傷':'重傷';
   }
   items.push({label:'入通院慰謝料', val:isharyo,
-    formula:`【${currentBook==='midori'?'緑本':'赤い本'}】${typeName}・通院${tsuinM}ヶ月・入院${nyuinM}ヶ月${extraNote} → 慰謝料表より ${fmtMan(isharyo)}`});
+    desc:'入院や通院をしたこと自体で受けた精神的なつらさへの補償です。入院期間と通院期間の長さの組み合わせを、あらかじめ決められた金額表（今回は' + (currentBook==='midori'?'緑本（大阪基準）':'赤い本（東京基準）') + '）に当てはめて金額を求めます。期間が長いほど金額は増えますが、増え方は次第に緩やかになります。',
+    formula:`【${currentBook==='midori'?'緑本':'赤い本'}】${typeName}・通院${tsuinM}ヶ月・入院${nyuinM}ヶ月${extraNote}<br>慰謝料表に当てはめると ＝ ${fmtMan(isharyo)}`});
 
   // --- 付添費 ---
   const fusoiNyuin = nv('i-fusoi-nyuin');
@@ -1276,7 +1370,8 @@ function calcAll(){
   const fusoiVal = fusoiNyuin * 6500 / 10000 + fusoiTsuin * 3300 / 10000;
   if(fusoiVal > 0){
     items.push({label:'付添費', val:fusoiVal,
-      formula:`入院付添${fusoiNyuin}日 × 6,500円 ＋ 通院付添${fusoiTsuin}日 × 3,300円 = ${fmtMan(fusoiVal)}`});
+      desc:'家族などが付き添って看病・通院サポートをしたことへの補償です。入院に付き添った日数と通院に付き添った日数、それぞれに決まった日額をかけて合計します。',
+      formula:`入院付添 ${fusoiNyuin}日 × 6,500円 ＋ 通院付添 ${fusoiTsuin}日 × 3,300円 ＝ ${fmtMan(fusoiVal)}`});
   }
 
   // --- 車両損害・代車費用 ---
@@ -1286,7 +1381,8 @@ function calcAll(){
   const sharyoTotal = sharyoRepair + sharyoEval + sharyoDasha;
   if(sharyoTotal > 0){
     items.push({label:'車両損害・代車費用', val:sharyoTotal,
-      formula:`修理費${fmtMan(sharyoRepair)} ＋ 評価損${fmtMan(sharyoEval)} ＋ 代車費用${fmtMan(sharyoDasha)} = ${fmtMan(sharyoTotal)}`});
+      desc:'事故で壊れた車を直すための修理費、修理しても残ってしまう価値の下落分（評価損）、修理中に借りた代車の費用を合計したものです。',
+      formula:`修理費 ${fmtMan(sharyoRepair)} ＋ 評価損 ${fmtMan(sharyoEval)} ＋ 代車費用 ${fmtMan(sharyoDasha)} ＝ ${fmtMan(sharyoTotal)}`});
   }
 
   // --- 損害賠償関係費用 ---
@@ -1296,7 +1392,8 @@ function calcAll(){
   const costTotal = costShindan + costShomei + costKoiShindan;
   if(costTotal > 0){
     items.push({label:'損害賠償関係費用', val:costTotal,
-      formula:`診断書${fmtMan(costShindan)} ＋ 証明書${fmtMan(costShomei)} ＋ 後遺障害診断書${fmtMan(costKoiShindan)} = ${fmtMan(costTotal)}`});
+      desc:'賠償請求に必要な診断書や交通事故証明書などを取り寄せるためにかかった費用です。',
+      formula:`診断書 ${fmtMan(costShindan)} ＋ 証明書 ${fmtMan(costShomei)} ＋ 後遺障害診断書 ${fmtMan(costKoiShindan)} ＝ ${fmtMan(costTotal)}`});
   }
 
   // 後遺障害あり
@@ -1308,7 +1405,8 @@ function calcAll(){
     koiIsh = getKoiAmount(grade, std);
     const koiBookLabel = std==='bengoshi' ? (currentBook==='midori'?'弁護士・緑本':'弁護士・赤い本') : '自賠責';
     items.push({label:`後遺障害慰謝料（${gradeData.label}・${koiBookLabel}基準）`, val:koiIsh,
-      formula:`${gradeData.label} ${koiBookLabel}基準 = ${fmtMan(koiIsh)}`});
+      desc:'治療を続けても完全には治らず、後遺症が残ってしまったことへの精神的な補償です。後遺障害の重さ（等級）ごとに金額があらかじめ決められています。',
+      formula:`${gradeData.label}の${koiBookLabel}基準の金額 ＝ ${fmtMan(koiIsh)}`});
 
     const sIncome = nv('s-income');
     const sAge = nv('s-age');
@@ -1317,7 +1415,8 @@ function calcAll(){
     const lz = getLeibniz(years);
     koiIsshitsu = sIncome * (lossRate/100) * lz;
     items.push({label:'後遺障害逸失利益', val:koiIsshitsu,
-      formula:`${fmtMan(sIncome)} × ${lossRate}% × ${lz}（${years}年分） = ${fmtMan(koiIsshitsu)}`});
+      desc:'後遺症のせいで将来の仕事の能力が下がり、本来もらえたはずの収入が減ってしまう分の補償です。「1年間の収入 × 能力が落ちた割合 × 将来分をいまの価値に割り引く係数（ライプニッツ係数）」で計算します。',
+      formula:`年収 ${fmtMan(sIncome)} × 労働能力喪失率 ${lossRate}% × ライプニッツ係数 ${lz}（${years}年分） ＝ ${fmtMan(koiIsshitsu)}`});
 
     if(grade==='kaigo1'||grade==='kaigo2'){
       const daily = nv('s-kaigo-daily');
@@ -1325,7 +1424,8 @@ function calcAll(){
       const kaigoLz = getLeibniz(kaigoYears);
       kaigoHi = (daily * 365 / 10000) * kaigoLz;
       items.push({label:'将来介護費', val:kaigoHi,
-        formula:`${daily.toLocaleString()}円/日 × 365日 × ${kaigoLz}（${kaigoYears}年分） = ${fmtMan(kaigoHi)}`});
+        desc:'後遺症が重く、将来にわたって介護が必要な場合の費用です。1日あたりの介護費用に1年分の日数（365日）と、将来分をいまの価値に割り引く係数をかけて計算します。',
+        formula:`日額 ${daily.toLocaleString()}円 × 365日 × ライプニッツ係数 ${kaigoLz}（${kaigoYears}年分） ＝ ${fmtMan(kaigoHi)}`});
     }
 
     // 将来治療費
@@ -1335,21 +1435,24 @@ function calcAll(){
       const ftLz = getLeibniz(futureTreatYears);
       const futureTreat = futureTreatAnnual * ftLz;
       items.push({label:'将来治療費', val:futureTreat,
-        formula:`${fmtMan(futureTreatAnnual)}/年 × ライプニッツ係数${ftLz}（${futureTreatYears}年分） = ${fmtMan(futureTreat)}`});
+        desc:'将来も治療（通院・リハビリなど）を続ける必要がある場合に見込まれる治療費です。1年あたりの見込み額に、将来分をいまの価値に割り引く係数をかけて計算します。',
+        formula:`年額 ${fmtMan(futureTreatAnnual)} × ライプニッツ係数 ${ftLz}（${futureTreatYears}年分） ＝ ${fmtMan(futureTreat)}`});
     }
 
     // 器具装具費
     const kiguVal = nv('s-kigu');
     if(kiguVal > 0){
       items.push({label:'器具装具費', val:kiguVal,
-        formula:`実費 ${fmtMan(kiguVal)}`});
+        desc:'義足・車椅子・コルセットなど、後遺症のために必要になった器具・装具の購入費用です。',
+        formula:`実費の合計 ＝ ${fmtMan(kiguVal)}`});
     }
 
     // 家屋・自動車改造費
     const kaokuVal = nv('s-kaoku');
     if(kaokuVal > 0){
       items.push({label:'家屋・自動車改造費', val:kaokuVal,
-        formula:`実費 ${fmtMan(kaokuVal)}`});
+        desc:'後遺症があっても生活できるよう、自宅や車をバリアフリーに改造する費用です。',
+        formula:`実費の合計 ＝ ${fmtMan(kaokuVal)}`});
     }
   }
 
@@ -1364,18 +1467,21 @@ function calcAll(){
     const dLz = getLeibniz(dYears);
     deathIsshitsu = dIncome * (1-dLossRate/100) * dLz;
     items.push({label:'死亡逸失利益', val:deathIsshitsu,
-      formula:`${fmtMan(dIncome)} × (1−${dLossRate}%) × ${dLz}（${dYears}年分） = ${fmtMan(deathIsshitsu)}`});
+      desc:'亡くなったことにより、将来得られるはずだった収入がなくなってしまった分の補償です。「1年間の収入 ×（1−生活費として使うはずだった割合）× 将来分をいまの価値に割り引く係数」で計算します。',
+      formula:`年収 ${fmtMan(dIncome)} × (1−生活費控除率${dLossRate}%) × ライプニッツ係数 ${dLz}（${dYears}年分） ＝ ${fmtMan(deathIsshitsu)}`});
 
     const dPos = v('d-position');
     deathIsh = DEATH_ISHARYO[dPos]||2000;
     const dPosName = dPos==='pillar'?'一家の支柱':dPos==='spouse'?'母親・配偶者':'独身・子供・幼児等';
     items.push({label:`死亡慰謝料（${dPosName}）`, val:deathIsh,
-      formula:`弁護士基準 ${dPosName} = ${fmtMan(deathIsh)}`});
+      desc:'亡くなったことに対する、本人と遺族の精神的な苦痛への補償をまとめた金額です。被害者の家庭内での立場によって金額の目安が決まっています。',
+      formula:`${dPosName}の弁護士基準の金額 ＝ ${fmtMan(deathIsh)}`});
 
     sosai = Math.min(nv('d-sosai')||150, 150);
     const actualSosai = nv('d-sosai')||150;
     items.push({label:'葬祭費', val:Math.min(actualSosai,150),
-      formula:`実費${fmtMan(actualSosai)}（上限150万円） = ${fmtMan(Math.min(actualSosai,150))}`});
+      desc:'葬儀にかかった実際の費用です。弁護士基準では150万円が上限の目安とされ、実費がそれより少ない場合は実費で計算します。',
+      formula:`実費 ${fmtMan(actualSosai)}（上限150万円） ＝ ${fmtMan(Math.min(actualSosai,150))}`});
   }
 
   // 合計
@@ -1383,14 +1489,17 @@ function calcAll(){
 
   // 弁護士費用
   let bengoshiFee = 0;
+  const bengoshiDesc = '裁判（訴訟）になった場合、認められた損害額のおよそ10%を、弁護士に依頼した費用として上乗せできるというルールです。示談交渉だけで解決する場合は通常含めません。';
   if(v('i-bengoshi')==='yes' && currentCase!=='death'){
     bengoshiFee = subtotal * 0.10;
     items.push({label:'弁護士費用（認容額の10%）', val:bengoshiFee,
-      formula:`${fmtMan(subtotal)} × 10% = ${fmtMan(bengoshiFee)}`});
+      desc:bengoshiDesc,
+      formula:`ここまでの損害合計 ${fmtMan(subtotal)} × 10% ＝ ${fmtMan(bengoshiFee)}`});
   } else if(currentCase==='death'){
     bengoshiFee = (subtotal) * 0.10;
     items.push({label:'弁護士費用（認容額の10%）', val:bengoshiFee,
-      formula:`${fmtMan(subtotal)} × 10% = ${fmtMan(bengoshiFee)}`});
+      desc:bengoshiDesc,
+      formula:`ここまでの損害合計 ${fmtMan(subtotal)} × 10% ＝ ${fmtMan(bengoshiFee)}`});
   }
 
   const total = items.reduce((s,i)=>s+i.val, 0);
@@ -1404,7 +1513,7 @@ function calcAll(){
     const years = (d2-d1)/(1000*60*60*24*365.25);
     if(years>0){
       chien = total * 0.03 * years;
-      chienFormula = `${fmtMan(total)} × 3% × ${years.toFixed(2)}年 = ${fmtMan(chien)}`;
+      chienFormula = `損害合計 ${fmtMan(total)} × 年3% × ${years.toFixed(2)}年分 ＝ ${fmtMan(chien)}`;
     }
   }
 
@@ -1421,7 +1530,8 @@ function calcAll(){
       <span class="bk-key">${i.label}</span>
       <span class="bk-val">${fmtMan(i.val)}</span>
     </div>
-    <div class="bk-formula">${i.formula}</div>
+    ${i.desc ? `<div class="bk-desc">${i.desc}</div>` : ''}
+    <div class="bk-formula">計算式: ${i.formula}</div>
   `).join('');
 
   let chienRow = '';
@@ -1429,7 +1539,9 @@ function calcAll(){
     chienRow = `<div class="bk-row">
       <span class="bk-key">遅延損害金</span>
       <span class="bk-val">${fmtMan(chien)}</span>
-    </div><div class="bk-formula">${chienFormula}</div>`;
+    </div>
+    <div class="bk-desc">事故の日から実際に支払いを受ける日まで、賠償金の支払いが遅れたことに対する利息のようなものです。年3%の割合で計算します。</div>
+    <div class="bk-formula">計算式: ${chienFormula}</div>`;
   }
 
   const limit = currentCase==='death' ? JIBAISEKI_LIMIT.death : JIBAISEKI_LIMIT.injury;
@@ -1442,9 +1554,10 @@ function calcAll(){
       <div class="result-label">最終請求額（過失相殺・既払控除後）</div>
       <div class="result-amount">${fmtMan(finalAmt)}</div>
       <div class="result-sub">${fmtEn(finalAmt)}</div>
+      <div class="result-sub" style="margin-top:6px">これが、相手（加害者側）に請求できる金額の目安です。下に、どのように計算したかを一つずつ説明しています。</div>
     </div>
     <div class="breakdown">
-      <div class="breakdown-title">損害内訳</div>
+      <div class="breakdown-title">損害の内訳（それぞれの項目の金額と計算方法）</div>
       ${rowsHtml}
       ${chienRow}
       <div class="bk-total">
@@ -1452,20 +1565,22 @@ function calcAll(){
         <span class="bk-val">${fmtMan(total + chien)}</span>
       </div>
       <div class="bk-row" style="margin-top:8px">
-        <span class="bk-key">過失相殺（被害者過失${fault}%）</span>
+        <span class="bk-key">過失相殺（被害者にも過失${fault}%がある分を差し引く）</span>
         <span class="bk-val" style="color:var(--danger)">−${fmtMan((total+chien)*fault/100)}</span>
       </div>
-      <div class="bk-formula">過失相殺後 = ${fmtMan(total+chien)} × (1 − ${fault}%) = ${fmtMan(afterFaultChien)}</div>
+      <div class="bk-desc">「過失相殺」とは、被害者側にも事故の原因の一部がある場合、その割合分だけ受け取れる金額を減らす仕組みです。過失割合が0%であれば、ここは差し引かれません。</div>
+      <div class="bk-formula">計算式: 損害合計 ${fmtMan(total+chien)} × (1 − 過失${fault}%) ＝ ${fmtMan(afterFaultChien)}</div>
       <div class="bk-row">
-        <span class="bk-key">既払保険金控除</span>
+        <span class="bk-key">既払保険金控除（すでに受け取った分を差し引く）</span>
         <span class="bk-val" style="color:var(--danger)">−${fmtMan(paid)}</span>
       </div>
+      <div class="bk-desc">自賠責保険などから、すでに一部の支払いを受けている場合、その金額を差し引きます。同じ損害を二重に受け取らないようにするためです。</div>
       <div class="bk-total">
         <span class="bk-key">最終請求額</span>
         <span class="bk-val">${fmtMan(finalAmt)}</span>
       </div>
     </div>
-    <div class="note"><span class="note-icon">i</span>${limitNote}。超過分は任意保険または加害者本人への請求となります。${finalAmt < limit ? '（今回の計算では自賠責限度額の範囲内です）' : '<strong>今回の計算額は自賠責限度額を超えています。任意保険への請求が必要です。</strong>'}</div>
+    <div class="note"><span class="note-icon">i</span>${limitNote}。これは自賠責保険（強制保険）だけで支払われる上限額です。超過分は相手の任意保険会社、または加害者本人に請求します。${finalAmt < limit ? '（今回の計算では自賠責限度額の範囲内です）' : '<strong>今回の計算額は自賠責限度額を超えています。任意保険への請求が必要です。</strong>'}</div>
   `;
 
   const el = document.getElementById('keisan-result');
