@@ -405,8 +405,8 @@
       <div class="form-group">
         <label>弁護士費用を損害として請求する</label>
         <select id="i-bengoshi">
+          <option value="no" selected>いいえ（示談段階・計上しない）</option>
           <option value="yes">はい（訴訟の場合：認容額の約10%）</option>
-          <option value="no">いいえ（示談段階・計上しない）</option>
         </select>
       </div>
     </div>
@@ -912,32 +912,45 @@ function fmtEn(val){return '約'+Math.round(val*10000).toLocaleString('ja-JP')+'
 function fmt2(val){return val.toLocaleString('ja-JP',{maximumFractionDigits:2,minimumFractionDigits:0});}
 
 // 慰謝料テーブル参照（月数は小数OK）
-function lookupIsharyo(tsuinMonths, nyuinMonths, isLight){
-  const tbl = isLight ? ISHARYO_LIGHT : ISHARYO_HEAVY;
-  // clamp
-  const tMax=12, nMax=6;
+// 慰謝料表を参照し、計算過程（ステップごとの説明文）も一緒に返す（赤い本・緑本共通）
+function lookupIsharyoDetailed(tsuinMonths, nyuinMonths, tbl, tMax, nMax, extraTsuinInc, extraNyuinInc){
   const extraNyuin = Math.max(0, nyuinMonths - nMax);
   const extraTsuin = Math.max(0, tsuinMonths - tMax);
   const nClamped = Math.min(nyuinMonths, nMax);
   const tClamped = Math.min(tsuinMonths, tMax);
 
-  // bilinear interpolation
-  function interp(t, n){
-    const ti = Math.floor(t), tf = t - ti;
-    const ni = Math.floor(n), nf = n - ni;
-    const ti2 = Math.min(ti+1, tMax), ni2 = Math.min(ni+1, nMax);
-    const v00 = tbl[ti][ni];
-    const v10 = tbl[Math.min(ti+1,tMax)][ni];
-    const v01 = tbl[ti][Math.min(ni+1,nMax)];
-    const v11 = tbl[Math.min(ti+1,tMax)][Math.min(ni+1,nMax)];
-    return v00*(1-tf)*(1-nf) + v10*tf*(1-nf) + v01*(1-tf)*nf + v11*tf*nf;
+  const ti = Math.floor(tClamped), ni = Math.floor(nClamped);
+  const ti2 = Math.min(ti+1, tMax), ni2 = Math.min(ni+1, nMax);
+  const tf = Math.round((tClamped-ti)*100)/100;
+  const nf = Math.round((nClamped-ni)*100)/100;
+
+  const v00 = tbl[ti][ni], v10 = tbl[ti2][ni], v01 = tbl[ti][ni2], v11 = tbl[ti2][ni2];
+  const base = v00*(1-tf)*(1-nf) + v10*tf*(1-nf) + v01*(1-tf)*nf + v11*tf*nf;
+
+  const steps = [];
+  const hasFrac = (tf>0.001 && ti2!==ti) || (nf>0.001 && ni2!==ni);
+  if(hasFrac){
+    steps.push(`通院期間・入院期間はちょうど整数のヶ月数ではないため、慰謝料表の中で近くにある4つの欄の金額を、月数の端数の割合に応じて比例配分（あん分）して求めます。`);
+    steps.push(`使う4つの欄の金額 → 通院${ti}ヶ月・入院${ni}ヶ月：${fmtMan(v00)}／通院${ti2}ヶ月・入院${ni}ヶ月：${fmtMan(v10)}／通院${ti}ヶ月・入院${ni2}ヶ月：${fmtMan(v01)}／通院${ti2}ヶ月・入院${ni2}ヶ月：${fmtMan(v11)}`);
+    steps.push(`端数の割合 → 通院は${ti}ヶ月から${ti2}ヶ月に向けて${(tf*100).toFixed(0)}%分進んだ位置、入院は${ni}ヶ月から${ni2}ヶ月に向けて${(nf*100).toFixed(0)}%分進んだ位置にあります。`);
+    steps.push(`比例配分の計算 → ${fmtMan(v00)}×${(1-tf).toFixed(2)}×${(1-nf).toFixed(2)} ＋ ${fmtMan(v10)}×${tf.toFixed(2)}×${(1-nf).toFixed(2)} ＋ ${fmtMan(v01)}×${(1-tf).toFixed(2)}×${nf.toFixed(2)} ＋ ${fmtMan(v11)}×${tf.toFixed(2)}×${nf.toFixed(2)} ＝ ${fmtMan(base)}`);
+  } else {
+    steps.push(`通院${ti}ヶ月・入院${ni}ヶ月は、ちょうど慰謝料表に載っている月数なので、その欄の金額をそのまま基準額とします → ${fmtMan(base)}`);
   }
 
-  let base = interp(tClamped, nClamped);
-  // Add for extra months
-  if(extraNyuin>0) base += extraNyuin * (isLight ? 4 : 6);
-  if(extraTsuin>0) base += extraTsuin * (isLight ? 2 : 3);
-  return base;
+  let total = base;
+  if(extraTsuin>0){
+    const add = extraTsuin*extraTsuinInc;
+    total += add;
+    steps.push(`通院期間が表に載っている上限（${tMax}ヶ月）を${extraTsuin.toFixed(2)}ヶ月超えているため、超えた分は1ヶ月あたり${extraTsuinInc}万円の目安で加算します → ${extraTsuin.toFixed(2)}ヶ月 × ${extraTsuinInc}万円 ＝ ${fmtMan(add)}`);
+  }
+  if(extraNyuin>0){
+    const add = extraNyuin*extraNyuinInc;
+    total += add;
+    steps.push(`入院期間が表に載っている上限（${nMax}ヶ月）を${extraNyuin.toFixed(2)}ヶ月超えているため、超えた分は1ヶ月あたり${extraNyuinInc}万円の目安で加算します → ${extraNyuin.toFixed(2)}ヶ月 × ${extraNyuinInc}万円 ＝ ${fmtMan(add)}`);
+  }
+
+  return {value: total, steps};
 }
 
 // ============================================================
@@ -1144,6 +1157,16 @@ function generateSample(){
     sequelaIncome = randNonRoundDecimal(280, 620, 1);
   }
 
+  // 既払金が発生するパターン（労災保険の給付・相手方保険の一括対応など、約35%の確率）
+  const hasPaid = Math.random() < 0.35;
+  let paidType = null, paidAmount = 0;
+  if(hasPaid){
+    paidType = Math.random() < 0.5 ? 'rousai' : 'ikkatsu';
+    paidAmount = paidType === 'rousai'
+      ? randNonRoundDecimal(6, 38, 1)
+      : randNonRoundDecimal(18, 88, 1);
+  }
+
   const jikoDate = `2025-${String(randInt(1,11)).padStart(2,'0')}-${String(randInt(1,27)).padStart(2,'0')}`;
   const koteiDate = addDaysToDate(jikoDate, tsuinDays);
   const calcDate = addDaysToDate(jikoDate, randNonRoundInt(190, 540));
@@ -1155,6 +1178,7 @@ function generateSample(){
     empIncome, empWorkdays, empOffdays,
     sharyoRepair, sharyoEval, sharyoDasha, costShindan, costShomei,
     hasSequela, sequelaGrade, sequelaIncome,
+    hasPaid, paidType, paidAmount,
     jikoDate, koteiDate, calcDate
   };
 }
@@ -1168,11 +1192,16 @@ function sampleScenarioHtml(s){
   const sequelaText = s.hasSequela
     ? `治療を続けましたが、${GRADE_SYMPTOM[s.sequelaGrade]}、後遺障害<strong>${s.sequelaGrade}級</strong>の認定を受けました。${s.name}の年収は${fmtMan(s.sequelaIncome)}です。`
     : '治療の結果、後遺症は残りませんでした。';
+  const paidText = s.hasPaid
+    ? (s.paidType === 'rousai'
+        ? `なお、この事故は仕事中に起きたものだったため、労災保険から休業補償給付として既に<strong>${fmtMan(s.paidAmount)}</strong>の支給を受けています。`
+        : `なお、相手方の任意保険会社が治療費等を病院に直接支払う「一括対応」をしており、その内払いとして既に<strong>${fmtMan(s.paidAmount)}</strong>が支払われています。`)
+    : '';
   return `
     ${s.name}（${s.age}歳・${s.gender}、給与所得者）は、${s.faultScenario.cause}<br><br>
     この事故で${injuryName}を負いました。${nyuinText}この間、仕事を<strong>${s.empOffdays}日間</strong>休みました（事故前3ヶ月間の給料の合計は${fmtMan(s.empIncome)}）。<br><br>
     今回の事故については、${s.name}にも<strong>過失割合${s.fault}%</strong>があるものとします。${sequelaText}<br><br>
-    治療費は${fmtMan(s.chiryohi)}、通院のための交通費は${fmtMan(s.kotsuhi)}かかりました。車の修理費は${fmtMan(s.sharyoRepair)}${s.sharyoEval>0?`、評価損${fmtMan(s.sharyoEval)}`:''}、修理期間中の代車費用は${fmtMan(s.sharyoDasha)}、診断書代など書類費用は${fmtMan(shindanTotal)}でした。
+    治療費は${fmtMan(s.chiryohi)}、通院のための交通費は${fmtMan(s.kotsuhi)}かかりました。車の修理費は${fmtMan(s.sharyoRepair)}${s.sharyoEval>0?`、評価損${fmtMan(s.sharyoEval)}`:''}、修理期間中の代車費用は${fmtMan(s.sharyoDasha)}、診断書代など書類費用は${fmtMan(shindanTotal)}でした。${paidText ? '<br><br>'+paidText : ''}
   `;
 }
 
@@ -1235,13 +1264,13 @@ function loadSample(book){
   document.getElementById('i-cost-shomei').value = s.costShomei;
   document.getElementById('i-cost-koi-shindan').value = 0;
 
-  document.getElementById('i-bengoshi').value = 'yes';
+  document.getElementById('i-bengoshi').value = 'no';
 
   document.getElementById('c-jiko-date').value = s.jikoDate;
   document.getElementById('c-kotei-date').value = s.koteiDate;
   calcTreatPeriod();
   document.getElementById('c-fault').value = s.fault;
-  document.getElementById('c-paid').value = 0;
+  document.getElementById('c-paid').value = s.hasPaid ? s.paidAmount : 0;
 
   document.getElementById('i-accident-date').value = s.jikoDate;
   document.getElementById('i-calc-date').value = s.calcDate;
@@ -1261,31 +1290,6 @@ function loadSample(book){
   const keisanTabBtn = document.querySelector('.tab-btn[onclick*="switchTab(\'keisan\'"]');
   if(keisanTabBtn) switchTab('keisan', keisanTabBtn);
   window.scrollTo({top:0, behavior:'smooth'});
-}
-
-// 緑本慰謝料表参照（月数は小数OK）。25ヶ月・12ヶ月超は概算加算。
-function lookupGreenIsharyo(tsuinMonths, nyuinMonths, tbl, extraTsuinInc, extraNyuinInc){
-  const tMax=25, nMax=12;
-  const extraNyuin = Math.max(0, nyuinMonths - nMax);
-  const extraTsuin = Math.max(0, tsuinMonths - tMax);
-  const nClamped = Math.min(nyuinMonths, nMax);
-  const tClamped = Math.min(tsuinMonths, tMax);
-
-  function interp(t, n){
-    const ti = Math.floor(t), tf = t - ti;
-    const ni = Math.floor(n), nf = n - ni;
-    const ti2 = Math.min(ti+1, tMax), ni2 = Math.min(ni+1, nMax);
-    const v00 = tbl[ti][ni];
-    const v10 = tbl[ti2][ni];
-    const v01 = tbl[ti][ni2];
-    const v11 = tbl[ti2][ni2];
-    return v00*(1-tf)*(1-nf) + v10*tf*(1-nf) + v01*(1-tf)*nf + v11*tf*nf;
-  }
-
-  let base = interp(tClamped, nClamped);
-  if(extraNyuin>0) base += extraNyuin * extraNyuinInc;
-  if(extraTsuin>0) base += extraTsuin * extraTsuinInc;
-  return base;
 }
 
 function switchTab(id,btn){
@@ -1484,7 +1488,9 @@ function calcAll(){
   const injType = v('i-injury-type');
   const nyuinM = nv('i-nyuin-months');
   let tsuinM = nv('i-tsuin-months');
-  let isharyo, typeName, extraNote = '';
+  let isharyo, typeName;
+  const isharyoSteps = [];
+  isharyoSteps.push(`入院期間は${nyuinM}ヶ月、通院期間は${tsuinM}ヶ月として計算を始めます。`);
 
   if(currentBook==='midori'){
     const jitsuDays = nv('i-jitsu-tsuin-days');
@@ -1493,25 +1499,39 @@ function calcAll(){
       const calDays = tsuinM * 30;
       const capDays = jitsuDays * 3.5;
       const useDays = Math.min(calDays, capDays);
-      effectiveTsuinM = useDays / 30;
-      extraNote += `（実通院${jitsuDays}日×3.5=${capDays.toFixed(1)}日 と 通院期間${calDays.toFixed(0)}日 のうち少ない方 ${useDays.toFixed(1)}日＝${effectiveTsuinM.toFixed(2)}ヶ月で算定）`;
+      effectiveTsuinM = Math.round((useDays/30)*100)/100;
+      isharyoSteps.push(`緑本のルール: 「実際に通院した日数×3.5」と「通院期間の暦日数」を比べ、少ない方を通院期間として使います。実通院${jitsuDays}日 × 3.5 ＝ ${capDays.toFixed(1)}日、通院期間の暦日数 ＝ ${tsuinM}ヶ月×30日 ＝ ${calDays.toFixed(0)}日。少ない方の${useDays.toFixed(1)}日を採用し、${useDays.toFixed(1)}日 ÷ 30 ＝ ${effectiveTsuinM}ヶ月を通院期間とします。`);
     }
     const muchiuchi = document.getElementById('i-muchiuchi') && document.getElementById('i-muchiuchi').checked;
     const tbl = injType==='severe' ? GREEN_ISHARYO_SEVERE : GREEN_ISHARYO_NORMAL;
     const incTsuin = injType==='severe' ? 3 : 2;
     const incNyuin = injType==='severe' ? 6 : 5;
-    let base = lookupGreenIsharyo(effectiveTsuinM, nyuinM, tbl, incTsuin, incNyuin);
-    if(muchiuchi){ base = base * 2/3; extraNote += '（軽度の神経症状・むちうち症等のため通常表の3分の2に減額）'; }
+    isharyoSteps.push(`傷病区分は「${injType==='severe'?'重傷':'通常'}」なので、緑本（大阪基準）の${injType==='severe'?'重傷用':'通常用'}の慰謝料表を使います。`);
+    const detail = lookupIsharyoDetailed(effectiveTsuinM, nyuinM, tbl, 25, 12, incTsuin, incNyuin);
+    isharyoSteps.push(...detail.steps);
+    let base = detail.value;
+    if(muchiuchi){
+      const reduced = base * 2/3;
+      isharyoSteps.push(`軽度の神経症状（むちうち症）・軽度の打撲/挫創（傷）にあたるため、ここまでの金額を3分の2にします → ${fmtMan(base)} × 2/3 ＝ ${fmtMan(reduced)}`);
+      base = reduced;
+    }
     isharyo = base;
     typeName = muchiuchi ? 'むちうち等（通常表×2/3）' : (injType==='severe'?'重傷':'通常');
   } else {
     const isLight = injType==='light';
-    isharyo = lookupIsharyo(tsuinM, nyuinM, isLight);
+    isharyoSteps.push(`傷病区分は「${isLight?'軽傷':'重傷'}」なので、赤い本（東京基準）の${isLight?'軽傷用':'重傷用'}の慰謝料表を使います。`);
+    const tbl = isLight ? ISHARYO_LIGHT : ISHARYO_HEAVY;
+    const detail = lookupIsharyoDetailed(tsuinM, nyuinM, tbl, 12, 6, isLight?2:3, isLight?4:6);
+    isharyoSteps.push(...detail.steps);
+    isharyo = detail.value;
     typeName = isLight?'軽傷':'重傷';
   }
+
+  const isharyoFormula = isharyoSteps.map((st,i)=>`${i+1}. ${st}`).join('<br>') +
+    `<br><strong>→ 入通院慰謝料の合計 ＝ ${fmtMan(isharyo)}</strong>`;
   items.push({label:'入通院慰謝料', val:isharyo,
     desc:'入院や通院をしたこと自体で受けた精神的なつらさへの補償です。入院期間と通院期間の長さの組み合わせを、あらかじめ決められた金額表（今回は' + (currentBook==='midori'?'緑本（大阪基準）':'赤い本（東京基準）') + '）に当てはめて金額を求めます。期間が長いほど金額は増えますが、増え方は次第に緩やかになります。',
-    formula:`【${currentBook==='midori'?'緑本':'赤い本'}】${typeName}・通院${tsuinM}ヶ月・入院${nyuinM}ヶ月${extraNote}<br>慰謝料表に当てはめると ＝ ${fmtMan(isharyo)}`});
+    formula:isharyoFormula});
 
   // --- 付添費 ---
   const fusoiNyuin = nv('i-fusoi-nyuin');
@@ -1680,7 +1700,7 @@ function calcAll(){
       <span class="bk-val">${fmtMan(i.val)}</span>
     </div>
     ${i.desc ? `<div class="bk-desc">${i.desc}</div>` : ''}
-    <div class="bk-formula">計算式: ${i.formula}</div>
+    <div class="bk-formula">${i.formula.includes('<br>') ? '計算の手順:<br>' : '計算式: '}${i.formula}</div>
   `).join('');
 
   let chienRow = '';
