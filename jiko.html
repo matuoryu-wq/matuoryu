@@ -413,17 +413,26 @@
 
     <div class="card">
       <div class="card-title">遅延損害金 <button class="help-btn" onclick="showHelp('chien')">詳しく</button></div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>事故日</label>
-          <input type="date" id="i-accident-date">
-        </div>
-        <div class="form-group">
-          <label>計算基準日（支払日・現在等）</label>
-          <input type="date" id="i-calc-date">
-        </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label>遅延損害金を損害として請求する</label>
+        <select id="i-chien" onchange="toggleChienFields()">
+          <option value="no" selected>いいえ（示談段階・計上しない）</option>
+          <option value="yes">はい（訴訟等で計上する）</option>
+        </select>
       </div>
-      <div class="bk-formula">遅延損害金 ＝ 損害額 × 3% × 事故日からの年数（令和2年4月1日以降の事故）</div>
+      <div id="chien-fields" style="display:none">
+        <div class="form-row">
+          <div class="form-group">
+            <label>事故日</label>
+            <input type="date" id="i-accident-date">
+          </div>
+          <div class="form-group">
+            <label>計算基準日（支払日・現在等）</label>
+            <input type="date" id="i-calc-date">
+          </div>
+        </div>
+        <div class="bk-formula">遅延損害金 ＝ 損害額 × 3% × 事故日からの年数（令和2年4月1日以降の事故）</div>
+      </div>
     </div>
   </div><!-- end #section-injury -->
 
@@ -913,6 +922,7 @@ function fmt2(val){return val.toLocaleString('ja-JP',{maximumFractionDigits:2,mi
 
 // 慰謝料テーブル参照（月数は小数OK）
 // 慰謝料表を参照し、計算過程（ステップごとの説明文）も一緒に返す（赤い本・緑本共通）
+// 慰謝料表を参照する（実務標準の方法：整数月の基準額を出し、端数分を通院・入院それぞれ計算して合算する）
 function lookupIsharyoDetailed(tsuinMonths, nyuinMonths, tbl, tMax, nMax, extraTsuinInc, extraNyuinInc){
   const extraNyuin = Math.max(0, nyuinMonths - nMax);
   const extraTsuin = Math.max(0, tsuinMonths - tMax);
@@ -924,30 +934,40 @@ function lookupIsharyoDetailed(tsuinMonths, nyuinMonths, tbl, tMax, nMax, extraT
   const tf = Math.round((tClamped-ti)*100)/100;
   const nf = Math.round((nClamped-ni)*100)/100;
 
-  const v00 = tbl[ti][ni], v10 = tbl[ti2][ni], v01 = tbl[ti][ni2], v11 = tbl[ti2][ni2];
-  const base = v00*(1-tf)*(1-nf) + v10*tf*(1-nf) + v01*(1-tf)*nf + v11*tf*nf;
-
+  const base = tbl[ti][ni];
   const steps = [];
-  const hasFrac = (tf>0.001 && ti2!==ti) || (nf>0.001 && ni2!==ni);
-  if(hasFrac){
-    steps.push(`通院期間・入院期間はちょうど整数のヶ月数ではないため、慰謝料表の中で近くにある4つの欄の金額を、月数の端数の割合に応じて比例配分（あん分）して求めます。`);
-    steps.push(`使う4つの欄の金額 → 通院${ti}ヶ月・入院${ni}ヶ月：${fmtMan(v00)}／通院${ti2}ヶ月・入院${ni}ヶ月：${fmtMan(v10)}／通院${ti}ヶ月・入院${ni2}ヶ月：${fmtMan(v01)}／通院${ti2}ヶ月・入院${ni2}ヶ月：${fmtMan(v11)}`);
-    steps.push(`端数の割合 → 通院は${ti}ヶ月から${ti2}ヶ月に向けて${(tf*100).toFixed(0)}%分進んだ位置、入院は${ni}ヶ月から${ni2}ヶ月に向けて${(nf*100).toFixed(0)}%分進んだ位置にあります。`);
-    steps.push(`比例配分の計算 → ${fmtMan(v00)}×${(1-tf).toFixed(2)}×${(1-nf).toFixed(2)} ＋ ${fmtMan(v10)}×${tf.toFixed(2)}×${(1-nf).toFixed(2)} ＋ ${fmtMan(v01)}×${(1-tf).toFixed(2)}×${nf.toFixed(2)} ＋ ${fmtMan(v11)}×${tf.toFixed(2)}×${nf.toFixed(2)} ＝ ${fmtMan(base)}`);
-  } else {
-    steps.push(`通院${ti}ヶ月・入院${ni}ヶ月は、ちょうど慰謝料表に載っている月数なので、その欄の金額をそのまま基準額とします → ${fmtMan(base)}`);
+  steps.push(`まず、通院${ti}ヶ月・入院${ni}ヶ月にあたる月分の金額を表から求めます ＝ ${fmtMan(base)}`);
+
+  let tsuinAdj = 0;
+  if(tf > 0.001 && ti2 !== ti){
+    const nextVal = tbl[ti2][ni];
+    const diff = nextVal - base;
+    tsuinAdj = diff * tf;
+    steps.push(`次に、通院期間の端数（${tf.toFixed(2)}ヶ月分）を計算します。通院${ti2}ヶ月・入院${ni}ヶ月の金額${fmtMan(nextVal)}と、月分の金額${fmtMan(base)}との差額${fmtMan(diff)}に、端数${tf.toFixed(2)}をかけます ＝ ${fmtMan(tsuinAdj)}`);
   }
 
-  let total = base;
+  let nyuinAdj = 0;
+  if(nf > 0.001 && ni2 !== ni){
+    const nextVal = tbl[ti][ni2];
+    const diff = nextVal - base;
+    nyuinAdj = diff * nf;
+    steps.push(`同じように、入院期間の端数（${nf.toFixed(2)}ヶ月分）を計算します。通院${ti}ヶ月・入院${ni2}ヶ月の金額${fmtMan(nextVal)}と、月分の金額${fmtMan(base)}との差額${fmtMan(diff)}に、端数${nf.toFixed(2)}をかけます ＝ ${fmtMan(nyuinAdj)}`);
+  }
+
+  let total = base + tsuinAdj + nyuinAdj;
+  if(tsuinAdj !== 0 || nyuinAdj !== 0){
+    steps.push(`月分の金額と端数分を合算します ＝ ${fmtMan(base)} + ${fmtMan(tsuinAdj)} + ${fmtMan(nyuinAdj)} ＝ ${fmtMan(total)}`);
+  }
+
   if(extraTsuin>0){
     const add = extraTsuin*extraTsuinInc;
     total += add;
-    steps.push(`通院期間が表に載っている上限（${tMax}ヶ月）を${extraTsuin.toFixed(2)}ヶ月超えているため、超えた分は1ヶ月あたり${extraTsuinInc}万円の目安で加算します → ${extraTsuin.toFixed(2)}ヶ月 × ${extraTsuinInc}万円 ＝ ${fmtMan(add)}`);
+    steps.push(`通院期間が表の上限（${tMax}ヶ月）を${extraTsuin.toFixed(2)}ヶ月超えているため、超えた分は1ヶ月あたり${extraTsuinInc}万円の目安で加算します ＝ ${extraTsuin.toFixed(2)}ヶ月 × ${extraTsuinInc}万円 ＝ ${fmtMan(add)}`);
   }
   if(extraNyuin>0){
     const add = extraNyuin*extraNyuinInc;
     total += add;
-    steps.push(`入院期間が表に載っている上限（${nMax}ヶ月）を${extraNyuin.toFixed(2)}ヶ月超えているため、超えた分は1ヶ月あたり${extraNyuinInc}万円の目安で加算します → ${extraNyuin.toFixed(2)}ヶ月 × ${extraNyuinInc}万円 ＝ ${fmtMan(add)}`);
+    steps.push(`入院期間が表の上限（${nMax}ヶ月）を${extraNyuin.toFixed(2)}ヶ月超えているため、超えた分は1ヶ月あたり${extraNyuinInc}万円の目安で加算します ＝ ${extraNyuin.toFixed(2)}ヶ月 × ${extraNyuinInc}万円 ＝ ${fmtMan(add)}`);
   }
 
   return {value: total, steps};
@@ -1157,14 +1177,15 @@ function generateSample(){
     sequelaIncome = randNonRoundDecimal(280, 620, 1);
   }
 
-  // 既払金が発生するパターン（労災保険の給付・相手方保険の一括対応など、約35%の確率）
+  // 既払金が発生するパターン（労災保険・相手方保険の一括対応・自賠責への被害者請求など、約35%の確率）
   const hasPaid = Math.random() < 0.35;
   let paidType = null, paidAmount = 0;
   if(hasPaid){
-    paidType = Math.random() < 0.5 ? 'rousai' : 'ikkatsu';
-    paidAmount = paidType === 'rousai'
-      ? randNonRoundDecimal(6, 38, 1)
-      : randNonRoundDecimal(18, 88, 1);
+    const r = Math.random();
+    paidType = r < 0.34 ? 'rousai' : (r < 0.67 ? 'ikkatsu' : 'jibaiseki');
+    paidAmount = paidType === 'rousai' ? randNonRoundDecimal(6, 38, 1)
+      : paidType === 'ikkatsu' ? randNonRoundDecimal(18, 88, 1)
+      : randNonRoundDecimal(9, 96, 1);
   }
 
   const jikoDate = `2025-${String(randInt(1,11)).padStart(2,'0')}-${String(randInt(1,27)).padStart(2,'0')}`;
@@ -1195,7 +1216,9 @@ function sampleScenarioHtml(s){
   const paidText = s.hasPaid
     ? (s.paidType === 'rousai'
         ? `なお、この事故は仕事中に起きたものだったため、労災保険から休業補償給付として既に<strong>${fmtMan(s.paidAmount)}</strong>の支給を受けています。`
-        : `なお、相手方の任意保険会社が治療費等を病院に直接支払う「一括対応」をしており、その内払いとして既に<strong>${fmtMan(s.paidAmount)}</strong>が支払われています。`)
+        : s.paidType === 'ikkatsu'
+        ? `なお、相手方の任意保険会社が治療費等を病院に直接支払う「一括対応」をしており、その内払いとして既に<strong>${fmtMan(s.paidAmount)}</strong>が支払われています。`
+        : `なお、自賠責保険へ被害者請求（自賠法16条請求）を行い、既に<strong>${fmtMan(s.paidAmount)}</strong>の支払いを受けています。`)
     : '';
   return `
     ${s.name}（${s.age}歳・${s.gender}、給与所得者）は、${s.faultScenario.cause}<br><br>
@@ -1272,6 +1295,8 @@ function loadSample(book){
   document.getElementById('c-fault').value = s.fault;
   document.getElementById('c-paid').value = s.hasPaid ? s.paidAmount : 0;
 
+  document.getElementById('i-chien').value = 'no';
+  toggleChienFields();
   document.getElementById('i-accident-date').value = s.jikoDate;
   document.getElementById('i-calc-date').value = s.calcDate;
 
@@ -1334,6 +1359,11 @@ function updateJobFields(){
     const el=document.getElementById('i-job-'+t);
     if(el) el.style.display = (job===t)?'block':'none';
   });
+}
+
+function toggleChienFields(){
+  const el = document.getElementById('chien-fields');
+  if(el) el.style.display = v('i-chien')==='yes' ? 'block' : 'none';
 }
 
 // 後遺障害慰謝料の金額を算定基準に応じて取得（緑本・弁護士基準の場合はGREEN_KOI_ISHARYOを優先）
@@ -1675,14 +1705,16 @@ function calcAll(){
 
   // 遅延損害金
   let chien = 0, chienFormula = '';
-  const accDate = v('i-accident-date');
-  const calcDate = v('i-calc-date');
-  if(accDate && calcDate){
-    const d1 = new Date(accDate), d2 = new Date(calcDate);
-    const years = (d2-d1)/(1000*60*60*24*365.25);
-    if(years>0){
-      chien = total * 0.03 * years;
-      chienFormula = `損害合計 ${fmtMan(total)} × 年3% × ${years.toFixed(2)}年分 ＝ ${fmtMan(chien)}`;
+  if(v('i-chien')==='yes'){
+    const accDate = v('i-accident-date');
+    const calcDate = v('i-calc-date');
+    if(accDate && calcDate){
+      const d1 = new Date(accDate), d2 = new Date(calcDate);
+      const years = (d2-d1)/(1000*60*60*24*365.25);
+      if(years>0){
+        chien = total * 0.03 * years;
+        chienFormula = `損害合計 ${fmtMan(total)} × 年3% × ${years.toFixed(2)}年分 ＝ ${fmtMan(chien)}`;
+      }
     }
   }
 
@@ -2126,6 +2158,7 @@ document.addEventListener('DOMContentLoaded', function(){
   renderLeibnizTable();
   updateJobFields();
   updateDeathFields();
+  toggleChienFields();
   regenerateSample();
   const today = new Date().toISOString().slice(0,10);
   const calcDateEl = document.getElementById('i-calc-date');
