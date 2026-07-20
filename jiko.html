@@ -1084,20 +1084,44 @@ function addDaysToDate(dateStr, days){
   return d.toISOString().slice(0,10);
 }
 
+// 過失割合は0%を含む10%刻み。それぞれの割合になりやすい具体的な事故態様とセットにする。
+const FAULT_SCENARIOS = [
+  {fault:0,  cause:'赤信号で完全に停止していたところ、後方から来た車に追突されました。停止中の追突事故のため、過失は相手方の一方的なものです。'},
+  {fault:10, cause:'渋滞で低速走行していたところ、先行車が特段の理由もなく急ブレーキをかけたため、これに追突してしまいました。先行車の不必要な急ブレーキが考慮されるケースです。'},
+  {fault:20, cause:'車線を走行中、隣の車線から前方不注意のまま進路変更してきた車と接触しました。進路変更車の過失が大きいものの、自車にも前方への注意がやや不足していたケースです。'},
+  {fault:30, cause:'見通しの悪い交差点で優先道路を直進していたところ、非優先道路から一時停止をせずに進入してきた車と衝突しました。優先道路を通行していたものの、自車にも速度超過などの落ち度があったケースです。'},
+  {fault:40, cause:'信号機のない交差点で、明らかに広い道路を直進していたところ、狭い道路から進入してきた車と出会い頭に衝突しました。道路の広さの違いにより双方に過失が認められるケースです。'},
+  {fault:50, cause:'信号機も一時停止の規制もない、同じくらいの幅の道路同士が交わる交差点で、双方とも安全確認が不十分なまま進入し、出会い頭に衝突しました。双方に同程度の落ち度が認められるケースです。'}
+];
+
+const GRADE_SYMPTOM = {
+  '14':'首や腰に神経症状（痛みやしびれ）が残ってしまい',
+  '13':'手指の一部の動きに軽い制限が残ってしまい',
+  '12':'関節の動きや局部の神経症状に頑固な症状が残ってしまい',
+  '11':'脊柱に変形が残ってしまい',
+  '10':'関節の機能に著しい制限が残ってしまい',
+  '9':'神経系統の機能に障害が残り、普段の仕事に相当な支障が出てしまい',
+  '7':'神経系統の機能に障害が残り、仕事が大きく制限されてしまい'
+};
+
 function generateSample(){
   const isFracture = Math.random() < 0.5;
   const name = SAMPLE_NAMES[randInt(0, SAMPLE_NAMES.length-1)];
   const age = randNonRoundInt(24, 58);
   const gender = Math.random() < 0.5 ? '男性' : '女性';
+  const faultScenario = FAULT_SCENARIOS[randInt(0, FAULT_SCENARIOS.length-1)];
+  const fault = faultScenario.fault;
 
   const hasHospital = isFracture ? true : Math.random() < 0.3;
   const nyuinDays = hasHospital ? (isFracture ? randNonRoundInt(6, 33) : randNonRoundInt(2, 11)) : 0;
-  const nyuinMonths = hasHospital ? Math.round((nyuinDays/30)*10)/10 : 0;
+  const nyuinMonths = hasHospital ? Math.round((nyuinDays/30)*100)/100 : 0;
 
-  const tsuinMonths = randNonRoundDecimal(1.2, isFracture ? 8.4 : 6.7, 1);
-  const jitsuTsuinDays = randNonRoundInt(9, Math.max(13, Math.round(tsuinMonths*30*0.55)));
+  // 通院期間は「日にち」で生成する（月の小数表記は使わない）
+  const tsuinDays = randNonRoundInt(24, isFracture ? 210 : 165);
+  const tsuinMonths = Math.round((tsuinDays/30)*100)/100; // 計算フォーム入力用（ヶ月換算）
+  const jitsuCap = Math.max(10, Math.min(tsuinDays-2, Math.round(tsuinDays*0.6)));
+  const jitsuTsuinDays = randNonRoundInt(8, jitsuCap);
 
-  const fault = randNonRoundInt(1, 28);
   const chiryohi = randNonRoundDecimal(isFracture?58:16, isFracture?165:72, 1);
   const kotsuhi = randNonRoundDecimal(0.7, 7.8, 1);
   const empIncome = randNonRoundDecimal(46, 138, 1);
@@ -1109,15 +1133,28 @@ function generateSample(){
   const costShindan = randNonRoundDecimal(0.22, 1.38, 2);
   const costShomei = randNonRoundDecimal(0.06, 0.34, 2);
 
+  // 後遺障害が残るパターン（約4割の確率）
+  const hasSequela = Math.random() < 0.4;
+  let sequelaGrade = null, sequelaIncome = null;
+  if(hasSequela){
+    const whiplashGrades = ['14','14','14','13'];
+    const fractureGrades = ['12','12','11','10','9','7'];
+    const pool = isFracture ? fractureGrades : whiplashGrades;
+    sequelaGrade = pool[randInt(0, pool.length-1)];
+    sequelaIncome = randNonRoundDecimal(280, 620, 1);
+  }
+
   const jikoDate = `2025-${String(randInt(1,11)).padStart(2,'0')}-${String(randInt(1,27)).padStart(2,'0')}`;
-  const koteiDate = addDaysToDate(jikoDate, tsuinMonths*30);
+  const koteiDate = addDaysToDate(jikoDate, tsuinDays);
   const calcDate = addDaysToDate(jikoDate, randNonRoundInt(190, 540));
 
   return {
-    isFracture, name, age, gender, hasHospital, nyuinDays, nyuinMonths,
-    tsuinMonths, jitsuTsuinDays, fault, chiryohi, kotsuhi,
+    isFracture, name, age, gender, faultScenario, fault,
+    hasHospital, nyuinDays, nyuinMonths,
+    tsuinDays, tsuinMonths, jitsuTsuinDays, chiryohi, kotsuhi,
     empIncome, empWorkdays, empOffdays,
     sharyoRepair, sharyoEval, sharyoDasha, costShindan, costShomei,
+    hasSequela, sequelaGrade, sequelaIncome,
     jikoDate, koteiDate, calcDate
   };
 }
@@ -1125,13 +1162,16 @@ function generateSample(){
 function sampleScenarioHtml(s){
   const injuryName = s.isFracture ? '肋骨の骨折' : 'むちうち症（頸椎捻挫）';
   const nyuinText = s.hasHospital
-    ? `<strong>入院${s.nyuinDays}日</strong>のあと、整形外科に<strong>通院${s.tsuinMonths}ヶ月間（実際に通院した日数は${s.jitsuTsuinDays}日）</strong>通いました。`
-    : `入院はせず、整形外科に<strong>通院${s.tsuinMonths}ヶ月間（実際に通院した日数は${s.jitsuTsuinDays}日）</strong>通いました。`;
+    ? `<strong>入院${s.nyuinDays}日</strong>のあと、整形外科に<strong>${s.tsuinDays}日間（実際に通院した日数は${s.jitsuTsuinDays}日）</strong>通いました。`
+    : `入院はせず、整形外科に<strong>${s.tsuinDays}日間（実際に通院した日数は${s.jitsuTsuinDays}日）</strong>通いました。`;
   const shindanTotal = Math.round((s.costShindan + s.costShomei)*100)/100;
+  const sequelaText = s.hasSequela
+    ? `治療を続けましたが、${GRADE_SYMPTOM[s.sequelaGrade]}、後遺障害<strong>${s.sequelaGrade}級</strong>の認定を受けました。${s.name}の年収は${fmtMan(s.sequelaIncome)}です。`
+    : '治療の結果、後遺症は残りませんでした。';
   return `
-    ${s.name}（${s.age}歳・${s.gender}、給与所得者）は、信号待ちで停止していたところ、後ろから来た車に追突され、${injuryName}を負いました。<br><br>
-    ${nyuinText}この間、仕事を<strong>${s.empOffdays}日間</strong>休みました（事故前3ヶ月間の給料の合計は${fmtMan(s.empIncome)}）。<br><br>
-    今回の事故については、${s.name}にも<strong>過失割合${s.fault}%</strong>があるものとします。後遺症は残りませんでした。<br><br>
+    ${s.name}（${s.age}歳・${s.gender}、給与所得者）は、${s.faultScenario.cause}<br><br>
+    この事故で${injuryName}を負いました。${nyuinText}この間、仕事を<strong>${s.empOffdays}日間</strong>休みました（事故前3ヶ月間の給料の合計は${fmtMan(s.empIncome)}）。<br><br>
+    今回の事故については、${s.name}にも<strong>過失割合${s.fault}%</strong>があるものとします。${sequelaText}<br><br>
     治療費は${fmtMan(s.chiryohi)}、通院のための交通費は${fmtMan(s.kotsuhi)}かかりました。車の修理費は${fmtMan(s.sharyoRepair)}${s.sharyoEval>0?`、評価損${fmtMan(s.sharyoEval)}`:''}、修理期間中の代車費用は${fmtMan(s.sharyoDasha)}、診断書代など書類費用は${fmtMan(shindanTotal)}でした。
   `;
 }
@@ -1141,7 +1181,11 @@ function regenerateSample(){
   const textEl = document.getElementById('sample-scenario-text');
   if(textEl) textEl.innerHTML = sampleScenarioHtml(currentSample);
   const titleEl = document.getElementById('sample-scenario-title');
-  if(titleEl) titleEl.textContent = `事例：追突事故による${currentSample.isFracture?'骨折':'むちうち症'}（後遺障害なし）`;
+  if(titleEl){
+    const injuryLabel = currentSample.isFracture ? '骨折' : 'むちうち症';
+    const sequelaLabel = currentSample.hasSequela ? `後遺障害${currentSample.sequelaGrade}級` : '後遺障害なし';
+    titleEl.textContent = `事例：${injuryLabel}のケース（${sequelaLabel}）`;
+  }
 }
 
 // サンプル事例のデータを「損害計算」タブに入力する
@@ -1149,8 +1193,13 @@ function loadSample(book){
   if(!currentSample) regenerateSample();
   const s = currentSample;
 
-  const injuryBtn = document.querySelector('.toggle-btn[onclick*="setCaseType(\'injury\'"]');
-  if(injuryBtn) setCaseType('injury', injuryBtn);
+  if(s.hasSequela){
+    const sequelaBtn = document.querySelector('.toggle-btn[onclick*="setCaseType(\'sequela\'"]');
+    if(sequelaBtn) setCaseType('sequela', sequelaBtn);
+  } else {
+    const injuryBtn = document.querySelector('.toggle-btn[onclick*="setCaseType(\'injury\'"]');
+    if(injuryBtn) setCaseType('injury', injuryBtn);
+  }
   setBook(book);
 
   setTreatMode('total');
@@ -1196,6 +1245,15 @@ function loadSample(book){
 
   document.getElementById('i-accident-date').value = s.jikoDate;
   document.getElementById('i-calc-date').value = s.calcDate;
+
+  if(s.hasSequela){
+    document.getElementById('s-grade').value = s.sequelaGrade;
+    document.getElementById('s-standard').value = 'bengoshi';
+    document.getElementById('s-income').value = s.sequelaIncome;
+    document.getElementById('s-age').value = s.age;
+    updateGradeFields();
+    updateSequelaYears();
+  }
 
   const result = document.getElementById('keisan-result');
   if(result){ result.style.display='none'; result.innerHTML=''; }
