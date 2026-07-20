@@ -142,9 +142,9 @@
   <div class="card">
     <div class="card-title">事故種別・基本情報</div>
     <div class="section-toggle">
-      <button class="toggle-btn active" onclick="setCaseType('injury',this)">傷害のみ（後遺障害なし）</button>
-      <button class="toggle-btn" onclick="setCaseType('sequela',this)">後遺障害あり</button>
-      <button class="toggle-btn" onclick="setCaseType('death',this)">死亡事故</button>
+      <button class="toggle-btn case-type-btn active" onclick="setCaseType('injury',this)">傷害のみ（後遺障害なし）</button>
+      <button class="toggle-btn case-type-btn" onclick="setCaseType('sequela',this)">後遺障害あり</button>
+      <button class="toggle-btn case-type-btn" onclick="setCaseType('death',this)">死亡事故</button>
     </div>
     <div class="form-row">
       <div class="form-group">
@@ -334,14 +334,11 @@
         <input type="checkbox" id="i-muchiuchi" style="margin-top:3px">
         <label for="i-muchiuchi" style="font-size:12px;font-weight:600;color:var(--text);cursor:pointer">軽度の神経症状（むちうち症）・軽度の打撲/挫創（傷）の場合 → 通常慰謝料の3分の2程度に減額して計算する</label>
       </div>
+      <div class="note" style="margin-bottom:10px"><span class="note-icon">ℹ️</span>入院期間は、上の「入院雑費」で入力した入院日数をそのまま使用します。</div>
       <div class="form-row">
         <div class="form-group">
-          <label>入院期間（ヶ月）— 日数の場合: 日数÷30</label>
-          <div class="input-wrap"><input type="number" id="i-nyuin-months" placeholder="0" min="0" step="0.1"><span class="unit">ヶ月</span></div>
-        </div>
-        <div class="form-group">
-          <label>通院期間（ヶ月）— 日数の場合: 日数÷30</label>
-          <div class="input-wrap"><input type="number" id="i-tsuin-months" placeholder="0" min="0" step="0.1"><span class="unit">ヶ月</span></div>
+          <label>通院期間（日数）</label>
+          <div class="input-wrap"><input type="number" id="i-tsuin-days" placeholder="例：83" min="0"><span class="unit">日</span></div>
         </div>
       </div>
       <div id="midori-tsuin-extra" style="display:none">
@@ -349,12 +346,12 @@
           <label>実通院日数（実際に通院した日数・任意）</label>
           <div class="input-wrap"><input type="number" id="i-jitsu-tsuin-days" placeholder="例：40" min="0"><span class="unit">日</span></div>
         </div>
-        <div class="note" style="margin-top:2px;margin-bottom:10px"><span class="note-icon">ℹ️</span>緑本（大阪基準）では、実通院期間（始期〜終期の日数）と実通院日数を3.5倍した日数を比較し、少ない方を通院期間として計算します。不規則・長期の通院の場合に用います。空欄の場合は入力した通院期間（ヶ月）をそのまま使用します。</div>
+        <div class="note" style="margin-top:2px;margin-bottom:10px"><span class="note-icon">ℹ️</span>緑本（大阪基準）では、実通院期間（始期〜終期の日数）と実通院日数を3.5倍した日数を比較し、少ない方を通院期間として計算します。不規則・長期の通院の場合に用います。空欄の場合は入力した通院期間（日数）をそのまま使用します。</div>
       </div>
       <div class="formula-header">
         <div class="fh-title">入通院慰謝料の計算式</div>
-        <div class="fh-eq">慰謝料 ＝ 慰謝料表[通院月数][入院月数]（万円）</div>
-        <div class="fh-vars">端数がある場合: 整数月の値＋（次の月との差額×端数）で日割り計算<br>例: 通院2.4ヶ月（軽傷・入院なし）→ 36 + (53−36)×0.4 = 42.8万円</div>
+        <div class="fh-eq">① 入院日数・通院日数を30で割ってヶ月数に変換<br>② 慰謝料表で整数月分の金額を求める<br>③ 端数の日数分を、次の月との差額から比例計算して加算</div>
+        <div class="fh-vars">例: 通院72日（軽傷・入院なし）→ 72日÷30＝2.4ヶ月 → 2ヶ月分36万円 ＋ (3ヶ月分53万円−2ヶ月分36万円)×0.4 ＝ 42.8万円</div>
       </div>
       <div class="doc-box">📄 必要書類: 自賠責診断書（入院日数・通院期間・症状固定日）、診療報酬明細書（通院日○印で実日数確認）</div>
       <div class="ins-box">🏥 保険: 自賠責傷害限度120万円（治療費・休業損害・慰謝料の合計上限）。超過分は任意保険へ請求。入院給付金（生命保険）は損益相殺の対象外。</div>
@@ -715,15 +712,10 @@
 
 <!-- ===== Tab 3: サンプル ===== -->
 <div id="panel-sample" class="panel">
-  <div class="info-banner">
-    <p>下の事例を読んで、ボタンを押すだけで「損害計算」タブに数字が入力された状態を体験できます。事例はタブを開くたびにランダムに変わります。実際の計算のイメージをつかむのにお使いください。</p>
-  </div>
-
   <div class="card">
     <div class="card-title" id="sample-scenario-title">事例：追突事故によるケガ（後遺障害なし）</div>
     <div class="bk-desc" style="font-size:13px;line-height:1.9" id="sample-scenario-text"></div>
     <button class="btn-secondary" onclick="regenerateSample()" style="margin-top:4px">🔄 別の事例に変える</button>
-    <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>下のボタンを押すと、この事例の数字が「損害計算」タブの各項目に自動で入力され、画面が「損害計算」タブに切り替わります。あとは「損害計算」タブの一番下にある「計算する」ボタンを押すだけで、結果が表示されます。</div>
   </div>
 
   <div class="card">
@@ -936,14 +928,14 @@ function lookupIsharyoDetailed(tsuinMonths, nyuinMonths, tbl, tMax, nMax, extraT
 
   const base = tbl[ti][ni];
   const steps = [];
-  steps.push(`まず、通院${ti}ヶ月・入院${ni}ヶ月にあたる月分の金額を表から求めます ＝ ${fmtMan(base)}`);
+  steps.push(`【月分】通院${ti}ヶ月分・入院${ni}ヶ月分にあたる金額を表から求めます ＝ ${fmtMan(base)}`);
 
   let tsuinAdj = 0;
   if(tf > 0.001 && ti2 !== ti){
     const nextVal = tbl[ti2][ni];
     const diff = nextVal - base;
     tsuinAdj = diff * tf;
-    steps.push(`次に、通院期間の端数（${tf.toFixed(2)}ヶ月分）を計算します。通院${ti2}ヶ月・入院${ni}ヶ月の金額${fmtMan(nextVal)}と、月分の金額${fmtMan(base)}との差額${fmtMan(diff)}に、端数${tf.toFixed(2)}をかけます ＝ ${fmtMan(tsuinAdj)}`);
+    steps.push(`【端数：通院】通院${ti2}ヶ月分の金額${fmtMan(nextVal)}と、通院${ti}ヶ月分の金額${fmtMan(base)}との差額 ＝ ${fmtMan(diff)}。通院期間の端数は${tf.toFixed(2)}ヶ月分なので、${fmtMan(diff)} × ${tf.toFixed(2)} ＝ ${fmtMan(tsuinAdj)}`);
   }
 
   let nyuinAdj = 0;
@@ -951,12 +943,12 @@ function lookupIsharyoDetailed(tsuinMonths, nyuinMonths, tbl, tMax, nMax, extraT
     const nextVal = tbl[ti][ni2];
     const diff = nextVal - base;
     nyuinAdj = diff * nf;
-    steps.push(`同じように、入院期間の端数（${nf.toFixed(2)}ヶ月分）を計算します。通院${ti}ヶ月・入院${ni2}ヶ月の金額${fmtMan(nextVal)}と、月分の金額${fmtMan(base)}との差額${fmtMan(diff)}に、端数${nf.toFixed(2)}をかけます ＝ ${fmtMan(nyuinAdj)}`);
+    steps.push(`【端数：入院】入院${ni2}ヶ月分の金額${fmtMan(nextVal)}と、入院${ni}ヶ月分の金額${fmtMan(base)}との差額 ＝ ${fmtMan(diff)}。入院期間の端数は${nf.toFixed(2)}ヶ月分なので、${fmtMan(diff)} × ${nf.toFixed(2)} ＝ ${fmtMan(nyuinAdj)}`);
   }
 
   let total = base + tsuinAdj + nyuinAdj;
   if(tsuinAdj !== 0 || nyuinAdj !== 0){
-    steps.push(`月分の金額と端数分を合算します ＝ ${fmtMan(base)} + ${fmtMan(tsuinAdj)} + ${fmtMan(nyuinAdj)} ＝ ${fmtMan(total)}`);
+    steps.push(`【合算】月分 ${fmtMan(base)} ＋ 通院の端数分 ${fmtMan(tsuinAdj)} ＋ 入院の端数分 ${fmtMan(nyuinAdj)} ＝ ${fmtMan(total)}`);
   }
 
   if(extraTsuin>0){
@@ -1147,11 +1139,9 @@ function generateSample(){
 
   const hasHospital = isFracture ? true : Math.random() < 0.3;
   const nyuinDays = hasHospital ? (isFracture ? randNonRoundInt(6, 33) : randNonRoundInt(2, 11)) : 0;
-  const nyuinMonths = hasHospital ? Math.round((nyuinDays/30)*100)/100 : 0;
 
   // 通院期間は「日にち」で生成する（月の小数表記は使わない）
   const tsuinDays = randNonRoundInt(24, isFracture ? 210 : 165);
-  const tsuinMonths = Math.round((tsuinDays/30)*100)/100; // 計算フォーム入力用（ヶ月換算）
   const jitsuCap = Math.max(10, Math.min(tsuinDays-2, Math.round(tsuinDays*0.6)));
   const jitsuTsuinDays = randNonRoundInt(8, jitsuCap);
 
@@ -1194,8 +1184,8 @@ function generateSample(){
 
   return {
     isFracture, name, age, gender, faultScenario, fault,
-    hasHospital, nyuinDays, nyuinMonths,
-    tsuinDays, tsuinMonths, jitsuTsuinDays, chiryohi, kotsuhi,
+    hasHospital, nyuinDays,
+    tsuinDays, jitsuTsuinDays, chiryohi, kotsuhi,
     empIncome, empWorkdays, empOffdays,
     sharyoRepair, sharyoEval, sharyoDasha, costShindan, costShomei,
     hasSequela, sequelaGrade, sequelaIncome,
@@ -1246,10 +1236,10 @@ function loadSample(book){
   const s = currentSample;
 
   if(s.hasSequela){
-    const sequelaBtn = document.querySelector('.toggle-btn[onclick*="setCaseType(\'sequela\'"]');
+    const sequelaBtn = document.querySelector('.case-type-btn[onclick*="setCaseType(\'sequela\'"]');
     if(sequelaBtn) setCaseType('sequela', sequelaBtn);
   } else {
-    const injuryBtn = document.querySelector('.toggle-btn[onclick*="setCaseType(\'injury\'"]');
+    const injuryBtn = document.querySelector('.case-type-btn[onclick*="setCaseType(\'injury\'"]');
     if(injuryBtn) setCaseType('injury', injuryBtn);
   }
   setBook(book);
@@ -1274,8 +1264,7 @@ function loadSample(book){
   document.getElementById('i-injury-type').value = book==='midori' ? (s.isFracture?'severe':'normal') : (s.isFracture?'heavy':'light');
   const muchiuchiEl = document.getElementById('i-muchiuchi');
   if(muchiuchiEl) muchiuchiEl.checked = (book==='midori' && !s.isFracture);
-  document.getElementById('i-nyuin-months').value = s.nyuinMonths;
-  document.getElementById('i-tsuin-months').value = s.tsuinMonths;
+  document.getElementById('i-tsuin-days').value = s.tsuinDays;
   const jitsuEl = document.getElementById('i-jitsu-tsuin-days');
   if(jitsuEl) jitsuEl.value = s.jitsuTsuinDays;
 
@@ -1326,7 +1315,7 @@ function switchTab(id,btn){
 
 function setCaseType(type, btn){
   currentCase = type;
-  document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.case-type-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 
   const injurySection = document.getElementById('section-injury');
@@ -1516,21 +1505,22 @@ function calcAll(){
 
   // --- 入通院慰謝料 ---
   const injType = v('i-injury-type');
-  const nyuinM = nv('i-nyuin-months');
-  let tsuinM = nv('i-tsuin-months');
+  const tsuinDaysVal = nv('i-tsuin-days');
+  const nyuinM = Math.round((nyuindays/30)*100)/100;
+  let tsuinM = Math.round((tsuinDaysVal/30)*100)/100;
   let isharyo, typeName;
   const isharyoSteps = [];
-  isharyoSteps.push(`入院期間は${nyuinM}ヶ月、通院期間は${tsuinM}ヶ月として計算を始めます。`);
+  isharyoSteps.push(`入院日数は${nyuindays}日、通院日数は${tsuinDaysVal}日です。まず、これを慰謝料表で使うヶ月数に変換します：入院 ${nyuindays}日 ÷ 30 ＝ ${nyuinM}ヶ月、通院 ${tsuinDaysVal}日 ÷ 30 ＝ ${tsuinM}ヶ月。`);
 
   if(currentBook==='midori'){
     const jitsuDays = nv('i-jitsu-tsuin-days');
     let effectiveTsuinM = tsuinM;
     if(jitsuDays > 0){
-      const calDays = tsuinM * 30;
+      const calDays = tsuinDaysVal;
       const capDays = jitsuDays * 3.5;
       const useDays = Math.min(calDays, capDays);
       effectiveTsuinM = Math.round((useDays/30)*100)/100;
-      isharyoSteps.push(`緑本のルール: 「実際に通院した日数×3.5」と「通院期間の暦日数」を比べ、少ない方を通院期間として使います。実通院${jitsuDays}日 × 3.5 ＝ ${capDays.toFixed(1)}日、通院期間の暦日数 ＝ ${tsuinM}ヶ月×30日 ＝ ${calDays.toFixed(0)}日。少ない方の${useDays.toFixed(1)}日を採用し、${useDays.toFixed(1)}日 ÷ 30 ＝ ${effectiveTsuinM}ヶ月を通院期間とします。`);
+      isharyoSteps.push(`緑本のルール: 「実際に通院した日数×3.5」と「通院期間の日数」を比べ、少ない方を通院期間として使います。実通院${jitsuDays}日 × 3.5 ＝ ${capDays.toFixed(1)}日、通院期間 ＝ ${calDays.toFixed(0)}日。少ない方の${useDays.toFixed(1)}日を採用し、${useDays.toFixed(1)}日 ÷ 30 ＝ ${effectiveTsuinM}ヶ月を通院期間とします。`);
     }
     const muchiuchi = document.getElementById('i-muchiuchi') && document.getElementById('i-muchiuchi').checked;
     const tbl = injType==='severe' ? GREEN_ISHARYO_SEVERE : GREEN_ISHARYO_NORMAL;
