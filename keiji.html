@@ -106,6 +106,7 @@ select[multiple]{min-height:70px}
   <button class="tab-btn" onclick="switchTab('documents',this)">📄 書面</button>
   <button class="tab-btn" onclick="switchTab('evidence',this)">📂 証拠開示</button>
   <button class="tab-btn" onclick="switchTab('billing',this)">💴 費用</button>
+  <button class="tab-btn" onclick="switchTab('sample',this)">📘 サンプル</button>
 </nav>
 <div class="container">
 
@@ -161,6 +162,11 @@ select[multiple]{min-height:70px}
 <!-- ===== 費用 ===== -->
 <div id="panel-billing" class="panel">
   <div id="billingWrap"></div>
+</div>
+
+<!-- ===== サンプル ===== -->
+<div id="panel-sample" class="panel">
+  <div id="sampleWrap"></div>
 </div>
 
 </div>
@@ -245,12 +251,13 @@ function switchTab(name,btn){
   if(name==='documents')renderDocuments();
   if(name==='evidence')renderEvidence();
   if(name==='billing')renderBilling();
+  if(name==='sample')renderSample();
 }
 
 /* ============ 事件タブ ============ */
 function renderCaseList(){
   const wrap=document.getElementById('caseList');
-  if(DB.cases.length===0){wrap.innerHTML='<div class="empty-hint">まだ事件が登録されていません。「＋ 新規事件を追加」から作成してください。</div>';}
+  if(DB.cases.length===0){wrap.innerHTML='<div class="empty-hint">まだ事件が登録されていません。「＋ 新規事件を追加」から作成してください。使い方を確認したい場合は「📘 サンプル」タブをご覧ください。</div>';}
   else{
     wrap.innerHTML=DB.cases.map(c=>{
       const active=c.id===DB.currentCaseId;
@@ -421,6 +428,19 @@ function copyText(btn,text){
 }
 
 function computeAndRenderDeadlines(c){
+  const {s1,s2,s3,s4}=computeCustodyStages(c);
+  document.getElementById('dl-stage1').innerHTML=s1.map(lawBox).join('')||'<div class="empty-hint">逮捕日時を入力すると計算されます。</div>';
+  document.getElementById('dl-stage2').innerHTML=s2.map(lawBox).join('')||'<div class="empty-hint">開始日を入力すると計算されます。</div>';
+  document.getElementById('dl-stage3').innerHTML=s3.map(lawBox).join('');
+  document.getElementById('dl-stage4').innerHTML=s4.map(lawBox).join('');
+
+  // キャッシュして期限一覧タブで使う
+  c._computedDeadlines=[...s1,...s2,...s3,...s4].filter(x=>x.dueAt);
+  saveDB();
+}
+
+// DOM非依存の純粋な計算関数（身柄拘束期間タブ・サンプルタブ双方から利用）
+function computeCustodyStages(c){
   const cu=c.custody;
   const s1=[],s2=[],s3=[],s4=[];
   const arrestAt=toDT(cu.arrestAt);
@@ -535,14 +555,7 @@ function computeAndRenderDeadlines(c){
   s4.push({title:'準抗告（勾留に関する裁判に対する不服申立て）',basisRef:LAW.a429.ref,basisText:LAW.a429.text,
     steps:['期間の制限はありません。勾留が継続する限りいつでも申立て可能です。'],resultLabel:'期間制限なし',dueAt:null});
 
-  document.getElementById('dl-stage1').innerHTML=s1.map(lawBox).join('')||'<div class="empty-hint">逮捕日時を入力すると計算されます。</div>';
-  document.getElementById('dl-stage2').innerHTML=s2.map(lawBox).join('')||'<div class="empty-hint">開始日を入力すると計算されます。</div>';
-  document.getElementById('dl-stage3').innerHTML=s3.map(lawBox).join('');
-  document.getElementById('dl-stage4').innerHTML=s4.map(lawBox).join('');
-
-  // キャッシュして期限一覧タブで使う
-  c._computedDeadlines=[...s1,...s2,...s3,...s4].filter(x=>x.dueAt);
-  saveDB();
+  return {s1,s2,s3,s4};
 }
 
 /* ============ 期限一覧タブ ============ */
@@ -858,13 +871,80 @@ function addBilling(){
 }
 function deleteBilling(id){const c=currentCase();c.billing=c.billing.filter(x=>x.id!==id);saveDB();renderBilling();}
 
+/* ============ サンプルタブ（実データとは独立した架空の例） ============ */
+function demoCase(){
+  const isoDT=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const isoD=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const arrest=new Date(); arrest.setHours(9,0,0,0);
+  const referral=new Date(arrest); referral.setDate(referral.getDate()+1); referral.setHours(10,0,0,0);
+  const detStart=new Date(arrest); detStart.setDate(detStart.getDate()+2); detStart.setHours(10,0,0,0);
+  const indict=new Date(detStart); indict.setDate(indict.getDate()+14);
+  const judgment=new Date(indict); judgment.setDate(judgment.getDate()+70);
+  return {
+    name:'サンプル太郎（架空の人物です）', crime:'窃盗（万引き）', custodyType:'mibin', isJuvenile:false, defenseType:'kokusen',
+    custody:{
+      prosecutorArrest:false, specialCrime:false, juvenileTrack:'detention',
+      arrestAt:isoDT(arrest), referralAt:isoDT(referral), detentionRequestAt:isoDT(detStart), detentionStartAt:isoDT(detStart),
+      extensionDays:5, specialExtensionDays:0, kangoStartAt:'', kangoRenewals:0,
+      indictmentAt:isoD(indict), postIndictRenewals:1, judgmentAt:isoD(judgment)
+    }
+  };
+}
+function renderSample(){
+  const wrap=document.getElementById('sampleWrap');
+  const c=demoCase();
+  const {s1,s2,s3,s4}=computeCustodyStages(c);
+  const tplText=TEMPLATES.kouryu_riyu.build(c);
+  wrap.innerHTML=`
+  <div class="info-banner">👀 これは操作イメージをつかむための<strong>架空のサンプルデータ</strong>です。実在の人物・事件とは関係ありません。ここでの表示は保存されず、実際の事件データにも一切影響しません。使い方が分かったら「📁 事件」タブから実際の事件を登録してください。</div>
+  <div class="card">
+    <div class="card-title">サンプル事件の設定</div>
+    <div class="card-sub">依頼者名：${esc(c.name)}／罪名：${esc(c.crime)}／身柄事件・国選（今日を逮捕日として自動計算した例です）</div>
+  </div>
+  <div class="stage-title"><span class="num">1</span>逮捕〜勾留請求</div>
+  ${s1.map(lawBox).join('')}
+  <div class="stage-title"><span class="num">2</span>勾留期間（延長5日を含む例）</div>
+  ${s2.map(lawBox).join('')}
+  <div class="stage-title"><span class="num">3</span>起訴後勾留（更新1回を含む例）</div>
+  ${s3.map(lawBox).join('')}
+  <div class="stage-title"><span class="num">4</span>上訴期限</div>
+  ${s4.map(lawBox).join('')}
+
+  <div class="sec-title">接見記録タブの例</div>
+  <div class="entry-item">
+    <div class="entry-top"><span>接見記録の入力例</span></div>
+    <div class="entry-meta">○○警察署 ／ 30分 ／ 接見禁止：一部解除</div>
+    <div class="entry-note">否認方針を維持。家族への接見禁止一部解除を申し立てる予定。</div>
+  </div>
+
+  <div class="sec-title">証拠開示タブの例</div>
+  <table class="simple"><tr><th>証拠名</th><th>区分</th><th>開示</th><th>開示日</th></tr>
+    <tr><td>実況見分調書</td><td>類型証拠</td><td>✅</td><td>開示済み</td></tr>
+    <tr><td>被害者供述調書</td><td>主張関連証拠</td><td>—</td><td>未開示</td></tr>
+  </table>
+
+  <div class="sec-title">書面タブの例（勾留理由開示請求書）</div>
+  <div class="card"><textarea readonly style="min-height:220px;font-family:'Courier New',monospace;font-size:12px">${esc(tplText)}</textarea>
+  <div class="card-sub" style="margin-top:8px">「書面」タブでは他に準抗告申立書・保釈請求書・接見禁止一部解除申立書のテンプレートも生成できます。</div></div>
+
+  <div class="sec-title">費用タブの例</div>
+  <table class="simple"><tr><th>日付</th><th>種別</th><th>内容</th><th>金額</th></tr>
+    <tr><td>接見初日</td><td>着手金</td><td>着手金</td><td>220,000円</td></tr>
+  </table>
+  `;
+}
+
 /* ============ 初期化 ============ */
 loadDB();
-if(DB.cases.length===0){
-  const c=blankCase('サンプル事件（自由に編集・削除できます）');
-  DB.cases.push(c); DB.currentCaseId=c.id; saveDB();
-}
+// 旧バージョンで自動生成されていた未使用の「サンプル事件」を除去（実データが入っていれば残す）
+DB.cases=DB.cases.filter(c=>{
+  if(c.name!=='サンプル事件（自由に編集・削除できます）')return true;
+  const untouched=!c.crime&&!c.memo&&!c.custody.arrestAt&&(c.interviews||[]).length===0&&(c.evidence||[]).length===0&&(c.billing||[]).length===0&&(c.customDeadlines||[]).length===0;
+  return !untouched;
+});
+if(DB.currentCaseId && !DB.cases.find(c=>c.id===DB.currentCaseId)){DB.currentCaseId=null;}
 if(!DB.currentCaseId && DB.cases.length>0){DB.currentCaseId=DB.cases[0].id;}
+saveDB();
 renderCaseList();
 </script>
 </body>
