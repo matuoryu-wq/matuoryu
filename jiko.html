@@ -946,43 +946,71 @@ function lookupIsharyoDetailed(tsuinDays, nyuinDays, tbl, tMax, nMax, extraTsuin
   const nRemDays = Math.round((clampedNyuinDays - ni*30)*100)/100;
 
   const base = tbl[ti][ni];
-  const steps = [];
-  steps.push(`【月分】通院${ti}ヶ月分・入院${ni}ヶ月分にあたる金額を表から求めます ＝ ${fmtMan(base)}`);
+  const lines = [];
+  lines.push(`入院日数は${nyuinDays}日、通院日数は${tsuinDays}日（${ti}ヶ月${tRemDays}日）`);
+
+  let sectionNo = 1;
+  lines.push('');
+  lines.push(`${sectionNo}　通院慰謝料`);
+  lines.push(`⑴月分`);
+  lines.push(`通院${ti}ヶ月分＝ ${fmtMan(base)}`);
 
   let tsuinAdj = 0;
+  let tsuinSubtotal = base;
   if(tRemDays > 0 && ti2 !== ti){
     const niForTi2 = Math.min(ni, rowNMax(ti2));
     const nextVal = tbl[ti2][niForTi2];
-    const diff = nextVal - base;
-    tsuinAdj = diff * (tRemDays/30);
-    steps.push(`【端数：通院】通院期間の端数は${tRemDays}日（＝30日のうち${tRemDays}/30）です。入院${ni}ヶ月分のまま通院だけ1ヶ月増やした「通院${ti2}ヶ月・入院${ni}ヶ月」の金額${fmtMan(nextVal)}と、月分の「通院${ti}ヶ月・入院${ni}ヶ月」の金額${fmtMan(base)}との差額${fmtMan(diff)}に、端数${tRemDays}/30をかけます ＝ ${fmtMan(diff)} × ${tRemDays}/30 ＝ ${fmtMan(tsuinAdj)}`);
+    tsuinAdj = (nextVal - base) * (tRemDays/30);
+    tsuinSubtotal = base + tsuinAdj;
+    lines.push(`⑵端数`);
+    lines.push(`(${fmtMan(nextVal)}(「通院${ti2}ヶ月・入院${ni}ヶ月」)−${fmtMan(base)}(「通院${ti}ヶ月・入院${ni}ヶ月」))× ${tRemDays}/30 ＝ ${fmtMan(tsuinAdj)}`);
+    lines.push(`⑶合計`);
+    lines.push(`　${fmtMan(base)}＋${fmtMan(tsuinAdj)}＝${fmtMan(tsuinSubtotal)}`);
   }
+  sectionNo++;
 
+  const parts = [tsuinSubtotal];
   let nyuinAdj = 0;
   if(nRemDays > 0 && ni2 !== ni){
     const nextVal = tbl[ti][ni2];
-    const diff = nextVal - base;
-    nyuinAdj = diff * (nRemDays/30);
-    steps.push(`【端数：入院】入院期間の端数は${nRemDays}日（＝30日のうち${nRemDays}/30）です。通院${ti}ヶ月分のまま入院だけ1ヶ月増やした「通院${ti}ヶ月・入院${ni2}ヶ月」の金額${fmtMan(nextVal)}と、月分の「通院${ti}ヶ月・入院${ni}ヶ月」の金額${fmtMan(base)}との差額${fmtMan(diff)}に、端数${nRemDays}/30をかけます ＝ ${fmtMan(diff)} × ${nRemDays}/30 ＝ ${fmtMan(nyuinAdj)}`);
+    nyuinAdj = (nextVal - base) * (nRemDays/30);
+    parts.push(nyuinAdj);
+    lines.push('');
+    lines.push(`${sectionNo}　入院慰謝料`);
+    lines.push(`(${fmtMan(nextVal)}(通院${ti}ヶ月・入院${ni2}ヶ月)−${fmtMan(base)}(通院${ti}ヶ月・入院${ni}ヶ月))× ${nRemDays}/30 ＝ ${fmtMan(nyuinAdj)}`);
+    sectionNo++;
   }
 
-  let total = base + tsuinAdj + nyuinAdj;
-  if(tsuinAdj !== 0 || nyuinAdj !== 0){
-    steps.push(`【合算】月分 ${fmtMan(base)} ＋ 通院の端数分 ${fmtMan(tsuinAdj)} ＋ 入院の端数分 ${fmtMan(nyuinAdj)} ＝ ${fmtMan(total)}`);
-  }
+  let total = tsuinSubtotal + nyuinAdj;
 
   if(extraTsuinDays>0){
     const add = (extraTsuinDays/30)*extraTsuinInc;
     total += add;
-    steps.push(`通院期間が表の上限（${tMax}ヶ月＝${tMaxDays}日）を${extraTsuinDays}日超えているため、${tMax}ヶ月分の額と${tMax-1}ヶ月分の額の差額（${fmtMan(extraTsuinInc)}）を1ヶ月あたりの加算額として、超えた分に加算します ＝ (${extraTsuinDays}日/30) × ${fmtMan(extraTsuinInc)} ＝ ${fmtMan(add)}`);
+    parts.push(add);
+    lines.push('');
+    lines.push(`${sectionNo}　通院期間が表の上限（${tMax}ヶ月）を超えた分の加算`);
+    lines.push(`(${fmtMan(tbl[tMax][0])}(通院${tMax}ヶ月)−${fmtMan(tbl[tMax-1][0])}(通院${tMax-1}ヶ月))× ${extraTsuinDays}/30 ＝ ${fmtMan(add)}`);
+    sectionNo++;
   }
   if(extraNyuinDays>0){
     const add = (extraNyuinDays/30)*extraNyuinInc;
     total += add;
-    steps.push(`入院期間が表の上限（${niMaxHere}ヶ月＝${nMaxDays}日）を${extraNyuinDays}日超えているため、${niMaxHere}ヶ月分の額と${niMaxHere-1}ヶ月分の額の差額（${fmtMan(extraNyuinInc)}）を1ヶ月あたりの加算額として、超えた分に加算します ＝ (${extraNyuinDays}日/30) × ${fmtMan(extraNyuinInc)} ＝ ${fmtMan(add)}`);
+    parts.push(add);
+    lines.push('');
+    lines.push(`${sectionNo}　入院期間が表の上限（${niMaxHere}ヶ月）を超えた分の加算`);
+    lines.push(`(${fmtMan(tbl[ti][niMaxHere])}(入院${niMaxHere}ヶ月)−${fmtMan(tbl[ti][niMaxHere-1])}(入院${niMaxHere-1}ヶ月))× ${extraNyuinDays}/30 ＝ ${fmtMan(add)}`);
+    sectionNo++;
   }
 
-  return {value: total, steps};
+  lines.push('');
+  lines.push(`${sectionNo}　入通院慰謝料の合計`);
+  if(parts.length > 1){
+    lines.push(`${parts.map(fmtMan).join('＋ ')} ＝ ${fmtMan(total)}`);
+  } else {
+    lines.push(`${fmtMan(total)}`);
+  }
+
+  return {value: total, lines};
 }
 
 // ============================================================
@@ -1543,8 +1571,8 @@ function calcAll(){
   const injType = v('i-injury-type');
   const tsuinDaysVal = nv('i-tsuin-days');
   let isharyo, typeName;
-  const isharyoSteps = [];
-  isharyoSteps.push(`入院日数は${nyuindays}日、通院日数は${tsuinDaysVal}日です。`);
+  const isharyoContext = [];
+  let isharyoBody = '';
 
   if(currentBook==='midori'){
     const jitsuDays = nv('i-jitsu-tsuin-days');
@@ -1552,18 +1580,18 @@ function calcAll(){
     if(jitsuDays > 0){
       const capDays = jitsuDays * 3.5;
       effectiveTsuinDays = Math.min(tsuinDaysVal, capDays);
-      isharyoSteps.push(`緑本のルール: 「実際に通院した日数×3.5」と「通院期間の日数」を比べ、少ない方を通院期間として使います。実通院${jitsuDays}日 × 3.5 ＝ ${capDays}日、通院期間 ＝ ${tsuinDaysVal}日。少ない方の${effectiveTsuinDays}日を通院期間とします。`);
+      isharyoContext.push(`緑本のルール: 「実際に通院した日数×3.5」と「通院期間の日数」を比べ、少ない方を通院期間として使います。実通院${jitsuDays}日 × 3.5 ＝ ${capDays}日、通院期間 ＝ ${tsuinDaysVal}日。少ない方の${effectiveTsuinDays}日を通院期間とします。`);
     }
     const muchiuchi = document.getElementById('i-muchiuchi') && document.getElementById('i-muchiuchi').checked;
     const tbl = injType==='severe' ? GREEN_ISHARYO_SEVERE : GREEN_ISHARYO_NORMAL;
     const totalCap = injType==='severe' ? null : GREEN_ISHARYO_NORMAL_TOTAL_CAP;
-    isharyoSteps.push(`傷病区分は「${injType==='severe'?'重傷':'通常'}」なので、緑本（大阪基準）の${injType==='severe'?'重傷用':'通常用'}の慰謝料表を使います。`);
+    isharyoContext.push(`傷病区分は「${injType==='severe'?'重傷':'通常'}」なので、緑本（大阪基準）の${injType==='severe'?'重傷用':'通常用'}の慰謝料表を使います。`);
     const detail = lookupIsharyoDetailed(effectiveTsuinDays, nyuindays, tbl, 25, 12, null, null, totalCap);
-    isharyoSteps.push(...detail.steps);
+    isharyoBody = detail.lines.join('<br>');
     let base = detail.value;
     if(muchiuchi){
       const reduced = base * 2/3;
-      isharyoSteps.push(`軽度の神経症状（むちうち症）・軽度の打撲/挫創（傷）にあたるため、ここまでの金額を3分の2にします → ${fmtMan(base)} × 2/3 ＝ ${fmtMan(reduced)}`);
+      isharyoBody += `<br><br>軽度の神経症状（むちうち症）・軽度の打撲/挫創（傷）にあたるため、ここまでの金額を3分の2にします → ${fmtMan(base)} × 2/3 ＝ ${fmtMan(reduced)}`;
       base = reduced;
     }
     isharyo = base;
@@ -1576,18 +1604,17 @@ function calcAll(){
       const multiplier = isLight ? 3 : 3.5;
       const capDaysAka = jitsuDaysAka * multiplier;
       effectiveTsuinDaysAka = Math.min(tsuinDaysVal, capDaysAka);
-      isharyoSteps.push(`赤い本のルール: 通院が長期にわたる場合、実際に通院した日数×${multiplier}を通院期間の目安とすることがあります（${isLight?'別表Ⅱ（むちうち等）は3倍':'別表Ⅰ（通常・重傷）は3.5倍'}）。実通院${jitsuDaysAka}日 × ${multiplier} ＝ ${capDaysAka}日、通院期間 ＝ ${tsuinDaysVal}日。少ない方の${effectiveTsuinDaysAka}日を通院期間とします。`);
+      isharyoContext.push(`赤い本のルール: 通院が長期にわたる場合、実際に通院した日数×${multiplier}を通院期間の目安とすることがあります（${isLight?'別表Ⅱ（むちうち等）は3倍':'別表Ⅰ（通常・重傷）は3.5倍'}）。実通院${jitsuDaysAka}日 × ${multiplier} ＝ ${capDaysAka}日、通院期間 ＝ ${tsuinDaysVal}日。少ない方の${effectiveTsuinDaysAka}日を通院期間とします。`);
     }
-    isharyoSteps.push(`傷病区分は「${isLight?'軽傷':'重傷'}」なので、赤い本（東京基準）の${isLight?'軽傷用（別表Ⅱ）':'重傷用（別表Ⅰ）'}の慰謝料表を使います。`);
+    isharyoContext.push(`傷病区分は「${isLight?'軽傷':'重傷'}」なので、赤い本（東京基準）の${isLight?'軽傷用（別表Ⅱ）':'重傷用（別表Ⅰ）'}の慰謝料表を使います。`);
     const tbl = isLight ? ISHARYO_LIGHT : ISHARYO_HEAVY;
     const detail = lookupIsharyoDetailed(effectiveTsuinDaysAka, nyuindays, tbl, 15, 15);
-    isharyoSteps.push(...detail.steps);
+    isharyoBody = detail.lines.join('<br>');
     isharyo = detail.value;
     typeName = isLight?'軽傷':'重傷';
   }
 
-  const isharyoFormula = isharyoSteps.map((st,i)=>`${i+1}. ${st}`).join('<br>') +
-    `<br><strong>→ 入通院慰謝料の合計 ＝ ${fmtMan(isharyo)}</strong>`;
+  const isharyoFormula = [...isharyoContext, isharyoBody].join('<br>');
   items.push({label:'入通院慰謝料', val:isharyo,
     desc:'入院や通院をしたこと自体で受けた精神的なつらさへの補償です。入院期間と通院期間の長さの組み合わせを、あらかじめ決められた金額表（今回は' + (currentBook==='midori'?'緑本（大阪基準）':'赤い本（東京基準）') + '）に当てはめて金額を求めます。期間が長いほど金額は増えますが、増え方は次第に緩やかになります。',
     formula:isharyoFormula});
