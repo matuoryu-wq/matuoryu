@@ -325,7 +325,7 @@
       <div class="card-title">入通院慰謝料 <button class="help-btn" onclick="showHelp('nyutsuin_isharyo')">詳しく</button></div>
       <div class="form-group" style="margin-bottom:10px">
         <label>傷病区分</label>
-        <select id="i-injury-type">
+        <select id="i-injury-type" onchange="updateJitsuTsuinNote()">
           <option value="light">軽傷（むち打ち・打撲・擦過傷等）</option>
           <option value="heavy">重傷（骨折・脱臼・手術・内臓損傷等）</option>
         </select>
@@ -341,12 +341,12 @@
           <div class="input-wrap"><input type="number" id="i-tsuin-days" placeholder="例：83" min="0"><span class="unit">日</span></div>
         </div>
       </div>
-      <div id="midori-tsuin-extra" style="display:none">
+      <div id="midori-tsuin-extra">
         <div class="form-group" style="margin-bottom:4px">
           <label>実通院日数（実際に通院した日数・任意）</label>
-          <div class="input-wrap"><input type="number" id="i-jitsu-tsuin-days" placeholder="例：40" min="0"><span class="unit">日</span></div>
+          <div class="input-wrap"><input type="number" id="i-jitsu-tsuin-days" placeholder="例：40" min="0" onchange="updateJitsuTsuinNote()"><span class="unit">日</span></div>
         </div>
-        <div class="note" style="margin-top:2px;margin-bottom:10px"><span class="note-icon">ℹ️</span>緑本（大阪基準）では、実通院期間（始期〜終期の日数）と実通院日数を3.5倍した日数を比較し、少ない方を通院期間として計算します。不規則・長期の通院の場合に用います。空欄の場合は入力した通院期間（日数）をそのまま使用します。</div>
+        <div class="note" style="margin-top:2px;margin-bottom:10px" id="jitsu-tsuin-note"><span class="note-icon">ℹ️</span></div>
       </div>
       <div class="formula-header">
         <div class="fh-title">入通院慰謝料の計算式</div>
@@ -649,7 +649,8 @@
         <div class="fh-vars">
           手順: ①日数÷30で月数を算出　②整数部分の月の金額と次の月の金額の差を求める　③差額×端数を加算<br>
           例: 通院72日 ＝ 2.4ヶ月 → 軽傷（入院なし）: 36 + (53−36) × 0.4 ＝ 36 + 6.8 ＝ <strong>42.8万円</strong><br>
-          12ヶ月超の場合: 12ヶ月の値を上限としてそれ以上は1ヶ月あたり軽傷約2万円・重傷約3万円を加算（目安）
+          表の上限（15ヶ月）を超える場合: 15ヶ月の値を基準に、15ヶ月の値と14ヶ月の値の差額を1ヶ月あたりの加算額とする（例: 別表Ⅰの16ヶ月の入院慰謝料額は340万円＋(340万円−334万円)＝346万円）<br>
+          通院が長期にわたる場合: 実通院日数×3.5（別表Ⅰ）・×3（別表Ⅱ）を通院期間の目安とすることがある
         </div>
       </div>
     </div>
@@ -760,39 +761,46 @@ function getLeibniz(years){
   return LEIBNIZ[y]||0;
 }
 
-// 慰謝料表 [通院index 0-12][入院index 0-6]
-// 通院index 0=なし, 1=1ヶ月, ... 12=12ヶ月
-// 入院index 0=なし, 1=1ヶ月, ... 6=6ヶ月
+// 慰謝料表（赤い本 別表Ⅰ・別表Ⅱ、単位：万円）[通院index 0-15][入院index 0-15]
+// 通院index 0=なし, 1=1ヶ月, ... 15=15ヶ月／入院index 0=なし, 1=1ヶ月, ... 15=15ヶ月
+// 別表Ⅱ（むちうち等軽傷用）
 const ISHARYO_LIGHT = [
-  [0,35,66,92,116,135,152],   // 通院なし
-  [19,52,83,106,128,145,160], // 1ヶ月
-  [36,69,97,118,138,153,166], // 2ヶ月
-  [53,83,109,128,146,159,172],// 3ヶ月
-  [67,95,119,136,152,165,176],// 4ヶ月
-  [79,105,127,142,158,169,180],// 5ヶ月
-  [89,113,133,148,162,173,182],// 6ヶ月
-  [97,119,139,152,166,175,183],// 7ヶ月
-  [103,125,143,156,168,176,184],// 8ヶ月
-  [109,129,147,158,169,177,185],// 9ヶ月
-  [113,133,149,159,170,178,186],// 10ヶ月
-  [117,135,150,160,171,179,187],// 11ヶ月
-  [119,136,151,161,172,180,188] // 12ヶ月
+  [0,35,66,92,116,135,152,165,176,186,195,204,211,218,223,228],
+  [19,52,83,106,128,145,160,171,182,190,199,206,212,219,224,229],
+  [36,69,97,118,138,153,166,177,186,194,201,207,213,220,225,230],
+  [53,83,109,128,146,159,172,181,190,196,202,208,214,221,226,231],
+  [67,95,119,136,152,165,176,185,192,197,203,209,214,221,227,232],
+  [79,105,127,142,158,169,180,187,193,198,204,210,216,222,227,232],
+  [89,113,133,148,162,173,182,188,194,199,205,211,217,223,228,233],
+  [97,119,139,152,166,175,183,189,195,200,206,212,218,224,229,233],
+  [103,125,143,156,168,176,184,190,196,201,207,213,219,224,229,234],
+  [109,129,147,158,169,177,185,191,197,202,208,214,219,225,230,235],
+  [113,133,149,159,170,178,186,192,197,203,208,214,220,225,230,235],
+  [117,135,150,160,171,179,187,193,198,204,209,215,220,226,231,236],
+  [119,136,151,161,172,180,188,193,199,204,210,215,221,226,231,236],
+  [120,137,152,162,173,181,189,194,200,205,211,216,221,227,232,237],
+  [121,138,153,163,174,182,190,195,201,206,211,217,222,227,232,237],
+  [122,139,154,164,175,183,191,196,201,207,212,217,222,228,233,238]
 ];
 
+// 別表Ⅰ（通常・重傷用）
 const ISHARYO_HEAVY = [
-  [0,53,101,145,184,217,244],
-  [28,77,122,162,199,228,252],
-  [52,98,139,177,210,236,260],
-  [73,115,154,188,218,244,267],
-  [90,130,165,196,226,251,273],
-  [105,141,173,204,233,257,278],
-  [116,149,181,211,239,262,282],
-  [124,157,188,217,244,266,286],
-  [132,164,194,222,248,270,290],
-  [139,170,199,226,252,274,292],
-  [145,175,203,230,256,276,294],
-  [150,179,207,234,258,278,296],
-  [154,183,211,236,260,280,298]
+  [0,53,101,145,184,217,244,266,284,297,306,314,321,328,334,340],
+  [28,77,122,162,199,228,252,274,291,303,311,318,325,332,336,342],
+  [52,98,139,177,210,236,260,281,297,308,315,322,329,334,338,342],
+  [73,115,154,188,218,244,267,287,302,312,319,326,331,336,340,344],
+  [90,130,165,196,226,251,273,292,306,316,323,329,334,338,342,346],
+  [105,141,173,204,233,257,278,296,310,320,327,333,338,342,346,350],
+  [116,149,181,211,239,262,282,300,314,322,329,335,340,344,348,352],
+  [124,157,188,217,244,266,286,304,316,325,332,338,344,347,350,353],
+  [132,164,194,222,248,270,290,306,318,326,334,339,344,347,350,354],
+  [139,170,199,226,252,274,292,308,320,329,336,341,346,349,352,355],
+  [145,175,203,230,256,276,294,310,322,331,338,343,348,351,354,356],
+  [150,179,207,234,258,280,296,312,325,334,340,345,350,353,356,357],
+  [154,183,211,236,262,282,300,316,328,336,342,347,352,355,357,358],
+  [158,187,213,238,264,286,304,318,330,338,344,349,353,356,358,359],
+  [162,191,215,240,266,288,306,320,331,340,346,350,354,357,359,360],
+  [164,191,217,242,266,289,307,321,332,341,347,351,355,358,360,361]
 ];
 
 // ============================================================
@@ -912,11 +920,12 @@ function fmtMan(val){return val.toLocaleString('ja-JP',{maximumFractionDigits:2,
 function fmtEn(val){return '約'+Math.round(val*10000).toLocaleString('ja-JP')+'円';}
 function fmt2(val){return val.toLocaleString('ja-JP',{maximumFractionDigits:2,minimumFractionDigits:0});}
 
-// 慰謝料テーブル参照（月数は小数OK）
 // 慰謝料表を参照し、計算過程（ステップごとの説明文）も一緒に返す（赤い本・緑本共通）
-// 慰謝料表を参照する（実務標準の方法：整数月の基準額を出し、端数分を通院・入院それぞれ計算して合算する）
 // 通院・入院の「日数」から慰謝料表の金額を求める（端数は◯/30の分数のまま正確に計算し、丸めない）
-function lookupIsharyoDetailed(tsuinDays, nyuinDays, tbl, tMax, nMax, extraTsuinInc, extraNyuinInc){
+// 表の範囲を超える場合の加算額は、指定がなければ表本体の記載通り「最後の月の額－その前の月の額」を1ヶ月あたりの目安として動的に算出する
+function lookupIsharyoDetailed(tsuinDays, nyuinDays, tbl, tMax, nMax, extraTsuinIncOverride, extraNyuinIncOverride){
+  const extraTsuinInc = extraTsuinIncOverride != null ? extraTsuinIncOverride : (tbl[tMax][0] - tbl[tMax-1][0]);
+  const extraNyuinInc = extraNyuinIncOverride != null ? extraNyuinIncOverride : (tbl[0][nMax] - tbl[0][nMax-1]);
   const tMaxDays = tMax*30, nMaxDays = nMax*30;
   const extraTsuinDays = Math.max(0, tsuinDays - tMaxDays);
   const extraNyuinDays = Math.max(0, nyuinDays - nMaxDays);
@@ -957,12 +966,12 @@ function lookupIsharyoDetailed(tsuinDays, nyuinDays, tbl, tMax, nMax, extraTsuin
   if(extraTsuinDays>0){
     const add = (extraTsuinDays/30)*extraTsuinInc;
     total += add;
-    steps.push(`通院期間が表の上限（${tMax}ヶ月＝${tMaxDays}日）を${extraTsuinDays}日超えているため、超えた分は1ヶ月あたり${extraTsuinInc}万円の目安で加算します ＝ (${extraTsuinDays}日/30) × ${extraTsuinInc}万円 ＝ ${fmtMan(add)}`);
+    steps.push(`通院期間が表の上限（${tMax}ヶ月＝${tMaxDays}日）を${extraTsuinDays}日超えているため、${tMax}ヶ月分の額と${tMax-1}ヶ月分の額の差額（${fmtMan(extraTsuinInc)}）を1ヶ月あたりの加算額として、超えた分に加算します ＝ (${extraTsuinDays}日/30) × ${fmtMan(extraTsuinInc)} ＝ ${fmtMan(add)}`);
   }
   if(extraNyuinDays>0){
     const add = (extraNyuinDays/30)*extraNyuinInc;
     total += add;
-    steps.push(`入院期間が表の上限（${nMax}ヶ月＝${nMaxDays}日）を${extraNyuinDays}日超えているため、超えた分は1ヶ月あたり${extraNyuinInc}万円の目安で加算します ＝ (${extraNyuinDays}日/30) × ${extraNyuinInc}万円 ＝ ${fmtMan(add)}`);
+    steps.push(`入院期間が表の上限（${nMax}ヶ月＝${nMaxDays}日）を${extraNyuinDays}日超えているため、${nMax}ヶ月分の額と${nMax-1}ヶ月分の額の差額（${fmtMan(extraNyuinInc)}）を1ヶ月あたりの加算額として、超えた分に加算します ＝ (${extraNyuinDays}日/30) × ${fmtMan(extraNyuinInc)} ＝ ${fmtMan(add)}`);
   }
 
   return {value: total, steps};
@@ -1062,12 +1071,28 @@ function setBook(book){
   document.getElementById('book-btn-aka').classList.toggle('active', book==='aka');
   document.getElementById('book-btn-midori').classList.toggle('active', book==='midori');
   updateInjuryTypeOptions();
-  const midoriExtra = document.getElementById('midori-tsuin-extra');
-  if(midoriExtra) midoriExtra.style.display = book==='midori' ? 'block' : 'none';
   const muchiuchiWrap = document.getElementById('muchiuchi-wrap');
   if(muchiuchiWrap) muchiuchiWrap.style.display = book==='midori' ? 'flex' : 'none';
+  updateJitsuTsuinNote();
 
   updateGradeFields();
+}
+
+// 実通院日数の特則（緑本の3.5倍ルール／赤い本の3倍・3.5倍ルール）の説明文を、現在の基準・傷病区分に応じて更新する
+function updateJitsuTsuinNote(){
+  const noteEl = document.getElementById('jitsu-tsuin-note');
+  if(!noteEl) return;
+  const injType = v('i-injury-type');
+  let text;
+  if(currentBook==='midori'){
+    text = '緑本（大阪基準）では、実通院期間（始期〜終期の日数）と実通院日数を3.5倍した日数を比較し、少ない方を通院期間として計算します。不規則・長期の通院の場合に用います。空欄の場合は入力した通院期間（日数）をそのまま使用します。';
+  } else {
+    const isLight = injType==='light';
+    text = isLight
+      ? '赤い本（東京基準）のむちうち症等（別表Ⅱ）では、通院が長期にわたる場合、実際に通院した日数の3倍程度を通院期間の目安とすることがあります。空欄の場合は入力した通院期間（日数）をそのまま使用します。'
+      : '赤い本（東京基準）の通常・重傷（別表Ⅰ）では、通院が長期にわたる場合、通院頻度をふまえ実通院日数の3.5倍を通院期間の目安とすることがあります。空欄の場合は入力した通院期間（日数）をそのまま使用します。';
+  }
+  noteEl.innerHTML = '<span class="note-icon">ℹ️</span>' + text;
 }
 
 function updateInjuryTypeOptions(){
@@ -1538,9 +1563,17 @@ function calcAll(){
     typeName = muchiuchi ? 'むちうち等（通常表×2/3）' : (injType==='severe'?'重傷':'通常');
   } else {
     const isLight = injType==='light';
-    isharyoSteps.push(`傷病区分は「${isLight?'軽傷':'重傷'}」なので、赤い本（東京基準）の${isLight?'軽傷用':'重傷用'}の慰謝料表を使います。`);
+    const jitsuDaysAka = nv('i-jitsu-tsuin-days');
+    let effectiveTsuinDaysAka = tsuinDaysVal;
+    if(jitsuDaysAka > 0){
+      const multiplier = isLight ? 3 : 3.5;
+      const capDaysAka = jitsuDaysAka * multiplier;
+      effectiveTsuinDaysAka = Math.min(tsuinDaysVal, capDaysAka);
+      isharyoSteps.push(`赤い本のルール: 通院が長期にわたる場合、実際に通院した日数×${multiplier}を通院期間の目安とすることがあります（${isLight?'別表Ⅱ（むちうち等）は3倍':'別表Ⅰ（通常・重傷）は3.5倍'}）。実通院${jitsuDaysAka}日 × ${multiplier} ＝ ${capDaysAka}日、通院期間 ＝ ${tsuinDaysVal}日。少ない方の${effectiveTsuinDaysAka}日を通院期間とします。`);
+    }
+    isharyoSteps.push(`傷病区分は「${isLight?'軽傷':'重傷'}」なので、赤い本（東京基準）の${isLight?'軽傷用（別表Ⅱ）':'重傷用（別表Ⅰ）'}の慰謝料表を使います。`);
     const tbl = isLight ? ISHARYO_LIGHT : ISHARYO_HEAVY;
-    const detail = lookupIsharyoDetailed(tsuinDaysVal, nyuindays, tbl, 12, 6, isLight?2:3, isLight?4:6);
+    const detail = lookupIsharyoDetailed(effectiveTsuinDaysAka, nyuindays, tbl, 15, 15);
     isharyoSteps.push(...detail.steps);
     isharyo = detail.value;
     typeName = isLight?'軽傷':'重傷';
@@ -1783,8 +1816,8 @@ function calcAll(){
 // TABLE RENDERING
 // ============================================================
 function renderIsharyoTable(tableData, wrapperId){
-  const cols = ['なし','1ヶ月','2ヶ月','3ヶ月','4ヶ月','5ヶ月','6ヶ月'];
-  const rows = ['通院なし','1ヶ月','2ヶ月','3ヶ月','4ヶ月','5ヶ月','6ヶ月','7ヶ月','8ヶ月','9ヶ月','10ヶ月','11ヶ月','12ヶ月'];
+  const cols = ['なし','1ヶ月','2ヶ月','3ヶ月','4ヶ月','5ヶ月','6ヶ月','7ヶ月','8ヶ月','9ヶ月','10ヶ月','11ヶ月','12ヶ月','13ヶ月','14ヶ月','15ヶ月'];
+  const rows = ['通院なし','1ヶ月','2ヶ月','3ヶ月','4ヶ月','5ヶ月','6ヶ月','7ヶ月','8ヶ月','9ヶ月','10ヶ月','11ヶ月','12ヶ月','13ヶ月','14ヶ月','15ヶ月'];
   let th = '<tr><th>通院＼入院</th>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr>';
   let body = rows.map((r,ri)=>{
     let tds = tableData[ri].map(v=>`<td>${v}</td>`).join('');
@@ -2148,6 +2181,7 @@ document.addEventListener('DOMContentLoaded', function(){
   updateJobFields();
   updateDeathFields();
   toggleChienFields();
+  updateJitsuTsuinNote();
   regenerateSample();
   const today = new Date().toISOString().slice(0,10);
   const calcDateEl = document.getElementById('i-calc-date');
