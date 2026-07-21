@@ -807,6 +807,7 @@ const ISHARYO_HEAVY = [
 // 緑本（大阪弁護士会・大阪地裁基準）平成17年基準 入通院慰謝料表
 // 行=通院月数(0-25) / 列=入院月数(0-12)。26ヶ月・13ヶ月超は概算加算。
 // ============================================================
+// 通院(行)+入院(列)の合計が29ヶ月を超える組み合わせは表に存在しない（三角形状に欠けている）
 const GREEN_ISHARYO_NORMAL = [
   [0,53,101,146,186,220,250,266,277,286,295,303,308],
   [27,76,121,164,201,228,255,270,282,291,298,306,310],
@@ -817,24 +818,25 @@ const GREEN_ISHARYO_NORMAL = [
   [120,153,183,213,236,259,275,290,300,306,311,318,322],
   [128,161,193,217,242,263,280,294,302,308,313,320,324],
   [136,169,198,224,248,267,284,298,305,311,316,323,326],
-  [144,176,204,228,254,271,288,301,307,313,318,325,329],
-  [152,182,210,232,260,274,292,304,310,316,320,328,331],
-  [160,188,216,236,264,277,294,306,312,318,323,330,334],
-  [166,194,220,241,268,281,296,308,314,320,325,332,336],
-  [170,199,224,246,271,284,299,311,317,323,328,335,338],
-  [175,203,228,250,275,287,301,313,319,325,330,337,341],
-  [180,206,232,253,277,289,304,316,322,328,332,340,343],
-  [184,210,235,257,280,292,306,318,324,330,335,342,346],
-  [187,214,239,260,282,294,308,320,326,332,337,344,348],
-  [191,219,244,266,288,300,315,327,333,339,344,351,355],
-  [194,222,248,270,293,305,320,332,338,344,350,357,361],
-  [197,225,252,274,297,310,325,337,343,350,355,362,367],
-  [199,228,254,277,300,313,328,341,347,353,359,366,370],
-  [202,231,258,281,305,318,333,346,352,359,364,372,376],
-  [204,234,261,284,308,321,336,349,356,362,368,375,380],
-  [206,236,263,286,311,324,339,353,359,366,371,379,384],
-  [209,239,267,291,315,329,344,358,364,371,377,385,389]
+  [144,176,204,232,254,271,288,301,307,313,318,325,329],
+  [152,182,210,236,260,274,292,304,310,316,320,328,331],
+  [160,188,216,241,264,277,294,306,312,318,323,330,334],
+  [166,194,220,246,268,281,296,308,314,320,325,332,336],
+  [170,199,224,250,271,284,299,311,317,323,328,335,338],
+  [175,203,228,253,275,287,301,313,319,325,330,337,341],
+  [180,206,232,257,277,289,304,316,322,328,332,340,343],
+  [184,210,235,260,280,292,306,318,324,330,335,342,346],
+  [187,214,239,263,282,294,308,320,326,332,337,344,348],
+  [191,217,242,265,284,296,311,323,329,335,340,347],
+  [194,221,245,268,287,299,313,325,331,337,342],
+  [197,223,247,270,289,301,316,328,334,340],
+  [199,226,250,272,292,304,318,330,336],
+  [202,228,252,275,294,306,320,332],
+  [204,230,254,277,296,308,323],
+  [206,233,257,280,299,311],
+  [209,235,259,282,301]
 ];
+const GREEN_ISHARYO_NORMAL_TOTAL_CAP = 29;
 
 const GREEN_ISHARYO_SEVERE = [
   [0,64,121,175,223,264,300,319,332,343,354,364,370],
@@ -923,18 +925,23 @@ function fmt2(val){return val.toLocaleString('ja-JP',{maximumFractionDigits:2,mi
 // 慰謝料表を参照し、計算過程（ステップごとの説明文）も一緒に返す（赤い本・緑本共通）
 // 通院・入院の「日数」から慰謝料表の金額を求める（端数は◯/30の分数のまま正確に計算し、丸めない）
 // 表の範囲を超える場合の加算額は、指定がなければ表本体の記載通り「最後の月の額－その前の月の額」を1ヶ月あたりの目安として動的に算出する
-function lookupIsharyoDetailed(tsuinDays, nyuinDays, tbl, tMax, nMax, extraTsuinIncOverride, extraNyuinIncOverride){
+function lookupIsharyoDetailed(tsuinDays, nyuinDays, tbl, tMax, nMax, extraTsuinIncOverride, extraNyuinIncOverride, totalCap){
+  // 一部の表（緑本・通常表など）は通院＋入院の合計月数が totalCap を超える組み合わせが存在しない（行ごとに列数が減る）
+  const rowNMax = (t) => totalCap != null ? Math.min(nMax, totalCap - t) : nMax;
   const extraTsuinInc = extraTsuinIncOverride != null ? extraTsuinIncOverride : (tbl[tMax][0] - tbl[tMax-1][0]);
-  const extraNyuinInc = extraNyuinIncOverride != null ? extraNyuinIncOverride : (tbl[0][nMax] - tbl[0][nMax-1]);
-  const tMaxDays = tMax*30, nMaxDays = nMax*30;
+  const tMaxDays = tMax*30;
   const extraTsuinDays = Math.max(0, tsuinDays - tMaxDays);
-  const extraNyuinDays = Math.max(0, nyuinDays - nMaxDays);
   const clampedTsuinDays = Math.min(tsuinDays, tMaxDays);
-  const clampedNyuinDays = Math.min(nyuinDays, nMaxDays);
 
   const ti = Math.floor(clampedTsuinDays/30);
+  const niMaxHere = rowNMax(ti);
+  const nMaxDays = niMaxHere*30;
+  const extraNyuinDays = Math.max(0, nyuinDays - nMaxDays);
+  const clampedNyuinDays = Math.min(nyuinDays, nMaxDays);
+  const extraNyuinInc = extraNyuinIncOverride != null ? extraNyuinIncOverride : (tbl[ti][niMaxHere] - tbl[ti][niMaxHere-1]);
+
   const ni = Math.floor(clampedNyuinDays/30);
-  const ti2 = Math.min(ti+1, tMax), ni2 = Math.min(ni+1, nMax);
+  const ti2 = Math.min(ti+1, tMax), ni2 = Math.min(ni+1, niMaxHere);
   const tRemDays = Math.round((clampedTsuinDays - ti*30)*100)/100;
   const nRemDays = Math.round((clampedNyuinDays - ni*30)*100)/100;
 
@@ -944,7 +951,8 @@ function lookupIsharyoDetailed(tsuinDays, nyuinDays, tbl, tMax, nMax, extraTsuin
 
   let tsuinAdj = 0;
   if(tRemDays > 0 && ti2 !== ti){
-    const nextVal = tbl[ti2][ni];
+    const niForTi2 = Math.min(ni, rowNMax(ti2));
+    const nextVal = tbl[ti2][niForTi2];
     const diff = nextVal - base;
     tsuinAdj = diff * (tRemDays/30);
     steps.push(`【端数：通院】通院期間の端数は${tRemDays}日（＝30日のうち${tRemDays}/30）です。入院${ni}ヶ月分のまま通院だけ1ヶ月増やした「通院${ti2}ヶ月・入院${ni}ヶ月」の金額${fmtMan(nextVal)}と、月分の「通院${ti}ヶ月・入院${ni}ヶ月」の金額${fmtMan(base)}との差額${fmtMan(diff)}に、端数${tRemDays}/30をかけます ＝ ${fmtMan(diff)} × ${tRemDays}/30 ＝ ${fmtMan(tsuinAdj)}`);
@@ -971,7 +979,7 @@ function lookupIsharyoDetailed(tsuinDays, nyuinDays, tbl, tMax, nMax, extraTsuin
   if(extraNyuinDays>0){
     const add = (extraNyuinDays/30)*extraNyuinInc;
     total += add;
-    steps.push(`入院期間が表の上限（${nMax}ヶ月＝${nMaxDays}日）を${extraNyuinDays}日超えているため、${nMax}ヶ月分の額と${nMax-1}ヶ月分の額の差額（${fmtMan(extraNyuinInc)}）を1ヶ月あたりの加算額として、超えた分に加算します ＝ (${extraNyuinDays}日/30) × ${fmtMan(extraNyuinInc)} ＝ ${fmtMan(add)}`);
+    steps.push(`入院期間が表の上限（${niMaxHere}ヶ月＝${nMaxDays}日）を${extraNyuinDays}日超えているため、${niMaxHere}ヶ月分の額と${niMaxHere-1}ヶ月分の額の差額（${fmtMan(extraNyuinInc)}）を1ヶ月あたりの加算額として、超えた分に加算します ＝ (${extraNyuinDays}日/30) × ${fmtMan(extraNyuinInc)} ＝ ${fmtMan(add)}`);
   }
 
   return {value: total, steps};
@@ -1548,8 +1556,9 @@ function calcAll(){
     }
     const muchiuchi = document.getElementById('i-muchiuchi') && document.getElementById('i-muchiuchi').checked;
     const tbl = injType==='severe' ? GREEN_ISHARYO_SEVERE : GREEN_ISHARYO_NORMAL;
+    const totalCap = injType==='severe' ? null : GREEN_ISHARYO_NORMAL_TOTAL_CAP;
     isharyoSteps.push(`傷病区分は「${injType==='severe'?'重傷':'通常'}」なので、緑本（大阪基準）の${injType==='severe'?'重傷用':'通常用'}の慰謝料表を使います。`);
-    const detail = lookupIsharyoDetailed(effectiveTsuinDays, nyuindays, tbl, 25, 12);
+    const detail = lookupIsharyoDetailed(effectiveTsuinDays, nyuindays, tbl, 25, 12, null, null, totalCap);
     isharyoSteps.push(...detail.steps);
     let base = detail.value;
     if(muchiuchi){
@@ -1831,7 +1840,7 @@ function renderGreenIsharyoTable(tableData, wrapperId){
     '13ヶ月','14ヶ月','15ヶ月','16ヶ月','17ヶ月','18ヶ月','19ヶ月','20ヶ月','21ヶ月','22ヶ月','23ヶ月','24ヶ月','25ヶ月'];
   let th = '<tr><th>通院＼入院</th>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr>';
   let body = rows.map((r,ri)=>{
-    let tds = tableData[ri].map(v=>`<td>${v}</td>`).join('');
+    let tds = cols.map((c,ci)=>`<td>${tableData[ri][ci] != null ? tableData[ri][ci] : ''}</td>`).join('');
     return `<tr><td class="row-header">${r}</td>${tds}</tr>`;
   }).join('');
   document.getElementById(wrapperId).innerHTML =
