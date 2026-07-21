@@ -947,7 +947,7 @@ function lookupIsharyoDetailed(tsuinDays, nyuinDays, tbl, tMax, nMax, extraTsuin
     const nextVal = tbl[ti2][ni];
     const diff = nextVal - base;
     tsuinAdj = diff * (tRemDays/30);
-    steps.push(`【端数：通院】通院期間の端数は${tRemDays}日（＝30日のうち${tRemDays}/30）です。通院${ti2}ヶ月分の金額${fmtMan(nextVal)}と通院${ti}ヶ月分の金額${fmtMan(base)}との差額${fmtMan(diff)}に、端数${tRemDays}/30をかけます ＝ ${fmtMan(diff)} × ${tRemDays}/30 ＝ ${fmtMan(tsuinAdj)}`);
+    steps.push(`【端数：通院】通院期間の端数は${tRemDays}日（＝30日のうち${tRemDays}/30）です。入院${ni}ヶ月分のまま通院だけ1ヶ月増やした「通院${ti2}ヶ月・入院${ni}ヶ月」の金額${fmtMan(nextVal)}と、月分の「通院${ti}ヶ月・入院${ni}ヶ月」の金額${fmtMan(base)}との差額${fmtMan(diff)}に、端数${tRemDays}/30をかけます ＝ ${fmtMan(diff)} × ${tRemDays}/30 ＝ ${fmtMan(tsuinAdj)}`);
   }
 
   let nyuinAdj = 0;
@@ -955,7 +955,7 @@ function lookupIsharyoDetailed(tsuinDays, nyuinDays, tbl, tMax, nMax, extraTsuin
     const nextVal = tbl[ti][ni2];
     const diff = nextVal - base;
     nyuinAdj = diff * (nRemDays/30);
-    steps.push(`【端数：入院】入院期間の端数は${nRemDays}日（＝30日のうち${nRemDays}/30）です。入院${ni2}ヶ月分の金額${fmtMan(nextVal)}と入院${ni}ヶ月分の金額${fmtMan(base)}との差額${fmtMan(diff)}に、端数${nRemDays}/30をかけます ＝ ${fmtMan(diff)} × ${nRemDays}/30 ＝ ${fmtMan(nyuinAdj)}`);
+    steps.push(`【端数：入院】入院期間の端数は${nRemDays}日（＝30日のうち${nRemDays}/30）です。通院${ti}ヶ月分のまま入院だけ1ヶ月増やした「通院${ti}ヶ月・入院${ni2}ヶ月」の金額${fmtMan(nextVal)}と、月分の「通院${ti}ヶ月・入院${ni}ヶ月」の金額${fmtMan(base)}との差額${fmtMan(diff)}に、端数${nRemDays}/30をかけます ＝ ${fmtMan(diff)} × ${nRemDays}/30 ＝ ${fmtMan(nyuinAdj)}`);
   }
 
   let total = base + tsuinAdj + nyuinAdj;
