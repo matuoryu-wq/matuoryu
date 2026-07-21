@@ -1548,10 +1548,8 @@ function calcAll(){
     }
     const muchiuchi = document.getElementById('i-muchiuchi') && document.getElementById('i-muchiuchi').checked;
     const tbl = injType==='severe' ? GREEN_ISHARYO_SEVERE : GREEN_ISHARYO_NORMAL;
-    const incTsuin = injType==='severe' ? 3 : 2;
-    const incNyuin = injType==='severe' ? 6 : 5;
     isharyoSteps.push(`傷病区分は「${injType==='severe'?'重傷':'通常'}」なので、緑本（大阪基準）の${injType==='severe'?'重傷用':'通常用'}の慰謝料表を使います。`);
-    const detail = lookupIsharyoDetailed(effectiveTsuinDays, nyuindays, tbl, 25, 12, incTsuin, incNyuin);
+    const detail = lookupIsharyoDetailed(effectiveTsuinDays, nyuindays, tbl, 25, 12);
     isharyoSteps.push(...detail.steps);
     let base = detail.value;
     if(muchiuchi){
