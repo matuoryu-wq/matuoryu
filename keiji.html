@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>刑事弁護支援ツール</title>
+<style>
+:root{--primary:#1F3A5F;--primary-hover:#16283F;--primary-light:#EAF0F7;--success:#2F7D5B;--success-light:#EAF6F0;--success-border:#8FCBAF;--warning:#B07A2E;--warning-light:#FBF3E7;--warning-border:#E4B96A;--danger:#B0362E;--danger-light:#FDECEA;--danger-border:#E79892;--border:#D8DEE6;--bg:#F1F4F8;--card:#FFFFFF;--text:#1A2433;--text-muted:#5B6B80;--radius:10px;--shadow:0 1px 4px rgba(20,40,70,.10)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh;padding-bottom:40px}
+.header{background:linear-gradient(135deg,#101E33,#1F3A5F);color:#fff;padding:16px 20px;text-align:center}
+.header h1{font-size:19px;font-weight:700}.header p{font-size:11.5px;opacity:.82;margin-top:3px}
+.disclaimer{background:#FFF7E6;border-bottom:1px solid #E4B96A;color:#7A5416;font-size:11.5px;padding:8px 14px;text-align:center;line-height:1.6}
+.tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:10}
+.tab-btn{flex:0 0 auto;padding:12px 10px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-light)}
+.container{max-width:760px;margin:0 auto;padding:16px 12px}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card-title{font-size:14.5px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.card-sub{font-size:12px;color:var(--text-muted);margin:-6px 0 12px}
+.info-banner{background:var(--primary-light);border:1px solid #B9CBE0;border-radius:var(--radius);padding:11px 14px;margin-bottom:14px;font-size:12.5px;color:#233C5C}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:520px){.form-row{grid-template-columns:1fr}.tab-btn{font-size:12px;padding:11px 8px}}
+.form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.form-row .form-group{margin-bottom:0}
+label{font-size:12px;font-weight:600;color:var(--text-muted)}
+input[type=number],input[type=text],input[type=date],input[type=datetime-local],select,textarea{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13.5px;color:var(--text);background:#fff;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(31,58,95,.12)}
+textarea{resize:vertical;min-height:70px}
+.checkline{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px}
+.checkline input{width:16px;height:16px}
+.btn{padding:9px 16px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover)}
+.btn-outline{background:#fff;border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.btn-danger{background:#fff;border:1.5px solid var(--danger-border);color:var(--danger)}
+.btn-danger:hover{background:var(--danger-light)}
+.btn-sm{padding:5px 10px;font-size:11.5px;border-radius:6px}
+.btn-add{width:100%;padding:9px;border:1.5px dashed var(--border);background:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--primary)}
+.btn-add:hover{background:var(--primary-light);border-color:var(--primary)}
+.case-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.case-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 13px;border-radius:9px;border:1.5px solid var(--border);cursor:pointer;background:#fff}
+.case-item.active{border-color:var(--primary);background:var(--primary-light)}
+.case-item .ci-name{font-weight:700;font-size:13.5px}
+.case-item .ci-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
+.badge{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.badge-navy{background:var(--primary-light);color:var(--primary)}
+.badge-danger{background:var(--danger-light);color:var(--danger);border:1px solid var(--danger-border)}
+.badge-warning{background:var(--warning-light);color:var(--warning);border:1px solid var(--warning-border)}
+.badge-success{background:var(--success-light);color:var(--success);border:1px solid var(--success-border)}
+.badge-gray{background:#EEF1F5;color:var(--text-muted);border:1px solid var(--border)}
+.no-case{padding:24px;text-align:center;color:var(--text-muted);font-size:13px}
+.stage-title{font-size:12px;font-weight:700;color:var(--primary);letter-spacing:.04em;margin:18px 0 10px;display:flex;align-items:center;gap:8px}
+.stage-title:first-child{margin-top:0}
+.stage-title .num{width:20px;height:20px;border-radius:50%;background:var(--primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+.stage-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.deadline-card{border-radius:10px;border:1.5px solid var(--border);padding:14px;margin-bottom:12px;background:#fff}
+.deadline-card.urg-danger{border-color:var(--danger-border);background:var(--danger-light)}
+.deadline-card.urg-warning{border-color:var(--warning-border);background:var(--warning-light)}
+.deadline-card.urg-success{border-color:var(--success-border);background:var(--success-light)}
+.dl-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+.dl-title{font-size:13.5px;font-weight:700}
+.dl-result{font-size:17px;font-weight:800;margin:4px 0 2px}
+.dl-basis{font-size:11.5px;color:var(--primary);font-weight:700;margin-bottom:4px}
+.dl-lawtext{font-size:12px;color:#3A3226;background:#F7F4EC;border-left:3px solid #C8A882;border-radius:0 6px 6px 0;padding:7px 10px;margin-bottom:8px;line-height:1.7}
+.dl-steps{font-size:12px;color:var(--text-muted);background:#F5F7FA;border-radius:6px;padding:8px 10px;margin-bottom:6px}
+.dl-steps div{padding:2px 0;font-family:'Courier New',monospace;line-height:1.8;word-break:break-all}
+.dl-note{font-size:11.5px;color:#7A5416;background:#FFF7E6;border-radius:6px;padding:6px 9px;margin-top:6px}
+.dl-copy{margin-top:8px}
+.remaining{font-size:12px;font-weight:700}
+.sec-title{font-size:11.5px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+table.simple{width:100%;border-collapse:collapse;font-size:12.5px}
+table.simple th{background:#EEF1F5;color:var(--text-muted);padding:7px 8px;text-align:left;font-weight:700;border-bottom:2px solid var(--border)}
+table.simple td{padding:7px 8px;border-bottom:1px dashed var(--border);vertical-align:top}
+table.simple tr:last-child td{border-bottom:none}
+.row-flex{display:flex;gap:8px;align-items:center}
+.entry-item{border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;background:#fff}
+.entry-top{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700;margin-bottom:4px}
+.entry-meta{font-size:11.5px;color:var(--text-muted)}
+.entry-note{font-size:12.5px;margin-top:4px;white-space:pre-wrap}
+.empty-hint{font-size:12.5px;color:var(--text-muted);text-align:center;padding:14px}
+.tpl-btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.tpl-btns button{padding:7px 12px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:600;cursor:pointer;color:var(--text)}
+.tpl-btns button.active{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.copyok{color:var(--success);font-size:12px;font-weight:700;margin-left:8px}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--primary-light);border-radius:8px;font-size:14px;font-weight:700;color:var(--primary);margin-top:6px}
+select[multiple]{min-height:70px}
+.pill-toggle{display:flex;border:1.5px solid var(--border);border-radius:8px;overflow:hidden}
+.pill-toggle button{flex:1;padding:8px;border:none;background:#fff;font-size:12.5px;font-weight:700;color:var(--text-muted);cursor:pointer}
+.pill-toggle button.active{background:var(--primary);color:#fff}
+</style>
+</head>
+<body>
+<header class="header">
+  <h1>⚖️ 刑事弁護支援ツール</h1>
+  <p>身柄拘束期間・期限管理／接見記録／証拠開示／書面／費用</p>
+</header>
+<div class="disclaimer">本ツールの期限計算・条文引用は実務上一般的な解釈に基づく参考情報です。条文は要旨であり、必ず e-Gov 法令検索等で原文・最新の改正状況をご確認のうえご利用ください。データは端末のブラウザ内（localStorage）にのみ保存されます。</div>
+<nav class="tabs">
+  <button class="tab-btn active" onclick="switchTab('cases',this)">📁 事件</button>
+  <button class="tab-btn" onclick="switchTab('custody',this)">⏱️ 身柄拘束期間</button>
+  <button class="tab-btn" onclick="switchTab('deadlines',this)">📅 期限一覧</button>
+  <button class="tab-btn" onclick="switchTab('interviews',this)">🤝 接見記録</button>
+  <button class="tab-btn" onclick="switchTab('documents',this)">📄 書面</button>
+  <button class="tab-btn" onclick="switchTab('evidence',this)">📂 証拠開示</button>
+  <button class="tab-btn" onclick="switchTab('billing',this)">💴 費用</button>
+</nav>
+<div class="container">
+
+<!-- ===== 事件 ===== -->
+<div id="panel-cases" class="panel active">
+  <div class="card">
+    <div class="card-title">事件一覧</div>
+    <div id="caseList" class="case-list"></div>
+    <button class="btn-add" onclick="createCase()">＋ 新規事件を追加</button>
+  </div>
+  <div id="caseDetailWrap"></div>
+</div>
+
+<!-- ===== 身柄拘束期間 ===== -->
+<div id="panel-custody" class="panel">
+  <div id="custodyWrap"></div>
+</div>
+
+<!-- ===== 期限一覧 ===== -->
+<div id="panel-deadlines" class="panel">
+  <div class="card">
+    <div class="card-title">カスタム期限を追加</div>
+    <div class="card-sub">時効・出頭要請・裁判期日など、自動計算に含まれない期限を手動登録できます。</div>
+    <div class="form-row">
+      <div class="form-group"><label>対象事件</label><select id="cd-case"></select></div>
+      <div class="form-group"><label>期限名</label><input type="text" id="cd-name" placeholder="例：公判前整理手続期日"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>日時</label><input type="datetime-local" id="cd-date"></div>
+      <div class="form-group"><label>メモ</label><input type="text" id="cd-note" placeholder="任意"></div>
+    </div>
+    <button class="btn btn-primary" onclick="addCustomDeadline()">追加</button>
+  </div>
+  <div class="sec-title">全事件の期限（近い順）</div>
+  <div id="deadlineDashboard"></div>
+</div>
+
+<!-- ===== 接見記録 ===== -->
+<div id="panel-interviews" class="panel">
+  <div id="interviewsWrap"></div>
+</div>
+
+<!-- ===== 書面 ===== -->
+<div id="panel-documents" class="panel">
+  <div id="documentsWrap"></div>
+</div>
+
+<!-- ===== 証拠開示 ===== -->
+<div id="panel-evidence" class="panel">
+  <div id="evidenceWrap"></div>
+</div>
+
+<!-- ===== 費用 ===== -->
+<div id="panel-billing" class="panel">
+  <div id="billingWrap"></div>
+</div>
+
+</div>
+
+<script>
+/* ============ 法令根拠テキスト（要旨。必ず原文確認のこと） ============ */
+const LAW = {
+  a203: {ref:'刑事訴訟法203条1項', text:'司法警察員は、逮捕された被疑者を受け取ったときは、弁解の機会を与え、留置の必要がないと思料するときは直ちに釈放し、留置の必要があると思料するときは、身体を拘束された時から48時間以内に、書類及び証拠物とともに被疑者を検察官に送致する手続をしなければならない。'},
+  a204: {ref:'刑事訴訟法204条1項', text:'検察官は、逮捕された被疑者を受け取ったとき、又は自ら被疑者を逮捕したときは、弁解の機会を与え、留置の必要がないと思料するときは直ちに釈放し、留置の必要があると思料するときは、身体を拘束された時から48時間以内に裁判官に被疑者の勾留を請求しなければならない。'},
+  a205_1: {ref:'刑事訴訟法205条1項', text:'検察官は、第203条の規定により送致された被疑者を受け取ったときは、被疑者を受け取った時から24時間以内に、裁判官に被疑者の勾留を請求し、又は公訴を提起しなければならない。'},
+  a205_2: {ref:'刑事訴訟法205条2項', text:'前項の時間の制限は、被疑者が身体を拘束された時から72時間を超えることができない。'},
+  a208_1: {ref:'刑事訴訟法208条1項', text:'勾留の請求をした日から10日以内に公訴を提起しないときは、検察官は、直ちに被疑者を釈放しなければならない。'},
+  a208_2: {ref:'刑事訴訟法208条2項', text:'裁判官は、やむを得ない事由があると認めるときは、検察官の請求により、前項の期間を延長することができる。この期間の延長は、通じて10日を超えることができない。'},
+  a208no2: {ref:'刑事訴訟法208条の2', text:'裁判官は、刑法第2編第2章（内乱）・第3章（外患）・第4章（国交）又は第8章（騒乱）の罪にあたる事件については、検察官の請求により、前条第2項の期間を、更に5日を超えない限度で延長することができる。'},
+  a55_1: {ref:'刑事訴訟法55条1項', text:'期間の計算については、時をもって計算するものは即時から起算し、日・月又は年をもって計算するものは初日を算入しない。ただし、時効期間及び勾留の期間の初日は、時間を計算せず1日として計算する（＝初日算入）。'},
+  a60_2: {ref:'刑事訴訟法60条2項', text:'勾留の期間は、公訴の提起があった日から2箇月とする。特に継続の必要がある場合は、具体的理由を付した決定で1箇月ごとに更新できる。ただし、第89条1号・3号・4号・6号に当たる場合を除き、更新は1回に限る。'},
+  a89: {ref:'刑事訴訟法89条（60条2項ただし書の参照条文）', text:'1号 死刑・無期・短期1年以上の懲役等にあたる罪／3号 常習として長期3年以上の懲役等にあたる罪を犯したとき／4号 罪証を隠滅すると疑うに足りる相当な理由があるとき／6号 氏名又は住居が分からないとき　＝これらに該当すれば起訴後勾留の更新回数に制限なし。'},
+  a373: {ref:'刑事訴訟法373条', text:'控訴の申立ては、14日の不変期間内にこれをしなければならない。'},
+  a414: {ref:'刑事訴訟法414条（373条準用）', text:'上告の申立てについても、控訴に関する373条の規定が準用され、申立期間は14日となる。'},
+  a422: {ref:'刑事訴訟法422条', text:'即時抗告の提起期間は、3日とする。'},
+  a429: {ref:'刑事訴訟法429条', text:'勾留、保釈、押収等に関する裁判官の裁判に不服があるときは、簡易裁判所の裁判官がした裁判を除き、その裁判官所属の裁判所に準抗告の申立てをすることができる。期間の定めはなく、勾留が継続する限りいつでも申立て可能。'},
+  a207_1: {ref:'刑事訴訟法207条1項ただし書', text:'起訴前の被疑者勾留については保釈に関する規定は準用されないと解されており、実務上、起訴前の保釈請求は認められない。起訴後（公訴提起後）は88条以下により保釈請求が可能となる。'},
+  shonen17_3: {ref:'少年法17条3項', text:'観護の措置（少年鑑別所送致）の期間は2週間を超えることができない。ただし、特に継続の必要があるときは、決定をもって更新することができる。'},
+  shonen17_4: {ref:'少年法17条4項', text:'前項ただし書の更新は原則1回に限る（＝最大4週間）。ただし、死刑・懲役・禁錮にあたる罪の事件で、証人尋問等の証拠調べのため少年を収容する必要がある一定の場合には、更に2回を限度として更新できる（＝最大8週間）。'},
+  shonen43_3: {ref:'少年法43条3項', text:'検察官は、少年の被疑事件については、やむを得ない場合でなければ勾留を請求することができない。この場合の勾留は少年鑑別所で行うこともできる。'},
+};
+
+/* ============ 日付ユーティリティ ============ */
+function pad(n){return String(n).padStart(2,'0');}
+function toDT(str){return str? new Date(str): null;}
+function addHours(d,h){return new Date(d.getTime()+h*3600*1000);}
+function addDaysExclusive(d,days){const r=new Date(d);r.setDate(r.getDate()+days);return r;} // 初日不算入
+function addDaysInclusive(d,days){const r=new Date(d);r.setDate(r.getDate()+days-1);return r;} // 初日算入(勾留等)
+function addCalendarMonths(d,months){const y=d.getFullYear(),m=d.getMonth(),day=d.getDate();const t=new Date(y,m+months,1);const lastDay=new Date(t.getFullYear(),t.getMonth()+1,0).getDate();t.setDate(Math.min(day,lastDay));t.setHours(d.getHours(),d.getMinutes(),0,0);return t;}
+function addMonthsInclusive(d,months){const t=addCalendarMonths(d,months);t.setDate(t.getDate()-1);return t;}
+const WD=['日','月','火','水','木','金','土'];
+function fmtDT(d){if(!d)return'—';return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())}(${WD[d.getDay()]}) ${pad(d.getHours())}:${pad(d.getMinutes())}`;}
+function fmtD(d){if(!d)return'—';return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())}(${WD[d.getDay()]})`;}
+function fmtDTshort(d){if(!d)return'';return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日${pad(d.getHours())}時${pad(d.getMinutes())}分`;}
+function fmtDshort(d){if(!d)return'';return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;}
+
+function urgency(dueAt){
+  const now=new Date();
+  const ms=dueAt-now;
+  const h=ms/3600000;
+  if(h<0) return {cls:'urg-danger',badge:'badge-danger',text:'期限超過'};
+  if(h<=24) return {cls:'urg-danger',badge:'badge-danger',text:'本日中（残り'+Math.max(0,Math.round(h))+'時間）'};
+  if(h<=72) return {cls:'urg-warning',badge:'badge-warning',text:'残り'+Math.ceil(h/24)+'日'};
+  if(h<=24*7) return {cls:'urg-warning',badge:'badge-warning',text:'残り'+Math.ceil(h/24)+'日'};
+  return {cls:'urg-success',badge:'badge-success',text:'残り'+Math.ceil(h/24)+'日'};
+}
+
+/* ============ 永続化 ============ */
+const STORAGE_KEY='keijibengo_v1';
+let DB={cases:[],currentCaseId:null};
+function loadDB(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw)DB=JSON.parse(raw);}catch(e){console.error(e);}}
+function saveDB(){localStorage.setItem(STORAGE_KEY,JSON.stringify(DB));}
+function uid(){return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function getCase(id){return DB.cases.find(c=>c.id===id);}
+function currentCase(){return getCase(DB.currentCaseId);}
+
+function blankCase(name){
+  return {
+    id:uid(), name:name||'新規事件', crime:'', defenseType:'kokusen', custodyType:'mibin',
+    isJuvenile:false, memo:'',
+    custody:{prosecutorArrest:false,specialCrime:false,juvenileTrack:'detention',
+      arrestAt:'',referralAt:'',detentionRequestAt:'',detentionStartAt:'',extensionDays:0,specialExtensionDays:0,
+      kangoStartAt:'',kangoRenewals:0,indictmentAt:'',postIndictRenewals:0,judgmentAt:''},
+    customDeadlines:[], interviews:[], evidence:[], billing:[]
+  };
+}
+
+/* ============ タブ切替 ============ */
+function switchTab(name,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='custody')renderCustody();
+  if(name==='deadlines')renderDeadlines();
+  if(name==='interviews')renderInterviews();
+  if(name==='documents')renderDocuments();
+  if(name==='evidence')renderEvidence();
+  if(name==='billing')renderBilling();
+}
+
+/* ============ 事件タブ ============ */
+function renderCaseList(){
+  const wrap=document.getElementById('caseList');
+  if(DB.cases.length===0){wrap.innerHTML='<div class="empty-hint">まだ事件が登録されていません。「＋ 新規事件を追加」から作成してください。</div>';}
+  else{
+    wrap.innerHTML=DB.cases.map(c=>{
+      const active=c.id===DB.currentCaseId;
+      return `<div class="case-item ${active?'active':''}" onclick="selectCase('${c.id}')">
+        <div><div class="ci-name">${esc(c.name)}</div><div class="ci-meta">${esc(c.crime||'罪名未入力')} ・ ${c.custodyType==='mibin'?'身柄':'在宅'} ${c.isJuvenile?'・少年':''} ・ ${c.defenseType==='kokusen'?'国選':'私選'}</div></div>
+        <span class="badge badge-navy">${active?'選択中':'選択'}</span>
+      </div>`;
+    }).join('');
+  }
+  renderCaseDetail();
+}
+function selectCase(id){DB.currentCaseId=id;saveDB();renderCaseList();}
+function createCase(){
+  const c=blankCase('新規事件');
+  DB.cases.push(c); DB.currentCaseId=c.id; saveDB(); renderCaseList();
+}
+function deleteCase(id){
+  if(!confirm('この事件を削除します。よろしいですか？（元に戻せません）'))return;
+  DB.cases=DB.cases.filter(c=>c.id!==id);
+  if(DB.currentCaseId===id)DB.currentCaseId=DB.cases[0]?DB.cases[0].id:null;
+  saveDB();renderCaseList();
+}
+function renderCaseDetail(){
+  const wrap=document.getElementById('caseDetailWrap');
+  const c=currentCase();
+  if(!c){wrap.innerHTML='';return;}
+  wrap.innerHTML=`
+  <div class="card">
+    <div class="card-title">基本情報（${esc(c.name)}）</div>
+    <div class="form-row">
+      <div class="form-group"><label>依頼者名・事件名</label><input type="text" id="f-name" value="${esc(c.name)}"></div>
+      <div class="form-group"><label>罪名</label><input type="text" id="f-crime" value="${esc(c.crime)}" placeholder="例：窃盗"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>身柄の状況</label>
+        <select id="f-custodyType"><option value="mibin" ${c.custodyType==='mibin'?'selected':''}>身柄事件</option><option value="zaitaku" ${c.custodyType==='zaitaku'?'selected':''}>在宅事件</option></select>
+      </div>
+      <div class="form-group"><label>国選／私選</label>
+        <select id="f-defenseType"><option value="kokusen" ${c.defenseType==='kokusen'?'selected':''}>国選</option><option value="shisen" ${c.defenseType==='shisen'?'selected':''}>私選</option></select>
+      </div>
+    </div>
+    <div class="checkline"><input type="checkbox" id="f-juvenile" ${c.isJuvenile?'checked':''}> 少年事件（20歳未満／特定少年含む）</div>
+    <div class="form-group"><label>メモ</label><textarea id="f-memo">${esc(c.memo)}</textarea></div>
+    <div class="row-flex">
+      <button class="btn btn-primary" onclick="saveCaseBasic()">保存</button>
+      <button class="btn btn-danger" onclick="deleteCase('${c.id}')">この事件を削除</button>
+    </div>
+  </div>`;
+}
+function saveCaseBasic(){
+  const c=currentCase(); if(!c)return;
+  c.name=document.getElementById('f-name').value||'無題事件';
+  c.crime=document.getElementById('f-crime').value;
+  c.custodyType=document.getElementById('f-custodyType').value;
+  c.defenseType=document.getElementById('f-defenseType').value;
+  c.isJuvenile=document.getElementById('f-juvenile').checked;
+  c.memo=document.getElementById('f-memo').value;
+  saveDB(); renderCaseList();
+}
+function esc(s){return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+/* ============ 身柄拘束期間タブ ============ */
+function renderCustody(){
+  const wrap=document.getElementById('custodyWrap');
+  const c=currentCase();
+  if(!c){wrap.innerHTML='<div class="card"><div class="no-case">「事件」タブで事件を選択または新規作成してください。</div></div>';return;}
+  if(c.custodyType==='zaitaku'){
+    wrap.innerHTML=`<div class="card">
+      <div class="card-title">${esc(c.name)}（在宅事件）</div>
+      <div class="info-banner">在宅事件のため逮捕・勾留に関する期限はありません。公判期日や公訴時効など個別の期限は「期限一覧」タブの「カスタム期限を追加」から登録してください。</div>
+    </div>`;
+    return;
+  }
+  const cu=c.custody;
+  wrap.innerHTML=`
+  <div class="card">
+    <div class="card-title">身柄拘束期間の計算（${esc(c.name)}）</div>
+    <div class="card-sub">条文根拠と計算過程を表示します。日時を入力すると自動計算されます。</div>
+    <div class="checkline"><input type="checkbox" id="cu-prosecutorArrest" ${cu.prosecutorArrest?'checked':''} onchange="updateCustodyField('prosecutorArrest',this.checked)"> 検察官が自ら逮捕した／検察官が逮捕した被疑者を直接受け取った（204条・送致の観念なし）</div>
+    <div class="checkline"><input type="checkbox" id="cu-specialCrime" ${cu.specialCrime?'checked':''} onchange="updateCustodyField('specialCrime',this.checked)"> 内乱・外患・国交・騒乱の罪にあたる事件（208条の2の特別延長対象）</div>
+    ${c.isJuvenile?`<div class="form-group"><label>少年事件の身柄拘束の種類</label>
+      <div class="pill-toggle">
+        <button class="${cu.juvenileTrack==='detention'?'active':''}" onclick="setJuvenileTrack('detention')">勾留（43条3項）</button>
+        <button class="${cu.juvenileTrack==='kango'?'active':''}" onclick="setJuvenileTrack('kango')">観護措置（少年法17条）</button>
+      </div>
+    </div>`:''}
+  </div>
+
+  <div class="stage-title"><span class="num">1</span>逮捕〜勾留請求</div>
+  <div class="card">
+    <div class="form-row">
+      <div class="form-group"><label>逮捕日時</label><input type="datetime-local" id="cu-arrestAt" value="${cu.arrestAt}" onchange="updateCustodyField('arrestAt',this.value)"></div>
+      <div class="form-group"><label>実際の送致日時（任意・司法警察員逮捕のみ）</label><input type="datetime-local" id="cu-referralAt" value="${cu.referralAt}" onchange="updateCustodyField('referralAt',this.value)" ${cu.prosecutorArrest?'disabled':''}></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>実際の勾留請求日時（任意）</label><input type="datetime-local" id="cu-detentionRequestAt" value="${cu.detentionRequestAt}" onchange="updateCustodyField('detentionRequestAt',this.value)"></div>
+      <div class="form-group"><label>勾留状発付・勾留開始日時（任意／未入力なら勾留請求日時を使用）</label><input type="datetime-local" id="cu-detentionStartAt" value="${cu.detentionStartAt}" onchange="updateCustodyField('detentionStartAt',this.value)"></div>
+    </div>
+  </div>
+  <div id="dl-stage1"></div>
+
+  ${(!c.isJuvenile||cu.juvenileTrack==='detention')?`
+  <div class="stage-title"><span class="num">2</span>勾留期間</div>
+  <div class="card">
+    <div class="form-row">
+      <div class="form-group"><label>勾留延長日数（通常。0〜10日）</label><input type="number" id="cu-extensionDays" min="0" max="10" value="${cu.extensionDays}" onchange="updateCustodyField('extensionDays',Number(this.value))"></div>
+      <div class="form-group"><label>特別延長日数（208条の2。0〜5日）</label><input type="number" id="cu-specialExtensionDays" min="0" max="5" value="${cu.specialExtensionDays}" onchange="updateCustodyField('specialExtensionDays',Number(this.value))" ${cu.specialCrime?'':'disabled'}></div>
+    </div>
+  </div>
+  <div id="dl-stage2"></div>`:`
+  <div class="stage-title"><span class="num">2</span>観護措置期間</div>
+  <div class="card">
+    <div class="form-row">
+      <div class="form-group"><label>観護措置開始日</label><input type="date" id="cu-kangoStartAt" value="${cu.kangoStartAt}" onchange="updateCustodyField('kangoStartAt',this.value)"></div>
+      <div class="form-group"><label>更新回数（0〜3回）</label><input type="number" id="cu-kangoRenewals" min="0" max="3" value="${cu.kangoRenewals}" onchange="updateCustodyField('kangoRenewals',Number(this.value))"></div>
+    </div>
+    <div class="dl-note">4週間を超える更新（2回目・3回目）は、死刑・懲役・禁錮にあたる罪の重大事件で証人尋問等の証拠調べのため収容の必要がある場合に限られます（少年法17条4項ただし書）。</div>
+  </div>
+  <div id="dl-stage2"></div>`}
+
+  <div class="stage-title"><span class="num">3</span>起訴後勾留</div>
+  <div class="card">
+    <div class="form-row">
+      <div class="form-group"><label>起訴日</label><input type="date" id="cu-indictmentAt" value="${cu.indictmentAt}" onchange="updateCustodyField('indictmentAt',this.value)"></div>
+      <div class="form-group"><label>更新回数</label><input type="number" id="cu-postIndictRenewals" min="0" value="${cu.postIndictRenewals}" onchange="updateCustodyField('postIndictRenewals',Number(this.value))"></div>
+    </div>
+    <div class="dl-note">2回目以降の更新は、89条1号・3号・4号・6号のいずれかに該当する場合を除き認められません（60条2項ただし書）。</div>
+  </div>
+  <div id="dl-stage3"></div>
+
+  <div class="stage-title"><span class="num">4</span>上訴期限</div>
+  <div class="card">
+    <div class="form-group"><label>判決言渡日</label><input type="date" id="cu-judgmentAt" value="${cu.judgmentAt}" onchange="updateCustodyField('judgmentAt',this.value)"></div>
+  </div>
+  <div id="dl-stage4"></div>
+  `;
+  computeAndRenderDeadlines(c);
+}
+function setJuvenileTrack(track){const c=currentCase();c.custody.juvenileTrack=track;saveDB();renderCustody();}
+function updateCustodyField(key,val){const c=currentCase();if(!c)return;c.custody[key]=val;saveDB();
+  // re-render only affected areas without losing focus too much; simplest: full re-render
+  computeAndRenderDeadlines(c);
+}
+
+function lawBox(item){
+  const u=item.dueAt?urgency(item.dueAt):null;
+  const cls=u?u.cls:'';
+  const stepsHtml=item.steps.map(s=>`<div>${esc(s)}</div>`).join('');
+  const copyText=`【${item.title}】\n根拠：${item.basisRef}\n条文要旨：${item.basisText}\n計算過程：\n${item.steps.join('\n')}\n結果：${item.resultLabel}`;
+  return `<div class="deadline-card ${cls}">
+    <div class="dl-head">
+      <div class="dl-title">${esc(item.title)}</div>
+      ${u?`<span class="badge ${u.badge}">${u.text}</span>`:''}
+    </div>
+    <div class="dl-result">${esc(item.resultLabel)}</div>
+    <div class="dl-basis">根拠：${esc(item.basisRef)}</div>
+    <div class="dl-lawtext">${esc(item.basisText)}</div>
+    <div class="dl-steps">${stepsHtml}</div>
+    ${item.note?`<div class="dl-note">${esc(item.note)}</div>`:''}
+    <div class="dl-copy"><button class="btn btn-outline btn-sm" onclick="copyText(this,${JSON.stringify(copyText)})">📋 説明文をコピー</button></div>
+  </div>`;
+}
+function copyText(btn,text){
+  navigator.clipboard.writeText(text).then(()=>{
+    const old=btn.textContent; btn.textContent='✅ コピーしました';
+    setTimeout(()=>btn.textContent=old,1500);
+  });
+}
+
+function computeAndRenderDeadlines(c){
+  const cu=c.custody;
+  const s1=[],s2=[],s3=[],s4=[];
+  const arrestAt=toDT(cu.arrestAt);
+
+  if(arrestAt){
+    if(cu.prosecutorArrest){
+      const due=addHours(arrestAt,48);
+      s1.push({title:'勾留請求期限（検察官自らの逮捕）',basisRef:LAW.a204.ref,basisText:LAW.a204.text,
+        steps:[`逮捕日時：${fmtDTshort(arrestAt)}`,`＋ 48時間`,`＝ ${fmtDTshort(due)}`],
+        resultLabel:fmtDT(due),dueAt:due});
+    }else{
+      const referralDue=addHours(arrestAt,48);
+      s1.push({title:'検察官送致期限',basisRef:LAW.a203.ref,basisText:LAW.a203.text,
+        steps:[`逮捕日時：${fmtDTshort(arrestAt)}`,`＋ 48時間`,`＝ ${fmtDTshort(referralDue)}`],
+        resultLabel:fmtDT(referralDue),dueAt:referralDue});
+      const actualReferral=toDT(cu.referralAt);
+      const referralBase=actualReferral||referralDue;
+      const by24=addHours(referralBase,24);
+      const by72=addHours(arrestAt,72);
+      const due=by24<by72?by24:by72;
+      s1.push({title:'勾留請求期限',basisRef:LAW.a205_1.ref+'／'+LAW.a205_2.ref,basisText:LAW.a205_1.text+' '+LAW.a205_2.text,
+        steps:[
+          `送致日時：${fmtDTshort(referralBase)}${actualReferral?'（実測値）':'（未入力のため送致期限＝逮捕+48時間を仮定）'}`,
+          `① 送致 + 24時間 ＝ ${fmtDTshort(by24)}`,
+          `② 逮捕 + 72時間 ＝ ${fmtDTshort(by72)}（上限）`,
+          `①②のいずれか早い方 ＝ ${fmtDTshort(due)}`
+        ],
+        resultLabel:fmtDT(due),dueAt:due,
+        note: !actualReferral?'実際の送致日時が未入力のため、送致は逮捕から48時間ぴったりで行われたと仮定しています。実測値が判明したら入力してください。':null});
+    }
+  }
+
+  // 勾留 or 観護措置
+  const requestAt=toDT(cu.detentionRequestAt);
+  const detentionStartRaw=cu.detentionStartAt?toDT(cu.detentionStartAt):requestAt;
+  if((!c.isJuvenile||cu.juvenileTrack==='detention')){
+    if(detentionStartRaw){
+      const first=addDaysInclusive(detentionStartRaw,10);
+      s2.push({title:'勾留期間満了日（初回・原則10日間）',basisRef:LAW.a208_1.ref+'（起算：'+LAW.a55_1.ref+'）',basisText:LAW.a208_1.text+' '+LAW.a55_1.text,
+        steps:[`勾留開始日：${fmtDshort(detentionStartRaw)}（初日を1日目として算入）`,`開始日 ＋ 10日 － 1日 ＝ ${fmtDshort(first)}`,`（10日目 ＝ ${fmtDshort(first)}）`],
+        resultLabel:fmtD(first)+'まで',dueAt:first});
+      let lastEnd=first;
+      if(cu.extensionDays>0){
+        const ext=new Date(first); ext.setDate(ext.getDate()+cu.extensionDays);
+        s2.push({title:'勾留期間満了日（通常延長後）',basisRef:LAW.a208_2.ref,basisText:LAW.a208_2.text,
+          steps:[`初回満了日：${fmtDshort(first)}`,`＋ 延長 ${cu.extensionDays}日（上限10日）`,`＝ ${fmtDshort(ext)}`],
+          resultLabel:fmtD(ext)+'まで',dueAt:ext});
+        lastEnd=ext;
+      }
+      if(cu.specialCrime && cu.specialExtensionDays>0){
+        const ext2=new Date(lastEnd); ext2.setDate(ext2.getDate()+cu.specialExtensionDays);
+        s2.push({title:'勾留期間満了日（特別延長後）',basisRef:LAW.a208no2.ref,basisText:LAW.a208no2.text,
+          steps:[`延長後満了日：${fmtDshort(lastEnd)}`,`＋ 特別延長 ${cu.specialExtensionDays}日（上限5日）`,`＝ ${fmtDshort(ext2)}`],
+          resultLabel:fmtD(ext2)+'まで',dueAt:ext2});
+      }
+    }
+  } else {
+    const kangoStart=toDT(cu.kangoStartAt);
+    if(kangoStart){
+      let cur=addDaysInclusive(kangoStart,14);
+      s2.push({title:'観護措置期間満了日（初回・原則2週間）',basisRef:LAW.shonen17_3.ref,basisText:LAW.shonen17_3.text,
+        steps:[`観護措置開始日：${fmtDshort(kangoStart)}`,`開始日 ＋ 14日 － 1日 ＝ ${fmtDshort(cur)}`],
+        resultLabel:fmtD(cur)+'まで',dueAt:cur});
+      for(let i=1;i<=Math.min(cu.kangoRenewals,3);i++){
+        const next=new Date(cur); next.setDate(next.getDate()+14);
+        s2.push({title:`観護措置期間満了日（更新${i}回目）`,basisRef:LAW.shonen17_4.ref,basisText:LAW.shonen17_4.text,
+          steps:[`前回満了日：${fmtDshort(cur)}`,`＋ 2週間（14日）`,`＝ ${fmtDshort(next)}`],
+          resultLabel:fmtD(next)+'まで',dueAt:next,
+          note:i>=2?'更新2回目以降は重大事件かつ証人尋問等が必要な場合に限られます（少年法17条4項ただし書）。要件充足を必ず確認してください。':null});
+        cur=next;
+      }
+    }
+  }
+
+  // 起訴後勾留
+  const indictAt=toDT(cu.indictmentAt);
+  if(indictAt){
+    let cur=addMonthsInclusive(indictAt,2);
+    s3.push({title:'起訴後勾留期間満了日（公訴提起から2箇月）',basisRef:LAW.a60_2.ref,basisText:LAW.a60_2.text,
+      steps:[`起訴日：${fmtDshort(indictAt)}（初日算入）`,`起訴日 ＋ 2箇月 － 1日 ＝ ${fmtDshort(cur)}`],
+      resultLabel:fmtD(cur)+'まで',dueAt:cur});
+    const renewals=cu.postIndictRenewals||0;
+    for(let i=1;i<=renewals;i++){
+      const start=new Date(cur); start.setDate(start.getDate()+1);
+      const next=addMonthsInclusive(start,1);
+      s3.push({title:`起訴後勾留期間満了日（更新${i}回目）`,basisRef:LAW.a60_2.ref+'／'+LAW.a89.ref,basisText:LAW.a60_2.text,
+        steps:[`更新期間開始：${fmtDshort(start)}`,`＋ 1箇月 － 1日 ＝ ${fmtDshort(next)}`],
+        resultLabel:fmtD(next)+'まで',dueAt:next,
+        note:i>=2?'2回目以降の更新は89条1号・3号・4号・6号のいずれかに該当する場合のみ可能です（60条2項ただし書）。':null});
+      cur=next;
+    }
+    s3.push({title:'保釈請求の可否',basisRef:LAW.a207_1.ref,basisText:LAW.a207_1.text,
+      steps:[`起訴日 ${fmtDshort(indictAt)} 以降は保釈請求が可能です。`],
+      resultLabel:'起訴後は保釈請求可能',dueAt:null});
+  } else if(!c.isJuvenile||cu.juvenileTrack==='detention'){
+    s3.push({title:'保釈請求の可否（起訴前）',basisRef:LAW.a207_1.ref,basisText:LAW.a207_1.text,
+      steps:['起訴日が未入力です。'],resultLabel:'起訴前のため保釈請求は原則不可',dueAt:null});
+  }
+
+  // 上訴
+  const judgmentAt=toDT(cu.judgmentAt);
+  if(judgmentAt){
+    const koso=addDaysExclusive(judgmentAt,14);
+    s4.push({title:'控訴提起期限',basisRef:LAW.a373.ref,basisText:LAW.a373.text,
+      steps:[`判決言渡日：${fmtDshort(judgmentAt)}（初日不算入）`,`＋ 14日（不変期間） ＝ ${fmtDshort(koso)}`],
+      resultLabel:fmtD(koso)+'まで',dueAt:koso});
+    const jokoku=addDaysExclusive(judgmentAt,14);
+    s4.push({title:'上告提起期限（控訴審判決の場合）',basisRef:LAW.a414.ref,basisText:LAW.a414.text,
+      steps:[`判決言渡日：${fmtDshort(judgmentAt)}（初日不算入）`,`＋ 14日（373条準用） ＝ ${fmtDshort(jokoku)}`],
+      resultLabel:fmtD(jokoku)+'まで',dueAt:jokoku});
+  }
+  s4.push({title:'準抗告（勾留に関する裁判に対する不服申立て）',basisRef:LAW.a429.ref,basisText:LAW.a429.text,
+    steps:['期間の制限はありません。勾留が継続する限りいつでも申立て可能です。'],resultLabel:'期間制限なし',dueAt:null});
+
+  document.getElementById('dl-stage1').innerHTML=s1.map(lawBox).join('')||'<div class="empty-hint">逮捕日時を入力すると計算されます。</div>';
+  document.getElementById('dl-stage2').innerHTML=s2.map(lawBox).join('')||'<div class="empty-hint">開始日を入力すると計算されます。</div>';
+  document.getElementById('dl-stage3').innerHTML=s3.map(lawBox).join('');
+  document.getElementById('dl-stage4').innerHTML=s4.map(lawBox).join('');
+
+  // キャッシュして期限一覧タブで使う
+  c._computedDeadlines=[...s1,...s2,...s3,...s4].filter(x=>x.dueAt);
+  saveDB();
+}
+
+/* ============ 期限一覧タブ ============ */
+function renderDeadlines(){
+  const sel=document.getElementById('cd-case');
+  sel.innerHTML=DB.cases.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  if(DB.currentCaseId)sel.value=DB.currentCaseId;
+
+  // 全事件の身柄拘束期限を再計算
+  const all=[];
+  DB.cases.forEach(c=>{
+    if(c.custodyType==='mibin'){
+      const tmp=[]; // 副作用なく計算するため直接呼ばず、既存の computeAndRenderDeadlines は DOM 依存なので簡易版で再計算
+    }
+  });
+  // 各ケースについて簡易再計算（DOM非依存版）
+  DB.cases.forEach(c=>{
+    const items=computeDeadlinesForCase(c);
+    items.forEach(it=>all.push({caseName:c.name,caseId:c.id,...it}));
+    (c.customDeadlines||[]).forEach(cd=>all.push({caseName:c.name,caseId:c.id,title:cd.name+'（カスタム）',resultLabel:fmtDT(new Date(cd.date)),dueAt:new Date(cd.date),basisRef:'手動登録',basisText:cd.note||'',steps:[]}));
+  });
+  all.sort((a,b)=>a.dueAt-b.dueAt);
+  const wrap=document.getElementById('deadlineDashboard');
+  if(all.length===0){wrap.innerHTML='<div class="card"><div class="empty-hint">まだ期限がありません。「身柄拘束期間」タブで日時を入力するか、カスタム期限を追加してください。</div></div>';return;}
+  wrap.innerHTML=all.map(it=>{
+    const u=urgency(it.dueAt);
+    return `<div class="deadline-card ${u.cls}">
+      <div class="dl-head">
+        <div><span class="badge badge-gray">${esc(it.caseName)}</span> <span class="dl-title">${esc(it.title)}</span></div>
+        <span class="badge ${u.badge}">${u.text}</span>
+      </div>
+      <div class="dl-result">${esc(it.resultLabel)}</div>
+      <div class="dl-basis">根拠：${esc(it.basisRef)}</div>
+    </div>`;
+  }).join('');
+}
+// DOM非依存でケースの期限を計算する軽量版（computeAndRenderDeadlinesと同一ロジックを共有するためラップ）
+function computeDeadlinesForCase(c){
+  if(c.custodyType!=='mibin')return [];
+  // 一時的にDOM描画関数のロジックを再利用：computeAndRenderDeadlinesはDOM要素を書くのでここでは複製せず、
+  // 既にcurrentCase()相当で呼べるよう、共通計算関数へリファクタしていないため、簡易に再実装する。
+  return computeCustodyDeadlinesPure(c);
+}
+function computeCustodyDeadlinesPure(c){
+  const cu=c.custody, out=[];
+  const arrestAt=toDT(cu.arrestAt);
+  if(arrestAt){
+    if(cu.prosecutorArrest){
+      out.push({title:'勾留請求期限',basisRef:LAW.a204.ref,resultLabel:fmtDT(addHours(arrestAt,48)),dueAt:addHours(arrestAt,48)});
+    }else{
+      const referralDue=addHours(arrestAt,48);
+      out.push({title:'検察官送致期限',basisRef:LAW.a203.ref,resultLabel:fmtDT(referralDue),dueAt:referralDue});
+      const referralBase=toDT(cu.referralAt)||referralDue;
+      const by24=addHours(referralBase,24), by72=addHours(arrestAt,72);
+      const due=by24<by72?by24:by72;
+      out.push({title:'勾留請求期限',basisRef:LAW.a205_1.ref,resultLabel:fmtDT(due),dueAt:due});
+    }
+  }
+  const requestAt=toDT(cu.detentionRequestAt);
+  const detentionStartRaw=cu.detentionStartAt?toDT(cu.detentionStartAt):requestAt;
+  if((!c.isJuvenile||cu.juvenileTrack==='detention')&&detentionStartRaw){
+    const first=addDaysInclusive(detentionStartRaw,10);
+    out.push({title:'勾留期間満了日（初回）',basisRef:LAW.a208_1.ref,resultLabel:fmtD(first)+'まで',dueAt:first});
+    let lastEnd=first;
+    if(cu.extensionDays>0){const ext=new Date(first);ext.setDate(ext.getDate()+cu.extensionDays);out.push({title:'勾留期間満了日（延長後）',basisRef:LAW.a208_2.ref,resultLabel:fmtD(ext)+'まで',dueAt:ext});lastEnd=ext;}
+    if(cu.specialCrime&&cu.specialExtensionDays>0){const ext2=new Date(lastEnd);ext2.setDate(ext2.getDate()+cu.specialExtensionDays);out.push({title:'勾留期間満了日（特別延長後）',basisRef:LAW.a208no2.ref,resultLabel:fmtD(ext2)+'まで',dueAt:ext2});}
+  } else if(c.isJuvenile&&cu.juvenileTrack==='kango'){
+    const kangoStart=toDT(cu.kangoStartAt);
+    if(kangoStart){
+      let cur=addDaysInclusive(kangoStart,14);
+      out.push({title:'観護措置期間満了日（初回）',basisRef:LAW.shonen17_3.ref,resultLabel:fmtD(cur)+'まで',dueAt:cur});
+      for(let i=1;i<=Math.min(cu.kangoRenewals,3);i++){const next=new Date(cur);next.setDate(next.getDate()+14);out.push({title:`観護措置期間満了日（更新${i}回目）`,basisRef:LAW.shonen17_4.ref,resultLabel:fmtD(next)+'まで',dueAt:next});cur=next;}
+    }
+  }
+  const indictAt=toDT(cu.indictmentAt);
+  if(indictAt){
+    let cur=addMonthsInclusive(indictAt,2);
+    out.push({title:'起訴後勾留期間満了日',basisRef:LAW.a60_2.ref,resultLabel:fmtD(cur)+'まで',dueAt:cur});
+    for(let i=1;i<=(cu.postIndictRenewals||0);i++){const start=new Date(cur);start.setDate(start.getDate()+1);const next=addMonthsInclusive(start,1);out.push({title:`起訴後勾留期間満了日（更新${i}回目）`,basisRef:LAW.a60_2.ref,resultLabel:fmtD(next)+'まで',dueAt:next});cur=next;}
+  }
+  const judgmentAt=toDT(cu.judgmentAt);
+  if(judgmentAt){
+    out.push({title:'控訴提起期限',basisRef:LAW.a373.ref,resultLabel:fmtD(addDaysExclusive(judgmentAt,14))+'まで',dueAt:addDaysExclusive(judgmentAt,14)});
+    out.push({title:'上告提起期限',basisRef:LAW.a414.ref,resultLabel:fmtD(addDaysExclusive(judgmentAt,14))+'まで',dueAt:addDaysExclusive(judgmentAt,14)});
+  }
+  return out;
+}
+function addCustomDeadline(){
+  const caseId=document.getElementById('cd-case').value;
+  const name=document.getElementById('cd-name').value.trim();
+  const date=document.getElementById('cd-date').value;
+  const note=document.getElementById('cd-note').value.trim();
+  if(!caseId||!name||!date){alert('対象事件・期限名・日時を入力してください。');return;}
+  const c=getCase(caseId);
+  c.customDeadlines=c.customDeadlines||[];
+  c.customDeadlines.push({id:uid(),name,date,note});
+  saveDB();
+  document.getElementById('cd-name').value='';document.getElementById('cd-date').value='';document.getElementById('cd-note').value='';
+  renderDeadlines();
+}
+
+/* ============ 接見記録タブ ============ */
+function renderInterviews(){
+  const wrap=document.getElementById('interviewsWrap');
+  const c=currentCase();
+  if(!c){wrap.innerHTML='<div class="card"><div class="no-case">「事件」タブで事件を選択してください。</div></div>';return;}
+  const list=(c.interviews||[]).slice().sort((a,b)=>new Date(b.datetime)-new Date(a.datetime));
+  wrap.innerHTML=`
+  <div class="card">
+    <div class="card-title">接見記録の追加（${esc(c.name)}）</div>
+    <div class="form-row">
+      <div class="form-group"><label>日時</label><input type="datetime-local" id="iv-datetime"></div>
+      <div class="form-group"><label>場所</label><input type="text" id="iv-location" placeholder="例：〇〇警察署／〇〇拘置所"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>所要時間（分）</label><input type="number" id="iv-duration" min="0" placeholder="例：30"></div>
+      <div class="form-group"><label>接見禁止の有無</label><select id="iv-gag"><option value="none">なし</option><option value="full">全部禁止</option><option value="partial">一部解除</option></select></div>
+    </div>
+    <div class="form-group"><label>内容メモ</label><textarea id="iv-note" placeholder="供述内容、方針確認事項など"></textarea></div>
+    <button class="btn btn-primary" onclick="addInterview()">記録を追加</button>
+  </div>
+  <div class="sec-title">接見履歴（${list.length}件）</div>
+  ${list.length===0?'<div class="empty-hint">まだ記録がありません。</div>':list.map(iv=>`
+    <div class="entry-item">
+      <div class="entry-top"><span>${fmtDT(new Date(iv.datetime))}</span><button class="btn btn-danger btn-sm" onclick="deleteInterview('${iv.id}')">削除</button></div>
+      <div class="entry-meta">${esc(iv.location||'場所未記入')} ／ ${iv.duration?iv.duration+'分':'時間未記入'} ／ 接見禁止：${iv.gag==='full'?'全部禁止':iv.gag==='partial'?'一部解除':'なし'}</div>
+      ${iv.note?`<div class="entry-note">${esc(iv.note)}</div>`:''}
+    </div>`).join('')}
+  `;
+}
+function addInterview(){
+  const c=currentCase(); if(!c)return;
+  const datetime=document.getElementById('iv-datetime').value;
+  if(!datetime){alert('日時を入力してください。');return;}
+  c.interviews=c.interviews||[];
+  c.interviews.push({id:uid(),datetime,location:document.getElementById('iv-location').value,duration:document.getElementById('iv-duration').value,gag:document.getElementById('iv-gag').value,note:document.getElementById('iv-note').value});
+  saveDB(); renderInterviews();
+}
+function deleteInterview(id){const c=currentCase();c.interviews=c.interviews.filter(iv=>iv.id!==id);saveDB();renderInterviews();}
+
+/* ============ 書面タブ ============ */
+const TEMPLATES={
+  kouryu_riyu:{label:'勾留理由開示請求書',
+    build:c=>`勾留理由開示請求書
+
+被疑者　${c.name||'（氏名）'}
+罪名　　${c.crime||'（罪名）'}
+
+上記被疑者に対する${c.crime||'○○'}被疑事件について、刑事訴訟法第82条第1項に基づき、勾留の理由の開示を請求する。
+
+請求の理由
+第1　勾留の要件（罪証隠滅のおそれ・逃亡のおそれ）を欠くこと
+第2　（具体的事情を記載）
+
+添付書類
+　弁護人選任届
+
+以上`},
+  jyunkokoku:{label:'準抗告申立書',
+    build:c=>`準抗告申立書
+
+被疑者　${c.name||'（氏名）'}
+罪名　　${c.crime||'（罪名）'}
+
+上記被疑者に対する${c.crime||'○○'}被疑事件について、${fmtDshort(new Date())}になされた勾留決定は不当であるから、刑事訴訟法第429条第1項第2号に基づき、これを取り消すよう申し立てる。
+
+申立ての理由
+第1　罪証隠滅のおそれがないこと（具体的事情）
+第2　逃亡のおそれがないこと（具体的事情）
+第3　勾留の必要性がないこと
+
+以上`},
+  hoshaku:{label:'保釈請求書',
+    build:c=>`保釈請求書
+
+被告人　${c.name||'（氏名）'}
+罪名　　${c.crime||'（罪名）'}
+
+${c.custody.indictmentAt?`公訴提起日：${fmtDshort(new Date(c.custody.indictmentAt))}`:'※起訴日が未入力です。起訴前は保釈請求ができません（刑事訴訟法207条1項ただし書）。'}
+
+上記被告人に対する${c.crime||'○○'}被告事件について、刑事訴訟法第88条に基づき、保釈を請求する。
+
+請求の理由
+第1　権利保釈の除外事由（89条各号）に該当しないこと
+第2　裁量保釈（90条）を相当とする事情
+　　　身元引受人の存在、住居の安定、逃亡・罪証隠滅のおそれの不存在等
+
+以上`},
+  sekkenkinshi:{label:'接見禁止一部解除申立書',
+    build:c=>`接見禁止一部解除申立書
+
+被疑者（被告人）　${c.name||'（氏名）'}
+罪名　　　　　　　${c.crime||'（罪名）'}
+
+上記の者に対する接見等禁止決定について、家族との接見・信書の授受に限り解除するよう申し立てる。
+
+申立ての理由
+第1　解除を求める相手方との関係（続柄等）
+第2　罪証隠滅のおそれがないこと（具体的事情）
+第3　被疑者（被告人）の防御・生活上の必要性
+
+以上`}
+};
+let currentTpl='kouryu_riyu';
+function renderDocuments(){
+  const wrap=document.getElementById('documentsWrap');
+  const c=currentCase();
+  if(!c){wrap.innerHTML='<div class="card"><div class="no-case">「事件」タブで事件を選択してください。</div></div>';return;}
+  wrap.innerHTML=`
+  <div class="card">
+    <div class="card-title">書面テンプレート生成（${esc(c.name)}）</div>
+    <div class="card-sub">事件情報を反映した下書きです。実際の提出前に必ず内容を確認・加筆してください。</div>
+    <div class="tpl-btns">${Object.entries(TEMPLATES).map(([k,v])=>`<button class="${k===currentTpl?'active':''}" onclick="pickTpl('${k}')">${v.label}</button>`).join('')}</div>
+    <textarea id="tpl-text" style="min-height:320px;font-family:'Courier New',monospace;font-size:12.5px"></textarea>
+    <div class="row-flex" style="margin-top:10px">
+      <button class="btn btn-primary" onclick="copyTplText()">📋 コピー</button>
+      <span id="tpl-copyok" class="copyok" style="display:none">コピーしました</span>
+    </div>
+  </div>`;
+  document.getElementById('tpl-text').value=TEMPLATES[currentTpl].build(c);
+}
+function pickTpl(k){currentTpl=k;renderDocuments();}
+function copyTplText(){
+  const ta=document.getElementById('tpl-text');
+  navigator.clipboard.writeText(ta.value).then(()=>{
+    const ok=document.getElementById('tpl-copyok'); ok.style.display='inline'; setTimeout(()=>ok.style.display='none',1500);
+  });
+}
+
+/* ============ 証拠開示タブ ============ */
+function renderEvidence(){
+  const wrap=document.getElementById('evidenceWrap');
+  const c=currentCase();
+  if(!c){wrap.innerHTML='<div class="card"><div class="no-case">「事件」タブで事件を選択してください。</div></div>';return;}
+  const list=c.evidence||[];
+  wrap.innerHTML=`
+  <div class="card">
+    <div class="card-title">証拠開示チェックリスト（${esc(c.name)}）</div>
+    <div class="form-row">
+      <div class="form-group"><label>証拠名</label><input type="text" id="ev-name" placeholder="例：実況見分調書"></div>
+      <div class="form-group"><label>区分</label><select id="ev-category"><option value="ruikei">類型証拠</option><option value="shuchou">主張関連証拠</option><option value="other">その他</option></select></div>
+    </div>
+    <button class="btn btn-primary" onclick="addEvidence()">追加</button>
+  </div>
+  <table class="simple">
+    <tr><th>証拠名</th><th>区分</th><th>開示</th><th>開示日</th><th></th></tr>
+    ${list.map(e=>`<tr>
+      <td>${esc(e.name)}</td>
+      <td>${e.category==='ruikei'?'類型証拠':e.category==='shuchou'?'主張関連証拠':'その他'}</td>
+      <td><input type="checkbox" ${e.disclosed?'checked':''} onchange="toggleEvidence('${e.id}',this.checked)"></td>
+      <td>${e.disclosed?`<input type="date" value="${e.disclosedDate||''}" onchange="setEvidenceDate('${e.id}',this.value)">`:'—'}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteEvidence('${e.id}')">削除</button></td>
+    </tr>`).join('')}
+  </table>
+  ${list.length===0?'<div class="empty-hint">まだ証拠が登録されていません。</div>':''}
+  `;
+}
+function addEvidence(){
+  const c=currentCase(); if(!c)return;
+  const name=document.getElementById('ev-name').value.trim();
+  if(!name){alert('証拠名を入力してください。');return;}
+  c.evidence=c.evidence||[];
+  c.evidence.push({id:uid(),name,category:document.getElementById('ev-category').value,disclosed:false,disclosedDate:''});
+  saveDB(); renderEvidence();
+}
+function toggleEvidence(id,val){const c=currentCase();const e=c.evidence.find(x=>x.id===id);e.disclosed=val;saveDB();renderEvidence();}
+function setEvidenceDate(id,val){const c=currentCase();const e=c.evidence.find(x=>x.id===id);e.disclosedDate=val;saveDB();}
+function deleteEvidence(id){const c=currentCase();c.evidence=c.evidence.filter(x=>x.id!==id);saveDB();renderEvidence();}
+
+/* ============ 費用タブ ============ */
+function renderBilling(){
+  const wrap=document.getElementById('billingWrap');
+  const c=currentCase();
+  if(!c){wrap.innerHTML='<div class="card"><div class="no-case">「事件」タブで事件を選択してください。</div></div>';return;}
+  const list=(c.billing||[]).slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const total=list.reduce((s,b)=>s+(b.type==='expense_refund'?-Number(b.amount):Number(b.amount)),0);
+  wrap.innerHTML=`
+  <div class="card">
+    <div class="card-title">費用・報酬の記録（${esc(c.name)}）${c.defenseType==='kokusen'?'<span class="badge badge-navy" style="margin-left:8px">国選事件</span>':''}</div>
+    ${c.defenseType==='kokusen'?'<div class="info-banner">国選事件の報酬は裁判所が算定するため、ここでは実費・日当等の管理用としてご利用ください。</div>':''}
+    <div class="form-row">
+      <div class="form-group"><label>日付</label><input type="date" id="bl-date"></div>
+      <div class="form-group"><label>種別</label><select id="bl-type"><option value="chakushu">着手金</option><option value="hoshu">報酬金</option><option value="jippi">実費</option><option value="nittou">日当</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>内容</label><input type="text" id="bl-desc" placeholder="例：接見交通費"></div>
+      <div class="form-group"><label>金額（円）</label><input type="number" id="bl-amount" min="0"></div>
+    </div>
+    <button class="btn btn-primary" onclick="addBilling()">追加</button>
+  </div>
+  <table class="simple">
+    <tr><th>日付</th><th>種別</th><th>内容</th><th>金額</th><th></th></tr>
+    ${list.map(b=>`<tr>
+      <td>${b.date}</td>
+      <td>${({chakushu:'着手金',hoshu:'報酬金',jippi:'実費',nittou:'日当'})[b.type]||b.type}</td>
+      <td>${esc(b.desc)}</td>
+      <td>${Number(b.amount).toLocaleString()}円</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteBilling('${b.id}')">削除</button></td>
+    </tr>`).join('')}
+  </table>
+  ${list.length===0?'<div class="empty-hint">まだ記録がありません。</div>':''}
+  <div class="total-row"><span>合計</span><span>${total.toLocaleString()}円</span></div>
+  `;
+}
+function addBilling(){
+  const c=currentCase(); if(!c)return;
+  const date=document.getElementById('bl-date').value;
+  const amount=document.getElementById('bl-amount').value;
+  if(!date||!amount){alert('日付と金額を入力してください。');return;}
+  c.billing=c.billing||[];
+  c.billing.push({id:uid(),date,type:document.getElementById('bl-type').value,desc:document.getElementById('bl-desc').value,amount});
+  saveDB(); renderBilling();
+}
+function deleteBilling(id){const c=currentCase();c.billing=c.billing.filter(x=>x.id!==id);saveDB();renderBilling();}
+
+/* ============ 初期化 ============ */
+loadDB();
+if(DB.cases.length===0){
+  const c=blankCase('サンプル事件（自由に編集・削除できます）');
+  DB.cases.push(c); DB.currentCaseId=c.id; saveDB();
+}
+if(!DB.currentCaseId && DB.cases.length>0){DB.currentCaseId=DB.cases[0].id;}
+renderCaseList();
+</script>
+</body>
+</html>
