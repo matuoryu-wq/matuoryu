@@ -1751,7 +1751,7 @@ function calcAll(){
       ${rowsHtml}
       ${chienRow}
       <div class="bk-total">
-        <span class="bk-key">損害合計（遅延損害金含む）</span>
+        <span class="bk-key">損害合計${chien>0?'（遅延損害金含む）':''}</span>
         <span class="bk-val">${fmtMan(total + chien)}</span>
       </div>
       <div class="bk-row" style="margin-top:8px">
