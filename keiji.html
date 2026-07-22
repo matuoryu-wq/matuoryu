@@ -67,7 +67,6 @@ textarea{resize:vertical;min-height:70px}
 .dl-steps{font-size:12px;color:var(--text-muted);background:#F5F7FA;border-radius:6px;padding:8px 10px;margin-bottom:6px}
 .dl-steps div{padding:2px 0;font-family:'Courier New',monospace;line-height:1.8;word-break:break-all}
 .dl-note{font-size:11.5px;color:#7A5416;background:#FFF7E6;border-radius:6px;padding:6px 9px;margin-top:6px}
-.dl-copy{margin-top:8px}
 .remaining{font-size:12px;font-weight:700}
 .sec-title{font-size:11.5px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
 .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -174,24 +173,24 @@ select[multiple]{min-height:70px}
 <script>
 /* ============ 法令根拠テキスト（要旨。必ず原文確認のこと） ============ */
 const LAW = {
-  a203: {ref:'刑事訴訟法203条1項', text:'司法警察員は、逮捕された被疑者を受け取ったときは、弁解の機会を与え、留置の必要がないと思料するときは直ちに釈放し、留置の必要があると思料するときは、身体を拘束された時から48時間以内に、書類及び証拠物とともに被疑者を検察官に送致する手続をしなければならない。'},
-  a204: {ref:'刑事訴訟法204条1項', text:'検察官は、逮捕された被疑者を受け取ったとき、又は自ら被疑者を逮捕したときは、弁解の機会を与え、留置の必要がないと思料するときは直ちに釈放し、留置の必要があると思料するときは、身体を拘束された時から48時間以内に裁判官に被疑者の勾留を請求しなければならない。'},
-  a205_1: {ref:'刑事訴訟法205条1項', text:'検察官は、第203条の規定により送致された被疑者を受け取ったときは、被疑者を受け取った時から24時間以内に、裁判官に被疑者の勾留を請求し、又は公訴を提起しなければならない。'},
-  a205_2: {ref:'刑事訴訟法205条2項', text:'前項の時間の制限は、被疑者が身体を拘束された時から72時間を超えることができない。'},
-  a208_1: {ref:'刑事訴訟法208条1項', text:'勾留の請求をした日から10日以内に公訴を提起しないときは、検察官は、直ちに被疑者を釈放しなければならない。'},
-  a208_2: {ref:'刑事訴訟法208条2項', text:'裁判官は、やむを得ない事由があると認めるときは、検察官の請求により、前項の期間を延長することができる。この期間の延長は、通じて10日を超えることができない。'},
-  a208no2: {ref:'刑事訴訟法208条の2', text:'裁判官は、刑法第2編第2章（内乱）・第3章（外患）・第4章（国交）又は第8章（騒乱）の罪にあたる事件については、検察官の請求により、前条第2項の期間を、更に5日を超えない限度で延長することができる。'},
-  a55_1: {ref:'刑事訴訟法55条1項', text:'期間の計算については、時をもって計算するものは即時から起算し、日・月又は年をもって計算するものは初日を算入しない。ただし、時効期間及び勾留の期間の初日は、時間を計算せず1日として計算する（＝初日算入）。'},
-  a60_2: {ref:'刑事訴訟法60条2項', text:'勾留の期間は、公訴の提起があった日から2箇月とする。特に継続の必要がある場合は、具体的理由を付した決定で1箇月ごとに更新できる。ただし、第89条1号・3号・4号・6号に当たる場合を除き、更新は1回に限る。'},
-  a89: {ref:'刑事訴訟法89条（60条2項ただし書の参照条文）', text:'1号 死刑・無期・短期1年以上の懲役等にあたる罪／3号 常習として長期3年以上の懲役等にあたる罪を犯したとき／4号 罪証を隠滅すると疑うに足りる相当な理由があるとき／6号 氏名又は住居が分からないとき　＝これらに該当すれば起訴後勾留の更新回数に制限なし。'},
-  a373: {ref:'刑事訴訟法373条', text:'控訴の申立ては、14日の不変期間内にこれをしなければならない。'},
-  a414: {ref:'刑事訴訟法414条（373条準用）', text:'上告の申立てについても、控訴に関する373条の規定が準用され、申立期間は14日となる。'},
-  a422: {ref:'刑事訴訟法422条', text:'即時抗告の提起期間は、3日とする。'},
-  a429: {ref:'刑事訴訟法429条', text:'勾留、保釈、押収等に関する裁判官の裁判に不服があるときは、簡易裁判所の裁判官がした裁判を除き、その裁判官所属の裁判所に準抗告の申立てをすることができる。期間の定めはなく、勾留が継続する限りいつでも申立て可能。'},
-  a207_1: {ref:'刑事訴訟法207条1項ただし書', text:'起訴前の被疑者勾留については保釈に関する規定は準用されないと解されており、実務上、起訴前の保釈請求は認められない。起訴後（公訴提起後）は88条以下により保釈請求が可能となる。'},
-  shonen17_3: {ref:'少年法17条3項', text:'観護の措置（少年鑑別所送致）の期間は2週間を超えることができない。ただし、特に継続の必要があるときは、決定をもって更新することができる。'},
-  shonen17_4: {ref:'少年法17条4項', text:'前項ただし書の更新は原則1回に限る（＝最大4週間）。ただし、死刑・懲役・禁錮にあたる罪の事件で、証人尋問等の証拠調べのため少年を収容する必要がある一定の場合には、更に2回を限度として更新できる（＝最大8週間）。'},
-  shonen43_3: {ref:'少年法43条3項', text:'検察官は、少年の被疑事件については、やむを得ない場合でなければ勾留を請求することができない。この場合の勾留は少年鑑別所で行うこともできる。'},
+  a203: {ref:'刑事訴訟法203条1項', text:'逮捕から48時間以内に検察官へ送致。超えれば釈放義務。'},
+  a204: {ref:'刑事訴訟法204条1項', text:'検察官が自ら逮捕・受理した場合は、送致という概念はなく、48時間以内に勾留請求。'},
+  a205_1: {ref:'刑事訴訟法205条1項', text:'送致から24時間以内に勾留請求または起訴が必要。'},
+  a205_2: {ref:'刑事訴訟法205条2項', text:'ただし逮捕から72時間を超えることはできない（上限）。'},
+  a208_1: {ref:'刑事訴訟法208条1項', text:'勾留請求日から10日以内に起訴しなければ釈放（原則の勾留期間）。'},
+  a208_2: {ref:'刑事訴訟法208条2項', text:'やむを得ない事由があれば、検察官の請求により最大10日まで延長可。'},
+  a208no2: {ref:'刑事訴訟法208条の2', text:'内乱・外患・国交・騒乱の罪は、さらに5日まで延長可。'},
+  a55_1: {ref:'刑事訴訟法55条1項', text:'勾留期間は初日を1日目として数える（初日算入）。'},
+  a60_2: {ref:'刑事訴訟法60条2項', text:'起訴後の勾留は起訴日から2箇月。継続の必要があれば1箇月ごとに更新可（更新は原則1回まで）。'},
+  a89: {ref:'刑事訴訟法89条（60条2項ただし書の参照条文）', text:'2回目以降の更新は、重罪・常習犯・罪証隠滅のおそれ・氏名住居不明のいずれかに該当する場合のみ可。'},
+  a373: {ref:'刑事訴訟法373条', text:'控訴の申立期間は14日（不変期間）。'},
+  a414: {ref:'刑事訴訟法414条（373条準用）', text:'上告の申立期間も同じく14日。'},
+  a422: {ref:'刑事訴訟法422条', text:'即時抗告の提起期間は3日。'},
+  a429: {ref:'刑事訴訟法429条', text:'勾留に関する裁判への準抗告に期間制限はなく、勾留継続中はいつでも可。'},
+  a207_1: {ref:'刑事訴訟法207条1項ただし書', text:'起訴前の被疑者勾留には保釈の規定が準用されず、起訴前保釈は不可。起訴後は保釈請求が可能。'},
+  shonen17_3: {ref:'少年法17条3項', text:'観護措置の期間は原則2週間。継続の必要があれば更新可。'},
+  shonen17_4: {ref:'少年法17条4項', text:'更新は原則1回（最大4週間）。重大事件で証拠調べのため必要な場合はさらに2回まで（最大8週間）。'},
+  shonen43_3: {ref:'少年法43条3項', text:'少年の被疑事件は、やむを得ない場合でなければ勾留請求できない。'},
 };
 
 /* ============ 日付ユーティリティ ============ */
@@ -402,11 +401,11 @@ function updateCustodyField(key,val){const c=currentCase();if(!c)return;c.custod
   computeAndRenderDeadlines(c);
 }
 
-function lawBox(item){
-  const u=item.dueAt?urgency(item.dueAt):null;
+function lawBox(item,opts){
+  const showUrgency=!(opts&&opts.noUrgency);
+  const u=(showUrgency&&item.dueAt)?urgency(item.dueAt):null;
   const cls=u?u.cls:'';
   const stepsHtml=item.steps.map(s=>`<div>${esc(s)}</div>`).join('');
-  const copyText=`【${item.title}】\n根拠：${item.basisRef}\n条文要旨：${item.basisText}\n計算過程：\n${item.steps.join('\n')}\n結果：${item.resultLabel}`;
   return `<div class="deadline-card ${cls}">
     <div class="dl-head">
       <div class="dl-title">${esc(item.title)}</div>
@@ -417,14 +416,7 @@ function lawBox(item){
     <div class="dl-lawtext">${esc(item.basisText)}</div>
     <div class="dl-steps">${stepsHtml}</div>
     ${item.note?`<div class="dl-note">${esc(item.note)}</div>`:''}
-    <div class="dl-copy"><button class="btn btn-outline btn-sm" onclick="copyText(this,${JSON.stringify(copyText)})">📋 説明文をコピー</button></div>
   </div>`;
-}
-function copyText(btn,text){
-  navigator.clipboard.writeText(text).then(()=>{
-    const old=btn.textContent; btn.textContent='✅ コピーしました';
-    setTimeout(()=>btn.textContent=old,1500);
-  });
 }
 
 function computeAndRenderDeadlines(c){
@@ -881,7 +873,7 @@ function demoCase(){
   const indict=new Date(detStart); indict.setDate(indict.getDate()+14);
   const judgment=new Date(indict); judgment.setDate(judgment.getDate()+70);
   return {
-    name:'サンプル太郎（架空の人物です）', crime:'窃盗（万引き）', custodyType:'mibin', isJuvenile:false, defenseType:'kokusen',
+    name:'被疑者A', crime:'窃盗（万引き）', custodyType:'mibin', isJuvenile:false, defenseType:'kokusen',
     custody:{
       prosecutorArrest:false, specialCrime:false, juvenileTrack:'detention',
       arrestAt:isoDT(arrest), referralAt:isoDT(referral), detentionRequestAt:isoDT(detStart), detentionStartAt:isoDT(detStart),
@@ -895,23 +887,25 @@ function renderSample(){
   const c=demoCase();
   const {s1,s2,s3,s4}=computeCustodyStages(c);
   const tplText=TEMPLATES.kouryu_riyu.build(c);
+  const arrestDT=toDT(c.custody.arrestAt);
+  const noU=item=>lawBox(item,{noUrgency:true});
   wrap.innerHTML=`
   <div class="info-banner">👀 これは操作イメージをつかむための<strong>架空のサンプルデータ</strong>です。実在の人物・事件とは関係ありません。ここでの表示は保存されず、実際の事件データにも一切影響しません。使い方が分かったら「📁 事件」タブから実際の事件を登録してください。</div>
   <div class="card">
     <div class="card-title">事案概要</div>
-    <div class="card-sub" style="margin-bottom:10px">依頼者名：${esc(c.name)}／罪名：${esc(c.crime)}／身柄事件・国選（今日を逮捕日として自動計算した例です）</div>
+    <div class="card-sub" style="margin-bottom:10px">依頼者：${esc(c.name)}（仮名）／罪名：${esc(c.crime)}／身柄事件・国選</div>
     <p style="font-size:13px;line-height:1.8">
-      サンプル太郎（41歳・無職、前科前歴なし）は、本日午前9時頃、○○市内のコンビニエンスストアで菓子類（時価2,000円相当）を万引きしたとして、駆け付けた警察官により窃盗の現行犯で逮捕された。翌日、検察官に送致され、その2日後に勾留質問を経て勾留が決定。罪証隠滅・逃亡のおそれの評価が争点となり、勾留延長（5日間）を経て起訴に至った想定である。本人は容疑を認めており、被害品は返還・弁償済みで、示談交渉と早期の身柄解放（準抗告・保釈請求）が弁護方針の中心となる事例である。
+      被疑者A（41歳・無職、前科前歴なし）は、${fmtDshort(arrestDT)}午前9時頃、○○市内のコンビニエンスストアで菓子類（時価2,000円相当）を万引きしたとして、駆け付けた警察官により窃盗の現行犯で逮捕された。翌日、検察官に送致され、その2日後に勾留質問を経て勾留が決定。罪証隠滅・逃亡のおそれの評価が争点となり、勾留延長（5日間）を経て起訴に至った想定である。本人は容疑を認めており、被害品は返還・弁償済みで、示談交渉と早期の身柄解放（準抗告・保釈請求）が弁護方針の中心となる事例である。
     </p>
   </div>
   <div class="stage-title"><span class="num">1</span>逮捕〜勾留請求</div>
-  ${s1.map(lawBox).join('')}
+  ${s1.map(noU).join('')}
   <div class="stage-title"><span class="num">2</span>勾留期間（延長5日を含む例）</div>
-  ${s2.map(lawBox).join('')}
+  ${s2.map(noU).join('')}
   <div class="stage-title"><span class="num">3</span>起訴後勾留（更新1回を含む例）</div>
-  ${s3.map(lawBox).join('')}
+  ${s3.map(noU).join('')}
   <div class="stage-title"><span class="num">4</span>上訴期限</div>
-  ${s4.map(lawBox).join('')}
+  ${s4.map(noU).join('')}
 
   <div class="sec-title">接見記録タブの例</div>
   <div class="entry-item">
