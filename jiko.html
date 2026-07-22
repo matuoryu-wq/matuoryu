@@ -334,8 +334,11 @@
         <input type="checkbox" id="i-muchiuchi" style="margin-top:3px">
         <label for="i-muchiuchi" style="font-size:12px;font-weight:600;color:var(--text);cursor:pointer">軽度の神経症状（むちうち症）・軽度の打撲/挫創（傷）の場合 → 通常慰謝料の3分の2程度に減額して計算する</label>
       </div>
-      <div class="note" style="margin-bottom:10px"><span class="note-icon">ℹ️</span>入院期間は、上の「入院雑費」で入力した入院日数をそのまま使用します。</div>
       <div class="form-row">
+        <div class="form-group">
+          <label>入院期間（日数）</label>
+          <div class="input-wrap"><input type="number" id="i-isharyo-nyuindays" placeholder="例：30" min="0"><span class="unit">日</span></div>
+        </div>
         <div class="form-group">
           <label>通院期間（日数）</label>
           <div class="input-wrap"><input type="number" id="i-tsuin-days" placeholder="例：83" min="0"><span class="unit">日</span></div>
@@ -1319,6 +1322,7 @@ function loadSample(book){
   document.getElementById('i-chiryohi').value = s.chiryohi;
 
   document.getElementById('i-nyuindays').value = s.nyuinDays;
+  document.getElementById('i-isharyo-nyuindays').value = s.nyuinDays;
 
   setKotsuMode('total');
   document.getElementById('i-kotsuhi').value = s.kotsuhi;
@@ -1577,6 +1581,7 @@ function calcAll(){
   // --- 入通院慰謝料 ---
   const injType = v('i-injury-type');
   const tsuinDaysVal = nv('i-tsuin-days');
+  const isharyoNyuinDays = nv('i-isharyo-nyuindays');
   let isharyo, typeName;
   const isharyoContext = [];
   let isharyoBody = '';
@@ -1597,7 +1602,7 @@ function calcAll(){
     const muchiuchi = document.getElementById('i-muchiuchi') && document.getElementById('i-muchiuchi').checked;
     const tbl = injType==='severe' ? GREEN_ISHARYO_SEVERE : GREEN_ISHARYO_NORMAL;
     const totalCap = injType==='severe' ? null : GREEN_ISHARYO_NORMAL_TOTAL_CAP;
-    const detail = lookupIsharyoDetailed(effectiveTsuinDays, nyuindays, tbl, 25, 12, null, null, totalCap);
+    const detail = lookupIsharyoDetailed(effectiveTsuinDays, isharyoNyuinDays, tbl, 25, 12, null, null, totalCap);
     isharyoBody = detail.lines.join('<br>');
     let base = detail.value;
     if(muchiuchi){
@@ -1623,7 +1628,7 @@ function calcAll(){
       isharyoContext.push(`少ない方の${effectiveTsuinDaysAka}日を通院期間とします`);
     }
     const tbl = isLight ? ISHARYO_LIGHT : ISHARYO_HEAVY;
-    const detail = lookupIsharyoDetailed(effectiveTsuinDaysAka, nyuindays, tbl, 15, 15);
+    const detail = lookupIsharyoDetailed(effectiveTsuinDaysAka, isharyoNyuinDays, tbl, 15, 15);
     isharyoBody = detail.lines.join('<br>');
     isharyo = detail.value;
     typeName = isLight?'軽傷':'重傷';
