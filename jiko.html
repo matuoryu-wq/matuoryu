@@ -971,13 +971,20 @@ function lookupIsharyoDetailed(tsuinDays, nyuinDays, tbl, tMax, nMax, extraTsuin
 
   const parts = [tsuinSubtotal];
   let nyuinAdj = 0;
-  if(nRemDays > 0 && ni2 !== ni){
-    const nextVal = tbl[ti][ni2];
-    nyuinAdj = (nextVal - base) * (nRemDays/30);
-    parts.push(nyuinAdj);
+  if((ni > 0 || nRemDays > 0) && (ni > 0 || ni2 !== ni)){
     lines.push('');
     lines.push(`${sectionNo}　入院慰謝料`);
-    lines.push(`(${fmtMan(nextVal)}(通院${ti}ヶ月・入院${ni2}ヶ月)−${fmtMan(base)}(通院${ti}ヶ月・入院${ni}ヶ月))× ${nRemDays}/30 ＝ ${fmtMan(nyuinAdj)}`);
+    if(ni > 0){
+      lines.push(`⑴月分`);
+      lines.push(`入院${ni}ヶ月分は、①の月分（通院${ti}ヶ月・入院${ni}ヶ月＝${fmtMan(base)}）にすでに含まれています`);
+    }
+    if(nRemDays > 0 && ni2 !== ni){
+      const nextVal = tbl[ti][ni2];
+      nyuinAdj = (nextVal - base) * (nRemDays/30);
+      parts.push(nyuinAdj);
+      if(ni > 0) lines.push(`⑵端数`);
+      lines.push(`(${fmtMan(nextVal)}(通院${ti}ヶ月・入院${ni2}ヶ月)−${fmtMan(base)}(通院${ti}ヶ月・入院${ni}ヶ月))× ${nRemDays}/30 ＝ ${fmtMan(nyuinAdj)}`);
+    }
     sectionNo++;
   }
 
@@ -1577,21 +1584,25 @@ function calcAll(){
   if(currentBook==='midori'){
     const jitsuDays = nv('i-jitsu-tsuin-days');
     let effectiveTsuinDays = tsuinDaysVal;
+    isharyoContext.push(`傷病区分：${injType==='severe'?'重傷':'通常'}（緑本・${injType==='severe'?'重傷用':'通常用'}の表を使用）`);
     if(jitsuDays > 0){
       const capDays = jitsuDays * 3.5;
       effectiveTsuinDays = Math.min(tsuinDaysVal, capDays);
-      isharyoContext.push(`緑本のルール: 「実際に通院した日数×3.5」と「通院期間の日数」を比べ、少ない方を通院期間として使います。実通院${jitsuDays}日 × 3.5 ＝ ${capDays}日、通院期間 ＝ ${tsuinDaysVal}日。少ない方の${effectiveTsuinDays}日を通院期間とします。`);
+      isharyoContext.push('');
+      isharyoContext.push(`実通院日数のルール（緑本）`);
+      isharyoContext.push(`実通院${jitsuDays}日 × 3.5 ＝ ${capDays}日`);
+      isharyoContext.push(`通院期間（実日数）＝ ${tsuinDaysVal}日`);
+      isharyoContext.push(`少ない方の${effectiveTsuinDays}日を通院期間とします`);
     }
     const muchiuchi = document.getElementById('i-muchiuchi') && document.getElementById('i-muchiuchi').checked;
     const tbl = injType==='severe' ? GREEN_ISHARYO_SEVERE : GREEN_ISHARYO_NORMAL;
     const totalCap = injType==='severe' ? null : GREEN_ISHARYO_NORMAL_TOTAL_CAP;
-    isharyoContext.push(`傷病区分は「${injType==='severe'?'重傷':'通常'}」なので、緑本（大阪基準）の${injType==='severe'?'重傷用':'通常用'}の慰謝料表を使います。`);
     const detail = lookupIsharyoDetailed(effectiveTsuinDays, nyuindays, tbl, 25, 12, null, null, totalCap);
     isharyoBody = detail.lines.join('<br>');
     let base = detail.value;
     if(muchiuchi){
       const reduced = base * 2/3;
-      isharyoBody += `<br><br>軽度の神経症状（むちうち症）・軽度の打撲/挫創（傷）にあたるため、ここまでの金額を3分の2にします → ${fmtMan(base)} × 2/3 ＝ ${fmtMan(reduced)}`;
+      isharyoBody += `<br><br>むちうちによる減額<br>${fmtMan(base)} × 2/3 ＝ ${fmtMan(reduced)}`;
       base = reduced;
     }
     isharyo = base;
@@ -1600,13 +1611,17 @@ function calcAll(){
     const isLight = injType==='light';
     const jitsuDaysAka = nv('i-jitsu-tsuin-days');
     let effectiveTsuinDaysAka = tsuinDaysVal;
+    isharyoContext.push(`傷病区分：${isLight?'軽傷':'重傷'}（赤い本・${isLight?'軽傷用（別表Ⅱ）':'重傷用（別表Ⅰ）'}の表を使用）`);
     if(jitsuDaysAka > 0){
       const multiplier = isLight ? 3 : 3.5;
       const capDaysAka = jitsuDaysAka * multiplier;
       effectiveTsuinDaysAka = Math.min(tsuinDaysVal, capDaysAka);
-      isharyoContext.push(`赤い本のルール: 通院が長期にわたる場合、実際に通院した日数×${multiplier}を通院期間の目安とすることがあります（${isLight?'別表Ⅱ（むちうち等）は3倍':'別表Ⅰ（通常・重傷）は3.5倍'}）。実通院${jitsuDaysAka}日 × ${multiplier} ＝ ${capDaysAka}日、通院期間 ＝ ${tsuinDaysVal}日。少ない方の${effectiveTsuinDaysAka}日を通院期間とします。`);
+      isharyoContext.push('');
+      isharyoContext.push(`実通院日数のルール（赤い本・${isLight?'軽傷は3倍':'重傷は3.5倍'}）`);
+      isharyoContext.push(`実通院${jitsuDaysAka}日 × ${multiplier} ＝ ${capDaysAka}日`);
+      isharyoContext.push(`通院期間（実日数）＝ ${tsuinDaysVal}日`);
+      isharyoContext.push(`少ない方の${effectiveTsuinDaysAka}日を通院期間とします`);
     }
-    isharyoContext.push(`傷病区分は「${isLight?'軽傷':'重傷'}」なので、赤い本（東京基準）の${isLight?'軽傷用（別表Ⅱ）':'重傷用（別表Ⅰ）'}の慰謝料表を使います。`);
     const tbl = isLight ? ISHARYO_LIGHT : ISHARYO_HEAVY;
     const detail = lookupIsharyoDetailed(effectiveTsuinDaysAka, nyuindays, tbl, 15, 15);
     isharyoBody = detail.lines.join('<br>');
@@ -1614,7 +1629,7 @@ function calcAll(){
     typeName = isLight?'軽傷':'重傷';
   }
 
-  const isharyoFormula = [...isharyoContext, isharyoBody].join('<br>');
+  const isharyoFormula = [...isharyoContext, '', isharyoBody].join('<br>');
   items.push({label:'入通院慰謝料', val:isharyo,
     desc:'入院や通院をしたこと自体で受けた精神的なつらさへの補償です。入院期間と通院期間の長さの組み合わせを、あらかじめ決められた金額表（今回は' + (currentBook==='midori'?'緑本（大阪基準）':'赤い本（東京基準）') + '）に当てはめて金額を求めます。期間が長いほど金額は増えますが、増え方は次第に緩やかになります。',
     formula:isharyoFormula});
