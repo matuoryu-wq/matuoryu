@@ -898,8 +898,11 @@ function renderSample(){
   wrap.innerHTML=`
   <div class="info-banner">👀 これは操作イメージをつかむための<strong>架空のサンプルデータ</strong>です。実在の人物・事件とは関係ありません。ここでの表示は保存されず、実際の事件データにも一切影響しません。使い方が分かったら「📁 事件」タブから実際の事件を登録してください。</div>
   <div class="card">
-    <div class="card-title">サンプル事件の設定</div>
-    <div class="card-sub">依頼者名：${esc(c.name)}／罪名：${esc(c.crime)}／身柄事件・国選（今日を逮捕日として自動計算した例です）</div>
+    <div class="card-title">事案概要</div>
+    <div class="card-sub" style="margin-bottom:10px">依頼者名：${esc(c.name)}／罪名：${esc(c.crime)}／身柄事件・国選（今日を逮捕日として自動計算した例です）</div>
+    <p style="font-size:13px;line-height:1.8">
+      サンプル太郎（41歳・無職、前科前歴なし）は、本日午前9時頃、○○市内のコンビニエンスストアで菓子類（時価2,000円相当）を万引きしたとして、駆け付けた警察官により窃盗の現行犯で逮捕された。翌日、検察官に送致され、その2日後に勾留質問を経て勾留が決定。罪証隠滅・逃亡のおそれの評価が争点となり、勾留延長（5日間）を経て起訴に至った想定である。本人は容疑を認めており、被害品は返還・弁償済みで、示談交渉と早期の身柄解放（準抗告・保釈請求）が弁護方針の中心となる事例である。
+    </p>
   </div>
   <div class="stage-title"><span class="num">1</span>逮捕〜勾留請求</div>
   ${s1.map(lawBox).join('')}
