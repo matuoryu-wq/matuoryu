@@ -364,10 +364,10 @@
       <div class="sec-title">分与割合</div>
       <div class="ratio-row">
         <span style="font-size:13px;font-weight:600">ご自身</span>
-        <div class="input-wrap" style="width:80px"><input type="number" id="z-ratio-a" value="50" min="0" max="100"><span class="unit">%</span></div>
+        <div class="input-wrap" style="width:80px"><input type="number" id="z-ratio-a" value="50" min="0" max="100" oninput="linkRatio('a',this.value)"><span class="unit">%</span></div>
         <span class="ratio-sep">:</span>
         <span style="font-size:13px;font-weight:600">相手方</span>
-        <div class="input-wrap" style="width:80px"><input type="number" id="z-ratio-b" value="50" min="0" max="100"><span class="unit">%</span></div>
+        <div class="input-wrap" style="width:80px"><input type="number" id="z-ratio-b" value="50" min="0" max="100" oninput="linkRatio('b',this.value)"><span class="unit">%</span></div>
       </div>
       <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>通常は50%ずつ（2分の1ずつ）の分与が原則です。</div>
       <div class="sec-title" style="margin-top:14px">現在の保有状況</div>
@@ -715,6 +715,13 @@ function calcYouiku(){
   const brYEl=document.getElementById('br-youiku');if(brYEl)brYEl.value=Math.round(mon*10)/10;
 }
 
+function linkRatio(src,val){
+  const other=document.getElementById(src==='a'?'z-ratio-b':'z-ratio-a');
+  if(!other)return;
+  const n=Math.min(100,Math.max(0,Number(val)||0));
+  other.value=100-n;
+}
+
 function calcZaisan(){
   let reAssets=0,reDebts=0;
   document.querySelectorAll('.z-re-card').forEach(row=>{
@@ -746,9 +753,9 @@ function calcZaisan(){
 }
 
 // UI HELPERS
-let cc=0,oc={k:0,y:0},ac=0,dc=0,rc=0;
+let cc=0,ocCount=0,ac=0,dc=0,rc=0;
 // ⑧ New counters for ob-children and res-other children
-let obc={k:0,y:0},roc={k:0,y:0};
+let obcCount=0,rocCount=0;
 
 function addChild(p){
   if(_syncing)return;
@@ -790,38 +797,72 @@ function syncChildAge(srcP,id,val){
 }
 function rmSharedChild(id){rmEl(`k-child-${id}`);rmEl(`y-child-${id}`);rmBrChild(id);}
 
-function addOtherChild(p){oc[p]++;const id=oc[p];const d=document.createElement('div');d.className='child-row';d.id=`${p}-other-${id}`;d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${p}-oage-${id}" oninput="updIdx(this,'${p}-oidx-${id}')"><span class="unit">歳</span><span class="age-index" id="${p}-oidx-${id}">─</span><button class="btn-remove" onclick="rmOther('${p}-other-${id}','${p}')">✕</button>`;document.getElementById(`${p}-other-list`).appendChild(d);document.getElementById(`${p}-other-parent-wrap`).style.display='block';}
-
-function rmOther(id,p){rmEl(id);if(!document.querySelectorAll(`[id^="${p}-oage-"]`).length)document.getElementById(`${p}-other-parent-wrap`).style.display='none';}
+function addOtherChild(p){
+  if(_syncing)return;
+  ocCount++;const id=ocCount;
+  ['k','y'].forEach(tab=>{
+    const d=document.createElement('div');d.className='child-row';d.id=`${tab}-other-${id}`;
+    d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${tab}-oage-${id}" oninput="updIdx(this,'${tab}-oidx-${id}');syncOtherChildAge('${tab}',${id},this.value)"><span class="unit">歳</span><span class="age-index" id="${tab}-oidx-${id}">─</span><button class="btn-remove" onclick="rmSharedOther(${id})">✕</button>`;
+    document.getElementById(`${tab}-other-list`).appendChild(d);
+    document.getElementById(`${tab}-other-parent-wrap`).style.display='block';
+  });
+}
+function syncOtherChildAge(srcP,id,val){
+  if(_syncing)return;_syncing=true;
+  const peer=srcP==='k'?'y':'k';
+  const peerEl=document.getElementById(`${peer}-oage-${id}`);
+  if(peerEl){peerEl.value=val;updIdx(peerEl,`${peer}-oidx-${id}`);}
+  _syncing=false;
+}
+function rmSharedOther(id){
+  rmEl(`k-other-${id}`);rmEl(`y-other-${id}`);
+  ['k','y'].forEach(p=>{if(!document.querySelectorAll(`[id^="${p}-oage-"]`).length)document.getElementById(`${p}-other-parent-wrap`).style.display='none';});
+}
 
 // ⑧ New function: addObChild
 function addObChild(p){
-  obc[p]++;
-  const id=obc[p];
-  const d=document.createElement('div');
-  d.className='child-row';
-  d.id=`${p}-obchild-${id}`;
-  d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${p}-obage-${id}" oninput="updIdx(this,'${p}-obidx-${id}')"><span class="unit">歳</span><span class="age-index" id="${p}-obidx-${id}">─</span><button class="btn-remove" onclick="rmEl('${p}-obchild-${id}')">✕</button>`;
-  document.getElementById(`${p}-ob-children-list`).appendChild(d);
+  if(_syncing)return;
+  obcCount++;const id=obcCount;
+  ['k','y'].forEach(tab=>{
+    const d=document.createElement('div');
+    d.className='child-row';
+    d.id=`${tab}-obchild-${id}`;
+    d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${tab}-obage-${id}" oninput="updIdx(this,'${tab}-obidx-${id}');syncObChildAge('${tab}',${id},this.value)"><span class="unit">歳</span><span class="age-index" id="${tab}-obidx-${id}">─</span><button class="btn-remove" onclick="rmSharedObChild(${id})">✕</button>`;
+    document.getElementById(`${tab}-ob-children-list`).appendChild(d);
+  });
 }
+function syncObChildAge(srcP,id,val){
+  if(_syncing)return;_syncing=true;
+  const peer=srcP==='k'?'y':'k';
+  const peerEl=document.getElementById(`${peer}-obage-${id}`);
+  if(peerEl){peerEl.value=val;updIdx(peerEl,`${peer}-obidx-${id}`);}
+  _syncing=false;
+}
+function rmSharedObChild(id){rmEl(`k-obchild-${id}`);rmEl(`y-obchild-${id}`);}
 
 // ⑧ New function: addResOtherChild
 function addResOtherChild(p){
-  roc[p]++;
-  const id=roc[p];
-  const d=document.createElement('div');
-  d.className='child-row';
-  d.id=`${p}-resother-${id}`;
-  d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${p}-rosage-${id}" oninput="updIdx(this,'${p}-rosidx-${id}')"><span class="unit">歳</span><span class="age-index" id="${p}-rosidx-${id}">─</span><button class="btn-remove" onclick="rmResOther('${p}-resother-${id}','${p}')">✕</button>`;
-  document.getElementById(`${p}-res-other-list`).appendChild(d);
-  document.getElementById(`${p}-res-other-parent-wrap`).style.display='block';
+  if(_syncing)return;
+  rocCount++;const id=rocCount;
+  ['k','y'].forEach(tab=>{
+    const d=document.createElement('div');
+    d.className='child-row';
+    d.id=`${tab}-resother-${id}`;
+    d.innerHTML=`<span class="child-label">第${id}子</span><input type="number" placeholder="年齢" min="0" max="19" id="${tab}-rosage-${id}" oninput="updIdx(this,'${tab}-rosidx-${id}');syncResOtherChildAge('${tab}',${id},this.value)"><span class="unit">歳</span><span class="age-index" id="${tab}-rosidx-${id}">─</span><button class="btn-remove" onclick="rmSharedResOther(${id})">✕</button>`;
+    document.getElementById(`${tab}-res-other-list`).appendChild(d);
+    document.getElementById(`${tab}-res-other-parent-wrap`).style.display='block';
+  });
 }
-
-// ⑧ New function: rmResOther
-function rmResOther(id,p){
-  rmEl(id);
-  if(!document.querySelectorAll(`[id^="${p}-rosage-"]`).length)
-    document.getElementById(`${p}-res-other-parent-wrap`).style.display='none';
+function syncResOtherChildAge(srcP,id,val){
+  if(_syncing)return;_syncing=true;
+  const peer=srcP==='k'?'y':'k';
+  const peerEl=document.getElementById(`${peer}-rosage-${id}`);
+  if(peerEl){peerEl.value=val;updIdx(peerEl,`${peer}-rosidx-${id}`);}
+  _syncing=false;
+}
+function rmSharedResOther(id){
+  rmEl(`k-resother-${id}`);rmEl(`y-resother-${id}`);
+  ['k','y'].forEach(p=>{if(!document.querySelectorAll(`[id^="${p}-rosage-"]`).length)document.getElementById(`${p}-res-other-parent-wrap`).style.display='none';});
 }
 
 function updIdx(input,sid){const age=Number(input.value);const s=document.getElementById(sid);if(s)s.textContent=age>=0&&age<=19?`指数${childIndex(age)}`:'─';}
@@ -1175,7 +1216,9 @@ function setupSync(){
     ['k-ob-type','y-ob-type'],['k-ob-salary','y-ob-salary'],
     ['k-ob-business','y-ob-business'],['k-ob-insurance','y-ob-insurance'],
     ['k-ee-type','y-ee-type'],['k-ee-salary','y-ee-salary'],
-    ['k-ee-business','y-ee-business'],['k-ee-insurance','y-ee-insurance']
+    ['k-ee-business','y-ee-business'],['k-ee-insurance','y-ee-insurance'],
+    ['k-other-parent-income','y-other-parent-income'],
+    ['k-res-other-income','y-res-other-income']
   ];
   function link(aId,bId){
     const a=document.getElementById(aId),b=document.getElementById(bId);
