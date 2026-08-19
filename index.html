@@ -657,11 +657,11 @@ function calcYouiku(){
 
   let c,ann;
   if(hasResOther){
-    // 同居婚外子あり: 養育費 = ap × α / (100 + α + β)
-    ann=ap*cs/(100+cs+beta);
+    // 同居婚外子あり: 養育費 = ap × α / (100 + obCs + α + β)
+    ann=ap*cs/(100+obCs+cs+beta);
     c=null;
   }else{
-    c=ap*cs/(100+cs);
+    c=ap*cs/(100+obCs+cs);
     ann=c*ap/(ap+b);
   }
   const mon=ann/12;
@@ -670,12 +670,12 @@ function calcYouiku(){
   let fmlEq1,fmlEq2,fmlVars;
   if(hasResOther){
     fmlEq1=`① β（婚外子の修正指数）＝ 子の指数 × a ÷ (a + Z)`;
-    fmlEq2=`② 養育費（年額）＝ a × α ÷ (100 + α + β)`;
-    fmlVars=`a ＝ 義務者の基礎収入${aLabel} ／ Z ＝ 婚外子の他方の親の基礎収入<br>α ＝ 子の生活費指数合計 ／ β ＝ 婚外子の修正生活費指数合計`;
+    fmlEq2=`② 養育費（年額）＝ a × α ÷ (100${obCs>0?' + γ':''} + α + β)`;
+    fmlVars=`a ＝ 義務者の基礎収入${aLabel} ／ Z ＝ 婚外子の他方の親の基礎収入<br>α ＝ 子の生活費指数合計 ／ β ＝ 婚外子の修正生活費指数合計`+(obCs>0?` ／ γ ＝ 義務者と同居する子の指数合計`:'');
   }else{
-    fmlEq1=`① 子の生活費 c ＝ a × 子の指数合計 ÷ (100 + 子の指数合計)`;
+    fmlEq1=`① 子の生活費 c ＝ a × 子の指数合計 ÷ (100${obCs>0?' + γ':''} + 子の指数合計)`;
     fmlEq2=`② 養育費（年額）＝ c × a ÷ (a + b)`;
-    fmlVars=`a ＝ 義務者の基礎収入${aLabel} ／ b ＝ 権利者の基礎収入<br>子の指数合計 ＝ 各子の生活費指数の合計（0〜14歳=62、15〜19歳=85）`;
+    fmlVars=`a ＝ 義務者の基礎収入${aLabel} ／ b ＝ 権利者の基礎収入<br>子の指数合計 ＝ 各子の生活費指数の合計（0〜14歳=62、15〜19歳=85）`+(obCs>0?` ／ γ ＝ 義務者と同居する子の指数合計`:'');
   }
   const fml=`<div class="formula-header"><div class="fh-title">養育費の計算式（標準算定方式）</div><div class="fh-eq">${fmlEq1}</div><div class="fh-eq">${fmlEq2}</div><div class="fh-vars">${fmlVars}</div></div>`;
 
@@ -688,7 +688,7 @@ function calcYouiku(){
   // Build obChildHtml
   let obChildHtml='';
   if(obCs>0){
-    obChildHtml=`<div class="bk-row" style="margin-top:6px"><span class="bk-key">義務者と同居する子の指数合計</span><span class="bk-val">${obCs}</span></div>${D('義務者と同居している夫婦間の子の生活費指数の合計です。')}<div class="bk-formula">${obChildAges.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')}</div>`;
+    obChildHtml=`<div class="bk-row" style="margin-top:6px"><span class="bk-key">義務者と同居する子の指数合計</span><span class="bk-val">${obCs}</span></div>${D('義務者と同居している夫婦間の子の生活費指数の合計です。義務者はこの子たちも直接養育しているため、分母に加算して養育費を按分します。')}<div class="bk-formula">${obChildAges.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')}</div>`;
   }
 
   // Build betaHtml
@@ -701,9 +701,9 @@ function calcYouiku(){
   let cSection='';
   let resultFormula='';
   if(hasResOther){
-    resultFormula=`a×α÷(100+α+β)<br>${fmtMan(ap)}×${cs}÷(100+${cs}+${beta.toFixed(3)})=${fmtMan(ann)}`;
+    resultFormula=`a×α÷(100${obCs>0?'+γ':''}+α+β)<br>${fmtMan(ap)}×${cs}÷(100${obCs>0?'+'+obCs:''}+${cs}+${beta.toFixed(3)})=${fmtMan(ann)}`;
   }else{
-    cSection=`<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の生活費（c）</span><span class="bk-val">${fmtMan(c)}</span></div>${D('義務者・権利者双方の生活費の中から、子に必要な生活費の総額を取り出した金額です。義務者の基礎収入に子の指数の比率を掛けて算出します。')}<div class="bk-formula">a×子の指数÷(100+子の指数)<br>${fmtMan(ap)}×${cs}÷(100+${cs})=${fmtMan(c)}</div>`;
+    cSection=`<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の生活費（c）</span><span class="bk-val">${fmtMan(c)}</span></div>${D('義務者・権利者双方の生活費の中から、子に必要な生活費の総額を取り出した金額です。義務者の基礎収入に子の指数の比率を掛けて算出します。'+(obCs>0?'義務者と同居する子がいる場合、その分も分母に加えて按分するため、金額が小さくなります。':''))}<div class="bk-formula">a×子の指数÷(100${obCs>0?'+γ':''}+子の指数)<br>${fmtMan(ap)}×${cs}÷(100${obCs>0?'+'+obCs:''}+${cs})=${fmtMan(c)}</div>`;
     resultFormula=`c×a÷(a+b)<br>${fmtMan(c)}×${fmtMan(ap)}÷(${fmtMan(ap)}+${fmtMan(b)})=${fmtMan(ann)}`;
   }
 
