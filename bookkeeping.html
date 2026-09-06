@@ -618,6 +618,7 @@
   <button class="ctrl-btn grp-btn active" id="sec-s3" onclick="setSection('s3')">3級</button>
   <button class="ctrl-btn grp-btn" id="sec-s2c" onclick="setSection('s2c')">2級商業</button>
   <button class="ctrl-btn grp-btn" id="sec-s2i" onclick="setSection('s2i')">2級工業</button>
+  <button class="ctrl-btn grp-btn" id="sec-pdf" onclick="setSection('pdf')">📄 PDF仕訳</button>
   <button class="apx-btn" onclick="showApx()">📖 勘定科目一覧</button>
   <button class="apx-btn" style="background:#E65100;" onclick="showQA()">📝 一問一答</button>
 </div>
@@ -7306,6 +7307,7 @@ const SECS = {
   s3:  q => (q.level||3)===3,
   s2c: q => q.level===2 && !IKOU_CATS.has(q.cat),
   s2i: q => q.level===2 && IKOU_CATS.has(q.cat),
+  pdf: q => q.cat === 'PDF仕訳',
 };
 
 function getSectionQuestions(sec){ return sec ? ALL.filter(SECS[sec]) : ALL; }
@@ -7642,12 +7644,13 @@ function expNextEntry(){
 function setSection(sec){
   sectionFilter=sec;
   groupFilter=0;
-  ['sec-s3','sec-s2c','sec-s2i'].forEach(id=>{
+  ['sec-s3','sec-s2c','sec-s2i','sec-pdf'].forEach(id=>{
     const btn=document.getElementById(id);
     if(btn) btn.classList.toggle('active',
       (sec==='s3'&&id==='sec-s3')||
       (sec==='s2c'&&id==='sec-s2c')||
-      (sec==='s2i'&&id==='sec-s2i')
+      (sec==='s2i'&&id==='sec-s2i')||
+      (sec==='pdf'&&id==='sec-pdf')
     );
   });
   updateGroupButtons();
