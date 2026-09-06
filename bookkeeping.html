@@ -639,15 +639,7 @@
         <button class="apx-close" onclick="hideApx()">✕</button>
       </div>
       <div class="apx-tabs" id="apx-tabs">
-        <button class="apx-tab active" data-type="all" onclick="setApxTab('all')">全て（章順）</button>
-        <button class="apx-tab" data-type="level3" onclick="setApxTab('level3')">3級</button>
-        <button class="apx-tab" data-type="level2" onclick="setApxTab('level2')">2級</button>
-        <button class="apx-tab" data-type="asset" onclick="setApxTab('asset')">資産</button>
-        <button class="apx-tab" data-type="liability" onclick="setApxTab('liability')">負債</button>
-        <button class="apx-tab" data-type="expense" onclick="setApxTab('expense')">費用</button>
-        <button class="apx-tab" data-type="revenue" onclick="setApxTab('revenue')">収益</button>
-        <button class="apx-tab" data-type="equity" onclick="setApxTab('equity')">純資産</button>
-        <button class="apx-tab" data-type="other" onclick="setApxTab('other')">その他</button>
+        <button class="apx-tab active" data-type="all" onclick="setApxTab('all')">全て</button>
         <button class="apx-tab" data-type="industrial" onclick="setApxTab('industrial')">🏭 工業簿記</button>
         <button class="apx-tab" data-type="glossary" onclick="setApxTab('glossary')">📖 用語集</button>
       </div>
@@ -1900,8 +1892,20 @@ let apxCurrentTab = 'all';
 
 function showApx(){
   const el = document.getElementById('apx-overlay');
-  if(!document.getElementById('apx-content').innerHTML)
+  if(!document.getElementById('apx-content').innerHTML){
     document.getElementById('apx-content').innerHTML = buildApxContent();
+    const tabsEl = document.getElementById('apx-tabs');
+    const indBtn = tabsEl.querySelector('[data-type="industrial"]');
+    ACCT_Q_CHAP_ORDER.filter(chap => !chap.startsWith('工業簿記')).forEach(chap => {
+      const btn = document.createElement('button');
+      btn.className = 'apx-tab';
+      btn.dataset.type = 'chap:' + chap;
+      btn.textContent = chap.replace(/：.*/, '');
+      btn.title = chap;
+      btn.onclick = () => setApxTab('chap:' + chap);
+      tabsEl.insertBefore(btn, indBtn);
+    });
+  }
   el.classList.add('show');
   apxCurrentTab = 'all';
   document.querySelectorAll('#apx-tabs .apx-tab').forEach(t => t.classList.toggle('active', t.dataset.type === 'all'));
@@ -1938,26 +1942,15 @@ function applyApxFilter(tab){
     const category = sec.dataset.category;
     let typeMatch;
     if(tab === 'all') typeMatch = category === 'chap';
+    else if(tab.startsWith('chap:')) typeMatch = sec.dataset.chap === tab.slice(5);
     else if(tab === 'industrial') typeMatch = category === 'industrial';
     else if(tab === 'glossary') typeMatch = false;
-    else if(tab === 'level3' || tab === 'level2') typeMatch = category === 'commercial';
-    else typeMatch = (type === tab && category === 'commercial');
+    else typeMatch = false;
 
     if(!typeMatch){ sec.style.display = 'none'; return; }
 
-    if(tab === 'level3' || tab === 'level2'){
-      const targetLevel = tab === 'level3' ? '3' : '2';
-      let anyVisible = false;
-      sec.querySelectorAll('.apx-row').forEach(row => {
-        const match = row.dataset.level === targetLevel;
-        row.classList.toggle('hidden', !match);
-        if(match) anyVisible = true;
-      });
-      sec.style.display = anyVisible ? '' : 'none';
-    } else {
-      sec.style.display = '';
-      sec.querySelectorAll('.apx-row').forEach(r => r.classList.remove('hidden'));
-    }
+    sec.style.display = '';
+    sec.querySelectorAll('.apx-row').forEach(r => r.classList.remove('hidden'));
   });
 }
 
