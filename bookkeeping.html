@@ -393,7 +393,12 @@
     .apx-note mark, .gloss-def-en mark { background:#FFF9C4; padding:0 2px; border-radius:2px; }
     .apx-lv { display:inline-block; font-size:9px; font-weight:700; background:var(--primary); color:#fff; border-radius:4px; padding:1px 5px; }
     .apx-lv.ind { background:#FF8F00; }
-    .apx-tabs { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
+    .apx-tabs-wrap { margin-bottom:8px; }
+    .apx-tabs-toggle { display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none; font-size:12px; color:var(--muted); font-weight:600; margin-bottom:5px; }
+    .apx-tabs-toggle-arrow { font-size:10px; transition:transform 0.2s; }
+    .apx-tabs-wrap.collapsed .apx-tabs-toggle-arrow { transform:rotate(-90deg); }
+    .apx-tabs-wrap.collapsed .apx-tabs { display:none; }
+    .apx-tabs { display:flex; flex-wrap:wrap; gap:5px; }
     .apx-tab { padding:5px 11px; border:1.5px solid var(--border); border-radius:20px; background:#fff; font-size:12px; cursor:pointer; color:var(--muted); font-weight:600; transition:background 0.15s,color 0.15s,border-color 0.15s; }
     .apx-tab:hover { background:#f5f5f5; }
     .apx-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
@@ -639,10 +644,16 @@
         <div><div class="apx-title">📚 勘定科目一覧</div><div class="apx-subtitle">3級・2級対応 ／ 色で分類（2級のみ「2級」バッジ）</div></div>
         <button class="apx-close" onclick="hideApx()">✕</button>
       </div>
-      <div class="apx-tabs" id="apx-tabs">
-        <button class="apx-tab active" data-type="all" onclick="setApxTab('all')">全て</button>
-        <button class="apx-tab" data-type="industrial" onclick="setApxTab('industrial')">🏭 工業簿記</button>
-        <button class="apx-tab" data-type="glossary" onclick="setApxTab('glossary')">📖 用語集</button>
+      <div class="apx-tabs-wrap" id="apx-tabs-wrap">
+        <div class="apx-tabs-toggle" onclick="toggleApxTabs()">
+          <span class="apx-tabs-toggle-arrow">▼</span>
+          <span id="apx-tabs-toggle-label">タブを隠す</span>
+        </div>
+        <div class="apx-tabs" id="apx-tabs">
+          <button class="apx-tab active" data-type="all" onclick="setApxTab('all')">全て</button>
+          <button class="apx-tab" data-type="industrial" onclick="setApxTab('industrial')">🏭 工業簿記</button>
+          <button class="apx-tab" data-type="glossary" onclick="setApxTab('glossary')">📖 用語集</button>
+        </div>
       </div>
       <div class="apx-hide-btns">
         <button class="apx-hide-btn" id="apx-hide-ans-btn" onclick="toggleHideAnswer()">👁 解答を隠す</button>
@@ -1918,6 +1929,13 @@ function setApxTab(type){
   apxCurrentTab = type;
   document.querySelectorAll('#apx-tabs .apx-tab').forEach(t => t.classList.toggle('active', t.dataset.type === type));
   applyApxFilter(type);
+}
+
+function toggleApxTabs(){
+  const wrap = document.getElementById('apx-tabs-wrap');
+  const label = document.getElementById('apx-tabs-toggle-label');
+  const collapsed = wrap.classList.toggle('collapsed');
+  label.textContent = collapsed ? 'タブを表示' : 'タブを隠す';
 }
 
 function toggleHideAnswer(){
@@ -3334,6 +3352,203 @@ function qaRestart(){
   renderQABody();
   document.getElementById('qa-body').scrollTop=0;
 }
+
+const JRNL_EN_Q = {
+  1:'A food store purchased 10 apples (¥100 each, total ¥1,000) for cash at ¥1,100 including tax.',
+  2:'A food store purchased 10 apples (¥100 each, total ¥1,000) on account at ¥1,100 including tax.',
+  3:'A food store purchased 5 oranges (¥100 each, total ¥500) by issuing a promissory note at ¥550 including tax.',
+  4:'A food store purchased 8 loaves of bread (¥100 each, total ¥800) by issuing its own check at ¥880 including tax.',
+  5:'The company paid ¥1,100 (including tax) in cash for food purchased previously on account.',
+  6:'A food store sold 20 apples (¥100 each, total ¥2,000) on account at ¥2,200 including tax.',
+  7:'A food store sold 10 apples at ¥1,100 (incl. tax) and received a check from another store (treated as cash).',
+  8:'A food store sold 10 apples at ¥1,100 (incl. tax) and received a gift certificate as payment.',
+  9:'A food store sold 20 apples at ¥2,200 (incl. tax) and received a promissory note as payment.',
+  10:'Cash was collected for a credit sale of food (¥2,200 including tax).',
+  11:'An electronics store sold 20 phone cases (@¥100, total ¥2,000) by credit card, incurring a 5% (¥100) processing fee.',
+  12:'The credit card company remitted ¥1,900 from the prior credit sale into the checking account.',
+  13:'A bookstore sold a reference book (¥1,000) on account and paid ¥200 shipping costs in cash on the customer\'s behalf.',
+  14:'The company exchanged a gift certificate receivable of ¥1,100 for cash.',
+  15:'Company A filed a digital payment record through its bank to electronically settle an accounts payable of ¥500.',
+  16:'Company B received a bank notification that its accounts receivable of ¥500 had been converted to an electronic trade receivable.',
+  17:'An electronic trade receivable of ¥500 matured and was deposited into the checking account.',
+  18:'The company purchased machine parts (bolts, screws, ¥1,000) and issued a promissory note as payment.',
+  19:'A promissory note of ¥1,000 previously issued matured and was settled from the checking account.',
+  20:'A promissory note receivable of ¥800 matured and was deposited into the checking account.',
+  21:'A building was purchased for ¥280 on deferred payment. Broker and registration fees of ¥20 were paid in cash (ancillary costs included in acquisition cost).',
+  22:'The company paid the deferred balance of ¥280 in cash for the building purchased earlier.',
+  23:'Land (book value ¥52 = purchase price ¥50 + fees ¥2) was sold for ¥55 on deferred payment terms.',
+  24:'The checking account balance was ¥100, but a ¥400 check was issued, creating a bank overdraft of ¥300. Record the year-end reclassification entry.',
+  25:'A stationery store (3-voucher system) collected ¥500 in cash for notebooks sold on account, using a cash receipt voucher.',
+  26:'The company contracted to purchase an office printer (¥1,000) and paid a deposit of ¥300 in cash.',
+  27:'The company contracted to sell an office printer (¥1,000) and received a deposit of ¥200 in cash.',
+  28:'The company delivered the office printer (¥1,000), received the ¥800 balance in cash, offsetting the ¥200 advance received.',
+  29:'The cash book balance was ¥700, but actual cash on hand was ¥500, revealing a cash shortage of ¥200.',
+  30:'Investigation of the ¥200 cash shortage revealed ¥120 was delivery expense; the remaining ¥80 was unresolved at year-end.',
+  31:'Investigation of the ¥300 cash surplus revealed ¥200 was fees received; the remaining ¥100 was unresolved at year-end.',
+  32:'The company paid ¥500 in cash to cover a lunch expense on behalf of an employee.',
+  33:'On payday, the company paid ¥120,000 net salary in cash from a gross of ¥150,000, after deducting ¥5,000 advance, ¥15,000 employee social insurance, and ¥10,000 withholding tax.',
+  34:'The company paid ¥30,000 cash to the social insurance office: ¥15,000 withheld from employees plus ¥15,000 employer contribution.',
+  35:'A loan receivable of ¥10,000 was repaid in cash together with interest of ¥500.',
+  36:'The company repaid a bank loan of ¥100,000 plus interest of ¥3,000 in cash.',
+  37:'The company lent ¥50,000 in cash to a business partner, receiving a promissory note as collateral.',
+  38:'The company paid ¥120,000 in cash for the interim corporate tax installment.',
+  39:'At year-end, corporate tax was finalized at 30% of pre-tax income of ¥700 (= ¥210). The interim payment of ¥120 had already been paid.',
+  40:'In the following period, the company paid the remaining corporate tax payable of ¥90,000 in cash.',
+  41:'At year-end, consumption tax was settled: ¥1,000 prepaid on purchases vs. ¥3,000 collected on sales.',
+  42:'In the following period, the company paid the remaining consumption tax payable of ¥2,000 in cash.',
+  43:'The company issued new shares and received ¥5,000 in paid-in capital deposited into the checking account.',
+  44:'At the shareholders\' meeting, dividends of ¥1,000 and a legal reserve appropriation of ¥100 were approved from retained earnings.',
+  45:'The company paid the declared dividend of ¥1,000 from its checking account.',
+  46:'A company (3-voucher system) paid ¥800 in cash for office supplies using a cash disbursement voucher.',
+  47:'The company paid ¥1,700 cash in total: ¥1,000 for revenue stamps and property tax, ¥500 advertising, ¥200 postage.',
+  48:'At year-end, unused postage stamps of ¥100 and revenue stamps of ¥200 were identified; reclassify to supplies inventory.',
+  49:'The company advanced ¥30,000 cash as estimated travel expenses for an employee\'s business trip.',
+  50:'The employee returned; actual travel was ¥25,000. The ¥5,000 excess of the ¥30,000 advance was refunded in cash.',
+  51:'An unexplained deposit of ¥50,000 appeared in the company\'s savings account.',
+  52:'The mysterious ¥50,000 deposit was identified as a customer deposit for a large copy-paper order.',
+  53:'The company moved into an office and paid ¥100,000 rent, ¥50,000 agency fee, and ¥300,000 security deposit in cash.',
+  54:'Upon vacating the office, the ¥300,000 security deposit was returned with ¥30,000 deducted for repairs, netting ¥270,000.',
+  55:'Accounts receivable of ¥50,000 from a prior sale became uncollectable due to the customer\'s bankruptcy (no allowance had been set).',
+  56:'At year-end, an allowance for doubtful accounts was set at 3% of A/R of ¥100,000 (prior balance: zero, complement method).',
+  57:'A/R of ¥10,000 became uncollectable; the ¥2,000 allowance was applied and the remaining ¥8,000 recorded as bad debt expense.',
+  58:'¥5,000 of bad debt expense recognized this period was collected in cash.',
+  59:'Accounts receivable written off in a prior period were subsequently recovered in cash for ¥20,000.',
+  60:'The company borrowed ¥100,000 in cash from a bank at interest.',
+  61:'At year-end, interest expense of ¥2,000 for the current period had not yet been paid. Record the accrual.',
+  62:'A stationery store (3-voucher system) purchased 10 notebooks (@¥100, ¥1,000) on account using a journal voucher.',
+  63:'At year-end, rent receivable of ¥10,000 for the current period had not yet been collected. Record the accrual.',
+  64:'In the following period, rent receivable of ¥10,000 accrued at prior year-end was collected in cash.',
+  65:'The company paid ¥36,000 in cash for one year\'s fire insurance premium.',
+  66:'At year-end, ¥12,000 of the ¥36,000 insurance premium was for the next period; record the prepayment deferral.',
+  67:'At year-end, ¥3,000 of the ¥12,000 interest paid was for the next period; record the prepayment deferral.',
+  68:'A stationery store (3-voucher system) purchased 20 notebooks (¥2,000 total): ¥500 cash and ¥1,500 on account. Combine the two vouchers into one journal entry.',
+  69:'A stationery store had three vouchers: ①cash receipt ¥200 (A/R collected) ②cash disbursement ¥300 (supplies) ③journal voucher: Purchases ¥500 / A/P ¥500. Record each as a journal entry.',
+  70:'At year-end, ¥4,000 of ¥12,000 interest received was for the next period; record the deferral.',
+  71:'On Jan. 1 the company lent ¥1,000 at 12% annual interest. At the Mar. 31 year-end, record 3 months\' accrued interest receivable.',
+  72:'At year-end, equipment (cost ¥500,000; useful life 5 years; residual 10%) was depreciated using the straight-line method.',
+  73:'Equipment (cost ¥500,000; accumulated depreciation ¥180,000) was sold for ¥100,000 cash after recognizing current-year depreciation of ¥90,000 (book value at sale: ¥230,000).',
+  74:'At year-end, beginning inventory (Merchandise ¥120) was transferred into cost of goods sold — Step 1 of the COGS calculation.',
+  75:'At year-end, ending inventory (Merchandise ¥130) was carried forward to next period — Step 2 of the COGS calculation.',
+  76:'Combine a cash disbursement voucher (Equipment ¥50 / Cash ¥50) and a journal voucher (Equipment ¥200 / Checking ¥200) into one journal entry.',
+  77:'At year-end, expense accounts (Purchases ¥300, Salaries ¥100, Rent ¥50) were closed to the Income Summary.',
+  78:'At year-end, revenue accounts (Sales ¥500, Interest Income ¥20) were closed to the Income Summary.',
+  79:'Income Summary shows revenues ¥520 and expenses ¥450, yielding net income of ¥70. Close to Retained Earnings.',
+  80:'Income Summary shows expenses ¥600 and revenues ¥520, yielding a net loss of ¥80. Close to Retained Earnings.',
+  81:'At year-end, salaries of ¥50 for the current period were unpaid. Record the accrual entry.',
+  82:'At the start of the next period, reverse the prior year-end accrual for unpaid salaries of ¥50.',
+  83:'At year-end, unused office supplies of ¥20 remained from purchases previously expensed. Record the adjustment.',
+  84:'The petty cash custodian reported spending ¥5,000 on communications and ¥3,000 on travel.',
+  85:'The petty cash fund was replenished with ¥8,000 by issuing a check from the checking account.',
+  86:'At year-end, ¥15,000 of ¥60,000 rent received was for the next period; record the deferral.',
+  87:'Classify these year-end balances into B/S debit (asset) or credit (liability): Merchandise ¥200, Prepaid Expenses ¥12,000, Accrued Revenue ¥5,000, Deferred Revenue ¥8,000, Accrued Expenses ¥3,000, Corporate Tax Payable ¥40,000.',
+  88:'Merchandise purchased on account (¥3,300 incl. tax = ¥3,000 + ¥300) was returned to the supplier due to defects.',
+  89:'Merchandise sold on account (¥2,200 incl. tax = ¥2,000 + ¥200) was returned by the customer due to a quality complaint.',
+  90:'A promissory note receivable (face ¥50,000) was endorsed and transferred to a supplier to pay for ¥50,000 in purchases.',
+  91:'A promissory note (face ¥100,000) was discounted at the bank; after a ¥2,000 fee, ¥98,000 was deposited into the checking account.',
+  92:'The company paid ¥300,000 cash for a building extension (capital expenditure increasing value and useful life).',
+  93:'The company paid ¥50,000 cash for exterior wall repainting (maintenance only, no increase in asset value).',
+  94:'From Company A\'s 8-column worksheet, calculate ①COGS ②Gross profit ③Net income ④Retained earnings.',
+  95:'Prepare Company A\'s income statement and calculate ①COGS ②Gross profit ③Net income.',
+  96:'Prepare Company A\'s balance sheet and find ①Retained earnings and ②Total equity.',
+  97:'Using the merchandise inventory card (FIFO method), find the unit cost of goods sold for 20 units on April 10.',
+  98:'Using the merchandise inventory card (moving-average method), find the unit cost of goods sold for 20 units on April 10.',
+  99:'Name ①the ledger recording all transactions in date order and ②the subsidiary ledger tracking A/R by customer.',
+  100:'The cash account shows debit total ¥500 and credit total ¥200. ①Balance for the trial balance? ②Debit amount for the totals trial balance? ③Does the combined trial balance show both?',
+  101:'At year-end, expenses totaled ¥450 and revenues ¥520. ①What account collects all revenues and expenses? ②Where is net income transferred? ③What is the net income amount?',
+  102:'Three year-end adjustments: ①reclassify ending merchandise ¥100→¥150 ②accrue unpaid salaries ¥30 ③defer prepaid insurance ¥20 for next period.',
+  103:'A stationery store (3-voucher system): ①sold goods ¥500 for cash ②paid supplies ¥100 cash ③purchased goods ¥200 on account. Which voucher type applies to each?',
+  104:'Read the accounts receivable ledger and find the balance carried forward at April 30.',
+  105:'From the income statement, find the blanks: (A) Gross profit and (B) Net income.',
+  106:'From the balance sheet, find ①Total equity and ②Retained earnings balance.',
+  107:'Read the customer ledger (Company A) and find the A/R balance as of April 28.',
+  108:'Read the cash receipts/payments record and find the cash balance on April 28. Verify: prior balance + receipts − disbursements.',
+  109:'From the trial balance, find (A) the loans payable balance and (B) the total credit side. The total debit side is ¥1,500,000.',
+  110:'From the 8-column worksheet, find (A) net income and (B) ending retained earnings. Ending merchandise is ¥150,000.',
+  111:'At formation, 10 shares @ ¥50 were issued and ¥500 deposited into savings (half to common stock). Incorporation costs of ¥100 were paid in cash.',
+  112:'①Share application received; ¥300 application deposits accepted. ②Shares formally issued; deposits reclassified to common stock and capital reserve (¥150 each) and transferred to savings.',
+  113:'Company A absorbed Company B, taking over assets of ¥1,000 and liabilities of ¥400. Common stock was increased by ¥800 as consideration.',
+  114:'Closing entries: ①net income ¥300 and ②net loss ¥200 (separate example) — record the closing transfer from Income Summary in each case.',
+  115:'Shareholders\' meeting resolved: pay dividends ¥1,000, appropriate ¥100 to legal reserve, and ¥300 to voluntary reserve from retained earnings.',
+  116:'Shareholders\' meeting resolved: pay dividends ¥800 and appropriate ¥80 to additional paid-in capital reserve from other capital surplus.',
+  117:'A dividend of ¥500 is paid from retained earnings. With common stock ¥60,000, capital reserve ¥4,000, and legal reserve ¥3,000, how much legal reserve must be set aside? Record the entry.',
+  118:'①Capital reserve of ¥200 was transferred to common stock. ②Legal reserve of ¥100 was transferred to retained earnings.',
+  119:'①At year-end, corporate tax was finalized at ¥2,500 (interim ¥1,000 already recorded). ②The balance was paid in cash next period.',
+  120:'Tax-exclusive method: ①purchased goods (base ¥100) for ¥110 cash incl. tax. ②sold goods (base ¥300) for ¥330 cash incl. tax (10% consumption tax).',
+  121:'①Year-end: settled ¥1,000 prepaid consumption tax and ¥3,000 collected. ②Next period: paid the net consumption tax in cash.',
+  122:'A clothing store sold a T-shirt (cost ¥1,500) on account for ¥2,100 using the perpetual inventory method.',
+  123:'The supplier notified of a ¥10 rebate on this month\'s purchases (to be deducted from accounts payable).',
+  124:'①A promissory note of ¥1,000 was endorsed to a supplier for electronic parts purchases. ②Electronic parts (¥2,000) were sold and a promissory note was received from the customer.',
+  125:'A promissory note (face ¥100) was discounted at the bank; after a ¥10 fee, ¥90 was deposited into the checking account.',
+  126:'①A note receivable of ¥500 was dishonored at maturity; ¥20 protest costs were paid in cash. ②The full amount (¥520) was subsequently collected.',
+  127:'A dishonored note of ¥300 (including charges) was determined uncollectable and written off as bad debt.',
+  128:'An electronic trade payable matured; ¥1,000 was settled from Company A\'s checking account to Company B. Record entries for both parties.',
+  129:'Company B transferred its electronic trade receivable of ¥1,000 to Company C to settle an accounts payable. Record entries for both B and C.',
+  130:'An electronic trade receivable of ¥1,000 was sold to a financial institution for ¥950, deposited into the checking account.',
+  131:'Equipment (book value ¥700) was sold for ¥700, with payment by electronic record.',
+  132:'Business land (¥800) was purchased with payment by electronic record.',
+  133:'There was an outstanding receivable of ¥300 and payable of ¥500 with Company A. By mutual agreement, ¥300 was offset.',
+  134:'An uncollected receivable of ¥1,000 from Company A was sold to a factoring company for ¥950, deposited into savings.',
+  135:'A customer payment of ¥300 was deposited into the checking account but had not yet been recorded by the company.',
+  136:'A/R of ¥50 was collected in cash but incorrectly recorded as "Checking ¥50 / A/R ¥50." Prepare the correcting entry.',
+  137:'A check for ¥800 was issued to pay A/P and recorded, but the check had not yet been delivered to the supplier. Record the correction.',
+  138:'A check for ¥600 was issued for advertising and recorded, but the check had not yet been delivered. Record the correction.',
+  139:'The company purchased office equipment for ¥200,000 and paid by issuing a promissory note.',
+  140:'Surplus equipment (book value ¥800, direct method) was sold for ¥850, receiving a promissory note.',
+  141:'Equipment costing ¥60,000 was purchased in 6 installments (¥10,500/month); the interest portion is recorded as prepaid interest at purchase.',
+  142:'The first installment of ¥10,500 for the equipment (cash price ¥60,000, 6 payments) was paid from savings; prepaid interest is allocated by straight-line.',
+  143:'Equipment purchased at the start of the period (cost ¥10,000, residual ¥0, useful life 20 years) was depreciated — straight-line, direct reduction method.',
+  144:'Equipment purchased at the start of the prior period (cost ¥10,000, residual ¥0, useful life 20 years) was depreciated — straight-line, indirect method (accumulated depreciation).',
+  145:'Equipment purchased on Dec. 1 (cost ¥30,000) was depreciated by the declining-balance method (rate 20%), indirect method. Record year-end entries for ①year 1, ②year 2, ③year 3.',
+  146:'Equipment purchased at the start of the period (cost ¥30,000, useful life 5 years, residual ¥0) was depreciated by the 200%-declining-balance method, indirect method.',
+  147:'A vehicle purchased on Oct. 1 (cost ¥180,000, residual ¥0, total useful mileage 10,000 km) was depreciated by the units-of-production method. Current-year mileage: 1,000 km; year-end: Mar. 31; indirect method.',
+  148:'A vehicle (cost ¥200,000, accumulated depreciation ¥108,000, indirect method) was traded in at ¥85,000 and a new vehicle (¥300,000) was purchased. The balance is payable next month.',
+  149:'Equipment (cost ¥60,000, accumulated depreciation ¥36,000, indirect method) was retired. Estimated scrap value is ¥18,000.',
+  150:'Equipment (cost ¥60,000, accumulated depreciation ¥36,000, indirect method) was scrapped. Disposal costs of ¥500 were paid in cash.',
+  151:'A construction contract (¥500,000) was signed for a new building; a deposit of ¥100,000 was paid by issuing a check.',
+  152:'Building construction (contract ¥500,000, deposit ¥100,000 paid) was completed and handed over. The balance of ¥400,000 was paid by check.',
+  153:'Capital improvements to a building (increasing value and useful life) were made; ¥50,000 was paid in cash.',
+  154:'Ordinary building repairs (maintenance only) were carried out; ¥20,000 was paid in cash.',
+  155:'A building (cost ¥300,000, accumulated depreciation ¥162,000, indirect method) was destroyed by fire.',
+  156:'A building (cost ¥300,000, accumulated depreciation ¥162,000, indirect method) was destroyed by fire. The building was insured for ¥200,000; the insurance company was notified immediately.',
+  157:'For each item, identify debit or credit: ①cash received ¥100 ②A/P increased ¥200 ③purchases ¥300 ④sales ¥400 ⑤allowance for doubtful accounts ¥500.',
+  158:'A café purchased coffee beans for ¥3,000 cash and sold coffee for ¥5,000 cash. Identify whether Purchases, Cash increase, and Sales go on the debit or credit side.',
+  159:'Tax-exclusive method: ①purchased notebooks (¥1,000 + ¥100 tax) for ¥1,100 cash. ②sold supplies (¥2,000 + ¥200 tax) for ¥2,200 cash. ③at year-end, offset prepaid tax ¥100 and collected tax ¥200.',
+  160:'The company received ①a check from another company (¥200) and ②a dividend receipt (¥300). Also ③deposited ¥500 into its checking account. Name the account used in each transaction.',
+  161:'Name the accrual account for: ①March rent ¥10,000 unpaid ②6-month insurance ¥30,000 paid, ¥12,000 for next period ③March interest ¥5,000 not yet collected.',
+  162:'Company A purchased machinery for ¥300,000 (useful life 5 years, residual ¥0). ①Annual straight-line depreciation? ②Book value at end of year 2? ③Name the two recording methods.',
+  163:'Allowance for doubtful accounts set at 2% of A/R ¥200,000 (prior balance ¥0). ①Amount? ②Debit account? If ¥4,000 A/R goes bad, ③what is applied first and ④what if the allowance is insufficient?',
+  164:'Company A: sales ¥2,000, beginning inventory ¥120, purchases ¥500, ending inventory ¥130, salaries ¥280. ①COGS? ②Gross profit? ③Net income?',
+  165:'①Electronics maker issued a note for ¥500,000 to pay for purchases. ②Clothing company received a note for ¥300,000 from a sale. ③Note discounted at bank; after ¥5,000 fee, ¥295,000 received.',
+  166:'Company A sold goods on account in March for ¥100 and collected in April. ①What is the term for the one-year accounting period? ②What is the accrual basis rule called? ③What statement shows financial position at March 31?',
+  167:'(Descriptive) Identify the financial statement elements and accounting concepts described.',
+  382:'Multiple-party bill of exchange: Company A (drawer) drew a ¥80,000 bill on Company B (drawee/acceptor) payable to Company C. Calculate the numerical result for each party.',
+  383:'Company A (drawer) drew a ¥80,000 bill on Company B payable to Company C to settle A\'s ¥80,000 A/P to C. Record Company A\'s (drawer\'s) journal entry.',
+  384:'Company B (acceptor) accepted a ¥80,000 bill from Company A (drawer) payable to Company C. B held ¥80,000 A/P to A. Record Company B\'s (acceptor\'s) journal entry.',
+  385:'Company C (payee) received a ¥80,000 bill accepted by B from A. C held ¥80,000 A/R from A. Record Company C\'s (payee\'s) journal entry.',
+  386:'A ¥80,000 bill matured. ①B (acceptor) paid from checking; ②C (payee) received into checking. Record each party\'s entry.',
+  387:'Company C endorsed a notes receivable (¥60,000 bill accepted by B) to Company D to settle ¥60,000 in purchases payable. Record Company C\'s entry.',
+  388:'Company C discounted a bill of exchange (face ¥50,000) at the bank; after a ¥500 fee, ¥49,500 was deposited into checking. Record Company C\'s entry.',
+  389:'(Comprehensive) Company A drew a ¥100,000 bill on Company B (who accepted) payable to Company C. Record all three parties\' entries.',
+  390:'Government subsidy of ¥2,000,000 received into savings; machinery of ¥4,000,000 purchased in cash (useful life 4 years, straight-line). Reserve method for tax deferral: record ①subsidy receipt ②machinery purchase ③reserve appropriation, and calculate ④year-1 depreciation and reserve release.',
+  391:'Building under direct reduction method: cost ¥10,000,000, compression loss recorded ¥3,000,000, useful life 20 years, residual ¥0, straight-line. ①Compressed book value? ②Annual depreciation? ③Depreciation entry?',
+  392:'Compare direct reduction vs. reserve method: subsidy ¥2,000,000, machinery ¥4,000,000, useful life 4 years (straight-line, residual ¥0).',
+  393:'Pre-opening costs: paid ¥400,000 advertising and ¥100,000 training cash before commencing operations (deferred charges). Record ①capitalization and ②year-end amortization (5-year straight-line, 12 months).',
+  394:'Share issuance costs of ¥600,000 were paid cash and capitalized as deferred charges. Record ①capitalization and ②annual amortization (3-year straight-line, 12 months).',
+  395:'Organization costs: paid ¥200,000 articles of incorporation, ¥100,000 registration, ¥80,000 incorporator remuneration in cash, capitalized as deferred charges. Also distinguish organization costs from pre-opening costs.',
+  396:'Calculate amortization for: organization costs ¥500,000; share issuance costs ¥600,000; pre-opening costs ¥400,000 (all straight-line, maximum allowable period).',
+  397:'R&D: paid ¥300,000 materials, ¥500,000 labor, ¥200,000 outsourcing for new product research in cash, expensed as R&D. Also identify why R&D cannot be capitalized.',
+  398:'Software development: ①research/planning costs ¥600,000 expensed; ②post-master-completion feature costs ¥900,000 capitalized — each paid cash. Also record ③amortization of ② over 3 years.',
+  399:'A custom order management system completed by an outside developer; ¥1,800,000 paid by check (future cost savings certain). Record ①acquisition (5-year straight-line) ②annual amortization ③amortization entry.',
+  400:'New shares (200 @ ¥2,000) issued for capital increase; ¥400,000 deposited into savings. Record the entry with half to common stock and half to additional paid-in capital.',
+  401:'Treasury shares (book value ¥150,000) were retired. Other capital surplus balance is sufficient. Record the entry.',
+  402:'By shareholders\' resolution: ①capital reserve of ¥600,000 transferred to common stock; ②retained earnings of ¥400,000 appropriated to legal reserve.',
+  403:'(Consignment — consignor) Company A consigned goods (cost ¥240,000) to Company B. B\'s sales report: sales ¥400,000, commission ¥20,000, remittance ¥380,000. Record A\'s ①consignment shipment ②receipt of sales report and cash.',
+  404:'(Consignment — consignee) Company B sold all consigned goods for ¥400,000 cash, deducted ¥20,000 commission, and remitted ¥380,000 to Company A. Record B\'s ①sale ②commission ③remittance.',
+  405:'(Trial sale) Company A sent goods (cost ¥150,000) on trial. Customer decided to buy and paid ¥250,000 cash. Record A\'s ①trial shipment ②purchase confirmation and cash receipt ③COGS recognition.',
+  406:'(Installment sale) Company B sold goods (cost ¥200,000) for ¥450,000 (¥15,000 × 30 months). Revenue recognized at delivery. Record ①delivery ②first installment receipt.',
+  407:'Finance lease (interest exclusion method): cash price ¥1,000,000, total lease payments ¥1,200,000, term 5 years, annual payment ¥240,000 (year-1 interest: ¥40,000). Record ①lease commencement.',
+  408:'Compare interest-inclusive vs. interest-exclusive methods for a finance lease: term 5 years, annual payment ¥240,000, cash price ¥1,000,000, rate 4% per year.',
+};
 
 const ALL = [
   // ===== 商品売買 =====
@@ -7397,7 +7612,8 @@ function fmtQ(q){
   txt=txt.replace(/^（穴埋め[^）]*）[\s　]*/u,'');
   txt=addQBreaks(txt);
   let html=styleParens(txt);
-  if(q.en_q) html+=`<div class="q-en-trans">${q.en_q}</div>`;
+  const enq = q.en_q || JRNL_EN_Q[q.id];
+  if(enq) html+=`<div class="q-en-trans">${enq}</div>`;
   return html;
 }
 
