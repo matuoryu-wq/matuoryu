@@ -528,6 +528,7 @@
     .exp-panel { display:block; max-width:640px; margin:0 auto; padding:14px 14px; }
     .exp-q-card { background:#fff; border-radius:12px; padding:14px 16px; margin-bottom:14px; border:1.5px solid var(--border); font-size:14px; line-height:2.0; font-weight:500; }
     .exp-q-card br+br { display:block; content:''; margin-top:4px; }
+    .q-en-trans { margin-top:8px; font-size:12px; color:var(--text-sub,#666); font-weight:400; border-top:1px solid var(--border); padding-top:6px; font-style:italic; }
     .exp-swipe-wrap { position:relative; height:130px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
     .exp-swipe-card {
       width:160px; background:#fff; border-radius:14px; border:2.5px solid var(--border);
@@ -640,7 +641,7 @@
         <button class="apx-close" onclick="hideApx()">✕</button>
       </div>
       <div class="apx-tabs" id="apx-tabs">
-        <button class="apx-tab active" data-type="all" onclick="setApxTab('all')">全て</button>
+        <button class="apx-tab active" data-type="all" onclick="setApxTab('all')">全て（章順）</button>
         <button class="apx-tab" data-type="level3" onclick="setApxTab('level3')">3級</button>
         <button class="apx-tab" data-type="level2" onclick="setApxTab('level2')">2級</button>
         <button class="apx-tab" data-type="asset" onclick="setApxTab('asset')">資産</button>
@@ -1809,26 +1810,51 @@ function buildApxContent(){
   const order = ['asset','liability','expense','revenue','equity','other'];
   const byType = {};
   order.forEach(t => byType[t] = []);
+  // Also build chapter-order map
+  const byChap = {};
+  ACCT_Q_CHAP_ORDER.forEach(c => byChap[c] = []);
+  byChap['その他（PDF未収録）'] = [];
+
   ACCT_DATA.forEach(([name, en, note, lv, note_en]) => {
     const type = T[name] || 'other';
     const cardNote = ACCT_Q[name] || note;
     const cardNoteEn = ACCT_Q_EN[name] || note_en;
-    byType[type].push({ name, en, note: cardNote, lv, note_en: cardNoteEn });
+    const item = { name, en, note: cardNote, lv, note_en: cardNoteEn, type };
+    byType[type].push(item);
+    const chap = ACCT_Q_CHAP[name];
+    if(chap && byChap[chap]) byChap[chap].push(item);
+    else byChap['その他（PDF未収録）'].push(item);
   });
   order.forEach(type => byType[type].sort((a, b) => (freq[b.name]||0) - (freq[a.name]||0)));
 
-  const commercialHtml = order.map(type => {
-    const { name, sub } = APX_TYPE_INFO[type];
-    const rows = byType[type].map(({ name, en, note, lv, note_en }) =>
-      `<div class="apx-row" data-name="${name}" data-en="${en}" data-level="${lv}">
+  function makeRow({ name, en, note, lv, note_en, type }){
+    const t = type || T[name] || 'other';
+    return `<div class="apx-row" data-name="${name}" data-en="${en}" data-level="${lv}" data-type="${t}">
         <div class="apx-row-top">
           <span class="apx-en">${en}</span>
-          <span class="tag ${type}">(${name})</span>
+          <span class="tag ${t}">(${name})</span>
           ${lv === 2 ? '<span class="apx-lv">2級</span>' : ''}
         </div>
         <div class="apx-note">${note_en?`<div class="gloss-def-en">${note_en}</div>`:''}<div class="apx-note-ja">${note}</div></div>
-      </div>`
-    ).join('');
+      </div>`;
+  }
+
+  // Chapter-based HTML (used for "all" tab)
+  const chapHtml = [...ACCT_Q_CHAP_ORDER, 'その他（PDF未収録）'].map(chap => {
+    const items = byChap[chap] || [];
+    if(!items.length) return '';
+    const isInd = chap.startsWith('工業簿記');
+    const category = isInd ? 'industrial' : 'chap';
+    const rows = items.map(makeRow).join('');
+    return `<div class="apx-section" data-type="chap" data-chap="${chap}" data-category="${category}">
+      <div class="apx-section-hd other"><span class="dot other"></span>${chap}</div>
+      ${rows}
+    </div>`;
+  }).join('');
+
+  const commercialHtml = order.map(type => {
+    const { name, sub } = APX_TYPE_INFO[type];
+    const rows = byType[type].map(makeRow).join('');
     return `<div class="apx-section" data-type="${type}" data-category="commercial">
       <div class="apx-section-hd ${type}"><span class="dot ${type}"></span>${name}</div>
       <div class="apx-section-sub">${sub}</div>
@@ -1870,7 +1896,7 @@ function buildApxContent(){
     ).join('') +
   '</div>';
 
-  return commercialHtml + indHtml + glossHtml;
+  return chapHtml + commercialHtml + indHtml + glossHtml;
 }
 
 let apxCurrentTab = 'all';
@@ -1922,11 +1948,11 @@ function applyApxFilter(tab){
     const type = sec.dataset.type;
     const category = sec.dataset.category;
     let typeMatch;
-    if(tab === 'all') typeMatch = category !== 'industrial';
+    if(tab === 'all') typeMatch = category === 'chap';
     else if(tab === 'industrial') typeMatch = category === 'industrial';
     else if(tab === 'glossary') typeMatch = false;
-    else if(tab === 'level3' || tab === 'level2') typeMatch = category !== 'industrial';
-    else typeMatch = (type === tab && category !== 'industrial');
+    else if(tab === 'level3' || tab === 'level2') typeMatch = category === 'commercial';
+    else typeMatch = (type === tab && category === 'commercial');
 
     if(!typeMatch){ sec.style.display = 'none'; return; }
 
@@ -2044,6 +2070,195 @@ function addQBreaks(txt){
 // HTMLタグを除いた表示用テキストを抽出（問題文のプレビュー用）
 function qaStripTags(html){ return html.replace(/<[^>]+>/g,''); }
 
+const ACCT_Q_CHAP = {
+  '仕入': '第1章：商品売買',
+  '売上': '第1章：商品売買',
+  '買掛金': '第1章：商品売買',
+  '売掛金': '第1章：商品売買',
+  '前払金': '第1章：商品売買',
+  '前受金': '第1章：商品売買',
+  '発送費': '第1章：商品売買',
+  '商品券': '第1章：商品売買',
+  '他店商品券': '第1章：商品売買',
+  '商品': '第1章：商品売買',
+  '売上原価': '第1章：商品売買',
+  '棚卸減耗損': '第1章：商品売買',
+  '商品評価損': '第1章：商品売買',
+  'クレジット売掛金': '第1章：商品売買',
+  '支払手数料': '第1章：商品売買',
+  '立替金': '第1章：商品売買',
+  '仕入割引': '第1章：商品売買',
+  '小口現金': '増補②：3級基礎の補完（現金預金・債権債務）',
+  '普通預金': '増補②：3級基礎の補完（現金預金・債権債務）',
+  '定期預金': '増補②：3級基礎の補完（現金預金・債権債務）',
+  '受取手形': '増補②：3級基礎の補完（現金預金・債権債務）',
+  '支払手形': '増補②：3級基礎の補完（現金預金・債権債務）',
+  '貸付金': '増補②：3級基礎の補完（現金預金・債権債務）',
+  '借入金': '増補②：3級基礎の補完（現金預金・債権債務）',
+  '役員貸付金': '増補②：3級基礎の補完（現金預金・債権債務）',
+  '役員借入金': '増補②：3級基礎の補完（現金預金・債権債務）',
+  '未収入金': '増補②：3級基礎の補完（現金預金・債権債務）',
+  '租税公課': '増補②：3級基礎の補完（現金預金・債権債務）',
+  '所得税預り金': '増補②：3級基礎の補完（現金預金・債権債務）',
+  '引出金（事業主貸）': '増補③：個人事業主特有の科目',
+  '圧縮積立金': '増補④：圧縮記帳（積立金方式）',
+  '返金負債': '第2章：収益認識',
+  '契約負債': '第2章：収益認識',
+  '仕掛品': '第2章：収益認識',
+  '役務収益': '第2章：収益認識',
+  '役務原価': '第2章：収益認識',
+  '現金過不足': '第3章：現金預金',
+  '雑損': '第3章：現金預金',
+  '雑益': '第3章：現金預金',
+  '当座預金': '第3章：現金預金',
+  '当座借越': '第3章：現金預金',
+  '未払金': '第3章：現金預金',
+  '受取手形': '第4章：債権債務（手形・電子記録債権）',
+  '支払手形': '第4章：債権債務（手形・電子記録債権）',
+  '貸倒引当金': '第4章：債権債務（手形・電子記録債権）',
+  '貸倒引当金繰入': '第4章：債権債務（手形・電子記録債権）',
+  '電子記録債権': '第4章：債権債務（手形・電子記録債権）',
+  '電子記録債権売却損': '第4章：債権債務（手形・電子記録債権）',
+  '手形売却損': '第4章：債権債務（手形・電子記録債権）',
+  '不渡手形': '第4章：債権債務（手形・電子記録債権）',
+  '営業外受取手形': '第4章：債権債務（手形・電子記録債権）',
+  '営業外支払手形': '第4章：債権債務（手形・電子記録債権）',
+  '受取利息': '第4章：債権債務（手形・電子記録債権）',
+  '有価証券': '第5章：有価証券',
+  '売買目的有価証券': '第5章：有価証券',
+  '満期保有目的債券': '第5章：有価証券',
+  '子会社株式': '第5章：有価証券',
+  '関係会社株式': '第5章：有価証券',
+  'その他有価証券': '第5章：有価証券',
+  '有価証券売却益': '第5章：有価証券',
+  '有価証券売却損': '第5章：有価証券',
+  '投資有価証券売却益': '第5章：有価証券',
+  '投資有価証券売却損': '第5章：有価証券',
+  '受取配当金': '第5章：有価証券',
+  '有価証券利息': '第5章：有価証券',
+  '有価証券評価益': '第5章：有価証券',
+  '有価証券評価損': '第5章：有価証券',
+  'その他有価証券評価差額金': '第5章：有価証券',
+  '建物': '第6章：有形固定資産',
+  '備品': '第6章：有形固定資産',
+  '土地': '第6章：有形固定資産',
+  '車両運搬具': '第6章：有形固定資産',
+  '減価償却費': '第6章：有形固定資産',
+  '減価償却累計額': '第6章：有形固定資産',
+  '固定資産売却益': '第6章：有形固定資産',
+  '固定資産売却損': '第6章：有形固定資産',
+  '建設仮勘定': '第6章：有形固定資産',
+  '前払利息': '第6章：有形固定資産',
+  '支払利息': '第6章：有形固定資産',
+  '国庫補助金受贈益': '第6章：有形固定資産',
+  '固定資産圧縮損': '第6章：有形固定資産',
+  '貯蔵品': '第6章：有形固定資産',
+  '固定資産除却損': '第6章：有形固定資産',
+  '固定資産廃棄損': '第6章：有形固定資産',
+  '火災未決算': '第6章：有形固定資産',
+  '火災損失': '第6章：有形固定資産',
+  '保険差益': '第6章：有形固定資産',
+  '研究開発費': '第7章：無形資産',
+  '特許権': '第7章：無形資産',
+  '特許権償却': '第7章：無形資産',
+  '商標権': '第7章：無形資産',
+  'ソフトウェア仮勘定': '第7章：無形資産',
+  'ソフトウェア償却': '第7章：無形資産',
+  'のれん': '第7章：無形資産',
+  'リース資産': '第8章：リース取引',
+  'リース債務': '第8章：リース取引',
+  '支払リース料': '第8章：リース取引',
+  '修繕引当金': '第9章：引当金',
+  '修繕引当金繰入': '第9章：引当金',
+  '賞与引当金': '第9章：引当金',
+  '賞与引当金繰入': '第9章：引当金',
+  '役員賞与引当金': '第9章：引当金',
+  '役員賞与引当金繰入': '第9章：引当金',
+  '退職給付引当金': '第9章：引当金',
+  '退職給付費用': '第9章：引当金',
+  '商品保証引当金': '第9章：引当金',
+  '商品保証引当金繰入': '第9章：引当金',
+  '商品保証費': '第9章：引当金',
+  '資本金': '第10章：株式会社会計',
+  '資本準備金': '第10章：株式会社会計',
+  '利益準備金': '第10章：株式会社会計',
+  '繰越利益剰余金': '第10章：株式会社会計',
+  'その他資本剰余金': '第10章：株式会社会計',
+  '株式申込証拠金': '第10章：株式会社会計',
+  '別段預金': '第10章：株式会社会計',
+  '創立費': '第10章：株式会社会計',
+  '開業費': '第10章：株式会社会計',
+  '株式交付費': '第10章：株式会社会計',
+  '負ののれん発生益': '第10章：株式会社会計',
+  'のれん償却': '第10章：株式会社会計',
+  '為替差損益': '第11章：外貨建取引',
+  '繰延税金資産': '第12章：税効果会計',
+  '繰延税金負債': '第12章：税効果会計',
+  '支店': '第14章：本支店会計',
+  '本店': '第14章：本支店会計',
+  '非支配株主持分': '第15章：連結会計',
+  '非支配株主に帰属する当期純': '第15章：連結会計',
+  '前払費用': '第15章：連結会計',
+  '未払費用': '第15章：連結会計',
+  '未収収益': '第15章：連結会計',
+  '前受収益': '第15章：連結会計',
+  '仮払消費税': '第15章：連結会計',
+  '仮受消費税': '第15章：連結会計',
+  '未払消費税': '第15章：連結会計',
+  '仮払法人税等': '第15章：連結会計',
+  '未払法人税等': '第15章：連結会計',
+  '法人税・住民税及び事業税': '第15章：連結会計',
+  '自己株式': '第15章：連結会計',
+  '自己株式処分差益': '第15章：連結会計',
+  '自己株式処分差損': '第15章：連結会計',
+  '任意積立金': '第15章：連結会計',
+  '未払配当金': '第15章：連結会計',
+  '償却債権取立益': '第15章：連結会計',
+  '貸倒引当金戻入': '第15章：連結会計',
+  '材料': '第15章：連結会計',
+  '材料副費': '第15章：連結会計',
+  '材料消費価格差異': '第15章：連結会計',
+  '賃金': '第15章：連結会計',
+  '給料': '第15章：連結会計',
+  '賃率差異': '第15章：連結会計',
+  '経費': '第15章：連結会計',
+  '製造間接費': '第15章：連結会計',
+  '仕掛品': '第15章：連結会計',
+  '製品': '第15章：連結会計',
+  '製造間接費配賦差異': '第15章：連結会計',
+  '仕損費': '第15章：連結会計',
+  '材料消費数量差異': '第15章：連結会計',
+  '作業時間差異': '第15章：連結会計',
+  '製造間接費予算差異': '第15章：連結会計',
+  '製造間接費能率差異': '第15章：連結会計',
+  '製造間接費操業度差異': '第15章：連結会計',
+  '工場': '第15章：連結会計',
+  '本社': '第15章：連結会計',
+  '直接材料費差異': '工業簿記　増補：標準原価差異の集計勘定',
+  '直接労務費差異': '工業簿記　増補：標準原価差異の集計勘定',
+  '製造間接費差異': '工業簿記　増補：標準原価差異の集計勘定'
+};
+
+const ACCT_Q_CHAP_ORDER = [
+  '第1章：商品売買',
+  '増補②：3級基礎の補完（現金預金・債権債務）',
+  '増補③：個人事業主特有の科目',
+  '増補④：圧縮記帳（積立金方式）',
+  '第2章：収益認識',
+  '第3章：現金預金',
+  '第4章：債権債務（手形・電子記録債権）',
+  '第5章：有価証券',
+  '第6章：有形固定資産',
+  '第7章：無形資産',
+  '第8章：リース取引',
+  '第9章：引当金',
+  '第10章：株式会社会計',
+  '第11章：外貨建取引',
+  '第12章：税効果会計',
+  '第14章：本支店会計',
+  '第15章：連結会計',
+  '工業簿記　増補：標準原価差異の集計勘定',
+];
 const ACCT_Q_EN = {
   '仕入': 'When a company buys goods on credit, what expense account is debited to record the cost of the goods acquired?',
   '売上': 'When a company sells goods, what revenue account is credited to record the sale?',
@@ -6757,7 +6972,148 @@ const ALL = [
       {label:'④利子抜き法の1年目支払利息', ans:40000, unit:'円', choices:[40000,200000,24000,10000]}
     ]
   },
-
+,
+  { id:409, cat:'PDF仕訳', chap:'第1章：商品売買',
+    q:'商品100を掛けで仕入れた。', en_q:'The company purchased goods for 100 on account.',
+    e:[{d:[['仕入',100]],c:[['買掛金',100]]},{d:[['売掛金',150]],c:[['売上',150]]}] },
+  { id:410, cat:'PDF仕訳', chap:'第1章：商品売買',
+    q:'買掛金100を現金で支払った。', en_q:'The company paid an account payable of 100 in cash.',
+    e:[{d:[['買掛金',100]],c:[['現金',100]]},{d:[['現金',150]],c:[['売掛金',150]]}] },
+  { id:411, cat:'PDF仕訳', chap:'第1章：商品売買',
+    q:'商品を引き渡す前に、手付金20を現金で受け取った。', en_q:'The company received 20 in cash as a deposit before delivering goods.',
+    e:[{d:[['現金',20]],c:[['前受金',20]]}] },
+  { id:412, cat:'PDF仕訳', chap:'第1章：商品売買',
+    q:'自社の商品券を発行し、現金50を受け取った。', en_q:'The company issued the company\'s own gift certificates and received 50 in cash.',
+    e:[{d:[['現金',50]],c:[['商品券',50]]}] },
+  { id:413, cat:'PDF仕訳', chap:'第1章：商品売買',
+    q:'売上原価対立法により、商品100を現金で仕入れた。', en_q:'Under the perpetual inventory method, purchased goods for 100 in cash.',
+    e:[{d:[['商品',100]],c:[['現金',100]]}] },
+  { id:414, cat:'PDF仕訳', chap:'第1章：商品売買',
+    q:'売上原価対立法により、原価60の商品を100で現金販売した。', en_q:'Under the perpetual inventory method, sold for 100 in cash goods that cost 60.',
+    e:[{d:[['現金',100]],c:[['売上',100]]},{d:[['売上原価',60]],c:[['商品',60]]}] },
+  { id:415, cat:'PDF仕訳', chap:'第1章：商品売買',
+    q:'取得単価10、正味売却価額8、実地数量8個。商品評価損を計上する。', en_q:'Unit cost is 10, net realizable value is 8, physical quantity is 8 units. Record the write-down.',
+    e:[{d:[['商品評価損',16]],c:[['繰越商品',16]]}] },
+  { id:416, cat:'PDF仕訳', chap:'第1章：商品売買',
+    q:'顧客が負担すべき発送費5を現金で立て替えた。', en_q:'The company paid 5 in cash for a customer\'s shipping cost that the customer is obligated to bear.',
+    e:[{d:[['立替金',5]],c:[['現金',5]]}] },
+  { id:417, cat:'PDF仕訳', chap:'増補②：3級基礎の補完（現金預金・債権債務）',
+    q:'定額資金前渡制度により、小口現金10を現金で設定した。', en_q:'The company set up a petty cash fund of 10 in cash under the imprest system.',
+    e:[{d:[['小口現金',10]],c:[['現金',10]]},{d:[['普通預金',50]],c:[['現金',50]]},{d:[['定期預金',100]],c:[['現金',100]]}] },
+  { id:418, cat:'PDF仕訳', chap:'増補②：3級基礎の補完（現金預金・債権債務）',
+    q:'他者が自社を名宛人として振り出した為替手形40を引き受けた。', en_q:'The company accepted a bill of exchange for 40 drawn on it by another party.',
+    e:[{d:[['買掛金',40]],c:[['支払手形',40]]},{d:[['貸付金',60]],c:[['現金',60]]},{d:[['現金',60]],c:[['借入金',60]]},{d:[['役員貸付金',30]],c:[['現金',30]]},{d:[['現金',30]],c:[['役員借入金',30]]}] },
+  { id:419, cat:'PDF仕訳', chap:'増補②：3級基礎の補完（現金預金・債権債務）',
+    q:'印紙税3を現金で支払った。', en_q:'The company paid 3 in cash for stamp duty.',
+    e:[{d:[['租税公課',3]],c:[['現金',3]]}] },
+  { id:420, cat:'PDF仕訳', chap:'増補②：3級基礎の補完（現金預金・債権債務）',
+    q:'備品（商品以外）の代金支払いのため手形40を振り出した。', en_q:'The company issued a note of 40 to pay for equipment (non- merchandise).',
+    e:[{d:[['備品',40]],c:[['営業外支払手形',40]]}] },
+  { id:421, cat:'PDF仕訳', chap:'第5章：有価証券',
+    q:'証券100を現金で取得した（一般）。', en_q:'The company purchased securities for 100 in cash (general holding).',
+    e:[{d:[['有価証券',100]],c:[['現金',100]]}] },
+  { id:422, cat:'PDF仕訳', chap:'第5章：有価証券',
+    q:'満期保有目的債券100を現金で取得した。', en_q:'The company purchased held-to-maturity bonds for 100 in cash.',
+    e:[{d:[['満期保有目的債券',100]],c:[['現金',100]]}] },
+  { id:423, cat:'PDF仕訳', chap:'第5章：有価証券',
+    q:'関連会社株式150を現金で取得した。', en_q:'The company purchased affiliate shares for 150 in cash.',
+    e:[{d:[['関連会社株式',150]],c:[['現金',150]]}] },
+  { id:424, cat:'PDF仕訳', chap:'第5章：有価証券',
+    q:'売買目的有価証券（帳簿価額100）を110で現金売却した。', en_q:'The company sold trading securities (book value 100) for 110 in cash.',
+    e:[{d:[['現金',110]],c:[]}] },
+  { id:425, cat:'PDF仕訳', chap:'第5章：有価証券',
+    q:'売買目的有価証券（帳簿価額100）を90で現金売却した。', en_q:'The company sold trading securities (book value 100) for 90 in cash.',
+    e:[{d:[],c:[['売買目的有価証券',100]]}] },
+  { id:426, cat:'PDF仕訳', chap:'第5章：有価証券',
+    q:'その他有価証券（帳簿価額80）を75で現金売却した。', en_q:'The company sold other securities (book value 80) for 75 in cash.',
+    e:[{d:[],c:[['その他有価証券',80]]}] },
+  { id:427, cat:'PDF仕訳', chap:'第5章：有価証券',
+    q:'債券の利息2を現金で受け取った。', en_q:'The company received bond interest of 2 in cash.',
+    e:[{d:[['現金',2]],c:[['有価証券利息',2]]}] },
+  { id:428, cat:'PDF仕訳', chap:'第5章：有価証券',
+    q:'決算時、売買目的有価証券（帳簿100）の時価が105に上昇した。', en_q:'At year-end, fair value of trading securities (book 100) rose to 105.',
+    e:[{d:[['売買目的有価証券',5]],c:[]}] },
+  { id:429, cat:'PDF仕訳', chap:'第5章：有価証券',
+    q:'決算時、売買目的有価証券（帳簿100）の時価が95に下落した。', en_q:'At year-end, fair value of trading securities (book 100) fell to 95.',
+    e:[{d:[],c:[['売買目的有価証券',5]]}] },
+  { id:430, cat:'PDF仕訳', chap:'第5章：有価証券',
+    q:'決算時、その他有価証券（帳簿80）の時価が88に上昇した。', en_q:'At year-end, fair value of other securities (book 80) rose to 88.',
+    e:[{d:[['その他有価証券',8]],c:[]}] },
+  { id:431, cat:'PDF仕訳', chap:'第6章：有形固定資産',
+    q:'建物300を現金で取得した。', en_q:'The company purchased a building for 300 in cash.',
+    e:[{d:[['建物',300]],c:[['現金',300]]}] },
+  { id:432, cat:'PDF仕訳', chap:'第6章：有形固定資産',
+    q:'備品（帳簿価額50）を60で現金売却した。', en_q:'The company sold equipment (book value 50) for 60 in cash.',
+    e:[{d:[['現金',60]],c:[]}] },
+  { id:433, cat:'PDF仕訳', chap:'第6章：有形固定資産',
+    q:'自社建設中の建物について100を現金で支払った。', en_q:'The company paid 100 in cash toward a building under self- construction.',
+    e:[{d:[['建設仮勘定',100]],c:[['現金',100]]}] },
+  { id:434, cat:'PDF仕訳', chap:'第6章：有形固定資産',
+    q:'上記補助金の税務上の影響を相殺するため、資産の帳簿価額を50圧縮した。', en_q:'Reduced the book value of an asset by 50 to offset the tax effect of the subsidy above.',
+    e:[{d:[],c:[['建物',50]]}] },
+  { id:435, cat:'PDF仕訳', chap:'第6章：有形固定資産',
+    q:'備品（帳簿価額20）を除却したが、処分価値はなかった。', en_q:'The company retired equipment (book value 20) with no remaining value.',
+    e:[{d:[],c:[['備品',20]]}] },
+  { id:436, cat:'PDF仕訳', chap:'第6章：有形固定資産',
+    q:'建物（帳簿価額100）が火災で滅失し、保険金は未確定である。', en_q:'A building (book value 100) was destroyed by fire; insurance payout not yet confirmed.',
+    e:[{d:[['火災未決算',100]],c:[['建物',100]]}] },
+  { id:437, cat:'PDF仕訳', chap:'第6章：有形固定資産',
+    q:'同様のケース（帳簿価額100）の保険金が120で確定した。', en_q:'Insurance payout for a similar case (book value 100) was confirmed at 120.',
+    e:[{d:[['未収入金',120],['土地',500]],c:[['現金',500]]}] },
+  { id:438, cat:'PDF仕訳', chap:'第6章：有形固定資産',
+    q:'割賦で備品100（うち利息相当額10を含む）を購入した。', en_q:'The company purchased equipment on installment for 100, of which 10 is interest included in the price.',
+    e:[{d:[],c:[['未払金',100]]}] },
+  { id:439, cat:'PDF仕訳', chap:'第6章：有形固定資産',
+    q:'1か月経過し、前払利息のうち1を支払利息に振り替えた。', en_q:'As one month passes, transferred 1 of that prepaid interest to interest expense.',
+    e:[{d:[['支払利息',1]],c:[['前払利息',1]]}] },
+  { id:440, cat:'PDF仕訳', chap:'第7章：無形資産',
+    q:'研究開発活動のために40を現金で支払った。', en_q:'The company paid 40 in cash for research and development activities.',
+    e:[{d:[['特許権',60],['特許権償却',6],['商標権',30]],c:[['現金',40],['現金',60],['特許権',6],['現金',30]]}] },
+  { id:441, cat:'PDF仕訳', chap:'第7章：無形資産',
+    q:'開発中のソフトウェアについて20を現金で支払った。', en_q:'The company paid 20 in cash toward software still under development.',
+    e:[{d:[['ソフトウェア仮勘定',20]],c:[['現金',20]]}] },
+  { id:442, cat:'PDF仕訳', chap:'第7章：無形資産',
+    q:'事業を現金120で取得した。識別可能純資産の時価は100であった。', en_q:'The company acquired a business for 120 in cash; fair value of net identifiable assets was 100.',
+    e:[{d:[],c:[['現金',120]]}] },
+  { id:443, cat:'PDF仕訳', chap:'第8章：リース取引',
+    q:'ファイナンス・リース契約により、リース資産50を計上した。', en_q:'The company entered a finance lease for equipment; recorded a leased asset of 50.',
+    e:[{d:[['リース資産',50]],c:[['リース債務',50]]}] },
+  { id:444, cat:'PDF仕訳', chap:'第9章：引当金',
+    q:'未実施の設備修繕について8を見積もった。', en_q:'The company estimated 8 for future equipment repairs not yet performed.',
+    e:[{d:[],c:[['修繕引当金',8]]}] },
+  { id:445, cat:'PDF仕訳', chap:'第9章：引当金',
+    q:'役員賞与について10を見積もった。', en_q:'The company estimated 10 for future director bonuses.',
+    e:[] },
+  { id:446, cat:'PDF仕訳', chap:'第9章：引当金',
+    q:'退職給付債務について25を見積もった。', en_q:'The company estimated 25 for future retirement benefit obligations.',
+    e:[{d:[['退職給付費用',25]],c:[]}] },
+  { id:447, cat:'PDF仕訳', chap:'第10章：株式会社会計',
+    q:'株式を発行し現金200を受け取り、全額を資本金とした。', en_q:'The company issued shares, receiving 200 in cash; recorded the entire amount as common stock.',
+    e:[{d:[['現金',200]],c:[['資本金',200]]}] },
+  { id:448, cat:'PDF仕訳', chap:'第10章：株式会社会計',
+    q:'利益剰余金から利益準備金10を積み立てた。', en_q:'The company appropriated 10 from retained earnings to the legal earnings reserve.',
+    e:[{d:[['繰越利益剰余金',10]],c:[]}] },
+  { id:449, cat:'PDF仕訳', chap:'第10章：株式会社会計',
+    q:'会社設立費用15を現金で支払った。', en_q:'The company paid 15 in cash for incorporation costs.',
+    e:[{d:[['創立費',15]],c:[['現金',15]]}] },
+  { id:450, cat:'PDF仕訳', chap:'第10章：株式会社会計',
+    q:'増資に伴う株式発行費用5を現金で支払った。', en_q:'The company paid 5 in cash for costs of issuing new shares in a capital increase.',
+    e:[{d:[['株式交付費',5]],c:[['現金',5]]}] },
+  { id:451, cat:'PDF仕訳', chap:'第10章：株式会社会計',
+    q:'のれん償却2を計上した。', en_q:'Bargain Purchase） 20 The company recorded amortization of goodwill for 2.',
+    e:[{d:[['のれん償却',2]],c:[['のれん',2]]},{d:[['自己株式',40]],c:[['現金',40]]}] },
+  { id:452, cat:'PDF仕訳', chap:'第10章：株式会社会計',
+    q:'自己株式（帳簿価額40）を35で現金処分した。', en_q:'The company resold treasury stock (book value 40) for 35 in cash.',
+    e:[{d:[],c:[['自己株式',40]]}] },
+  { id:453, cat:'PDF仕訳', chap:'第10章：株式会社会計',
+    q:'配当30を決議したが、まだ支払っていない。', en_q:'The company declared a dividend of 30, not yet paid.',
+    e:[{d:[['繰越利益剰余金',30]],c:[['未払配当金',30]]}] },
+  { id:454, cat:'PDF仕訳', chap:'第11章：外貨建取引',
+    q:'外貨建売掛金100が決済され、為替変動により円換算105を受け取った。', en_q:'A dollar-denominated receivable of 100 was settled, receiving 105 in yen due to exchange rate movement.',
+    e:[{d:[['現金',105]],c:[]}] },
+  { id:455, cat:'PDF仕訳', chap:'第12章：税効果会計',
+    q:'一時差異により将来の税務上の便益10が生じた。', en_q:'A timing difference results in 10 of future tax benefit.',
+    e:[{d:[['繰延税金資産',10]],c:[['法人税等調整額',10]]}] }
 ];
 
 const IKOU_CATS = new Set(['工業簿記基礎','材料費','労務費','経費','個別原価計算','部門別原価計算','製造間接費','総合原価計算','標準原価計算','直接原価計算','工業簿記総まとめ']);
@@ -6853,7 +7209,9 @@ function fmtQ(q){
   let txt=q.q_html||q.q||'';
   txt=txt.replace(/^（穴埋め[^）]*）[\s　]*/u,'');
   txt=addQBreaks(txt);
-  return styleParens(txt);
+  let html=styleParens(txt);
+  if(q.en_q) html+=`<div class="q-en-trans">${q.en_q}</div>`;
+  return html;
 }
 
 function loadExpQ(){
