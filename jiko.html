@@ -735,11 +735,20 @@
 <div id="panel-quiz" class="panel">
   <div class="card">
     <div class="card-title">一問一答<span id="quiz-progress" style="margin-left:auto;font-weight:400;font-size:12px;color:var(--text-muted)"></span></div>
-    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">交通事故の損害計算・保険実務に関する一問一答です。分野を選び、「答えを見る」で解答が表示されます。</p>
-    <div class="section-toggle" id="quiz-cat-buttons"></div>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">交通事故の損害計算・保険実務に関する一問一答です。「答えを見る」で解答が表示されます。</p>
+    <div id="quiz-cat-toggle" onclick="quizToggleCatMenu()" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:#F7F0E8;border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;color:var(--text)">
+      <span id="quiz-cat-current">分野：すべて</span>
+      <span id="quiz-cat-arrow">▾</span>
+    </div>
+    <div class="section-toggle" id="quiz-cat-buttons" style="display:none;margin-top:10px;margin-bottom:0"></div>
   </div>
   <div class="card">
-    <div id="quiz-cat-label" class="sec-title" style="margin-top:0"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
+      <div id="quiz-cat-label" class="sec-title" style="margin:0;flex:1"></div>
+      <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;white-space:nowrap;flex-shrink:0">
+        <input type="checkbox" id="quiz-check-current" onchange="quizToggleCheck()"> あとで解く
+      </label>
+    </div>
     <div id="quiz-question" style="font-size:16px;font-weight:700;line-height:1.7;margin-bottom:14px;min-height:70px"></div>
     <div id="quiz-answer-wrap" style="display:none">
       <div class="bk-desc" id="quiz-answer" style="font-size:14px;line-height:1.8"></div>
@@ -1630,6 +1639,7 @@ let quizInitialized = false;
 let quizPool = [];
 let quizIndex = 0;
 let quizCatFilter = 'all';
+let quizChecked = new Set();
 
 function shuffleArray(arr){
   for(let i=arr.length-1;i>0;i--){
@@ -1639,46 +1649,79 @@ function shuffleArray(arr){
   return arr;
 }
 
+function loadQuizChecked(){
+  try{
+    const raw = localStorage.getItem('quizChecked');
+    if(raw) quizChecked = new Set(JSON.parse(raw));
+  }catch(e){}
+}
+
+function saveQuizChecked(){
+  try{ localStorage.setItem('quizChecked', JSON.stringify([...quizChecked])); }catch(e){}
+}
+
 function buildQuizPool(){
   quizPool = [];
   QA_DATA.forEach((c,ci)=>{
-    if(quizCatFilter==='all' || quizCatFilter===ci){
-      c.items.forEach(([q,a])=> quizPool.push({cat:c.cat, q, a}));
-    }
+    c.items.forEach(([q,a],ii)=>{
+      const id = `${ci}-${ii}`;
+      if(quizCatFilter==='checked'){
+        if(quizChecked.has(id)) quizPool.push({id, cat:c.cat, q, a});
+      } else if(quizCatFilter==='all' || quizCatFilter===ci){
+        quizPool.push({id, cat:c.cat, q, a});
+      }
+    });
   });
+}
+
+function quizRenderCatButtons(){
+  const totalCount = QA_DATA.reduce((s,c)=>s+c.items.length,0);
+  const catWrap = document.getElementById('quiz-cat-buttons');
+  catWrap.innerHTML = `<button class="toggle-btn active" onclick="quizSetCat('all', this)">すべて（${totalCount}問）</button>` +
+    QA_DATA.map((c,ci)=>`<button class="toggle-btn" onclick="quizSetCat(${ci}, this)">${c.cat}（${c.items.length}）</button>`).join('') +
+    `<button class="toggle-btn" id="quiz-checked-btn" onclick="quizSetCat('checked', this)">⭐ あとで解く（${quizChecked.size}）</button>`;
 }
 
 function initQuiz(){
   if(quizInitialized){ quizRenderCurrent(); return; }
   quizInitialized = true;
-  const totalCount = QA_DATA.reduce((s,c)=>s+c.items.length,0);
-  const catWrap = document.getElementById('quiz-cat-buttons');
-  catWrap.innerHTML = `<button class="toggle-btn active" onclick="quizSetCat('all', this)">すべて（${totalCount}問）</button>` +
-    QA_DATA.map((c,ci)=>`<button class="toggle-btn" onclick="quizSetCat(${ci}, this)">${c.cat}（${c.items.length}）</button>`).join('');
+  loadQuizChecked();
+  quizRenderCatButtons();
   buildQuizPool();
   shuffleArray(quizPool);
   quizIndex = 0;
   quizRenderCurrent();
+}
+
+function quizToggleCatMenu(){
+  const wrap = document.getElementById('quiz-cat-buttons');
+  const open = wrap.style.display !== 'none';
+  wrap.style.display = open ? 'none' : 'flex';
+  document.getElementById('quiz-cat-arrow').textContent = open ? '▾' : '▴';
 }
 
 function quizSetCat(val, btn){
   quizCatFilter = val;
   document.querySelectorAll('#quiz-cat-buttons .toggle-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+  document.getElementById('quiz-cat-current').textContent = '分野：' + btn.textContent.replace(/（.*/,'');
   buildQuizPool();
   shuffleArray(quizPool);
   quizIndex = 0;
   quizRenderCurrent();
+  document.getElementById('quiz-cat-buttons').style.display = 'none';
+  document.getElementById('quiz-cat-arrow').textContent = '▾';
 }
 
 function quizRenderCurrent(){
   const item = quizPool[quizIndex];
   document.getElementById('quiz-progress').textContent = quizPool.length ? `${quizIndex+1} / ${quizPool.length}` : '';
-  document.getElementById('quiz-cat-label').textContent = item ? item.cat : '';
+  document.getElementById('quiz-cat-label').textContent = item ? item.cat : (quizCatFilter==='checked' ? 'あとで解く問題はありません' : '');
   document.getElementById('quiz-question').textContent = item ? `Q. ${item.q}` : '問題がありません';
   document.getElementById('quiz-answer').textContent = item ? item.a : '';
   document.getElementById('quiz-answer-wrap').style.display = 'none';
   document.getElementById('quiz-reveal-btn').style.display = 'block';
+  document.getElementById('quiz-check-current').checked = item ? quizChecked.has(item.id) : false;
 }
 
 function quizReveal(){
@@ -1696,6 +1739,16 @@ function quizShuffle(){
   shuffleArray(quizPool);
   quizIndex = 0;
   quizRenderCurrent();
+}
+
+function quizToggleCheck(){
+  const item = quizPool[quizIndex];
+  if(!item) return;
+  const cb = document.getElementById('quiz-check-current');
+  if(cb.checked) quizChecked.add(item.id); else quizChecked.delete(item.id);
+  saveQuizChecked();
+  const btn = document.getElementById('quiz-checked-btn');
+  if(btn) btn.textContent = `⭐ あとで解く（${quizChecked.size}）`;
 }
 
 function setCaseType(type, btn){
