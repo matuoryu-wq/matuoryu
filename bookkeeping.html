@@ -2001,8 +2001,12 @@ if('speechSynthesis' in window){
 function _apxUtter(text, lang, onend){
   const utt = new SpeechSynthesisUtterance(text);
   const voice = lang === 'ja' ? apxVoiceJa : apxVoiceEn;
-  if(voice) utt.voice = voice;
-  utt.lang  = lang === 'ja' ? 'ja-JP' : 'en-US';
+  if(voice){
+    utt.voice = voice;
+    utt.lang  = voice.lang;   // voiceに合わせる（ハードコードで上書きしない）
+  } else {
+    utt.lang  = lang === 'ja' ? 'ja-JP' : 'en-US';
+  }
   utt.rate  = apxTTSRate;
   if(onend) utt.onend = onend;
   window.speechSynthesis.speak(utt);
@@ -2053,6 +2057,7 @@ function apxStopAll(){
 }
 
 function showApx(){
+  apxInitVoices(); // iOS Safari は遅延ロードのためここでも呼ぶ
   const el = document.getElementById('apx-overlay');
   if(!document.getElementById('apx-content').innerHTML){
     document.getElementById('apx-content').innerHTML = buildApxContent();
