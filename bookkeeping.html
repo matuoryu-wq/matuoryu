@@ -2024,21 +2024,26 @@ function apxStripHtml(h){
   return h.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
 }
 
-/* ② 説明（問題）→ 用語（答え）の順で読む共通ビルダー */
-function _apxBuildText(row, name, en, lang){
-  if(lang === 'ja'){
-    const yomi   = APX_YOMI[name] || name;
-    const noteEl = row && row.querySelector('.apx-note-ja, .gloss-def-ja');
-    const note   = noteEl ? apxStripHtml(noteEl.innerHTML) : '';
-    return note ? note + '。' + yomi : yomi;
-  } else {
-    const noteEl = row && row.querySelector('.gloss-def-en, .apx-note .gloss-def-en');
-    const note   = noteEl ? apxStripHtml(noteEl.innerHTML) : '';
-    return note ? note + '. ' + en : en;
-  }
+/* 各行の4パーツを返すヘルパー */
+function _apxParts(row, name, en){
+  const jaEl = row && row.querySelector('.apx-note-ja, .gloss-def-ja');
+  const enEl = row && row.querySelector('.gloss-def-en, .apx-note .gloss-def-en');
+  return {
+    jaNote: jaEl ? apxStripHtml(jaEl.innerHTML) : '',
+    enNote: enEl ? apxStripHtml(enEl.innerHTML) : '',
+    jaYomi: APX_YOMI[name] || name,
+    enName: en,
+  };
 }
 
-/* ③ lang='both' → 日本語→英語の順で2発話 */
+/* ② 説明（問題）→ 用語（答え）の順 */
+function _apxBuildText(row, name, en, lang){
+  const {jaNote, enNote, jaYomi, enName} = _apxParts(row, name, en);
+  if(lang === 'ja') return jaNote ? jaNote + '。' + jaYomi : jaYomi;
+  return enNote ? enNote + '. ' + enName : enName;
+}
+
+/* ③ both → JP問題→EN問題→JP答え→EN答え の4発話 */
 function apxSpeakRow(btn, lang){
   if(!('speechSynthesis' in window)) return;
   const row = btn.closest('.apx-row, .gloss-row');
@@ -2047,9 +2052,13 @@ function apxSpeakRow(btn, lang){
   window.speechSynthesis.cancel();
   apxPlayAllActive = false;
   if(lang === 'both'){
-    const jaText = _apxBuildText(row, name, en, 'ja');
-    const enText = _apxBuildText(row, name, en, 'en');
-    _apxUtter(jaText, 'ja', () => _apxUtter(enText, 'en', null, 1.0), apxTTSRate * 1.5);
+    const {jaNote, enNote, jaYomi, enName} = _apxParts(row, name, en);
+    const jr = apxTTSRate * 1.5, er = 1.0;
+    const s4 = () => _apxUtter(enName,  'en', null,  er);
+    const s3 = () => _apxUtter(jaYomi,  'ja', s4,    jr);
+    const s2 = enNote ? () => _apxUtter(enNote, 'en', s3, er) : s3;
+    const s1 = jaNote ? () => _apxUtter(jaNote, 'ja', s2, jr) : s2;
+    s1();
   } else {
     _apxUtter(_apxBuildText(row, name, en, lang), lang);
   }
@@ -2127,10 +2136,12 @@ function apxPlayAll(lang){
     rows.forEach(row => {
       const name = row.dataset.name || '';
       const en   = row.dataset.en   || '';
-      const jt = _apxBuildText(row, name, en, 'ja');
-      const et = _apxBuildText(row, name, en, 'en');
-      if(jt.trim()) apxPlayAllQueue.push({text: jt, lang: 'ja', rate: apxTTSRate * 1.5});
-      if(et.trim()) apxPlayAllQueue.push({text: et, lang: 'en', rate: 1.0});
+      const {jaNote, enNote, jaYomi, enName} = _apxParts(row, name, en);
+      const jr = apxTTSRate * 1.5, er = 1.0;
+      if(jaNote)  apxPlayAllQueue.push({text: jaNote, lang: 'ja', rate: jr});
+      if(enNote)  apxPlayAllQueue.push({text: enNote, lang: 'en', rate: er});
+      if(jaYomi)  apxPlayAllQueue.push({text: jaYomi, lang: 'ja', rate: jr});
+      if(enName)  apxPlayAllQueue.push({text: enName, lang: 'en', rate: er});
     });
   } else {
     apxPlayAllQueue = rows.map(row => {
