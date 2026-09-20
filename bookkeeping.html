@@ -2049,7 +2049,7 @@ function apxSpeakRow(btn, lang){
   if(lang === 'both'){
     const jaText = _apxBuildText(row, name, en, 'ja');
     const enText = _apxBuildText(row, name, en, 'en');
-    _apxUtter(jaText, 'ja', () => _apxUtter(enText, 'en'));
+    _apxUtter(jaText, 'ja', () => _apxUtter(enText, 'en', null, 1.0), apxTTSRate * 1.5);
   } else {
     _apxUtter(_apxBuildText(row, name, en, lang), lang);
   }
@@ -2102,16 +2102,16 @@ if('speechSynthesis' in window){
   apxInitVoices(); // fires immediately in some browsers
 }
 
-function _apxUtter(text, lang, onend){
+function _apxUtter(text, lang, onend, rate){
   const utt = new SpeechSynthesisUtterance(text);
   const voice = lang === 'ja' ? apxVoiceJa : apxVoiceEn;
   if(voice){
     utt.voice = voice;
-    utt.lang  = voice.lang;   // voiceに合わせる（ハードコードで上書きしない）
+    utt.lang  = voice.lang;
   } else {
     utt.lang  = lang === 'ja' ? 'ja-JP' : 'en-US';
   }
-  utt.rate  = apxTTSRate;
+  utt.rate  = rate != null ? rate : apxTTSRate;
   if(onend) utt.onend = onend;
   window.speechSynthesis.speak(utt);
 }
@@ -2129,8 +2129,8 @@ function apxPlayAll(lang){
       const en   = row.dataset.en   || '';
       const jt = _apxBuildText(row, name, en, 'ja');
       const et = _apxBuildText(row, name, en, 'en');
-      if(jt.trim()) apxPlayAllQueue.push({text: jt, lang: 'ja'});
-      if(et.trim()) apxPlayAllQueue.push({text: et, lang: 'en'});
+      if(jt.trim()) apxPlayAllQueue.push({text: jt, lang: 'ja', rate: apxTTSRate * 1.5});
+      if(et.trim()) apxPlayAllQueue.push({text: et, lang: 'en', rate: 1.0});
     });
   } else {
     apxPlayAllQueue = rows.map(row => {
@@ -2148,8 +2148,8 @@ function apxPlayAll(lang){
   let idx = 0;
   function next(){
     if(!apxPlayAllActive || idx >= apxPlayAllQueue.length){ apxStopAll(); return; }
-    const {text, lang: l} = apxPlayAllQueue[idx++];
-    _apxUtter(text, l, next);
+    const {text, lang: l, rate} = apxPlayAllQueue[idx++];
+    _apxUtter(text, l, next, rate);
   }
   next();
 }
