@@ -437,6 +437,9 @@
     .apx-tts-btn:hover { background:var(--primary); color:#fff; }
     .apx-tts-btn.en { color:#1565C0; border-color:#90CAF9; }
     .apx-tts-btn.en:hover { background:#1565C0; color:#fff; }
+    .apx-play-all-btn { font-size:11px; padding:2px 9px; }
+    .apx-stop-btn { color:#B71C1C; border-color:#EF9A9A; }
+    .apx-stop-btn:hover { background:#B71C1C; color:#fff; }
     /* ===== スクロールモード ===== */
     .exp-panel { display:block; max-width:640px; margin:0 auto; padding:14px 14px; }
     .exp-q-card { background:#fff; border-radius:12px; padding:14px 16px; margin-bottom:14px; border:1.5px solid var(--border); font-size:14px; line-height:2.0; font-weight:500; }
@@ -592,6 +595,9 @@
           <option value="1.3">速い (1.3×)</option>
           <option value="1.6">最速 (1.6×)</option>
         </select>
+        <button class="apx-tts-btn apx-play-all-btn" id="apx-play-all-jp" onclick="apxPlayAll('ja')">▶ 全JP</button>
+        <button class="apx-tts-btn en apx-play-all-btn" id="apx-play-all-en" onclick="apxPlayAll('en')">▶ 全EN</button>
+        <button class="apx-tts-btn apx-stop-btn" onclick="apxStopAll()" title="停止">⏹</button>
       </div>
     </div>
     <div class="apx-modal-body">
@@ -1735,8 +1741,8 @@ function buildApxContent(){
           <span class="tag ${t}">(${name})</span>
           ${lv === 2 ? '<span class="apx-lv">2級</span>' : ''}
           <span class="apx-tts-btns">
-            <button class="apx-tts-btn" onclick="apxSpeak('${name.replace(/'/g,'')}','ja')" title="日本語で読む">🔊 JP</button>
-            <button class="apx-tts-btn en" onclick="apxSpeak('${en.replace(/'/g,'')}','en')" title="英語で読む">🔊 EN</button>
+            <button class="apx-tts-btn" onclick="apxSpeakRow(this,'ja')" title="日本語で読む">🔊 JP</button>
+            <button class="apx-tts-btn en" onclick="apxSpeakRow(this,'en')" title="英語で読む">🔊 EN</button>
           </span>
         </div>
         <div class="apx-note">${note_en?`<div class="gloss-def-en">${note_en}</div>`:''}<div class="apx-note-ja">${note}</div></div>
@@ -1779,8 +1785,8 @@ function buildApxContent(){
           <span class="tag ${type}">(${name})</span>
           <span class="apx-lv ind">工業</span>
           <span class="apx-tts-btns">
-            <button class="apx-tts-btn" onclick="apxSpeak('${name.replace(/'/g,'')}','ja')" title="日本語で読む">🔊 JP</button>
-            <button class="apx-tts-btn en" onclick="apxSpeak('${en.replace(/'/g,'')}','en')" title="英語で読む">🔊 EN</button>
+            <button class="apx-tts-btn" onclick="apxSpeakRow(this,'ja')" title="日本語で読む">🔊 JP</button>
+            <button class="apx-tts-btn en" onclick="apxSpeakRow(this,'en')" title="英語で読む">🔊 EN</button>
           </span>
         </div>
         <div class="apx-note">${cardNoteEn?`<div class="gloss-def-en">${cardNoteEn}</div>`:''}<div class="apx-note-ja">${cardNote}</div></div>
@@ -1799,8 +1805,8 @@ function buildApxContent(){
         `<div class="gloss-row" data-name="${term}" data-en="${en}">
           <div class="gloss-term"><span class="gloss-en">${en}</span> <span class="gloss-term-text">(${term})</span>
             <span class="apx-tts-btns">
-              <button class="apx-tts-btn" onclick="apxSpeak('${term.replace(/'/g,'')}','ja')" title="日本語で読む">🔊 JP</button>
-              <button class="apx-tts-btn en" onclick="apxSpeak('${en.replace(/'/g,'')}','en')" title="英語で読む">🔊 EN</button>
+              <button class="apx-tts-btn" onclick="apxSpeakRow(this,'ja')" title="日本語で読む">🔊 JP</button>
+              <button class="apx-tts-btn en" onclick="apxSpeakRow(this,'en')" title="英語で読む">🔊 EN</button>
             </span>
           </div>
           <div class="gloss-def">${def_en?`<div class="gloss-def-en">${def_en}</div>`:''}<div class="gloss-def-ja">${def}</div></div>
@@ -1815,13 +1821,176 @@ function buildApxContent(){
 let apxCurrentTab = 'all';
 
 let apxTTSRate = 1.0;
-function apxSpeak(text, lang){
+let apxPlayAllActive = false;
+let apxPlayAllQueue = [];
+
+/* ③ 読みがな辞書 */
+const APX_YOMI = {
+  '売掛金':'うりかけきん','買掛金':'かいかけきん','売上':'うりあげ','仕入':'しいれ',
+  '商品':'しょうひん','繰越商品':'くりこししょうひん','売上原価':'うりあげげんか',
+  '前払金':'まえばらいきん','前受金':'まえうけきん','手付金':'てつけきん',
+  '受取手形':'うけとりてがた','支払手形':'しはらいてがた',
+  '電子記録債権':'でんしきろくさいけん','電子記録債務':'でんしきろくさいむ',
+  '割引手形':'わりびきてがた','裏書手形':'うらがきてがた','不渡手形':'ふわたりてがた',
+  '有価証券':'ゆうかしょうけん','売買目的有価証券':'ばいばいもくてきゆうかしょうけん',
+  '満期保有目的債券':'まんきほゆうもくてきさいけん',
+  'その他有価証券':'そのたゆうかしょうけん',
+  '子会社株式':'こがいしゃかぶしき','関連会社株式':'かんれんがいしゃかぶしき',
+  '有価証券評価益':'ゆうかしょうけんひょうかえき',
+  '有価証券評価損':'ゆうかしょうけんひょうかそん',
+  '有価証券売却益':'ゆうかしょうけんばいきゃくえき',
+  '有価証券売却損':'ゆうかしょうけんばいきゃくそん',
+  'その他有価証券評価差額金':'そのたゆうかしょうけんひょうかさがくきん',
+  '建物':'たてもの','土地':'とち','備品':'びひん',
+  '車両運搬具':'しゃりょううんぱんぐ','機械装置':'きかいそうち',
+  '建設仮勘定':'けんせつかりかんじょう',
+  '減価償却費':'げんかしょうきゃくひ','減価償却累計額':'げんかしょうきゃくるいけいがく',
+  '固定資産売却益':'こていしさんばいきゃくえき',
+  '固定資産売却損':'こていしさんばいきゃくそん',
+  '棚卸減耗費':'たなおろしげんもうひ','棚卸減耗損':'たなおろしげんもうそん',
+  '商品評価損':'しょうひんひょうかそん',
+  '特許権':'とっきょけん','商標権':'しょうひょうけん','ソフトウェア':'そふとうえあ',
+  'のれん':'のれん',
+  'リース資産':'りーすしさん','リース債務':'りーすさいむ',
+  '支払利息':'しはらいりそく','受取利息':'うけとりりそく',
+  '受取利息配当金':'うけとりりそくはいとうきん',
+  '受取配当金':'うけとりはいとうきん',
+  '貸倒引当金':'かしだおれひきあてきん',
+  '貸倒引当金繰入':'かしだおれひきあてきんくりいれ',
+  '貸倒損失':'かしだおれそんしつ',
+  '退職給付引当金':'たいしょくきゅうふひきあてきん',
+  '退職給付費用':'たいしょくきゅうふひよう',
+  '修繕引当金':'しゅうぜんひきあてきん','修繕費':'しゅうぜんひ',
+  '資本金':'しほんきん','資本剰余金':'しほんじょうよきん',
+  '資本準備金':'しほんじゅんびきん','その他資本剰余金':'そのたしほんじょうよきん',
+  '利益剰余金':'りえきじょうよきん','利益準備金':'りえきじゅんびきん',
+  '繰越利益剰余金':'くりこしりえきじょうよきん',
+  '別途積立金':'べっとつみたてきん',
+  '配当金':'はいとうきん','未払配当金':'みばらいはいとうきん',
+  '株式交付費':'かぶしきこうふひ',
+  '新株式申込証拠金':'しんかぶしきもうしこみしょうこきん',
+  '株式申込証拠金':'かぶしきもうしこみしょうこきん',
+  '社債':'しゃさい','社債利息':'しゃさいりそく','社債発行費':'しゃさいはっこうひ',
+  '為替差損益':'かわせさそんえき','為替差益':'かわせさえき','為替差損':'かわせさそん',
+  '繰延税金資産':'くりのべぜいきんしさん','繰延税金負債':'くりのべぜいきんふさい',
+  '法人税等調整額':'ほうじんぜいとうちょうせいがく',
+  '法人税等':'ほうじんぜいとう','未払法人税等':'みばらいほうじんぜいとう',
+  '仮受消費税':'かりうけしょうひぜい','仮払消費税':'かりばらいしょうひぜい',
+  '未払消費税':'みばらいしょうひぜい',
+  '給料':'きゅうりょう','従業員給料':'じゅうぎょういんきゅうりょう',
+  '法定福利費':'ほうていふくりひ','福利厚生費':'ふくりこうせいひ',
+  '所得税預り金':'しょとくぜいあずかりきん',
+  '社会保険料預り金':'しゃかいほけんりょうあずかりきん',
+  '預り金':'あずかりきん',
+  '未収収益':'みしゅうしゅうえき','前払費用':'まえばらいひよう',
+  '未払費用':'みばらいひよう','前受収益':'まえうけしゅうえき',
+  '貯蔵品':'ちょぞうひん',
+  '損益':'そんえき','売上総利益':'うりあげそうりえき',
+  '営業利益':'えいぎょうりえき','経常利益':'けいじょうりえき',
+  '当期純利益':'とうきじゅんりえき','税引前当期純利益':'ぜいびきまえとうきじゅんりえき',
+  '営業外収益':'えいぎょうがいしゅうえき','営業外費用':'えいぎょうがいひよう',
+  '特別損益':'とくべつそんえき','特別利益':'とくべつりえき','特別損失':'とくべつそんしつ',
+  '現金':'げんきん','当座預金':'とうざよきん','普通預金':'ふつうよきん',
+  '小口現金':'こぐちげんきん','定期預金':'ていきよきん','当座借越':'とうざかりこし',
+  '未収金':'みしゅうきん','未払金':'みばらいきん',
+  '立替金':'たてかえきん','仮払金':'かりばらいきん','仮受金':'かりうけきん',
+  '差入保証金':'さしいれほしょうきん',
+  '長期前払費用':'ちょうきまえばらいひよう',
+  '長期貸付金':'ちょうきかしつけきん','長期借入金':'ちょうきかりいれきん',
+  '短期貸付金':'たんきかしつけきん','短期借入金':'たんきかりいれきん',
+  '役員貸付金':'やくいんかしつけきん',
+  '非支配株主持分':'ひしはいかぶぬしもちぶん',
+  '資産':'しさん','負債':'ふさい','純資産':'じゅんしさん',
+  '材料':'ざいりょう','材料費':'ざいりょうひ','直接材料費':'ちょくせつざいりょうひ',
+  '間接材料費':'かんせつざいりょうひ',
+  '労務費':'ろうむひ','直接労務費':'ちょくせつろうむひ','間接労務費':'かんせつろうむひ',
+  '直接賃金':'ちょくせつちんぎん','間接工賃金':'かんせつこうちんぎん',
+  '経費':'けいひ','直接経費':'ちょくせつけいひ','間接経費':'かんせつけいひ',
+  '製造間接費':'せいぞうかんせつひ','製造間接費配賦差異':'せいぞうかんせつひはいふさい',
+  '仕掛品':'しかかりひん','製品':'せいひん','月末仕掛品':'つきまつしかかりひん',
+  '製造原価':'せいぞうげんか','当期製品製造原価':'とうきせいひんせいぞうげんか',
+  '完成品原価':'かんせいひんげんか','製造費用':'せいぞうひよう',
+  '原価差異':'げんかさい','材料消費価格差異':'ざいりょうしょうひかかくさい',
+  '賃率差異':'ちんりつさい','作業時間差異':'さぎょうじかんさい',
+  '予算差異':'よさんさい','操業度差異':'そうぎょうどさい','能率差異':'のうりつさい',
+};
+
+function apxStripHtml(h){
+  return h.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+}
+
+/* ① 説明文も読む */
+function apxSpeakRow(btn, lang){
   if(!('speechSynthesis' in window)) return;
+  const row = btn.closest('.apx-row, .gloss-row');
+  const name = (row && row.dataset.name) || '';
+  const en   = (row && row.dataset.en)   || '';
+  let text;
+  if(lang === 'ja'){
+    const yomi = APX_YOMI[name] || name;
+    const noteEl = row && row.querySelector('.apx-note-ja, .gloss-def-ja');
+    const note = noteEl ? apxStripHtml(noteEl.innerHTML) : '';
+    text = note ? yomi + '。' + note : yomi;
+  } else {
+    const noteEl = row && row.querySelector('.gloss-def-en, .apx-note .gloss-def-en');
+    const note = noteEl ? apxStripHtml(noteEl.innerHTML) : '';
+    text = note ? en + '. ' + note : en;
+  }
   window.speechSynthesis.cancel();
+  apxPlayAllActive = false;
+  _apxUtter(text, lang);
+}
+
+function _apxUtter(text, lang, onend){
   const utt = new SpeechSynthesisUtterance(text);
-  utt.lang = lang === 'ja' ? 'ja-JP' : 'en-US';
-  utt.rate = apxTTSRate;
+  utt.lang  = lang === 'ja' ? 'ja-JP' : 'en-US';
+  utt.rate  = apxTTSRate;
+  if(onend) utt.onend = onend;
   window.speechSynthesis.speak(utt);
+}
+
+/* ② 全て一気に再生 */
+function apxPlayAll(lang){
+  if(apxPlayAllActive){ apxStopAll(); return; }
+  const rows = [...document.querySelectorAll(
+    '#apx-content .apx-row:not(.hidden), #apx-content .gloss-row:not(.hidden)'
+  )];
+  apxPlayAllQueue = rows.map(row => {
+    const name = row.dataset.name || '';
+    const en   = row.dataset.en   || '';
+    if(lang === 'ja'){
+      const yomi   = APX_YOMI[name] || name;
+      const noteEl = row.querySelector('.apx-note-ja, .gloss-def-ja');
+      const note   = noteEl ? apxStripHtml(noteEl.innerHTML) : '';
+      return { text: note ? yomi + '。' + note : yomi, lang: 'ja' };
+    } else {
+      const noteEl = row.querySelector('.gloss-def-en, .apx-note .gloss-def-en');
+      const note   = noteEl ? apxStripHtml(noteEl.innerHTML) : '';
+      return { text: note ? en + '. ' + note : en, lang: 'en' };
+    }
+  }).filter(x => x.text.trim());
+
+  if(!apxPlayAllQueue.length) return;
+  apxPlayAllActive = true;
+  document.getElementById('apx-play-all-jp').textContent = lang==='ja' ? '⏹ 停止' : '▶ 全JP';
+  document.getElementById('apx-play-all-en').textContent = lang==='en' ? '⏹ 停止' : '▶ 全EN';
+  window.speechSynthesis.cancel();
+  let idx = 0;
+  function next(){
+    if(!apxPlayAllActive || idx >= apxPlayAllQueue.length){ apxStopAll(); return; }
+    const {text, lang: l} = apxPlayAllQueue[idx++];
+    _apxUtter(text, l, next);
+  }
+  next();
+}
+
+function apxStopAll(){
+  apxPlayAllActive = false;
+  window.speechSynthesis.cancel();
+  const bj = document.getElementById('apx-play-all-jp');
+  const be = document.getElementById('apx-play-all-en');
+  if(bj) bj.textContent = '▶ 全JP';
+  if(be) be.textContent = '▶ 全EN';
 }
 
 function showApx(){
