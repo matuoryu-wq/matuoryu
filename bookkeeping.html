@@ -440,6 +440,8 @@
     .apx-play-all-btn { font-size:11px; padding:2px 9px; }
     .apx-stop-btn { color:#B71C1C; border-color:#EF9A9A; }
     .apx-stop-btn:hover { background:#B71C1C; color:#fff; }
+    .apx-voice-row { display:inline-flex; align-items:center; gap:4px; }
+    .apx-voice-sel { max-width:160px; }
     /* ===== スクロールモード ===== */
     .exp-panel { display:block; max-width:640px; margin:0 auto; padding:14px 14px; }
     .exp-q-card { background:#fff; border-radius:12px; padding:14px 16px; margin-bottom:14px; border:1.5px solid var(--border); font-size:14px; line-height:2.0; font-weight:500; }
@@ -598,6 +600,14 @@
         <button class="apx-tts-btn apx-play-all-btn" id="apx-play-all-jp" onclick="apxPlayAll('ja')">▶ 全JP</button>
         <button class="apx-tts-btn en apx-play-all-btn" id="apx-play-all-en" onclick="apxPlayAll('en')">▶ 全EN</button>
         <button class="apx-tts-btn apx-stop-btn" onclick="apxStopAll()" title="停止">⏹</button>
+        <span class="apx-voice-row">
+          <label>🗣 JP声:</label>
+          <select class="apx-tts-rate-sel apx-voice-sel" id="apx-voice-ja" onchange="apxSetVoice('ja',this.value)"><option value="">読込中…</option></select>
+        </span>
+        <span class="apx-voice-row">
+          <label>🗣 EN声:</label>
+          <select class="apx-tts-rate-sel apx-voice-sel" id="apx-voice-en" onchange="apxSetVoice('en',this.value)"><option value="">読込中…</option></select>
+        </span>
       </div>
     </div>
     <div class="apx-modal-body">
@@ -1941,8 +1951,57 @@ function apxSpeakRow(btn, lang){
   _apxUtter(text, lang);
 }
 
+let apxVoiceJa = null;
+let apxVoiceEn = null;
+
+function apxSetVoice(lang, name){
+  const v = speechSynthesis.getVoices().find(x => x.name === name) || null;
+  if(lang === 'ja') apxVoiceJa = v; else apxVoiceEn = v;
+}
+
+function apxInitVoices(){
+  const voices = speechSynthesis.getVoices();
+  if(!voices.length) return;
+
+  const jaEl = document.getElementById('apx-voice-ja');
+  const enEl = document.getElementById('apx-voice-en');
+  if(!jaEl || !enEl) return;
+
+  const jaVoices = voices.filter(v => v.lang.startsWith('ja'));
+  const enVoices = voices.filter(v => v.lang.startsWith('en'));
+
+  function populate(el, list, prefLang){
+    el.innerHTML = '';
+    if(!list.length){ el.innerHTML='<option value="">（なし）</option>'; return; }
+    list.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.name;
+      const quality = v.name.includes('Enhanced') || v.name.includes('Premium')
+                      ? ' ★' : v.localService ? '' : ' (net)';
+      opt.textContent = v.name + quality;
+      el.appendChild(opt);
+    });
+    // prefer Enhanced/Premium, then local
+    const best = list.find(v => v.name.includes('Enhanced') || v.name.includes('Premium'))
+              || list.find(v => v.localService)
+              || list[0];
+    el.value = best.name;
+    if(prefLang === 'ja') apxVoiceJa = best; else apxVoiceEn = best;
+  }
+
+  populate(jaEl, jaVoices, 'ja');
+  populate(enEl, enVoices, 'en');
+}
+
+if('speechSynthesis' in window){
+  speechSynthesis.onvoiceschanged = apxInitVoices;
+  apxInitVoices(); // fires immediately in some browsers
+}
+
 function _apxUtter(text, lang, onend){
   const utt = new SpeechSynthesisUtterance(text);
+  const voice = lang === 'ja' ? apxVoiceJa : apxVoiceEn;
+  if(voice) utt.voice = voice;
   utt.lang  = lang === 'ja' ? 'ja-JP' : 'en-US';
   utt.rate  = apxTTSRate;
   if(onend) utt.onend = onend;
