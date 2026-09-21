@@ -86,8 +86,10 @@
     .ratio-sep{font-size:16px;font-weight:700;color:var(--text-muted)}
     .sec-title{font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
     .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
-    .note{font-size:12px;color:#7A4A1E;background:#FBF5EC;border:1px solid #F0C070;border-radius:7px;padding:8px 12px;margin-top:8px;display:flex;gap:6px}
-    .note-icon{flex-shrink:0}
+    .note{font-size:12px;color:#7A4A1E;background:#FBF5EC;border:1px solid #F0C070;border-radius:7px;padding:8px 12px 8px 32px;margin-top:8px;position:relative;line-height:1.7}
+    .note-icon{position:absolute;left:11px;top:8px}
+    .note-plain{padding-left:12px}
+    .note-plain>div+div{margin-top:6px}
     .err-msg{background:var(--danger-light);border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;color:var(--danger);font-size:13px;margin-bottom:12px}
     .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
     .modal-overlay.open{display:flex}
@@ -1469,7 +1471,7 @@ function calcBreakeven(){
     </div>`;
 
   const cautions=`
-    <div class="note" style="flex-direction:column;gap:6px;line-height:1.8">
+    <div class="note note-plain" style="line-height:1.8">
       <div style="font-weight:700">⚠️ 注意事項（必ずお読みください）</div>
       <div>・同居の祖父母等の<strong>扶養義務者の所得が高い場合は支給停止になる可能性</strong>があります。</div>
       <div>・<strong>事実婚や公的年金の受給がある場合も支給停止</strong>になる可能性があります。</div>
