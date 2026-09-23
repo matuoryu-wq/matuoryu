@@ -557,6 +557,7 @@
       <button class="ctrl-btn grp-btn" data-sec="chap:工業簿記" title="工業簿記" onclick="setSection('chap:工業簿記')">工業簿記</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：連結会計" title="1級：連結会計" onclick="setSection('chap:1級：連結会計')">🎓1級：連結会計</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：企業結合・事業分離" title="1級：企業結合・事業分離" onclick="setSection('chap:1級：企業結合・事業分離')">🎓1級：企業結合</button>
+      <button class="ctrl-btn grp-btn" data-sec="chap:1級：金融商品" title="1級：金融商品（デリバティブ・ヘッジ会計）" onclick="setSection('chap:1級：金融商品')">🎓1級：金融商品</button>
     </div>
   </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
@@ -738,6 +739,8 @@ const T = {
   '固定費':'expense','貢献利益':'other','材料副費':'other','のれん償却額':'expense','長期借入金':'liability',
   '利益剰余金期首残高':'equity','投資有価証券評価損':'expense','商標権償却':'expense','販売手数料':'expense',
   '国庫補助金収入':'revenue','事業譲渡益':'revenue','P社株式':'asset',
+  '先物取引差入証拠金':'asset','先物取引差金':'asset','先物損益':'other','オプション資産':'asset',
+  'オプション差損益':'other','為替予約':'asset','繰延ヘッジ損益':'equity','デリバティブ資産':'asset',
   // 2級追加（新規科目）
   '商品券':'liability','他店商品券':'asset','仕入割引':'revenue','定期預金':'asset',
   '役員貸付金':'asset','役員借入金':'liability','引出金（事業主貸）':'other','圧縮積立金':'equity',
@@ -6384,6 +6387,74 @@ const ALL = [
     en_q:'In connection with absorbing Company S, Company P paid ¥80,000 cash for share-issuance administrative costs (printing, brokerage fees, etc.). Record the entry recognizing this as share issuance costs.',
     e:[{d:[['株式交付費',80000]], c:[['現金',80000]]}],
     exp:'合併や増資で新しく株式を発行するときにかかる事務費用（印刷代・証券会社への手数料など）は「株式交付費」という勘定で処理します。似た名前の「取得関連費用」（弁護士・会計士への相談料）は必ずその場で費用にしますが、株式交付費は一定の要件のもとで資産計上して数年かけて償却することも認められています。「M&Aの相談料」と「株式発行の事務費用」は名前は似ていますが別物、と覚えておきましょう。'
+  },
+
+  // ===== 1級：金融商品会計（デリバティブ・ヘッジ会計） =====
+  { id:750, level:3, cat:'金融商品', chap:'1級：金融商品',
+    q:'Ｘ社は国債先物の取引を行うため、証券会社に先物取引差入証拠金50,000円を現金で差し入れた。この取引の仕訳を示しなさい。',
+    en_q:'Company X deposited ¥50,000 cash with a securities firm as a margin deposit (先物取引差入証拠金) to trade government bond futures. Record this entry.',
+    e:[{d:[['先物取引差入証拠金',50000]], c:[['現金',50000]]}],
+    exp:'先物取引は「将来の一定時点で、あらかじめ決めた価格で売買する」契約です。実際に売買するまでの間、証券会社に担保として証拠金を預けます。証拠金はまだ損益が確定したわけではなく、後で返ってくる「預け金」的な性質なので、資産の勘定科目（先物取引差入証拠金）として計上します。'
+  },
+  { id:751, level:3, cat:'金融商品', chap:'1級：金融商品',
+    q:'Ｘ社は保有する国債先物について、決算日に時価評価を行ったところ、契約時と比べて50,000円値上がりしていることが判明した。決算時の評価替えの仕訳を示しなさい。',
+    en_q:'At fiscal year-end, Company X marked its government bond futures position to market and found the value had risen ¥50,000 since the contract date. Record the year-end revaluation entry.',
+    e:[{d:[['先物取引差金',50000]], c:[['先物損益',50000]]}],
+    exp:'デリバティブ（先物・オプション・スワップなど）は原則として「時価評価」が強制され、評価差額はその期の損益として即座に計上します（これは他の有価証券と大きく違う点です）。値上がり分は「先物取引差金」という資産（未収の含み益）を計上し、相手科目として「先物損益」という収益（デリバティブ評価損益）を計上します。'
+  },
+  { id:752, level:3, cat:'金融商品', chap:'1級：金融商品',
+    q:'Ｘ社はコール・オプションを30,000円で購入し、代金を現金で支払った。オプション取得時の仕訳を示しなさい。',
+    en_q:'Company X purchased a call option for ¥30,000 cash. Record the entry at the time of acquiring the option.',
+    e:[{d:[['オプション資産',30000]], c:[['現金',30000]]}],
+    exp:'オプション（権利）を買うために支払った金額（オプション料）は、「その権利を将来行使できる」という価値を持つ資産なので、「オプション資産」として計上します。まだ権利を行使していない段階では、損益は一切発生しません。'
+  },
+  { id:753, level:3, cat:'金融商品', chap:'1級：金融商品',
+    q:'Ｘ社が保有するオプション（取得原価30,000円）について、決算日の時価は45,000円であった。決算時の評価替えの仕訳を示しなさい。',
+    en_q:"Company X's option (cost ¥30,000) had a fair value of ¥45,000 at fiscal year-end. Record the year-end revaluation entry.",
+    e:[{d:[['オプション資産',15000]], c:[['オプション差損益',15000]]}],
+    exp:'オプションも先物と同様、決算日には時価評価が必要です。時価（45,000円）と帳簿価額（30,000円）との差額15,000円だけ「オプション資産」を増額し、相手科目として評価損益（オプション差損益）を計上します。値下がりしていれば逆に評価損を計上します。'
+  },
+  { id:754, level:3, cat:'金融商品', chap:'1級：金融商品',
+    q:'Ｘ社は将来の外貨建取引に備えて為替予約（ヘッジ手段）を締結し、繰延ヘッジ会計を適用している。決算日において、この為替予約の時価評価益が30,000円生じた。税効果を考慮しない場合の仕訳を示しなさい。',
+    en_q:"Company X entered into a forward foreign exchange contract as a hedge for a future foreign-currency transaction and applies deferred hedge accounting. At fiscal year-end, the forward contract's fair value gain was ¥30,000. Record the entry, ignoring tax effects.",
+    e:[{d:[['為替予約',30000]], c:[['繰延ヘッジ損益',30000]]}],
+    exp:'「繰延ヘッジ会計」とは、ヘッジ手段（為替予約など）の評価損益を、対象となる取引（ヘッジ対象）が実際に発生するまで損益計算書に出さず、純資産の部（その他包括利益）に一旦保留しておく方法です。評価益が出ても「収益」にはせず、「繰延ヘッジ損益」という純資産の科目に振り替えます。ヘッジ対象の取引が実際に発生した時点で、初めて損益として実現させます。'
+  },
+  { id:755, level:3, cat:'金融商品', chap:'1級：金融商品',
+    q:'Ｘ社は上記と同様の為替予約について繰延ヘッジ会計を適用しており、決算日の時価評価益は30,000円であった。実効税率30％として税効果会計を適用した場合の仕訳を示しなさい。',
+    en_q:'For the same forward contract under deferred hedge accounting, the fair value gain at fiscal year-end was ¥30,000. Record the entry applying tax-effect accounting at an effective tax rate of 30%.',
+    e:[{d:[['為替予約',30000]], c:[['繰延税金負債',9000],['繰延ヘッジ損益',21000]]}],
+    exp:'繰延ヘッジ損益は純資産に計上される項目ですが、この評価益は将来課税対象になる（税金を増やす）含み益なので、税効果会計を適用して「繰延税金負債」（将来支払う税金）を認識します。評価益30,000円のうち、税金相当額9,000円（30,000×30％）を繰延税金負債として差し引き、残り21,000円を税引後の金額として繰延ヘッジ損益（純資産）に計上します。'
+  },
+  { id:756, level:3, cat:'金融商品', chap:'1級：金融商品',
+    q:'Ｘ社はその他有価証券（帳簿価額200,000円）について、時価下落リスクをヘッジするためデリバティブ取引を行い、時価ヘッジ会計を適用している。決算日において、その他有価証券の時価が40,000円下落し、ヘッジ手段であるデリバティブの評価益が40,000円生じた。①その他有価証券の評価替えと②デリバティブの評価替えの仕訳をそれぞれ示しなさい。',
+    en_q:"Company X applies fair value hedge accounting to hedge the price-decline risk of available-for-sale securities (book value ¥200,000) using a derivative. At fiscal year-end, the securities' fair value fell by ¥40,000 while the hedging derivative recorded a ¥40,000 valuation gain. Record (1) the securities revaluation and (2) the derivative revaluation.",
+    e:[{d:[['投資有価証券評価損',40000]], c:[['その他有価証券',40000]]}, {d:[['デリバティブ資産',40000]], c:[['有価証券評価益',40000]]}],
+    exp:'「時価ヘッジ会計」は繰延ヘッジと違い、ヘッジ対象（その他有価証券）の評価損益も、ヘッジ手段（デリバティブ）の評価損益も、両方ともその期の損益として計上する方法です。その他有価証券の評価差額は通常「純資産直入」ですが、時価ヘッジを適用すると例外的に損益計算書を通します。値下がり損40,000円と、デリバティブの値上がり益40,000円が同時に計上されるため、両者が相殺され、ヘッジの効果（リスクを打ち消す）が損益計算書上でも見える化されます。'
+  },
+  { id:757, level:3, cat:'金融商品', chap:'1級：金融商品',
+    q:'Ｘ社は満期保有目的で他社社債（額面2,000,000円、額面より安く取得）を保有している。当期のクーポン利息の受取額は20,000円であり、実効利子率法によって計算された金利調整差額（取得差額）の償却額は8,500円であった。利息法による当期の有価証券利息計上の仕訳を示しなさい。',
+    en_q:"Company X holds another company's bonds (face value ¥2,000,000, acquired below face value) as held-to-maturity securities. This period's coupon interest received was ¥20,000, and the amortization of the acquisition discount computed under the effective interest method was ¥8,500. Record this period's bond interest entry using the effective interest method.",
+    e:[{d:[['現金',20000],['満期保有目的債券',8500]], c:[['有価証券利息',28500]]}],
+    exp:'満期保有目的の債券を額面より安く取得した場合、その差額（金利調整差額）は「実質的な利息」の一部とみなされ、満期までの期間にわたって毎期コツコツ償却（帳簿価額に加算）していきます（＝利息法）。クーポン利息20,000円に加えて、償却額8,500円も「有価証券利息」という収益に含めます。償却した分は現金では受け取っていないため、相手科目は現金ではなく「満期保有目的債券」（帳簿価額を増やす）になります。'
+  },
+  { id:758, level:3, cat:'金融商品', chap:'1級：金融商品',
+    q:'Ｘ社は取引先Ｙ社に対する貸付金1,000,000円について、Ｙ社の財政状態が著しく悪化したため、貸倒懸念先として個別に将来キャッシュ・フローを見積り、貸倒引当金150,000円を計上することとした。決算時の仕訳を示しなさい。',
+    en_q:"Company X holds a ¥1,000,000 loan receivable from Company Y. Because Y's financial condition has significantly deteriorated, X classifies it as a doubtful claim, estimates future cash flows individually, and recognizes an allowance for doubtful accounts of ¥150,000. Record the year-end entry.",
+    e:[{d:[['貸倒引当金繰入',150000]], c:[['貸倒引当金',150000]]}],
+    exp:'金融商品会計基準では、金銭債権を「一般債権」「貸倒懸念債権」「破産更生債権等」の3区分に分けて評価します。貸倒懸念先（経営破綻はしていないが返済に重大な問題がある先）については、個別に将来キャッシュ・フローを見積り、その現在価値と債権額との差額を貸倒引当金として計上します（キャッシュ・フロー見積法）。費用側は「貸倒引当金繰入」、資産のマイナスとして「貸倒引当金」を計上します。'
+  },
+  { id:759, level:3, cat:'金融商品', chap:'1級：金融商品',
+    q:'Ｘ社は転換社債型新株予約権付社債（額面1,000,000円）を発行し、払込金額1,000,000円を現金で受け取った。区分法により、社債の対価部分950,000円・新株予約権の対価部分50,000円に区分して処理する。発行時の仕訳を示しなさい。',
+    en_q:'Company X issued convertible bonds with warrants (face value ¥1,000,000) and received ¥1,000,000 in cash. Under the split method, ¥950,000 is allocated to the bond (liability) component and ¥50,000 to the warrant (equity) component. Record the issuance entry.',
+    e:[{d:[['現金',1000000]], c:[['社債',950000],['新株予約権',50000]]}],
+    exp:'転換社債型新株予約権付社債は「社債（負債）」と「新株予約権（将来株式に転換できる権利＝純資産）」がセットになった複合金融商品です。「区分法」では、払込金額を合理的な基準で社債部分と新株予約権部分に分けて、それぞれ別の勘定科目（負債と純資産）で計上します（両方をまとめて「社債」で計上する「一括法」という方法もあります）。'
+  },
+  { id:760, level:3, cat:'金融商品', chap:'1級：金融商品',
+    q:'Ｘ社は上記の転換社債型新株予約権付社債（社債部分の帳簿価額950,000円・新株予約権50,000円）について、社債権者からの請求により全額が株式に転換された。増加する資本金は全額とする場合の仕訳を示しなさい。',
+    en_q:'The bondholder exercised the conversion right on the entire convertible bond above (bond component book value ¥950,000, warrants ¥50,000). Record the conversion entry, assuming the full amount is credited to Common Stock.',
+    e:[{d:[['社債',950000],['新株予約権',50000]], c:[['資本金',1000000]]}],
+    exp:'転換社債が株式に転換されると、それまで負債だった「社債」と純資産だった「新株予約権」が、どちらも新しく発行する株式の対価（＝資本金）に振り替わります。区分法で処理していた場合は、社債部分と新株予約権部分をそれぞれ帳簿価額のまま資本金に振り替えるだけで、転換時に損益は発生しません。'
   },
 
 ];
