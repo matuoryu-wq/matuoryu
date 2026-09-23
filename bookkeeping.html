@@ -7527,6 +7527,43 @@ const ALL = [
     e:[{d:[['繰越利益剰余金',66000],['その他資本剰余金',33000]], c:[['未払配当金',90000],['利益準備金',6000],['資本準備金',3000]]}],
     exp:'繰越利益剰余金を財源とした場合は「利益準備金」を、その他資本剰余金を財源とした場合は「資本準備金」を、それぞれの財源の1/10だけ積み立てます。利益準備金：60,000×1/10＝6,000円（繰越利益剰余金からは60,000＋6,000＝66,000円が減少）。資本準備金：30,000×1/10＝3,000円（その他資本剰余金からは30,000＋3,000＝33,000円が減少）。'
   },
+  // ===== 総合問題（本支店合併財務諸表・連結精算表） =====
+  { id:686, level:3, cat:'本支店会計', chap:'本支店・連結・個人事業主',
+    q:'本店・支店の個別損益計算書（決算整理後）は次の通り。本店は支店へ商品を原価に25％の利益を加算して送付している。合併損益計算書を作成しなさい。\n【本店】外部売上高：800,000円　支店へ売上：250,000円　期首商品（外部仕入原価分）：70,000円　当期仕入（外部）：600,000円　期末商品（外部仕入原価分）：90,000円　給料：150,000円\n【支店】外部売上高：500,000円　期首商品（本店より仕入・前期内部利益は考慮しない）：20,000円　本店より仕入：250,000円　期末商品（本店より仕入・送付価格ベース）：50,000円　給料：80,000円\n① 合併売上高（円）② 合併売上原価（円）③ 合併売上総利益（円）④ 合併当期純利益（円）',
+    en_q:'HQ and branch individual (post-adjustment) income statements are as follows. HQ ships goods to the branch marked up 25% over cost. Prepare the combined income statement.\n[HQ] External sales ¥800,000; Sales to branch ¥250,000; opening inventory (external cost) ¥70,000; purchases (external) ¥600,000; closing inventory (external cost) ¥90,000; salaries ¥150,000.\n[Branch] External sales ¥500,000; opening inventory (from HQ, ignore prior-year unrealized profit) ¥20,000; purchases from HQ ¥250,000; closing inventory (from HQ, at transfer price) ¥50,000; salaries ¥80,000.\nFind: ①combined sales ②combined COGS ③combined gross profit ④combined net income.',
+    ans_html: `<div class="tbl-sec">合併損益計算書　単位：円</div><table><tbody><tr><td>Ⅰ　売上高</td><td></td><td class="hl">1,300,000</td></tr><tr><td>Ⅱ　売上原価</td><td></td><td></td></tr><tr><td>　期首商品棚卸高</td><td>90,000</td><td></td></tr><tr><td>　当期商品仕入高</td><td>600,000</td><td></td></tr><tr><td>　合計</td><td>690,000</td><td></td></tr><tr><td>　期末商品棚卸高</td><td>△130,000</td><td></td></tr><tr><td>　売上原価　計</td><td></td><td class="hl">560,000</td></tr><tr class="total-row"><td class="hl">売上総利益</td><td></td><td class="hl">740,000</td></tr><tr><td>Ⅲ　販売費及び一般管理費（給料）</td><td></td><td>230,000</td></tr><tr class="total-row"><td class="hl">当期純利益</td><td></td><td class="hl">510,000</td></tr></tbody></table><div class="formula-box">内部売上高（本店→支店）250,000円と内部仕入高（支店の本店より仕入）250,000円は相殺消去。期首商品：70,000＋20,000＝90,000円。期末商品：（90,000＋50,000）－内部利益10,000（＝送付価格50,000×利益率25/125）＝130,000円。</div>`,
+    exp:'本支店合併財務諸表は「本店と支店を1つの会社として見た場合の財務諸表」です。①内部取引（本店の「支店へ売上」と支店の「本店より仕入」）は会社内部の付け替えに過ぎないため相殺消去します。②期末商品のうち本店から仕入れた分に含まれる「まだ外部に売っていない内部利益」は、合併上の利益から除きます。内部利益率：25％の値入れ＝送付価格の25/125＝20％。支店期末商品50,000×20％＝10,000円が内部利益。',
+    steps:[
+      {label:'①合併売上高', ans:1300000, unit:'円', choices:[1300000,1550000,1300250,1050000]},
+      {label:'②合併売上原価', ans:560000, unit:'円', choices:[560000,570000,550000,600000]},
+      {label:'③合併売上総利益', ans:740000, unit:'円', choices:[740000,730000,750000,700000]},
+      {label:'④合併当期純利益', ans:510000, unit:'円', choices:[510000,500000,520000,490000]}
+    ]
+  },
+  { id:687, level:3, cat:'本支店会計', chap:'本支店・連結・個人事業主',
+    q:'本店・支店の個別貸借対照表（決算整理後）は次の通り。本店の「支店」勘定と支店の「本店」勘定は相殺消去し、期末商品に含まれる内部利益10,000円（前問と同じ内部利益）を控除して合併貸借対照表を作成しなさい。\n【本店】現金：200,000円　売掛金：150,000円　繰越商品：90,000円　支店：300,000円　買掛金：120,000円　資本金：500,000円　繰越利益剰余金：120,000円\n【支店】現金：100,000円　売掛金：150,000円　繰越商品：50,000円（送付価格ベース、内部利益10,000円を含む）　本店：300,000円\n① 合併後の現金（円）② 合併後の繰越商品（円）③ 合併後の繰越利益剰余金（円）④ 資産合計（円）',
+    en_q:'HQ and branch individual (post-adjustment) balance sheets are as follows. Eliminate HQ\'s "Branch" account against the branch\'s "HQ" account, and remove the ¥10,000 unrealized (internal) profit included in closing inventory (same as the prior problem), then prepare the combined balance sheet.\n[HQ] Cash ¥200,000; Receivables ¥150,000; Inventory ¥90,000; Branch account ¥300,000; Payables ¥120,000; Capital ¥500,000; Retained earnings ¥120,000.\n[Branch] Cash ¥100,000; Receivables ¥150,000; Inventory ¥50,000 (at transfer price, includes ¥10,000 unrealized profit); HQ account ¥300,000.\nFind: ①combined cash ②combined inventory ③combined retained earnings ④total assets.',
+    ans_html: `<div class="tbl-sec">合併貸借対照表　単位：円</div><table><thead><tr><th colspan="2">資産の部</th><th colspan="2">負債・純資産の部</th></tr></thead><tbody><tr><td>現金</td><td class="hl">300,000</td><td>買掛金</td><td>120,000</td></tr><tr><td>売掛金</td><td>300,000</td><td>負債合計</td><td>120,000</td></tr><tr><td class="hl">繰越商品</td><td class="hl">130,000</td><td>資本金</td><td>500,000</td></tr><tr><td></td><td></td><td class="hl">繰越利益剰余金</td><td class="hl">110,000</td></tr><tr><td></td><td></td><td>純資産合計</td><td>610,000</td></tr><tr class="total-row"><td class="hl">資産合計</td><td class="hl">730,000</td><td>負債・純資産合計</td><td class="hl">730,000</td></tr></tbody></table><div class="formula-box">現金：200,000＋100,000＝300,000。売掛金：150,000＋150,000＝300,000。繰越商品：（90,000＋50,000）－内部利益10,000＝130,000。繰越利益剰余金：120,000－内部利益10,000＝110,000。本店の「支店」300,000と支店の「本店」300,000は相殺してゼロに（表には出てこない）。</div>`,
+    exp:'本支店合併貸借対照表を作るときの２つのポイント：①本店の「支店」勘定（資産）と支店の「本店」勘定（負債）は、会社内部の貸し借りに過ぎないので相殺消去してゼロにします。②期末商品に含まれる内部利益は、まだグループ外に実現していない利益なので、商品の評価額からも、繰越利益剰余金からも同額を控除します。損益計算書側の内部利益控除と貸借対照表側の内部利益控除は必ず連動します。',
+    steps:[
+      {label:'①合併後の現金', ans:300000, unit:'円', choices:[300000,200000,100000,500000]},
+      {label:'②合併後の繰越商品', ans:130000, unit:'円', choices:[130000,140000,120000,150000]},
+      {label:'③合併後の繰越利益剰余金', ans:110000, unit:'円', choices:[110000,120000,100000,130000]},
+      {label:'④資産合計', ans:730000, unit:'円', choices:[730000,1030000,740000,720000]}
+    ]
+  },
+  { id:688, level:3, cat:'連結会計', chap:'本支店・連結・個人事業主',
+    q:'P社（親会社）はS社（子会社）の発行済株式の80％を400,000円で取得し支配を獲得した。支配獲得時の個別貸借対照表は次の通り。連結精算表を作成し、連結貸借対照表の各金額を求めなさい。\n【P社】現金：300,000円　S社株式：400,000円　その他資産：800,000円　買掛金：300,000円　資本金：700,000円　利益剰余金：500,000円\n【S社】現金：50,000円　その他資産：450,000円　買掛金：100,000円　資本金：300,000円　利益剰余金：100,000円\n① のれん（円）② 非支配株主持分（円）③ 連結貸借対照表の資産合計（円）④ 連結貸借対照表の利益剰余金（円）',
+    en_q:'Parent P acquired 80% of subsidiary S for ¥400,000, gaining control. Individual balance sheets at acquisition are as follows. Prepare the consolidation worksheet and find the consolidated balance sheet amounts.\n[P] Cash ¥300,000; S shares ¥400,000; Other assets ¥800,000; Payables ¥300,000; Capital ¥700,000; Retained earnings ¥500,000.\n[S] Cash ¥50,000; Other assets ¥450,000; Payables ¥100,000; Capital ¥300,000; Retained earnings ¥100,000.\nFind: ①goodwill ②non-controlling interests ③consolidated total assets ④consolidated retained earnings.',
+    ans_html: `<div class="tbl-sec">連結精算表（抜粋）　単位：円</div><table><thead><tr><th>科目</th><th>P社</th><th>S社</th><th>合算</th><th>連結修正</th><th>連結B/S</th></tr></thead><tbody><tr><td>現金</td><td>300,000</td><td>50,000</td><td>350,000</td><td></td><td>350,000</td></tr><tr><td>S社株式</td><td>400,000</td><td>－</td><td>400,000</td><td class="hl">△400,000</td><td>0</td></tr><tr><td>その他資産</td><td>800,000</td><td>450,000</td><td>1,250,000</td><td></td><td>1,250,000</td></tr><tr><td class="hl">のれん</td><td>－</td><td>－</td><td>0</td><td class="hl">＋80,000</td><td class="hl">80,000</td></tr><tr class="total-row"><td>資産合計</td><td>1,500,000</td><td>500,000</td><td>2,000,000</td><td>△320,000</td><td class="hl">1,680,000</td></tr><tr><td>買掛金</td><td>300,000</td><td>100,000</td><td>400,000</td><td></td><td>400,000</td></tr><tr><td>資本金</td><td>700,000</td><td>300,000</td><td>1,000,000</td><td class="hl">△300,000</td><td>700,000</td></tr><tr><td>利益剰余金</td><td>500,000</td><td>100,000</td><td>600,000</td><td class="hl">△100,000</td><td class="hl">500,000</td></tr><tr><td class="hl">非支配株主持分</td><td>－</td><td>－</td><td>0</td><td class="hl">＋80,000</td><td class="hl">80,000</td></tr><tr class="total-row"><td>負債・純資産合計</td><td>1,500,000</td><td>500,000</td><td>2,000,000</td><td>△320,000</td><td class="hl">1,680,000</td></tr></tbody></table><div class="formula-box">S社純資産＝資本金300,000＋利益剰余金100,000＝400,000。親会社持分（80％）＝320,000。非支配株主持分（20％）＝80,000。のれん＝S社株式400,000－親会社持分320,000＝80,000。資本連結仕訳：(借)資本金300,000／利益剰余金100,000／のれん80,000　(貸)S社株式400,000／非支配株主持分80,000</div>`,
+    exp:'連結精算表は、親会社と子会社の個別財務諸表を単純合算し、そこから「投資と資本の相殺消去」を行って作成します。①子会社の純資産（資本金＋利益剰余金）のうち親会社の持分（80％）は「S社株式」と相殺消去。②子会社純資産のうち非支配株主の持分（20％）は「非支配株主持分」（純資産）に振り替え。③親会社の投資額（400,000）が親会社持分（320,000）を上回る差額（80,000）は「のれん」（資産）として計上します。子会社の資本金・利益剰余金は連結B/Sには一切残らない点がポイントです。',
+    steps:[
+      {label:'①のれん', ans:80000, unit:'円', choices:[80000,100000,60000,120000]},
+      {label:'②非支配株主持分', ans:80000, unit:'円', choices:[80000,100000,60000,64000]},
+      {label:'③連結貸借対照表の資産合計', ans:1680000, unit:'円', choices:[1680000,2000000,1600000,1720000]},
+      {label:'④連結貸借対照表の利益剰余金', ans:500000, unit:'円', choices:[500000,600000,400000,480000]}
+    ]
+  },
   // ===== 有価証券の補充 =====
   { id:620, level:2, cat:'有価証券', chap:'第5章：有価証券',
     q:'その他有価証券（株式）：取得原価500,000円、決算時時価550,000円（税率30%）。洗替法で評価替えの仕訳をしなさい。',
