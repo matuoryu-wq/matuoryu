@@ -564,6 +564,7 @@
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：リース会計（応用）" title="1級：リース会計（応用）" onclick="setSection('chap:1級：リース会計（応用）')">🎓1級：リース（応用）</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：会計方針の変更・誤謬の訂正" title="1級：会計方針の変更・誤謬の訂正" onclick="setSection('chap:1級：会計方針の変更・誤謬の訂正')">🎓1級：会計方針・誤謬</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：標準原価計算（差異分析）" title="1級：標準原価計算（差異分析）" onclick="setSection('chap:1級：標準原価計算（差異分析）')">🎓1級：標準原価差異</button>
+      <button class="ctrl-btn grp-btn" data-sec="chap:1級：ABC・本社工場会計" title="1級：活動基準原価計算・本社工場会計" onclick="setSection('chap:1級：ABC・本社工場会計')">🎓1級：ABC・本社工場</button>
     </div>
   </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
@@ -6685,6 +6686,32 @@ const ALL = [
     en_q:"Company X uses standard costing. This month's cost variance (¥15,000 favorable) was small, so it is charged entirely to cost of goods sold. Record the entry (a favorable variance reduces cost of goods sold).",
     e:[{d:[['原価差異',15000]], c:[['売上原価',15000]]}],
     exp:'原価差異が少額の場合は、簡便的に全額をその月の売上原価に賦課します。有利差異（実際原価が標準原価より少なくて済んだ）の場合は、売上原価を減額する方向で処理します。「儲けが出た分だけ、売上原価が少なくて済んだ」というイメージです。'
+  },
+
+  // ===== 1級：活動基準原価計算（ABC）・本社工場会計 =====
+  { id:796, level:3, cat:'ABC', chap:'1級：ABC・本社工場会計',
+    q:'Ｘ社は活動基準原価計算（ABC）を採用しており、段取活動にかかる製造間接費240,000円を、段取回数（合計80回）を配賦基準として、活動基準配賦率＠3,000円で各製品に配賦する。製品Ａに40回・製品Ｂに40回の段取りが行われた場合、製造間接費を仕掛品へ配賦する仕訳を示しなさい。',
+    en_q:'Company X uses activity-based costing (ABC). ¥240,000 of overhead from the setup activity is allocated using the number of setups (80 total) as the cost driver, at an activity rate of ¥3,000 per setup. Products A and B each required 40 setups. Record the entry allocating overhead to work-in-process.',
+    e:[{d:[['仕掛品',240000]], c:[['製造間接費',240000]]}],
+    exp:'活動基準原価計算（ABC）は、製造間接費を「生産量」ではなく「活動（段取り・検査・発注など）の発生回数」を基準に配賦する方法です。段取活動にかかる費用240,000円を、段取り回数合計80回で割ると、活動基準配賦率＠3,000円／回。製品Ａ・Ｂともに40回ずつ段取りが行われたため、それぞれ120,000円（40回×3,000円）が配賦されます。従来の「直接作業時間」などの単一基準による配賦よりも、実際に原価を発生させている活動の実態に即して配賦できる点がABCの利点です。'
+  },
+  { id:797, level:3, cat:'ABC', chap:'1級：ABC・本社工場会計',
+    q:'Ｘ社は検査活動にかかる製造間接費150,000円を、検査時間（合計500時間）を配賦基準として活動基準配賦率＠300円で配賦している。製品Ｃに200時間の検査が行われた場合、製品Ｃへ配賦される製造間接費を仕掛品へ計上する仕訳を示しなさい。',
+    en_q:'Company X allocates ¥150,000 of overhead from the inspection activity using inspection hours (500 total) as the cost driver, at an activity rate of ¥300 per hour. Product C required 200 inspection hours. Record the entry allocating the overhead assigned to Product C to work-in-process.',
+    e:[{d:[['仕掛品',60000]], c:[['製造間接費',60000]]}],
+    exp:'検査活動という別のコストプールについても同様に、活動の発生量（検査時間）を基準に配賦率を計算します。150,000円÷500時間＝＠300円／時間。製品Ｃに200時間の検査が行われたため、60,000円（200時間×300円）が製品Ｃに配賦されます。ABCでは、このように活動（コストドライバー）ごとに複数の配賦基準を使い分けるのが特徴です。'
+  },
+  { id:798, level:3, cat:'本社工場会計', chap:'1級：ABC・本社工場会計',
+    q:'Ｘ社は本社会計と工場会計を独立させている（本社工場会計）。本社は工場のために材料500,000円を購入し、現金で支払い、そのまま工場へ送付した。①本社側②工場側の仕訳をそれぞれ示しなさい。',
+    en_q:"Company X keeps separate head-office and factory ledgers. The head office purchased ¥500,000 of materials for the factory, paying cash, and shipped them directly to the factory. Record the entries on (1) the head office's books and (2) the factory's books.",
+    e:[{d:[['工場',500000]], c:[['現金',500000]]}, {d:[['材料',500000]], c:[['本社',500000]]}],
+    exp:'本社工場会計では、本社と工場がそれぞれ独立した帳簿を持ちます。本社と工場の間の取引は、通常の外部取引と同じように仕訳しますが、相手科目には「工場」「本社」という内部取引専用の勘定（照合勘定）を使います。①本社側：材料代金を立替払いし、工場に送付したので「工場」勘定（本社から見た工場への債権のようなもの）を借方に、現金を貸方に計上。②工場側：材料を受け入れたので「材料」を借方に、本社からの送付分として「本社」勘定（工場から見た本社への債務）を貸方に計上します。この2つの帳簿を合算すると、内部取引（工場・本社勘定）は相殺されて消えます。'
+  },
+  { id:799, level:3, cat:'本社工場会計', chap:'1級：ABC・本社工場会計',
+    q:'上記のＸ社において、工場で製品600,000円が完成し、ただちに本社倉庫へ発送した（工場では製品勘定を持たず、完成した製品はすべて本社が管理する）。①工場側②本社側の仕訳をそれぞれ示しなさい。',
+    en_q:"For Company X above, the factory completed ¥600,000 of finished goods and shipped them directly to the head office warehouse (the factory keeps no finished goods account; the head office manages all finished goods). Record the entries on (1) the factory's books and (2) the head office's books.",
+    e:[{d:[['本社',600000]], c:[['仕掛品',600000]]}, {d:[['製品',600000]], c:[['工場',600000]]}],
+    exp:'工場では、完成した製品を自ら保管せず、すぐに本社へ送付する場合があります。①工場側：仕掛品（製造中の原価）が完成し、本社に送ったので「本社」勘定を借方（本社への送付＝本社に対する債権的な意味合い）に、仕掛品を貸方に計上。②本社側：工場から製品を受け入れたので「製品」を借方に、「工場」勘定を貸方に計上します。本社工場会計では、このように工場側の帳簿には「製品」勘定が登場しないケースも典型的な出題パターンです。'
   },
 
 ];
