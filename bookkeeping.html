@@ -555,16 +555,13 @@
       <button class="ctrl-btn grp-btn" data-sec="chap:決算整理" title="決算整理" onclick="setSection('chap:決算整理')">決算整理</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:本支店・連結・個人事業主" title="本支店・連結・個人事業主" onclick="setSection('chap:本支店・連結・個人事業主')">本支店・連結等</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:工業簿記" title="工業簿記" onclick="setSection('chap:工業簿記')">工業簿記</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:1級：連結会計" title="1級：連結会計" onclick="setSection('chap:1級：連結会計')">🎓1級：連結会計</button>
+      <button class="ctrl-btn grp-btn" data-sec="chap:1級：連結会計" title="1級：連結会計（外貨換算を含む）" onclick="setSection('chap:1級：連結会計')">🎓1級：連結会計</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：企業結合・事業分離" title="1級：企業結合・事業分離" onclick="setSection('chap:1級：企業結合・事業分離')">🎓1級：企業結合</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：金融商品" title="1級：金融商品（デリバティブ・ヘッジ会計）" onclick="setSection('chap:1級：金融商品')">🎓1級：金融商品</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:1級：外貨換算会計" title="1級：外貨換算会計" onclick="setSection('chap:1級：外貨換算会計')">🎓1級：外貨換算</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：退職給付会計" title="1級：退職給付会計" onclick="setSection('chap:1級：退職給付会計')">🎓1級：退職給付</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:1級：減損会計（応用）" title="1級：減損会計（応用）" onclick="setSection('chap:1級：減損会計（応用）')">🎓1級：減損（応用）</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:1級：リース会計（応用）" title="1級：リース会計（応用）" onclick="setSection('chap:1級：リース会計（応用）')">🎓1級：リース（応用）</button>
+      <button class="ctrl-btn grp-btn" data-sec="chap:1級：固定資産の応用（減損・リース）" title="1級：固定資産の応用（減損・リース）" onclick="setSection('chap:1級：固定資産の応用（減損・リース）')">🎓1級：減損・リース</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：会計方針の変更・誤謬の訂正" title="1級：会計方針の変更・誤謬の訂正" onclick="setSection('chap:1級：会計方針の変更・誤謬の訂正')">🎓1級：会計方針・誤謬</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:1級：標準原価計算（差異分析）" title="1級：標準原価計算（差異分析）" onclick="setSection('chap:1級：標準原価計算（差異分析）')">🎓1級：標準原価差異</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:1級：ABC・本社工場会計" title="1級：活動基準原価計算・本社工場会計" onclick="setSection('chap:1級：ABC・本社工場会計')">🎓1級：ABC・本社工場</button>
+      <button class="ctrl-btn grp-btn" data-sec="chap:1級：原価計算（差異分析・ABC・本社工場）" title="1級：原価計算（差異分析・ABC・本社工場）" onclick="setSection('chap:1級：原価計算（差異分析・ABC・本社工場）')">🎓1級：原価計算応用</button>
     </div>
   </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
@@ -6467,49 +6464,49 @@ const ALL = [
   },
 
   // ===== 1級：外貨換算会計（在外子会社の換算） =====
-  { id:761, level:3, cat:'外貨換算', chap:'1級：外貨換算会計',
+  { id:761, level:3, cat:'外貨換算', chap:'1級：連結会計',
     q:'Ｐ社は在外子会社Ｓ社の株式80％を取得し支配を獲得した。取得対価は60,000ドルで、取得時のレートは1ドル＝100円であり、現金で支払った。個別財務諸表上の仕訳を示しなさい。',
     en_q:"Company P acquired an 80% stake in overseas subsidiary S, obtaining control, for $60,000 paid in cash at the transaction-date rate of ¥100/USD. Record the entry in P's separate financial statements.",
     e:[{d:[['S社株式',6000000]], c:[['現金',6000000]]}],
     exp:'在外子会社の株式を外貨で取得した場合も、通常の外貨建取引と同じく「取得時のレート（HR：Historical Rate）」で円換算します。60,000ドル×100円＝6,000,000円。この金額は、その後為替レートが変動しても動かしません（非貨幣性項目として取得時のレートで固定されます）。'
   },
-  { id:762, level:3, cat:'外貨換算', chap:'1級：外貨換算会計',
+  { id:762, level:3, cat:'外貨換算', chap:'1級：連結会計',
     q:'Ｐ社は在外子会社Ｓ社の支配獲得にあたり、外貨建てのれん40,000ドル（取得時レート1ドル＝100円、円換算額4,000,000円）を連結上計上した。決算時レートが1ドル＝110円になった場合、連結上ののれんを決算時レートで再換算し、差額を「為替換算調整勘定」として計上する仕訳を示しなさい。',
     en_q:"Company P recognized foreign-currency-denominated goodwill of $40,000 (¥4,000,000 at the ¥100/USD transaction-date rate) on consolidation. When the closing rate became ¥110/USD, record the entry retranslating the goodwill at the closing rate, with the difference recognized as a foreign currency translation adjustment.",
     e:[{d:[['のれん',400000]], c:[['為替換算調整勘定',400000]]}],
     exp:'連結上計上した外貨建てのれんは、外貨建ての「資産」として扱われるため、決算時レート（CR）で換算替えします。40,000ドル×取得時100円＝4,000,000円（計上時）→40,000ドル×決算時110円＝4,400,000円（換算後）。差額400,000円は、のれん自体の価値が変わったわけではなく為替相場の変動によるものなので、損益（のれん償却額など）にはせず、純資産の部の「為替換算調整勘定」に計上します。'
   },
-  { id:763, level:3, cat:'外貨換算', chap:'1級：外貨換算会計',
+  { id:763, level:3, cat:'外貨換算', chap:'1級：連結会計',
     q:'在外子会社Ｓ社（Ｐ社の持株比率80％）の財務諸表を換算した結果、連結上「為替換算調整勘定」（貸方）500,000円が生じた。このうち非支配株主持分相当額（20％）を按分する仕訳を示しなさい。',
     en_q:"Translating overseas subsidiary S's (80%-owned by P) financial statements produced a credit foreign currency translation adjustment of ¥500,000 on consolidation. Record the entry allocating the non-controlling interests' 20% share.",
     e:[{d:[['為替換算調整勘定',100000]], c:[['非支配株主持分',100000]]}],
     exp:'為替換算調整勘定は「在外子会社の純資産全体」に対して生じるものなので、親会社の持分だけでなく非支配株主の持分にも按分する必要があります。500,000円×非支配株主持分比率20％＝100,000円を、親会社持分の為替換算調整勘定から非支配株主持分に付け替えます（残り400,000円が親会社に帰属する為替換算調整勘定として連結貸借対照表に残ります）。'
   },
-  { id:764, level:3, cat:'外貨換算', chap:'1級：外貨換算会計',
+  { id:764, level:3, cat:'外貨換算', chap:'1級：連結会計',
     q:'Ｐ社は連結上計上した外貨建てのれん（取得時40,000ドル、取得時レート1ドル＝100円）を10年間で均等償却している。当期の償却額（4,000ドル）を、期中平均レート（AR）1ドル＝105円で換算した仕訳を示しなさい。',
     en_q:"Company P amortizes foreign-currency goodwill (acquired for $40,000 at ¥100/USD) recognized on consolidation over 10 years straight-line. Record this period's amortization of $4,000, translated at the average rate (AR) of ¥105/USD.",
     e:[{d:[['のれん償却額',420000]], c:[['のれん',420000]]}],
     exp:'のれんの「償却額」は費用（フロー項目）にあたるため、決算時レート（CR）ではなく「期中平均レート（AR）」で換算するのが原則です。4,000ドル×105円＝420,000円。一方、のれんという「資産」の残高そのものは決算時レートで換算するため（前問参照）、償却額の換算レートと残高の換算レートが異なる点が実務上のポイントです。'
   },
-  { id:765, level:3, cat:'外貨換算', chap:'1級：外貨換算会計',
+  { id:765, level:3, cat:'外貨換算', chap:'1級：連結会計',
     q:'在外子会社Ｓ社（Ｐ社の持株比率80％）の当期純利益は50,000ドルであった。連結上、期中平均レート（AR）1ドル＝103円で換算する。非支配株主に帰属する当期純利益（20％相当）を計上する仕訳を示しなさい。',
     en_q:"Overseas subsidiary S's (80%-owned by P) net income was $50,000. On consolidation this is translated at the average rate (AR) of ¥103/USD. Record the entry recognizing the 20% portion attributable to non-controlling interests.",
     e:[{d:[['非支配株主に帰属する当期純利益',1030000]], c:[['非支配株主持分',1030000]]}],
     exp:'損益計算書の項目（収益・費用・当期純利益）は、原則として「期中平均レート（AR）」で円換算します。50,000ドル×103円＝5,150,000円（円換算後の当期純利益）。このうち非支配株主の持分20％相当額1,030,000円を、非支配株主に帰属する当期純利益として振り替えます。'
   },
-  { id:766, level:3, cat:'外貨換算', chap:'1級：外貨換算会計',
+  { id:766, level:3, cat:'外貨換算', chap:'1級：連結会計',
     q:'Ｐ社は保有する在外子会社Ｓ社株式をすべて売却し、連結上計上されていた為替換算調整勘定300,000円（貸方残高、親会社帰属分）を、子会社株式売却損益に振り替えることとした。仕訳を示しなさい。',
     en_q:"Company P sold its entire stake in overseas subsidiary S. Record the entry reclassifying the ¥300,000 credit-balance foreign currency translation adjustment (the parent's attributable portion) recognized on consolidation into gain/loss on sale of subsidiary shares.",
     e:[{d:[['為替換算調整勘定',300000]], c:[['子会社株式売却益',300000]]}],
     exp:'「その他有価証券評価差額金」は売却しても損益に振り替えられませんが、「為替換算調整勘定」は在外子会社株式を売却（連結範囲から外れる）した時点で、これとは異なり「実現」したものとしてその期の損益に振り替えられます（リサイクリング）。これは1級試験でよく問われる重要な相違点です。'
   },
-  { id:767, level:2, cat:'外貨換算', chap:'1級：外貨換算会計',
+  { id:767, level:2, cat:'外貨換算', chap:'1級：連結会計',
     q:'在外子会社Ｓ社は、現地で機械装置を30,000ドルで購入し、現金で支払った。取得時のレートは1ドル＝105円であった。Ｓ社の現地帳簿（円換算後）における仕訳を示しなさい。',
     en_q:"Overseas subsidiary S purchased machinery locally for $30,000 cash. The transaction-date rate was ¥105/USD. Record the entry in S's local books, translated to yen.",
     e:[{d:[['機械装置',3150000]], c:[['現金',3150000]]}],
     exp:'固定資産のような非貨幣性項目は、取得時のレート（HR）で換算し、その後の決算時レートの変動があっても換算替えしません（取得原価のまま据え置きます）。30,000ドル×105円＝3,150,000円。この金額は、減価償却を通じて費用化される際も、取得時に確定したこの円換算額を基準に計算します。'
   },
-  { id:768, level:2, cat:'外貨換算', chap:'1級：外貨換算会計',
+  { id:768, level:2, cat:'外貨換算', chap:'1級：連結会計',
     q:'在外子会社Ｓ社は、当期に商品を80,000ドル分販売した（掛け）。連結上の損益計算書に反映させる際は、期中平均レート（AR）1ドル＝104円で換算する。この売上高を計上する仕訳を示しなさい。',
     en_q:"Overseas subsidiary S sold $80,000 of merchandise on credit during the period. For consolidation purposes this is translated at the average rate (AR) of ¥104/USD. Record the entry recognizing this sales revenue.",
     e:[{d:[['売掛金',8320000]], c:[['売上',8320000]]}],
@@ -6567,31 +6564,31 @@ const ALL = [
   },
 
   // ===== 1級：減損会計（応用） =====
-  { id:777, level:3, cat:'減損会計', chap:'1級：減損会計（応用）',
+  { id:777, level:3, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社は建物（帳簿価額800,000円）と機械装置（帳簿価額400,000円）を一体として使用しているため、これらをひとつの資産グループとして減損会計を適用している。資産グループ全体の回収可能価額は900,000円と算定され、減損損失の認識が必要と判定された。減損損失300,000円を帳簿価額の比率で建物・機械装置に配分する仕訳を示しなさい。',
     en_q:'Company X treats a building (book value ¥800,000) and machinery (book value ¥400,000) as a single asset group because they are used together. The group\'s recoverable amount was determined to be ¥900,000, requiring recognition of an impairment loss. Record the entry allocating the ¥300,000 impairment loss to the building and machinery in proportion to their book values.',
     e:[{d:[['減損損失',300000]], c:[['建物',200000],['機械装置',100000]]}],
     exp:'複数の資産が一体となってキャッシュ・フローを生み出している場合、個々の資産ごとではなく「資産グループ」全体で減損会計を適用します。グループ全体の帳簿価額1,200,000円（800,000＋400,000）－回収可能価額900,000円＝減損損失300,000円。この総額を、個々の資産の帳簿価額の比率で配分します。建物：300,000×(800,000／1,200,000)＝200,000円、機械装置：300,000×(400,000／1,200,000)＝100,000円。「グループ全体でいくら損したか」を先に計算し、それを構成資産に振り分ける、という2段階の処理がポイントです。'
   },
-  { id:778, level:3, cat:'減損会計', chap:'1級：減損会計（応用）',
+  { id:778, level:3, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社が買収した事業（資産グループ帳簿価額900,000円［内訳：建物600,000円・備品300,000円］、のれん帳簿価額300,000円、合計1,200,000円）について、のれんを含む、より大きな単位で減損損失600,000円を認識した。減損損失は原則としてのれんに優先的に配分するというルールに従い、まずのれんの帳簿価額300,000円全額を減損し、残額300,000円を資産グループの各資産の帳簿価額比で配分する場合の仕訳を示しなさい。',
     en_q:'On testing a larger unit that includes goodwill (goodwill book value ¥300,000; asset group book value ¥900,000, consisting of a building at ¥600,000 and equipment at ¥300,000; total ¥1,200,000), an impairment loss of ¥600,000 was recognized. Per the rule that impairment losses are first allocated to goodwill, the entire ¥300,000 goodwill balance is written off first, and the remaining ¥300,000 is allocated to the asset group\'s assets by book value. Record the entry.',
     e:[{d:[['減損損失',600000]], c:[['のれん',300000],['建物',200000],['備品',100000]]}],
     exp:'「のれんを含む、より大きな単位」で減損テストを行った結果、減損損失が生じた場合、原則としてまず「のれん」の帳簿価額を優先的に減損します（のれんは単独では収益を生まない資産なので、最初に切り捨てる扱いです）。のれん300,000円を全額減損した後、なお残る損失300,000円を、資産グループを構成する各資産（建物・備品）の帳簿価額比率で配分します。建物：300,000×(600,000／900,000)＝200,000円、備品：300,000×(300,000／900,000)＝100,000円。'
   },
-  { id:779, level:3, cat:'減損会計', chap:'1級：減損会計（応用）',
+  { id:779, level:3, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社の本社建物（共用資産、帳簿価額500,000円）を含めて、より大きな単位で減損テストを行った。この単位には資産グループＡ（機械装置、帳簿価額800,000円）と資産グループＢ（備品、帳簿価額700,000円）も含まれ、合計帳簿価額は2,000,000円である。より大きな単位全体の回収可能価額が1,500,000円と算定され、減損損失500,000円を認識した。この損失を帳簿価額の比率で機械装置・備品・建物（共用資産）に配分する仕訳を示しなさい。',
     en_q:"Company X tested a larger unit that includes its headquarters building (a shared asset, book value ¥500,000), together with asset group A (machinery, ¥800,000) and asset group B (equipment, ¥700,000) — total book value ¥2,000,000. The unit's recoverable amount was ¥1,500,000, recognizing an impairment loss of ¥500,000. Record the entry allocating this loss to machinery, equipment, and the building (shared asset) by book value.",
     e:[{d:[['減損損失',500000]], c:[['機械装置',200000],['備品',175000],['建物',125000]]}],
     exp:'本社建物のように、複数の資産グループに共通して使われ、単独ではキャッシュ・フローを生み出さない資産を「共用資産」と呼びます。共用資産の減損は、共用資産を含む「より大きな単位」全体で判定し、生じた減損損失を各構成資産（資産グループＡ・Ｂ・共用資産）の帳簿価額の比率で配分します。機械装置：500,000×(800,000／2,000,000)＝200,000円、備品：500,000×(700,000／2,000,000)＝175,000円、建物：500,000×(500,000／2,000,000)＝125,000円。「個別の資産グループでは減損の兆候がなくても、共用資産を含めた全体で見ると回収できない」というケースを扱う、1級特有の論点です。'
   },
-  { id:780, level:2, cat:'減損会計', chap:'1級：減損会計（応用）',
+  { id:780, level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社が保有する使用を休止している土地（遊休資産、帳簿価額1,000,000円）について、正味売却価額が700,000円であることが判明した。遊休資産は使用価値を見積れないため、正味売却価額を回収可能価額として減損損失を計上する。仕訳を示しなさい。',
     en_q:'Company X owns idle land (book value ¥1,000,000) that is not in use, and determined its net realizable value to be ¥700,000. Since value in use cannot be estimated for idle assets, the recoverable amount is based solely on net realizable value. Record the impairment loss entry.',
     e:[{d:[['減損損失',300000]], c:[['土地',300000]]}],
     exp:'稼働を停止している「遊休資産」は、将来キャッシュ・フローを生み出さない（使用価値を見積れない）ため、回収可能価額は正味売却価額（今売ったらいくらか）だけで判定します。帳簿価額1,000,000円－正味売却価額700,000円＝減損損失300,000円。通常の固定資産のように「使用価値と正味売却価額のいずれか高い方」を比較する必要がなく、シンプルに売却価値だけで判定する点が特徴です。'
   },
-  { id:781, level:2, cat:'減損会計', chap:'1級：減損会計（応用）',
+  { id:781, level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社は前期末に機械装置（取得原価1,000,000円、減損損失前の帳簿価額600,000円）について減損損失200,000円を計上した（減損後帳簿価額400,000円、残存耐用年数4年、残存価額ゼロ、定額法）。当期の減価償却費を計上する仕訳を示しなさい。',
     en_q:'At the end of last period, Company X recognized a ¥200,000 impairment loss on machinery (acquisition cost ¥1,000,000; pre-impairment book value ¥600,000), leaving a post-impairment book value of ¥400,000, with 4 years of remaining useful life and zero residual value, depreciated straight-line. Record this period\'s depreciation entry.',
     e:[{d:[['減価償却費',100000]], c:[['減価償却累計額',100000]]}],
@@ -6599,31 +6596,31 @@ const ALL = [
   },
 
   // ===== 1級：リース会計（応用） =====
-  { id:782, level:3, cat:'リース会計', chap:'1級：リース会計（応用）',
+  { id:782, level:3, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社は保有する機械装置（帳簿価額800,000円）をリース会社に1,000,000円で売却し、現金を受け取った。同時にこの機械装置をファイナンス・リースとしてリースバックする契約を締結した。セール・アンド・リースバック取引に該当するため、売却益は繰延べ処理する。売却時の仕訳を示しなさい。',
     en_q:'Company X sold machinery (book value ¥800,000) to a leasing company for ¥1,000,000 cash, and simultaneously leased it back under a finance lease. Because this qualifies as a sale-and-leaseback transaction, the sale gain is deferred. Record the entry at the time of sale.',
     e:[{d:[['現金',1000000]], c:[['機械装置',800000],['長期前受収益',200000]]}],
     exp:'セール・アンド・リースバックとは、自社が保有する資産をいったんリース会社に売却し、その資産を改めてリースで借り受ける（リースバックする）取引です。リースバックがファイナンス・リースに該当する場合、実質的には「その資産を担保にお金を借りた」のと変わらないとみなされ、売却益を通常の固定資産売却益のようにその場で計上せず、いったん「長期前受収益」（負債）として繰延べます。現金1,000,000円－機械装置の帳簿価額800,000円＝売却益相当額200,000円を長期前受収益として計上します。'
   },
-  { id:783, level:2, cat:'リース会計', chap:'1級：リース会計（応用）',
+  { id:783, level:2, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'上記のリースバック契約について、リース資産・リース債務を売却価額1,000,000円で計上する仕訳を示しなさい（利子込み法）。',
     en_q:'For the leaseback above, record the entry recognizing the leased asset and lease liability at the ¥1,000,000 sale price (interest-included method).',
     e:[{d:[['リース資産',1000000]], c:[['リース債務',1000000]]}],
     exp:'リースバックの開始時は、通常のファイナンス・リースと同様に「リース資産／リース債務」を計上します。セール・アンド・リースバックでは、この金額は売却価額（＝リース物件の見積現金購入価額とみなす）を用いるのが一般的です。'
   },
-  { id:784, level:3, cat:'リース会計', chap:'1級：リース会計（応用）',
+  { id:784, level:3, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'上記のリース資産（計上額1,000,000円、リース期間5年、残存価額ゼロ、定額法）について、1年分の減価償却費を計上するとともに、繰延べた長期前受収益200,000円を同じ耐用年数にわたって取り崩し、減価償却費から控除する。1年分の仕訳を示しなさい。',
     en_q:'For the leased asset above (¥1,000,000, 5-year lease term, zero residual value, straight-line), record one year of depreciation, and also amortize the ¥200,000 deferred gain over the same term, offsetting it against depreciation expense.',
     e:[{d:[['減価償却費',200000]], c:[['リース資産減価償却累計額',200000]]}, {d:[['長期前受収益',40000]], c:[['減価償却費',40000]]}],
     exp:'繰延べた売却益（長期前受収益）は、リース資産の減価償却費の計上に対応させて、同じ期間・比率で取り崩し、減価償却費と相殺します。減価償却費：1,000,000÷5年＝200,000円。長期前受収益の取崩額：200,000÷5年＝40,000円。結果として、損益計算書に表示される正味の減価償却費は200,000－40,000＝160,000円となります。「売却益を一気に利益にせず、資産を使う期間にわたって少しずつ、費用を軽減する形で認識していく」というのがセール・アンド・リースバックの本質です。'
   },
-  { id:785, level:3, cat:'リース会計', chap:'1級：リース会計（応用）',
+  { id:785, level:3, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社は所有権移転ファイナンス・リース（リース資産計上額1,200,000円、リース物件の経済的耐用年数8年、リース期間5年）を契約した。所有権移転ファイナンス・リースの場合、自己所有の固定資産と同様に経済的耐用年数で減価償却する。1年分の減価償却費を計上する仕訳を示しなさい（定額法・残存価額ゼロ）。',
     en_q:'Company X entered an ownership-transfer finance lease (leased asset ¥1,200,000; economic useful life of the property 8 years; lease term 5 years). Under an ownership-transfer finance lease, depreciation follows the economic useful life, as for owned fixed assets. Record one year of straight-line depreciation with zero residual value.',
     e:[{d:[['減価償却費',150000]], c:[['リース資産減価償却累計額',150000]]}],
     exp:'リース取引には「所有権移転ファイナンス・リース」（リース期間終了後に所有権が借手に移る）と「所有権移転外ファイナンス・リース」（リース期間終了後に返却する）の2種類があります。所有権移転ファイナンス・リースは、実質的に資産を買ったのと同じなので、自己所有の固定資産と同様に「経済的耐用年数」（8年）で減価償却します。1,200,000円÷8年＝150,000円。これに対し、所有権移転外ファイナンス・リースは返却が前提のため「リース期間」（5年など、通常は経済的耐用年数より短い）を耐用年数として償却します。この違いを区別できるかが1級で問われるポイントです。'
   },
-  { id:786, level:3, cat:'リース会計', chap:'1級：リース会計（応用）',
+  { id:786, level:3, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'ファイナンス・リース取引（利子抜き法、リース債務当初計上額1,000,000円、リース期間5年、年間リース料240,000円、利率年4%）について、1年目の利息は40,000円（1,000,000×4%）であった。2年目の利息費用を利息法で計算し、2年目のリース料支払いの仕訳を示しなさい。',
     en_q:'For a finance lease (interest-excluded method, initial lease liability ¥1,000,000, 5-year term, annual lease payment ¥240,000, interest rate 4% per year), first-year interest was ¥40,000 (¥1,000,000 × 4%). Using the effective interest method, compute the second year\'s interest expense and record the second year\'s lease payment entry.',
     e:[{d:[['リース債務',208000],['支払利息',32000]], c:[['現金',240000]]}],
@@ -6663,25 +6660,25 @@ const ALL = [
   },
 
   // ===== 1級：標準原価計算（差異分析・応用） =====
-  { id:792, level:3, cat:'標準原価計算', chap:'1級：標準原価計算（差異分析）',
+  { id:792, level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は製品を製造するにあたり、材料Ａ（標準単価＠200円）と材料Ｂ（標準単価＠100円）を標準配合比率7：3で投入している。当月、実際には材料Ａ750kg・材料Ｂ300kgを投入し（合計1,050kg）、標準配合比率で計算した実際投入量ベースの配合量は材料Ａ735kg・材料Ｂ315kgであった。配合差異を計算し、仕掛品から配合差異勘定へ振り替える仕訳を示しなさい（不利差異）。',
     en_q:'Company X combines material A (standard price ¥200/kg) and material B (standard price ¥100/kg) in a standard mix ratio of 7:3. This month it actually used 750kg of A and 300kg of B (total 1,050kg); at the standard mix ratio, the actual total input implies 735kg of A and 315kg of B. Compute the mix variance and record the entry transferring it from work-in-process to the mix variance account (unfavorable).',
     e:[{d:[['配合差異',1500]], c:[['仕掛品',1500]]}],
     exp:'配合差異とは、複数の材料を組み合わせて製品を作る場合に、実際の配合比率が標準の配合比率とズレたことによって生じる差異です。標準よりも単価の高い材料Ａを多く（735kg→750kg、15kg超過）、単価の低い材料Ｂを少なく（315kg→300kg、15kg減少）投入した結果、材料Ａ：200円×(735－750)＝△3,000円、材料Ｂ：100円×(315－300)＝＋1,500円、合計△1,500円（不利差異）が生じました。投入量の合計（1,050kg）は変わらなくても、「高い材料の比率を増やした」ことでコストが増加しています。'
   },
-  { id:793, level:3, cat:'標準原価計算', chap:'1級：標準原価計算（差異分析）',
+  { id:793, level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'上記のＸ社において、標準投入量は材料Ａ700kg・材料Ｂ300kg（標準配合比率での実際生産量に対する必要量）であった。歩留差異を計算し、仕掛品から歩留差異勘定へ振り替える仕訳を示しなさい（不利差異）。',
     en_q:'For Company X above, the standard input required for actual output (at the standard mix ratio) was 700kg of A and 300kg of B. Compute the yield variance and record the entry transferring it from work-in-process to the yield variance account (unfavorable).',
     e:[{d:[['歩留差異',8500]], c:[['仕掛品',8500]]}],
     exp:'歩留差異とは、材料の配合比率は標準どおりだったとしても、投入量の合計そのものが標準より多かった（＝歩留り＝原材料が製品に変わる効率が悪かった）ことによって生じる差異です。標準配合比率のまま計算した必要量合計1,000kg（700kg＋300kg）に対し、実際には1,050kg（配合比率どおりで735kg＋315kg）を投入したため、50kg分（歩留りの悪化分）が余分にコストとしてかかっています。材料Ａ：200円×(700－735)＝△7,000円、材料Ｂ：100円×(300－315)＝△1,500円、合計△8,500円（不利差異）。'
   },
-  { id:794, level:3, cat:'標準原価計算', chap:'1級：標準原価計算（差異分析）',
+  { id:794, level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は標準原価計算を採用しており、当月の原価差異（不利差異）100,000円が比較的多額であったため、期末の仕掛品・製品・売上原価の標準原価の比率（仕掛品20％・製品30％・売上原価50％）で配分することとした。原価差異を配分する仕訳を示しなさい。',
     en_q:'Company X uses standard costing. This month\'s cost variance (¥100,000 unfavorable) was relatively large, so it is allocated across ending work-in-process, finished goods, and cost of goods sold in proportion to their standard cost balances (WIP 20%, finished goods 30%, COGS 50%). Record the allocation entry.',
     e:[{d:[['仕掛品',20000],['製品',30000],['売上原価',50000]], c:[['原価差異',100000]]}],
     exp:'標準原価計算で生じた原価差異は、原則として当月の売上原価に賦課（すべて売上原価に加算）します。ただし、差異の金額が「比較的多額」である場合は、棚卸資産（期末仕掛品・期末製品）にもその発生原因が及んでいると考え、各在庫と売上原価の残高比率で配分します。100,000円×仕掛品20％＝20,000円、製品30％＝30,000円、売上原価50％＝50,000円。「差異が小さければ全部売上原価、大きければ在庫にも配分」という原価差異の会計処理の原則を扱う問題です。'
   },
-  { id:795, level:2, cat:'標準原価計算', chap:'1級：標準原価計算（差異分析）',
+  { id:795, level:2, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は標準原価計算を採用しており、当月の原価差異（有利差異）15,000円は少額であったため、全額を売上原価に賦課することとした。仕訳を示しなさい（有利差異のため売上原価を減額する）。',
     en_q:"Company X uses standard costing. This month's cost variance (¥15,000 favorable) was small, so it is charged entirely to cost of goods sold. Record the entry (a favorable variance reduces cost of goods sold).",
     e:[{d:[['原価差異',15000]], c:[['売上原価',15000]]}],
@@ -6689,25 +6686,25 @@ const ALL = [
   },
 
   // ===== 1級：活動基準原価計算（ABC）・本社工場会計 =====
-  { id:796, level:3, cat:'ABC', chap:'1級：ABC・本社工場会計',
+  { id:796, level:3, cat:'ABC', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は活動基準原価計算（ABC）を採用しており、段取活動にかかる製造間接費240,000円を、段取回数（合計80回）を配賦基準として、活動基準配賦率＠3,000円で各製品に配賦する。製品Ａに40回・製品Ｂに40回の段取りが行われた場合、製造間接費を仕掛品へ配賦する仕訳を示しなさい。',
     en_q:'Company X uses activity-based costing (ABC). ¥240,000 of overhead from the setup activity is allocated using the number of setups (80 total) as the cost driver, at an activity rate of ¥3,000 per setup. Products A and B each required 40 setups. Record the entry allocating overhead to work-in-process.',
     e:[{d:[['仕掛品',240000]], c:[['製造間接費',240000]]}],
     exp:'活動基準原価計算（ABC）は、製造間接費を「生産量」ではなく「活動（段取り・検査・発注など）の発生回数」を基準に配賦する方法です。段取活動にかかる費用240,000円を、段取り回数合計80回で割ると、活動基準配賦率＠3,000円／回。製品Ａ・Ｂともに40回ずつ段取りが行われたため、それぞれ120,000円（40回×3,000円）が配賦されます。従来の「直接作業時間」などの単一基準による配賦よりも、実際に原価を発生させている活動の実態に即して配賦できる点がABCの利点です。'
   },
-  { id:797, level:3, cat:'ABC', chap:'1級：ABC・本社工場会計',
+  { id:797, level:3, cat:'ABC', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は検査活動にかかる製造間接費150,000円を、検査時間（合計500時間）を配賦基準として活動基準配賦率＠300円で配賦している。製品Ｃに200時間の検査が行われた場合、製品Ｃへ配賦される製造間接費を仕掛品へ計上する仕訳を示しなさい。',
     en_q:'Company X allocates ¥150,000 of overhead from the inspection activity using inspection hours (500 total) as the cost driver, at an activity rate of ¥300 per hour. Product C required 200 inspection hours. Record the entry allocating the overhead assigned to Product C to work-in-process.',
     e:[{d:[['仕掛品',60000]], c:[['製造間接費',60000]]}],
     exp:'検査活動という別のコストプールについても同様に、活動の発生量（検査時間）を基準に配賦率を計算します。150,000円÷500時間＝＠300円／時間。製品Ｃに200時間の検査が行われたため、60,000円（200時間×300円）が製品Ｃに配賦されます。ABCでは、このように活動（コストドライバー）ごとに複数の配賦基準を使い分けるのが特徴です。'
   },
-  { id:798, level:3, cat:'本社工場会計', chap:'1級：ABC・本社工場会計',
+  { id:798, level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は本社会計と工場会計を独立させている（本社工場会計）。本社は工場のために材料500,000円を購入し、現金で支払い、そのまま工場へ送付した。①本社側②工場側の仕訳をそれぞれ示しなさい。',
     en_q:"Company X keeps separate head-office and factory ledgers. The head office purchased ¥500,000 of materials for the factory, paying cash, and shipped them directly to the factory. Record the entries on (1) the head office's books and (2) the factory's books.",
     e:[{d:[['工場',500000]], c:[['現金',500000]]}, {d:[['材料',500000]], c:[['本社',500000]]}],
     exp:'本社工場会計では、本社と工場がそれぞれ独立した帳簿を持ちます。本社と工場の間の取引は、通常の外部取引と同じように仕訳しますが、相手科目には「工場」「本社」という内部取引専用の勘定（照合勘定）を使います。①本社側：材料代金を立替払いし、工場に送付したので「工場」勘定（本社から見た工場への債権のようなもの）を借方に、現金を貸方に計上。②工場側：材料を受け入れたので「材料」を借方に、本社からの送付分として「本社」勘定（工場から見た本社への債務）を貸方に計上します。この2つの帳簿を合算すると、内部取引（工場・本社勘定）は相殺されて消えます。'
   },
-  { id:799, level:3, cat:'本社工場会計', chap:'1級：ABC・本社工場会計',
+  { id:799, level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'上記のＸ社において、工場で製品600,000円が完成し、ただちに本社倉庫へ発送した（工場では製品勘定を持たず、完成した製品はすべて本社が管理する）。①工場側②本社側の仕訳をそれぞれ示しなさい。',
     en_q:"For Company X above, the factory completed ¥600,000 of finished goods and shipped them directly to the head office warehouse (the factory keeps no finished goods account; the head office manages all finished goods). Record the entries on (1) the factory's books and (2) the head office's books.",
     e:[{d:[['本社',600000]], c:[['仕掛品',600000]]}, {d:[['製品',600000]], c:[['工場',600000]]}],
