@@ -227,6 +227,8 @@
     .tag.equity    { background: #FFF3E0; color: #E65100; border: 1.5px solid #FB8C00; }
     /* その他（評価勘定・損益等）：白 */
     .tag.other     { background: #fff; color: #333; border: 1.5px solid #9E9E9E; }
+    /* 資産のマイナス（減価償却累計額・貸倒引当金等）：白地に資産の黄枠 */
+    .tag.other.contra-asset { border: 1.5px solid #F9C400; }
 
     .note-box {
       margin-top: 6px;
@@ -782,7 +784,10 @@ const T = {
   '本社':'other','工場':'other','月次損益':'other',
 };
 
-function tagType(a){ return T[a] || 'other'; }
+const CONTRA_ASSET = new Set(['貸倒引当金','減価償却累計額','車両運搬具減価償却累計額','建物減価償却累計額',
+  '備品減価償却累計額','機械装置減価償却累計額','構築物減価償却累計額','工具器具備品減価償却累計額',
+  'リース資産減価償却累計額','繰延内部利益']);
+function tagType(a){ const base = T[a] || 'other'; return CONTRA_ASSET.has(a) ? base+' contra-asset' : base; }
 
 // ===== 勘定科目一覧データ [名前, 英語, 説明, 級] =====
 const ACCT_DATA = [
@@ -1792,7 +1797,7 @@ function buildApxContent(){
     return `<div class="apx-row" data-name="${name}" data-en="${en}" data-level="${lv}" data-type="${t}">
         <div class="apx-row-top">
           <span class="apx-en">${en}</span>
-          <span class="tag ${t}">(${name})</span>
+          <span class="tag ${tagType(name)}">(${name})</span>
           ${lv === 2 ? '<span class="apx-lv">2級</span>' : ''}
           <span class="apx-tts-btns">
             <button class="apx-tts-btn" onclick="apxSpeakRow(this,'ja')" title="日本語で読む">🔊 JP</button>
@@ -1837,7 +1842,7 @@ function buildApxContent(){
       return `<div class="apx-row" data-name="${name}" data-en="${en}">
         <div class="apx-row-top">
           <span class="apx-en">${en}</span>
-          <span class="tag ${type}">(${name})</span>
+          <span class="tag ${tagType(name)}">(${name})</span>
           <span class="apx-lv ind">工業</span>
           <span class="apx-tts-btns">
             <button class="apx-tts-btn" onclick="apxSpeakRow(this,'ja')" title="日本語で読む">🔊 JP</button>
@@ -7461,7 +7466,7 @@ function renderExpCard(){
   card.className='exp-swipe-card';
   const len=acc.name.length;
   const fs=len<=5?15:len<=7?13:len<=9?11:10;
-  card.innerHTML=`<span class="tag ${T[acc.name]||'other'}" style="font-size:${fs}px;white-space:nowrap;">${acc.name}</span>${acc.amt!=null?`<div style="font-size:12px;color:var(--muted);margin-top:5px;font-weight:600;">${acc.amt.toLocaleString()}円</div>`:''}`;
+  card.innerHTML=`<span class="tag ${tagType(acc.name)}" style="font-size:${fs}px;white-space:nowrap;">${acc.name}</span>${acc.amt!=null?`<div style="font-size:12px;color:var(--muted);margin-top:5px;font-weight:600;">${acc.amt.toLocaleString()}円</div>`:''}`;
   wrap.appendChild(card);
   initExpSwipe(card);
 }
@@ -7487,7 +7492,7 @@ function initExpSwipe(card){
 function updateExpZones(){
   ['d','c'].forEach(s=>{
     const el=document.getElementById('exp-p'+s);
-    if(el) el.innerHTML=expPlaced[s].map(a=>`<span class="tag ${T[a.name]||'other'}">${a.name}${a.amt!=null?`<span class="tag-amt"> ${a.amt.toLocaleString()}円</span>`:''}</span>`).join('');
+    if(el) el.innerHTML=expPlaced[s].map(a=>`<span class="tag ${tagType(a.name)}">${a.name}${a.amt!=null?`<span class="tag-amt"> ${a.amt.toLocaleString()}円</span>`:''}</span>`).join('');
   });
 }
 
@@ -7536,7 +7541,7 @@ function expCheckResult(){
   const entryAccounts=getExpEntryAccounts(q, expEntryIdx);
   const debit=entryAccounts.filter(a=>a.side==='d');
   const credit=entryAccounts.filter(a=>a.side==='c');
-  const tagHtml=arr=>arr.map(a=>`<span class="tag ${T[a.name]||'other'}">${a.name}${a.amt!=null?`<span class="tag-amt"> ${a.amt.toLocaleString()}円</span>`:''}</span>`).join('');
+  const tagHtml=arr=>arr.map(a=>`<span class="tag ${tagType(a.name)}">${a.name}${a.amt!=null?`<span class="tag-amt"> ${a.amt.toLocaleString()}円</span>`:''}</span>`).join('');
   const multiLabel=q.e.length>1?` (${expEntryIdx+1}／${q.e.length})`:'';
   const nextEntryBtn=isLastEntry?'':`<button class="exp-nav-btn exp-nav-next" style="width:100%;margin-top:10px;" onclick="expNextEntry()">次の仕訳へ →</button>`;
   res.className=`exp-result ${ok?'ok':'ng'}`;
