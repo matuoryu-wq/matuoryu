@@ -747,6 +747,8 @@ const T = {
   'オプション差損益':'other','為替予約':'asset','繰延ヘッジ損益':'equity','デリバティブ資産':'asset',
   '為替換算調整勘定':'equity','退職給付に係る調整累計額':'equity','長期前受収益':'liability',
   '配合差異':'other','歩留差異':'other','原価差異':'other',
+  '条件付取得対価':'liability','取得対価精算損':'expense','T社株式':'asset',
+  '抱合せ株式評価益':'revenue','顧客関連資産':'asset',
   // 2級追加（新規科目）
   '商品券':'liability','他店商品券':'asset','仕入割引':'revenue','定期預金':'asset',
   '役員貸付金':'asset','役員借入金':'liability','引出金（事業主貸）':'other','圧縮積立金':'equity',
@@ -6393,6 +6395,66 @@ const ALL = [
     en_q:'In connection with absorbing Company S, Company P paid ¥80,000 cash for share-issuance administrative costs (printing, brokerage fees, etc.). Record the entry recognizing this as share issuance costs.',
     e:[{d:[['株式交付費',80000]], c:[['現金',80000]]}],
     exp:'合併や増資で新しく株式を発行するときにかかる事務費用（印刷代・証券会社への手数料など）は「株式交付費」という勘定で処理します。似た名前の「取得関連費用」（弁護士・会計士への相談料）は必ずその場で費用にしますが、株式交付費は一定の要件のもとで資産計上して数年かけて償却することも認められています。「M&Aの相談料」と「株式発行の事務費用」は名前は似ていますが別物、と覚えておきましょう。'
+  },
+  { id:800, level:2, cat:'企業結合', chap:'1級：企業結合・事業分離',
+    q:'Ｐ社はＳ社を吸収合併するにあたり、デューデリジェンス費用（弁護士・公認会計士への報酬）50,000円を現金で支払った。取得関連費用の会計処理として、発生時に費用処理する仕訳を示しなさい。',
+    en_q:'In connection with absorbing Company S, Company P paid ¥50,000 cash for due diligence fees (legal and accounting advisory fees). Record the entry expensing these acquisition-related costs as incurred.',
+    e:[{d:[['支払手数料',50000]], c:[['現金',50000]]}],
+    exp:'企業結合にかかる取得関連費用（デューデリジェンス費用、アドバイザリー報酬など）は、取得原価（のれんの計算に含める金額）には含めず、発生した期の費用として処理します。「のれんは買収対象そのものの価値に対して払った超過額であり、手続きにかかった事務コストとは性質が違う」という考え方です。前問（株式交付費）とは異なる勘定科目（支払手数料）を使う点に注意しましょう。'
+  },
+  { id:801, level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
+    q:'Ｐ社はＳ社を吸収合併し、対価として現金600,000円に加え、Ｓ社の将来の業績目標達成を条件とする条件付取得対価（アーンアウト、公正価値50,000円）を計上した。引き継いだＳ社の資産・負債の時価は、諸資産900,000円・諸負債300,000円であった。合併時の仕訳を示しなさい。',
+    en_q:"Company P absorbed Company S, paying ¥600,000 cash plus recognizing a contingent consideration (earnout, fair value ¥50,000) payable if S meets future performance targets. Fair values taken over: assets ¥900,000, liabilities ¥300,000. Record the merger entry.",
+    e:[{d:[['諸資産',900000],['のれん',50000]], c:[['諸負債',300000],['現金',600000],['条件付取得対価',50000]]}],
+    exp:'条件付取得対価（アーンアウト条項）とは、「将来、業績目標を達成したら追加で対価を払う」という約束です。この将来の支払義務も、企業結合時点の公正価値（見積額）で負債として認識し、取得原価（のれんの計算のもと）に含めます。対価総額：現金600,000円＋条件付取得対価50,000円＝650,000円。引き継いだ純資産600,000円との差額50,000円がのれんです。'
+  },
+  { id:802, level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
+    q:'上記の条件付取得対価（当初の公正価値50,000円）について、測定期間内（企業結合日から1年以内）に新たな情報が判明し、公正価値の見積りを70,000円に修正した。差額20,000円をのれんの調整として処理する仕訳を示しなさい。',
+    en_q:'For the contingent consideration above (initial fair value ¥50,000), new information came to light within the measurement period (within one year of the acquisition date), revising the fair value estimate to ¥70,000. Record the entry treating the ¥20,000 difference as an adjustment to goodwill.',
+    e:[{d:[['のれん',20000]], c:[['条件付取得対価',20000]]}],
+    exp:'企業結合日時点で入手可能だった情報に基づく見積りの修正が「測定期間」（原則1年以内）中に生じた場合、その修正はのれんの金額を直接調整します（過去に遡って、企業結合時点の見積りが違っていたと考えるイメージ）。測定期間を過ぎてからの見積り変更は、のれんを調整せず、その期の損益として処理する点が対照的です（次問参照）。'
+  },
+  { id:803, level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
+    q:'上記の条件付取得対価（帳簿価額70,000円）について、測定期間経過後に業績目標の達成状況が確定し、実際の支払額が90,000円となった。差額20,000円を損益として処理する仕訳を示しなさい。',
+    en_q:'For the contingent consideration above (book value ¥70,000), after the measurement period ended, the actual performance outcome was determined and the amount payable became ¥90,000. Record the entry recognizing the ¥20,000 difference in profit or loss.',
+    e:[{d:[['条件付取得対価',70000],['取得対価精算損',20000]], c:[['未払金',90000]]}],
+    exp:'測定期間を過ぎてから条件付取得対価の金額が確定・変動した場合は、企業結合時点の見積りをさかのぼって修正するのではなく、確定した期の「損益」として処理します。負債（条件付取得対価）70,000円を取り崩し、実際に支払うことになった90,000円との差額20,000円を費用（取得対価精算損）として計上します。'
+  },
+  { id:804, level:2, cat:'企業結合', chap:'1級：企業結合・事業分離',
+    q:'Ｐ社は自社の一事業部門（帳簿価額：資産1,200,000円・負債500,000円）を新設分割により、新たに設立するＴ社へ移転した。Ｔ社の資本金は全額この移転による純資産額とする。Ｔ社（新設会社）側の仕訳を示しなさい。',
+    en_q:'Company P transferred one of its business segments (book value: assets ¥1,200,000, liabilities ¥500,000) to newly-established Company T via a newly-formed company split. T\'s Capital equals the full net assets transferred. Record the entry on T\'s (the newly-formed company\'s) books.',
+    e:[{d:[['諸資産',1200000]], c:[['諸負債',500000],['資本金',700000]]}],
+    exp:'新設分割は、既存の会社（吸収分割の場合のＳ社）ではなく、新しく設立する会社に事業を移転する会社分割の方法です。受け入れ側（新設されたＴ社）の処理は、吸収分割の承継会社の場合と基本的に同じで、引き継いだ資産・負債をそのまま計上し、対応する分を資本金として計上します。「既存の会社に事業を渡すか、新しい会社を作って渡すか」が吸収分割と新設分割の違いで、会計処理の基本パターンは共通です。'
+  },
+  { id:805, level:2, cat:'企業結合', chap:'1級：企業結合・事業分離',
+    q:'上記のＰ社（分割会社）は、新設分割によりＴ社株式700,000円を受け取った。Ｐ社側の仕訳を示しなさい。',
+    en_q:"For Company P (the splitting company) above, record the entry recognizing the ¥700,000 of T shares received as consideration for the newly-formed company split.",
+    e:[{d:[['諸負債',500000],['T社株式',700000]], c:[['諸資産',1200000]]}],
+    exp:'事業を渡す側（分割会社＝Ｐ社）は、移転した資産・負債を帳簿から取り除き、対価として受け取った新設会社の株式（Ｔ社株式）を投資として計上します。吸収分割の分割会社の処理と同じ考え方です。'
+  },
+  { id:806, level:2, cat:'企業結合', chap:'1級：企業結合・事業分離',
+    q:'Ｐ社は他社と共同で、新会社（共同支配企業）Ｊ社を設立するにあたり、現金300,000円を出資した。Ｐ社の持分比率は40％で、重要な影響力を有するに留まる（支配は獲得しない）。持分法を適用する場合のＰ社の仕訳を示しなさい。',
+    en_q:'Company P contributed ¥300,000 cash to jointly establish new company J (a jointly-controlled entity) with another company. P\'s ownership is 40%, giving it significant influence but not control. Record the entry under the equity method.',
+    e:[{d:[['関係会社株式',300000]], c:[['現金',300000]]}],
+    exp:'複数の会社が共同で支配する企業（共同支配企業、ジョイントベンチャー）は、単独では支配していないため、通常の子会社のように連結せず、「持分法」（投資の額を、相手の業績に応じて増減させる方法）を適用します。出資時点では、単純に出資額を「関係会社株式」として計上するだけで、通常の子会社株式取得や合併のような、のれんの計算は行いません（持分法ではのれん相当額は投資額に含まれたまま個別に区分しません）。'
+  },
+  { id:807, level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
+    q:'Ｐ社は、あらかじめ保有していたＳ社株式（帳簿価額200,000円）に加え、Ｓ社を吸収合併した。合併により交付した新株の時価は600,000円、引き継いだＳ社の資産（時価1,800,000円）・負債（時価1,050,000円）であった。①抱合せ株式の評価替え（帳簿価額200,000円→時価250,000円）②合併の仕訳（新株の時価600,000円＋評価後の抱合せ株式250,000円＝取得原価850,000円）をそれぞれ示しなさい。',
+    en_q:"Company P absorbed Company S, having already held S shares (book value ¥200,000) before the merger. The fair value of newly-issued shares was ¥600,000; S's assets (fair value ¥1,800,000) and liabilities (fair value ¥1,050,000) were taken over. Record ①the revaluation of the pre-existing (\"tote-awase\") shares from book value ¥200,000 to fair value ¥250,000, and ②the merger entry (acquisition cost = new shares ¥600,000 + revalued pre-existing shares ¥250,000 = ¥850,000).",
+    e:[{d:[['S社株式',50000]], c:[['抱合せ株式評価益',50000]]}, {d:[['諸資産',1800000],['のれん',100000]], c:[['諸負債',1050000],['資本金',600000],['S社株式',250000]]}],
+    exp:'「抱合せ株式」とは、合併する前からすでに保有していた、合併される側（Ｓ社）の株式のことです。合併にあたっては、①まずこの抱合せ株式を合併時点の時価（250,000円）に評価替えし、帳簿価額との差額（50,000円）を「抱合せ株式評価益」として損益に計上します。②その上で、合併の取得原価は「新たに交付した株式の時価（600,000円）」＋「評価替え後の抱合せ株式（250,000円）」＝850,000円となります。これと引き継いだＳ社の時価純資産750,000円（1,800,000－1,050,000）との差額100,000円がのれんです。「もともと持っていた株式も、対価の一部として合併の取得原価に含める」という点が抱合せ株式の処理のポイントです。'
+  },
+  { id:808, level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
+    q:'Ｐ社はＳ社を吸収合併した。合併対価は現金1,000,000円。引き継いだＳ社の資産・負債の時価は、諸資産600,000円・諸負債200,000円に加え、新たに識別された顧客関連資産（無形資産）150,000円が認められた。合併の仕訳を示しなさい。',
+    en_q:"Company P absorbed Company S for ¥1,000,000 cash. Fair values taken over were: assets ¥600,000, liabilities ¥200,000, plus a newly identified customer-related intangible asset of ¥150,000. Record the merger entry.",
+    e:[{d:[['諸資産',600000],['顧客関連資産',150000],['のれん',450000]], c:[['諸負債',200000],['現金',1000000]]}],
+    exp:'企業結合では、対象会社の資産・負債を時価評価して引き継ぎますが、その際、対象会社の個別財務諸表には計上されていなかった無形資産（顧客関連資産・商標権・技術関連資産など）が新たに識別されることがあります（PPA：Purchase Price Allocation、取得原価の配分）。今回は「顧客関連資産」150,000円が新たに認識されました。のれんは、対価1,000,000円から、識別可能純資産（諸資産600,000＋顧客関連資産150,000－諸負債200,000＝550,000円）を差し引いた450,000円です。識別可能な無形資産をきちんと分離して計上するほど、のれん（正体不明の超過収益力）の金額は小さくなる、という関係を理解しておきましょう。'
+  },
+  { id:809, level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
+    q:'Ｐ社はすでにＳ社株式60％を保有していたが、残り40％の少数株主から株式交換によりＳ社を完全子会社化した。交付したＰ社株式の時価は400,000円であった。会社法の規定により、増加する払込資本のうち半額を資本金、残り半額を資本準備金とする場合のＰ社個別財務諸表上の仕訳を示しなさい。',
+    en_q:'Company P already held 60% of Company S, and acquired the remaining 40% from minority shareholders via a share exchange to make S a wholly-owned subsidiary. The fair value of P shares issued was ¥400,000. Under the Companies Act, half of the increase in paid-in capital is credited to Capital and half to Capital Surplus. Record the entry on P\'s individual financial statements.',
+    e:[{d:[['S社株式',400000]], c:[['資本金',200000],['資本準備金',200000]]}],
+    exp:'すでに子会社化している会社の残りの株式（非支配株主の持分）を株式交換で取得するケースです。個別財務諸表上は、通常の株式交換と同じく「Ｓ社株式」という投資を追加取得したものとして計上します。会社法上、新株発行の対価は全額を資本金にする必要はなく、その一部（最大半額）を「資本準備金」とすることができます。今回は半分ずつとする指示なので、400,000円を200,000円ずつ資本金と資本準備金に計上します。'
   },
 
   // ===== 1級：金融商品会計（デリバティブ・ヘッジ会計） =====
