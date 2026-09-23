@@ -562,6 +562,7 @@
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：退職給付会計" title="1級：退職給付会計" onclick="setSection('chap:1級：退職給付会計')">🎓1級：退職給付</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：減損会計（応用）" title="1級：減損会計（応用）" onclick="setSection('chap:1級：減損会計（応用）')">🎓1級：減損（応用）</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：リース会計（応用）" title="1級：リース会計（応用）" onclick="setSection('chap:1級：リース会計（応用）')">🎓1級：リース（応用）</button>
+      <button class="ctrl-btn grp-btn" data-sec="chap:1級：会計方針の変更・誤謬の訂正" title="1級：会計方針の変更・誤謬の訂正" onclick="setSection('chap:1級：会計方針の変更・誤謬の訂正')">🎓1級：会計方針・誤謬</button>
     </div>
   </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
@@ -6624,6 +6625,38 @@ const ALL = [
     en_q:'For a finance lease (interest-excluded method, initial lease liability ¥1,000,000, 5-year term, annual lease payment ¥240,000, interest rate 4% per year), first-year interest was ¥40,000 (¥1,000,000 × 4%). Using the effective interest method, compute the second year\'s interest expense and record the second year\'s lease payment entry.',
     e:[{d:[['リース債務',208000],['支払利息',32000]], c:[['現金',240000]]}],
     exp:'利子抜き法では、リース料の支払いを「元本返済」と「利息」に分けますが、利息法では毎期の期首リース債務残高に利率を掛けて利息を計算します（元本が減るにつれ、利息も減っていきます）。1年目：利息40,000円（1,000,000×4%）、元本返済200,000円→期末残高800,000円。2年目：利息32,000円（800,000×4%）、元本返済208,000円（240,000－32,000）。単純に毎年同額の利息を計上する「定額法」とは異なり、実際の借入金の返済と同じ考え方で利息が逓減していく点が特徴です。'
+  },
+
+  // ===== 1級：会計方針の変更・誤謬の訂正 =====
+  { id:787, level:3, cat:'会計方針の変更', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は棚卸資産の評価方法を先入先出法から総平均法に変更した。この変更を過去の財務諸表に遡って適用した結果、過去の期首商品棚卸高が総平均法によればより低い金額であったことが判明し、利益剰余金期首残高を150,000円減額修正する必要が生じた（税効果は考慮しない）。遡及適用による修正仕訳を示しなさい。',
+    en_q:'Company X changed its inventory valuation method from FIFO to the weighted-average method. Applying this change retrospectively revealed that opening inventory under the new method would have been ¥150,000 lower, requiring a ¥150,000 reduction to opening retained earnings, ignoring tax effects. Record the retrospective-application adjustment entry.',
+    e:[{d:[['利益剰余金期首残高',150000]], c:[['繰越商品',150000]]}],
+    exp:'「会計方針の変更」（棚卸資産の評価方法など）は、原則として新たな会計方針を過去の期間にも遡って適用したかのように会計処理します（遡及適用）。過去の損益はすでに確定しているため、当期の損益計算書を通さず、直接「利益剰余金期首残高」を修正します。変更後の方法（総平均法）で計算し直した結果、過去の商品棚卸高が150,000円少なかったことになるため、繰越商品（資産）を減額し、対応する分だけ利益剰余金期首残高を減額します。'
+  },
+  { id:788, level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は前期の決算において、経費80,000円の計上漏れ（未払費用の計上漏れ）があったことを当期に発見した。過去の誤謬の訂正として、修正再表示による仕訳を示しなさい（税効果は考慮しない）。',
+    en_q:'Company X discovered this period that it had failed to accrue ¥80,000 of expenses (an omitted accrued liability) in last period\'s financial statements. Record the retrospective restatement entry correcting this prior-period error, ignoring tax effects.',
+    e:[{d:[['利益剰余金期首残高',80000]], c:[['未払費用',80000]]}],
+    exp:'前期以前の財務諸表に誤り（誤謬）があったことが当期に判明した場合、その影響を当期の損益として計上するのではなく、「修正再表示」といって、あたかも誤りがなかったかのように過去の財務諸表を直接修正します。当期の損益計算書を通さず、直接「利益剰余金期首残高」を修正することで、過去の誤りを訂正します。未払費用（負債）の計上漏れだったため、利益剰余金期首残高を減額し、未払費用を追加計上します。'
+  },
+  { id:789, level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は前期に売上高を120,000円過大に計上していたことが当期に判明した（実際には売上が発生していなかった）。修正再表示による仕訳を示しなさい（税効果は考慮しない）。',
+    en_q:'Company X discovered this period that it had overstated sales revenue by ¥120,000 last period (the sale had not actually occurred). Record the retrospective restatement entry, ignoring tax effects.',
+    e:[{d:[['利益剰余金期首残高',120000]], c:[['売掛金',120000]]}],
+    exp:'前期に本来計上すべきでなかった売上高（売掛金）が誤って計上されていたケースです。誤りを発見した当期の売上高を減額するのではなく、過去の誤りとして「利益剰余金期首残高」を直接減額し、過大計上されていた売掛金を取り消します。誤謬の訂正は、発生した年度ではなく発見した年度の当期純利益に影響を与えない、という点がポイントです。'
+  },
+  { id:790, level:3, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社が保有する機械装置（取得原価1,000,000円、これまで耐用年数10年・定額法で償却、期首時点の帳簿価額600,000円）について、今後の使用見込みを再検討した結果、残存耐用年数を当初の残り6年から3年に変更した。過去の年度は修正せず、変更後の残存耐用年数で当期の減価償却費を計上する仕訳を示しなさい（残存価額ゼロ・定額法）。',
+    en_q:'Company X reassessed the useful life of its machinery (acquisition cost ¥1,000,000, previously depreciated straight-line over 10 years, opening book value ¥600,000) and revised the remaining useful life from 6 years to 3 years. Without restating prior periods, record this period\'s depreciation entry using the revised remaining life (zero residual value, straight-line).',
+    e:[{d:[['減価償却費',200000]], c:[['減価償却累計額',200000]]}],
+    exp:'「会計上の見積りの変更」（耐用年数の変更、引当金の見積り変更など）は、「会計方針の変更」とは異なり、過去に遡って財務諸表を修正しません（遡及処理をしません）。変更があった期以後の将来に向かって、新しい見積りに基づいて会計処理を行います（プロスペクティブ処理）。期首帳簿価額600,000円を、変更後の残存耐用年数3年で償却：600,000÷3年＝200,000円。「過去は正しかったが、これからの見積りを変えた」という整理なので、利益剰余金の修正は一切発生しない点が、会計方針の変更・誤謬の訂正との大きな違いです。'
+  },
+  { id:791, level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は前期に費用100,000円の計上漏れがあったことを当期に発見した。修正再表示にあたり、実効税率30％として税効果を考慮した仕訳を示しなさい。',
+    en_q:'Company X discovered this period that it had failed to record ¥100,000 of expenses last period. In restating the financials, applying tax-effect accounting at an effective tax rate of 30%, record the correcting entry.',
+    e:[{d:[['利益剰余金期首残高',70000],['繰延税金資産',30000]], c:[['未払費用',100000]]}],
+    exp:'修正再表示にも税効果会計を適用します。過去に計上漏れだった費用100,000円は、将来（税務上の扱いが確定した時点で）税金負担を軽減する効果を持つため、繰延税金資産30,000円（100,000×30％）を認識します。残り70,000円が税引後ベースでの利益剰余金期首残高の減額分です。誤謬の訂正であっても、通常の決算整理と同じように税効果会計のルールを適用する点を押さえておきましょう。'
   },
 
 ];
