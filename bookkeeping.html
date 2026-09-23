@@ -7382,6 +7382,48 @@ const ALL = [
     e:[{d:[['繰延税金資産',90000]], c:[['法人税等調整額',90000]]}, {d:[['繰延税金負債',45000]], c:[['法人税等調整額',45000]]}],
     exp:'①減損損失300,000円は将来税務上も損金算入→将来減算一時差異→繰延税金資産90,000円（300,000×30%）を計上。②減損により固定資産の将来加算一時差異が解消→繰延税金負債45,000円を取り崩し（法人税等調整額・費用計上）。減損は複合的な税効果を生じるため注意。'
   },
+  // ===== テキスト網羅：未収録論点の補充 =====
+  { id:663, level:2, cat:'商品', chap:'第1章：商品売買',
+    q:'総平均法：前月繰越80個（＠150円、計12,000円）、当月仕入120個（＠170円、計20,400円）、当月売上180個。総平均法による払出単価と当月売上原価を求めなさい。',
+    en_q:'Weighted-average (periodic) method: Opening inventory 80 units (@¥150, ¥12,000 total), purchases 120 units (@¥170, ¥20,400 total), sales 180 units. Calculate the average unit cost and cost of goods sold using the periodic weighted-average method.',
+    e:[],
+    a:'①総平均単価＝(12,000＋20,400)÷(80＋120)＝＠162円　②売上原価＝180個×＠162＝29,160円',
+    exp:'総平均法は「一定期間（通常1ヶ月）の受入総額を受入総数量で割って平均単価を求め、その単価を期間全体の払出に適用する」方法です。仕入れの都度単価を再計算する移動平均法と異なり、期間終了後に一括して単価を確定します。平均単価＝(期首金額＋当期仕入金額)÷(期首数量＋当期仕入数量)。',
+    steps:[
+      {label:'①総平均単価', ans:162, unit:'円', choices:[162,160,165,158]},
+      {label:'②当月売上原価', ans:29160, unit:'円', choices:[29160,28800,29400,28620]}
+    ]
+  },
+  { id:664, level:2, cat:'収益認識', chap:'収益認識・現金預金',
+    q:'当社は検収基準を採用している。決算日時点の状況は次の通り。①商品Ａ（240,000円）：出荷済みだが配送中で未着。②商品Ｂ（360,000円）：出荷済みで決算日に顧客から検収完了の連絡あり。③商品Ｃ（180,000円）：顧客のもとへ到着済みだが未検収。当期の売上として計上すべき仕訳を示しなさい。',
+    en_q:'The company uses the inspection-basis (customer acceptance) method for revenue recognition. At year end: ①Product A (¥240,000): shipped, still in transit. ②Product B (¥360,000): shipped and customer confirmed acceptance on the closing date. ③Product C (¥180,000): delivered to the customer but not yet inspected. Record the current-period sales entry.',
+    e:[{d:[['売掛金',360000]], c:[['売上',360000]]}],
+    exp:'検収基準では「顧客が検収（受入確認）を行った時点」で売上を認識します。商品Ａは未着、商品Ｃは到着済みだが未検収のため、いずれも当期売上にはなりません。検収済みの商品Ｂのみ360,000円を売上計上します。出荷基準（出荷時点で認識）・着荷基準（到着時点で認識）・検収基準（検収時点で認識）の違いに注意。'
+  },
+  { id:665, level:3, cat:'収益認識', chap:'収益認識・現金預金',
+    q:'X1年10月１日、商品（販売価格120,000円）と、２年間（24ヶ月）にわたって追加の保証サービスを提供する有償保証（販売価格24,000円）をセットで販売し、現金144,000円を受け取った。決算日（X2年３月31日、月割計算）に必要な決算整理仕訳を行いなさい。販売時・決算時の仕訳をそれぞれ示しなさい。',
+    en_q:'On Oct 1, X1, sold goods (selling price ¥120,000) bundled with a 2-year (24-month) extended warranty providing additional service (selling price ¥24,000), receiving ¥144,000 in cash. At year-end (Mar 31, X2, prorated monthly), record the entries at both the sale date and year-end.',
+    e:[{d:[['現金',144000]], c:[['売上',120000],['契約負債',24000]]}, {d:[['契約負債',6000]], c:[['売上',6000]]}],
+    exp:'商品の引渡しと保証サービスの提供は別個の履行義務です。①販売時：商品は引渡し時点が履行義務の充足時点のため売上120,000円を計上。保証サービスはまだ提供していないため「契約負債」（負債）24,000円を計上。②決算時：保証サービスは一定期間（24ヶ月）にわたって履行義務を充足するため、経過期間（10/1〜3/31＝６ヶ月）分だけ契約負債を取り崩し売上に振り替える。24,000×６ヶ月/24ヶ月＝6,000円。'
+  },
+  { id:666, level:3, cat:'有価証券', chap:'第5章：有価証券',
+    q:'額面50,000円（額面100円につき＠96円で取得）の売買目的社債を、利率年7.3％・利払日６月末と12月末の条件で、X1年９月29日（前回利払日から90日経過、１年365日で日割計算）に額面100円につき＠94円・端数利息を含めた現金で売却した。売却の仕訳をしなさい。',
+    en_q:'Sold a trading-purpose bond (face ¥50,000, acquired at ¥96 per ¥100 face) carrying a 7.3% annual coupon (paid June 30 and Dec 31) on Sep 29, X1 (90 days since the last coupon date; use a 365-day year). Sale price was ¥94 per ¥100 face, with cash received including accrued interest. Record the sale.',
+    e:[{d:[['現金',47900],['有価証券売却損',1000]], c:[['売買目的有価証券',48000],['有価証券利息',900]]}],
+    exp:'売却価額：額面50,000×＠94/100＝47,000円。取得原価：額面50,000×＠96/100＝48,000円。有価証券売却損：47,000－48,000＝△1,000円。端数利息：額面50,000×7.3%×90日/365日＝900円。公社債を利払日以外で売買する場合、買主は端数利息分を売主に支払います（売主は端数利息を受け取り、有価証券売却損益とは別に「有価証券利息」で処理）。'
+  },
+  { id:667, level:2, cat:'有価証券', chap:'第5章：有価証券',
+    q:'売買目的有価証券（取得原価200,000円）の期末時価は175,000円である。①洗替方式と②切放方式のそれぞれについて、当期末の決算整理仕訳と翌期首の仕訳を示しなさい。',
+    en_q:'Trading securities (acquisition cost ¥200,000) have a year-end market value of ¥175,000. Show the year-end adjusting entry and the following period\'s opening entry under (1) the reversal method and (2) the carry-forward method.',
+    e:[{d:[['有価証券評価損',25000]], c:[['売買目的有価証券',25000]]}, {d:[['売買目的有価証券',25000]], c:[['有価証券評価損',25000]]}],
+    exp:'①洗替方式：決算時に時価評価損25,000円（200,000－175,000）を計上し、翌期首に逆仕訳を行って帳簿価額を取得原価200,000円に戻します（上記仕訳がこれに該当）。②切放方式：決算時の仕訳は同じですが、翌期首は仕訳なし。帳簿価額は前期末時価175,000円のまま据え置かれます。売買目的有価証券は洗替・切放のどちらも選択できますが、その他有価証券は洗替方式のみが認められる点に注意。'
+  },
+  { id:668, level:3, cat:'外貨建', chap:'外貨建・伝票・給与',
+    q:'外国企業から商品2,000ドルを掛けで仕入れ、同時に買掛金全額について１ドル＝118円で為替予約を行った（取引発生時の直物為替相場は１ドル＝121円）。仕入時の仕訳をしなさい。また、この場合、決算時に為替差損益は計上されるか答えなさい。',
+    en_q:'Purchased goods for $2,000 on credit from a foreign supplier, simultaneously locking in a forward rate of ¥118/USD for the entire payable (the spot rate at the transaction date was ¥121/USD). Record the purchase entry, and state whether a foreign exchange gain/loss will be recognized at year-end.',
+    e:[{d:[['仕入',236000]], c:[['買掛金',236000]]}],
+    exp:'取引発生と同時に為替予約を行った場合、仕入・買掛金ともに為替予約レート（先物相場）で換算します（振当処理）。2,000ドル×予約レート118円＝236,000円。将来の決済レートが確定しているため、決算時に直物レートへの換算替えは行わず、為替差損益は生じません。取引発生後に為替予約を行った場合（為替予約時に換算替えを行い差損益が生じる）との違いに注意。'
+  },
   // ===== 有価証券の補充 =====
   { id:620, level:2, cat:'有価証券', chap:'第5章：有価証券',
     q:'その他有価証券（株式）：取得原価500,000円、決算時時価550,000円（税率30%）。洗替法で評価替えの仕訳をしなさい。',
