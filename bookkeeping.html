@@ -750,6 +750,7 @@ const T = {
   '条件付取得対価':'liability','取得対価精算損':'expense','T社株式':'asset',
   '抱合せ株式評価益':'revenue','顧客関連資産':'asset',
   'スワップ資産':'asset','子会社株式評価損':'expense','デリバティブ負債':'liability',
+  '退職給付制度終了益':'revenue',
   // 2級追加（新規科目）
   '商品券':'liability','他店商品券':'asset','仕入割引':'revenue','定期預金':'asset',
   '役員貸付金':'asset','役員借入金':'liability','引出金（事業主貸）':'other','圧縮積立金':'equity',
@@ -6678,6 +6679,78 @@ const ALL = [
     en_q:"Company X amortizes past service cost of ¥240,000 (from a benefit-level increase) that arose last period straight-line over an average remaining service period of 8 years. Record this period's amortization in the separate financial statements.",
     e:[{d:[['退職給付費用',30000]], c:[['退職給付引当金',30000]]}],
     exp:'過去勤務費用（退職金規程の改定などにより生じる退職給付債務の変動額）も、数理計算上の差異と同様に、個別財務諸表では発生時に全額を費用処理せず、平均残存勤務期間等の一定の年数で規則的に償却します。240,000円÷8年＝30,000円を当期の「退職給付費用」に追加します。'
+  },
+  { id:819, level:3, cat:'退職給付', chap:'1級：退職給付会計',
+    q:'Ｘ社の年金資産の実際運用収益が期待運用収益を60,000円上回り、数理計算上の差異（有利差異）60,000円が発生した。連結財務諸表上、この差異を即時に「退職給付に係る調整累計額」として認識する仕訳を示しなさい（税効果は考慮しない）。',
+    en_q:"Company X's actual return on plan assets exceeded the expected return by ¥60,000, generating a favorable actuarial difference of ¥60,000. On consolidation, record the entry immediately recognizing this difference in accumulated remeasurements of defined benefit plans, ignoring tax effects.",
+    e:[{d:[['退職給付引当金',60000]], c:[['退職給付に係る調整累計額',60000]]}],
+    exp:'運用が予想以上にうまくいった場合（実際運用収益＞期待運用収益）は、有利差異として、退職給付債務と年金資産の差額（＝会社の負担）を減らす方向に働きます。連結財務諸表上は即時に認識するため、「退職給付引当金」（負債）を減額し、相手科目として純資産の部「退職給付に係る調整累計額」を増額します。不利差異のケース（別問参照）とは、借方・貸方が逆になる点を確認しましょう。'
+  },
+  { id:820, level:3, cat:'退職給付', chap:'1級：退職給付会計',
+    q:'Ｘ社は退職金規程を改定し、退職給付水準を引き上げた。この結果、退職給付債務が350,000円増加した（過去勤務費用の発生、不利差異）。連結財務諸表上、この全額を即時に認識する仕訳を示しなさい（税効果は考慮しない）。',
+    en_q:'Company X amended its retirement benefit plan, raising benefit levels. This increased the retirement benefit obligation by ¥350,000 (an unfavorable past service cost). On consolidation, record the entry immediately recognizing this full amount, ignoring tax effects.',
+    e:[{d:[['退職給付に係る調整累計額',350000]], c:[['退職給付引当金',350000]]}],
+    exp:'退職給付水準の「引き上げ」による過去勤務費用は、退職給付債務を増やす方向（会社にとって不利）に働きます。連結財務諸表上は即時にＢ／Ｓへ反映するため、「退職給付引当金」（負債）を増額し、相手科目として純資産の部の「退職給付に係る調整累計額」を減額します。水準を引き下げた場合（別問参照）とは正反対の方向に動きます。'
+  },
+  { id:821, level:2, cat:'退職給付', chap:'1級：退職給付会計',
+    q:'Ｘ社の期首退職給付債務は3,000,000円であった。当期の勤務費用150,000円・利息費用60,000円が発生した場合の、退職給付債務の増加を認識する仕訳を示しなさい（退職給付引当金の増加として処理する）。',
+    en_q:"Company X's opening retirement benefit obligation was ¥3,000,000. This period, service cost of ¥150,000 and interest cost of ¥60,000 arose. Record the entry recognizing the increase in the retirement benefit obligation.",
+    e:[{d:[['退職給付費用',210000]], c:[['退職給付引当金',210000]]}],
+    exp:'退職給付債務は、期首残高に「勤務費用」（当期の労働により新たに発生した義務）と「利息費用」（割引計算により時の経過で増える現在価値相当額）を加えて増加していきます。150,000円＋60,000円＝210,000円が当期の増加分です。これは個別財務諸表上、「退職給付費用」（費用）と「退職給付引当金」（負債）の両方を増やす仕訳として処理されます。'
+  },
+  { id:822, level:2, cat:'退職給付', chap:'1級：退職給付会計',
+    q:'Ｘ社の年金資産について、期首残高2,000,000円に対し、期待運用収益40,000円が発生した。年金資産の増加（退職給付引当金の減少）を認識する仕訳を示しなさい。',
+    en_q:"Company X's plan assets had an opening balance of ¥2,000,000, and expected return on plan assets of ¥40,000 arose. Record the entry recognizing the increase in plan assets (a decrease in the retirement benefit obligation).",
+    e:[{d:[['退職給付引当金',40000]], c:[['退職給付費用',40000]]}],
+    exp:'年金資産は、外部の年金基金で運用されている資産で、増えるほど会社の正味の負担（退職給付債務－年金資産＝退職給付引当金）が減ります。期待運用収益（予定利率などから見積もった運用による増加分）40,000円が生じた分だけ、退職給付引当金を減額し、退職給付費用も同額減額します（退職給付費用の計算式で期待運用収益がマイナス項目だったことを思い出しましょう）。'
+  },
+  { id:823, level:2, cat:'退職給付', chap:'1級：退職給付会計',
+    q:'Ｘ社は確定拠出年金制度を採用しており、当期の掛金80,000円を現金で外部の年金基金に拠出した。仕訳を示しなさい。',
+    en_q:'Company X uses a defined contribution pension plan and contributed ¥80,000 cash to an external pension fund this period. Record the entry.',
+    e:[{d:[['退職給付費用',80000]], c:[['現金',80000]]}],
+    exp:'確定拠出年金制度（DC）は、会社が一定額の掛金を外部に拠出すれば、それ以降の運用リスクを会社が負わない制度です（確定給付制度ＤＢとは異なり、将来の給付額を会社が保証しません）。そのため、複雑な退職給付債務の計算は不要で、単純に「掛金を拠出した時点」で費用（退職給付費用）として処理して完了します。ＤＢ制度のように「退職給付引当金」という負債は計上しません。'
+  },
+  { id:824, level:3, cat:'退職給付', chap:'1級：退職給付会計',
+    q:'Ｘ社は確定給付企業年金制度（ＤＢ）の一部を確定拠出年金制度（ＤＣ）に移行した。移行により消滅した退職給付債務は600,000円、移換した年金資産は550,000円であった。この移行にともなう損益を計上する仕訳を示しなさい。',
+    en_q:'Company X converted part of its defined benefit (DB) pension plan to a defined contribution (DC) plan. The obligation extinguished was ¥600,000, and the plan assets transferred were ¥550,000. Record the entry recognizing the gain from this conversion.',
+    e:[{d:[['退職給付引当金',50000]], c:[['退職給付制度終了益',50000]]}],
+    exp:'ＤＢ制度からＤＣ制度へ制度の一部を移行すると、その部分についてはもはや会社が将来の運用リスクを負わなくなるため、「退職給付制度の終了」として処理します。消滅する退職給付債務600,000円と、移換する年金資産550,000円の差額（＝会社の正味負担の減少額）50,000円を、退職給付引当金の取崩しと「退職給付制度終了益」（特別利益）として計上します。ＤＢの一部がＤＣに置き換わることで、会社の将来負担が軽くなったことを表しています。'
+  },
+  { id:825, level:3, cat:'退職給付', chap:'1級：退職給付会計',
+    q:'Ｘ社は、前期に発生した数理計算上の差異80,000円（平均残存勤務期間8年で償却中、当期はその2年目にあたる）に加え、当期新たに数理計算上の差異90,000円（平均残存勤務期間9年）が発生した。当期の償却額の合計（前期発生分の2年目償却＋当期発生分の1年目償却）を計上する仕訳を示しなさい。',
+    en_q:"Company X is amortizing an actuarial difference of ¥80,000 that arose last period (over an 8-year average remaining service period; this is year 2 of that amortization), and this period a new actuarial difference of ¥90,000 arose (9-year average remaining service period). Record the entry recognizing the combined amortization (year 2 of the prior difference plus year 1 of the new one).",
+    e:[{d:[['退職給付費用',20000]], c:[['退職給付引当金',20000]]}],
+    exp:'実務では、数理計算上の差異は毎期のように発生するため、複数の年度に発生した差異が同時に償却されていきます。前期発生分（80,000円÷8年＝10,000円、2年目の償却）と、当期新たに発生した分（90,000円÷9年＝10,000円、1年目の償却）を合算して、当期の退職給付費用に加えます：10,000円＋10,000円＝20,000円。「発生年度の異なる複数の差異を、それぞれ独立して償却し、合算する」という実務上の処理方法を確認する問題です。'
+  },
+  { id:826, level:3, cat:'退職給付', chap:'1級：退職給付会計',
+    q:'連結財務諸表において、当期に過去勤務費用の費用処理額（組替調整額）18,000円を、退職給付費用として計上するとともに、その他の包括利益（退職給付に係る調整累計額）から同額を減額する。仕訳を示しなさい。',
+    en_q:"On consolidation, record the entry recognizing ¥18,000 of amortized past service cost (a reclassification adjustment) as retirement benefit expense, while reducing accumulated remeasurements of defined benefit plans by the same amount.",
+    e:[{d:[['退職給付費用',18000]], c:[['退職給付に係る調整累計額',18000]]}],
+    exp:'数理計算上の差異と同じように、過去勤務費用についても、連結財務諸表では発生時に即時認識した後、個別財務諸表と同じペースで償却した分を「組替調整額」として退職給付費用に計上し、同額を「退職給付に係る調整累計額」から取り崩します。二重計上を防ぐための処理で、退職給付債務・年金資産の総額（退職給付引当金）自体はこの仕訳では変動しません。'
+  },
+  { id:827, level:3, cat:'退職給付', chap:'1級：退職給付会計',
+    q:'Ｘ社は退職金規程を改定し、退職給付水準を引き上げた。この結果、退職給付債務が200,000円増加した（過去勤務費用の発生、不利差異）。連結財務諸表上、実効税率30％として税効果を考慮したうえで、この差異を認識する仕訳を示しなさい。',
+    en_q:'Company X amended its retirement benefit plan, raising benefit levels. This increased the retirement benefit obligation by ¥200,000 (an unfavorable past service cost). On consolidation, applying tax-effect accounting at an effective tax rate of 30%, record the entry recognizing this difference.',
+    e:[{d:[['退職給付に係る調整累計額',140000],['繰延税金資産',60000]], c:[['退職給付引当金',200000]]}],
+    exp:'過去勤務費用の即時認識にも税効果会計を適用します。将来の費用計上（損金算入）につながる不利差異なので、税金負担を軽減する効果（繰延税金資産）60,000円（200,000×30％）を認識し、残り140,000円を税引後の金額として「退職給付に係る調整累計額」に計上します。退職給付引当金（負債）は税効果を挟まず全額200,000円増加させます。'
+  },
+  { id:828, level:3, cat:'退職給付', chap:'1級：退職給付会計',
+    q:'Ｘ社は早期退職優遇制度を実施し、対象者の退職により退職給付債務が270,000円減少した。対応する年金資産の減少額は230,000円であった。制度の一部終了にともなう損益を計上する仕訳を示しなさい。',
+    en_q:"Company X implemented an early retirement incentive program. The resulting retirements reduced the retirement benefit obligation by ¥270,000, with a corresponding ¥230,000 decrease in plan assets. Record the entry recognizing the gain from this partial plan settlement.",
+    e:[{d:[['退職給付引当金',40000]], c:[['退職給付制度終了益',40000]]}],
+    exp:'早期退職優遇制度などにより、対象となる従業員が一斉に退職すると、それに対応する退職給付債務と年金資産がまとめて消滅します（「退職給付制度の一部終了」と呼びます）。消滅する退職給付債務270,000円の方が、対応する年金資産の減少額230,000円よりも大きいため、差額40,000円は会社の負担が軽くなったことを意味し、「退職給付制度終了益」として利益計上します。'
+  },
+  { id:829, level:2, cat:'退職給付', chap:'1級：退職給付会計',
+    q:'Ｘ社は業界団体が運営する複数事業主制度の企業年金に加入しており、自社の拠出に対応する年金資産・年金負債を合理的に区分計算することができない。当期の掛金拠出額120,000円を現金で支払った場合の仕訳を示しなさい（確定拠出制度に準じて処理する）。',
+    en_q:"Company X participates in a multiemployer pension plan operated by an industry association, and cannot reasonably determine its share of plan assets and obligations. Record the entry for this period's cash contribution of ¥120,000, accounted for as if it were a defined contribution plan.",
+    e:[{d:[['退職給付費用',120000]], c:[['現金',120000]]}],
+    exp:'複数の企業が共同で加入する年金制度（複数事業主制度）で、自社が負担すべき年金資産・年金負債の金額を合理的に計算できない場合は、通常のＤＢ制度のように複雑な数理計算を行わず、確定拠出制度と同様に、拠出した掛金の額をそのまま「退職給付費用」として処理することが認められています。「計算できないものは、シンプルに掛金＝費用として扱う」という実務上の簡便的な取り扱いです。'
+  },
+  { id:830, level:2, cat:'退職給付', chap:'1級：退職給付会計',
+    q:'従業員数が少ない中小企業であるＸ社は、退職給付会計に「簡便法」を採用している。期末自己都合要支給額（従業員が全員自己都合で退職した場合に支払うべき額）が期首より50,000円増加した。この増加額を退職給付費用として計上する仕訳を示しなさい。',
+    en_q:'Company X, a small business with few employees, uses the simplified method for retirement benefit accounting. The year-end voluntary-resignation benefit obligation (the amount payable if all employees resigned voluntarily) increased by ¥50,000 from the beginning of the year. Record the entry recognizing this increase as retirement benefit expense.',
+    e:[{d:[['退職給付費用',50000]], c:[['退職給付引当金',50000]]}],
+    exp:'従業員数の少ない小規模な企業では、数理計算上の差異や利息費用・期待運用収益を細かく計算する原則法の代わりに、「簡便法」を採用することが認められています。簡便法では、期末時点で従業員全員が自己都合退職した場合に支払うべき金額（期末自己都合要支給額）を退職給付債務とみなし、その期中の増加額をそのまま退職給付費用として計上します。複雑な数理計算をせずに済む、実務的な近似計算です。'
   },
 
   // ===== 1級：減損会計（応用） =====
