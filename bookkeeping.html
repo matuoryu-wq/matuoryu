@@ -751,6 +751,7 @@ const T = {
   '抱合せ株式評価益':'revenue','顧客関連資産':'asset',
   'スワップ資産':'asset','子会社株式評価損':'expense','デリバティブ負債':'liability',
   '退職給付制度終了益':'revenue','遊休資産':'asset',
+  '材料受入価格差異':'other','材料副費差異':'other','内部利益控除':'expense','繰延内部利益':'other',
   // 2級追加（新規科目）
   '商品券':'liability','他店商品券':'asset','仕入割引':'revenue','定期預金':'asset',
   '役員貸付金':'asset','役員借入金':'liability','引出金（事業主貸）':'other','圧縮積立金':'equity',
@@ -7049,6 +7050,78 @@ const ALL = [
     en_q:"For Company X above, the factory completed ¥600,000 of finished goods and shipped them directly to the head office warehouse (the factory keeps no finished goods account; the head office manages all finished goods). Record the entries on (1) the factory's books and (2) the head office's books.",
     e:[{d:[['本社',600000]], c:[['仕掛品',600000]]}, {d:[['製品',600000]], c:[['工場',600000]]}],
     exp:'工場では、完成した製品を自ら保管せず、すぐに本社へ送付する場合があります。①工場側：仕掛品（製造中の原価）が完成し、本社に送ったので「本社」勘定を借方（本社への送付＝本社に対する債権的な意味合い）に、仕掛品を貸方に計上。②本社側：工場から製品を受け入れたので「製品」を借方に、「工場」勘定を貸方に計上します。本社工場会計では、このように工場側の帳簿には「製品」勘定が登場しないケースも典型的な出題パターンです。'
+  },
+  { id:856, level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社は材料Ｃ（標準単価＠300円）と材料Ｄ（標準単価＠150円）を標準配合比率6：4で投入している。当月、実際には材料Ｃ500kg・材料Ｄ380kgを投入し（合計880kg）、標準配合比率で計算した実際投入量ベースの配合量は材料Ｃ528kg・材料Ｄ352kgであった。配合差異を計算し、仕掛品から配合差異勘定へ振り替える仕訳を示しなさい（有利差異）。',
+    en_q:'Company X combines material C (standard price ¥300/kg) and material D (standard price ¥150/kg) in a standard mix ratio of 6:4. This month it actually used 500kg of C and 380kg of D (total 880kg); at the standard mix ratio, the actual total input implies 528kg of C and 352kg of D. Compute the mix variance and record the entry transferring it from work-in-process to the mix variance account (favorable).',
+    e:[{d:[['仕掛品',4200]], c:[['配合差異',4200]]}],
+    exp:'標準よりも単価の高い材料Ｃを少なく（528kg→500kg、28kg減少）、単価の低い材料Ｄを多く（352kg→380kg、28kg増加）投入した結果、材料Ｃ：300円×(528－500)＝＋8,400円、材料Ｄ：150円×(352－380)＝△4,200円、合計＋4,200円（有利差異）となりました。安い材料の比率を増やしたことでコストが節約されています。有利差異の場合は、不利差異のときとは逆に、仕掛品を借方、配合差異を貸方に計上します。'
+  },
+  { id:857, level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'上記のＸ社において、標準投入量は材料Ｃ540kg・材料Ｄ360kg（標準配合比率での実際生産量に対する必要量）であった。歩留差異を計算し、仕掛品から歩留差異勘定へ振り替える仕訳を示しなさい（有利差異）。',
+    en_q:'For Company X above, the standard input required for actual output (at the standard mix ratio) was 540kg of C and 360kg of D. Compute the yield variance and record the entry transferring it from work-in-process to the yield variance account (favorable).',
+    e:[{d:[['仕掛品',4800]], c:[['歩留差異',4800]]}],
+    exp:'標準配合比率のまま計算した必要量合計900kg（540kg＋360kg）に対し、実際の投入量合計は880kg（配合比率どおりで528kg＋352kg）で済んだため、20kg分だけ材料の無駄が少なく、歩留りが良かったことになります。材料Ｃ：300円×(540－528)＝＋3,600円、材料Ｄ：150円×(360－352)＝＋1,200円、合計＋4,800円（有利差異）。歩留りが標準より良かった分、コストが節約されたことを表しています。'
+  },
+  { id:858, level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社は材料の購入時点で価格差異を把握する方式を採用している。材料1,000kgを予定価格＠250円（合計250,000円）で購入する予定であったが、実際には＠260円（合計260,000円）で購入し、現金で支払った。購入時の仕訳を示しなさい（材料は予定価格で受け入れる）。',
+    en_q:'Company X recognizes material price variances at the point of purchase. It purchased 1,000kg of material at an actual price of ¥260/kg (total ¥260,000) versus a standard price of ¥250/kg (total ¥250,000), paying cash. Record the purchase entry (materials are recorded at standard price).',
+    e:[{d:[['材料',250000],['材料受入価格差異',10000]], c:[['現金',260000]]}],
+    exp:'材料の価格差異を「消費時点」ではなく「購入（受入）時点」で把握する方法を「材料受入価格差異」と呼びます。材料そのものは予定価格（＠250円）で帳簿に受け入れ、実際の支払額（260,000円）との差額10,000円は、購入した時点ですぐに「材料受入価格差異」（不利差異）として区分します。この方法のメリットは、材料を消費するたびに複雑な価格差異の計算をしなくて済み、材料勘定が常に予定価格で統一される点です。'
+  },
+  { id:859, level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社は材料の購入にあたり、材料副費（引取運賃等）を購入代価の5％で予定配賦している。材料の購入代価は400,000円、実際にかかった材料副費は22,000円であった。予定配賦額との差異を計上する仕訳を示しなさい。',
+    en_q:"Company X applies incidental material costs (freight-in, etc.) at a predetermined rate of 5% of purchase price. The purchase price was ¥400,000, while actual incidental costs were ¥22,000. Record the entry recognizing the variance from the applied amount.",
+    e:[{d:[['材料副費差異',2000]], c:[['材料副費',2000]]}],
+    exp:'材料副費（引取運賃、購入手数料など）も、実際発生額を都度集計するのは煩雑なため、購入代価に対する一定率で「予定配賦」することがあります。予定配賦額20,000円（400,000×5％）に対し、実際発生額は22,000円だったため、2,000円の不利差異（予定より多くかかった）が生じます。材料副費勘定を予定配賦額でいったん締め、実際発生額との差額を「材料副費差異」として区分します。'
+  },
+  { id:860, level:2, cat:'ABC', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社は発注活動にかかる製造間接費90,000円を、発注回数（合計30回）を配賦基準として活動基準配賦率＠3,000円で配賦している。製品Ｄに12回の発注が行われた場合、製品Ｄへ配賦される製造間接費を仕掛品へ計上する仕訳を示しなさい。',
+    en_q:'Company X allocates ¥90,000 of overhead from the ordering activity using the number of purchase orders (30 total) as the cost driver, at an activity rate of ¥3,000 per order. Product D required 12 purchase orders. Record the entry allocating the overhead assigned to Product D to work-in-process.',
+    e:[{d:[['仕掛品',36000]], c:[['製造間接費',36000]]}],
+    exp:'発注活動（購買部門が材料や部品を発注する業務）も、ABCでは独立したコストプールとして扱われます。90,000円÷30回＝＠3,000円／回。製品Ｄに12回分の発注が発生したため、36,000円（12回×3,000円）が製品Ｄに配賦されます。段取活動・検査活動と同じように、活動の発生量に応じて配賦する考え方は共通です。'
+  },
+  { id:861, level:2, cat:'ABC', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社は従来、製造間接費300,000円を直接作業時間（合計1,000時間）を基準に一律配賦していたが、製品Ｅに要した直接作業時間は300時間であった。ABC導入前の伝統的な配賦方法による製品Ｅへの配賦額を仕掛品へ計上する仕訳を示しなさい。',
+    en_q:'Before adopting ABC, Company X allocated ¥300,000 of overhead uniformly based on direct labor hours (1,000 total). Product E required 300 direct labor hours. Record the entry allocating overhead to Product E under the traditional (pre-ABC) method.',
+    e:[{d:[['仕掛品',90000]], c:[['製造間接費',90000]]}],
+    exp:'ABC導入前の伝統的な原価計算では、直接作業時間や機械稼働時間など「単一の配賦基準」で製造間接費をまとめて配賦します。300,000円÷1,000時間＝＠300円／時間。製品Ｅの作業時間300時間分：90,000円（300時間×300円）が配賦されます。ABC（活動ごとに複数の配賦基準を使う）と比べて計算はシンプルですが、活動の実態を反映しにくく、原価の歪みが生じやすいという欠点があります。両者を対比して理解しておきましょう。'
+  },
+  { id:862, level:2, cat:'ABC', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社は品質検査活動にかかる製造間接費200,000円を、検査回数（合計100回）を配賦基準として活動基準配賦率＠2,000円で配賦している。製品Ｆに35回の検査が行われた場合、製品Ｆへ配賦される製造間接費を仕掛品へ計上する仕訳を示しなさい。',
+    en_q:'Company X allocates ¥200,000 of overhead from the quality inspection activity using the number of inspections (100 total) as the cost driver, at an activity rate of ¥2,000 per inspection. Product F required 35 inspections. Record the entry allocating the overhead assigned to Product F to work-in-process.',
+    e:[{d:[['仕掛品',70000]], c:[['製造間接費',70000]]}],
+    exp:'検査活動のコストドライバーは「検査時間」（すでに学んだ例）だけでなく、「検査回数」を使うこともあります。どちらのドライバーがより実態を表すかは、活動の性質によって使い分けます。200,000円÷100回＝＠2,000円／回。製品Ｆに35回の検査が行われたため、70,000円（35回×2,000円）が配賦されます。同じ「検査」という活動でも、時間基準か回数基準かでコストドライバーの選び方が変わる、という実務上の判断ポイントを扱う問題です。'
+  },
+  { id:863, level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社は本社工場会計を採用しており、本社が全従業員の給与500,000円（うち工場従業員分300,000円）を現金で一括支払った。①本社側②工場側の仕訳をそれぞれ示しなさい。',
+    en_q:"Company X keeps separate head-office and factory ledgers. The head office paid all employees' salaries of ¥500,000 in cash in one lump sum (of which ¥300,000 relates to factory employees). Record the entries on (1) the head office's books and (2) the factory's books.",
+    e:[{d:[['給料',200000],['工場',300000]], c:[['現金',500000]]}, {d:[['賃金・給料',300000]], c:[['本社',300000]]}],
+    exp:'本社が全社員分の給与をまとめて支払う場合、本社は自社負担分（本社従業員分200,000円）を「給料」として計上し、工場負担分（300,000円）は「工場」勘定（内部取引の照合勘定）として区分します。工場側は、本社が立て替えて支払ってくれた自分たちの給与を「賃金・給料」として計上し、相手科目に「本社」勘定（本社への債務）を計上します。「本社が全部払うが、工場の分は内部で精算する」という構造です。'
+  },
+  { id:864, level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社は本社工場会計を採用しており、固定資産（機械装置）はすべて本社の帳簿で管理している。工場で使用する機械装置の当月減価償却費50,000円について、①本社側②工場側の仕訳をそれぞれ示しなさい。',
+    en_q:"Company X keeps separate head-office and factory ledgers, with all fixed assets (machinery) recorded on the head office's books. Record the entries on (1) the head office's books and (2) the factory's books for this month's ¥50,000 depreciation on machinery used at the factory.",
+    e:[{d:[['工場',50000]], c:[['減価償却累計額',50000]]}, {d:[['製造間接費',50000]], c:[['本社',50000]]}],
+    exp:'固定資産を本社が一括管理している場合、工場で使う機械装置の減価償却費であっても、資産の減少（減価償却累計額の増加）自体は本社の帳簿で記録します。本社は工場のための費用を負担した形になるので「工場」勘定（内部債権）を借方に計上します。工場側は、この減価償却費を自らの製造原価（製造間接費）として受け入れ、相手科目に「本社」勘定（内部債務）を計上します。「資産の管理は本社、費用の発生は工場」という役割分担を仕訳で表現しています。'
+  },
+  { id:865, level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社は本社工場会計を採用しており、工場は完成した製品を本社を経由せず、得意先へ直接発送・販売することがある。工場が製品（原価400,000円）を得意先へ直接販売し、販売代金600,000円は本社の当座預金口座に振り込まれた。①工場側（売上原価の付け替え）②本社側（売上の計上）の仕訳をそれぞれ示しなさい。',
+    en_q:"Company X's factory sometimes ships and sells finished goods directly to customers without routing through the head office. The factory sold goods (cost ¥400,000) directly to a customer, and the ¥600,000 proceeds were deposited into the head office's checking account. Record the entries on (1) the factory's books (transferring the cost) and (2) the head office's books (recognizing the sale).",
+    e:[{d:[['本社',400000]], c:[['製品',400000]]}, {d:[['当座預金',600000],['売上原価',400000]], c:[['売上',600000],['工場',400000]]}],
+    exp:'工場が得意先へ製品を直接発送・販売するケースでも、売上の計上自体は原則として本社側で行います（工場は製造・出荷の実行部隊、本社が販売・会計の窓口という役割分担）。①工場側：出荷した製品（原価400,000円）を製品勘定から減らし、本社に対する内部債権として「本社」勘定を計上します。②本社側：得意先からの入金600,000円を「売上」として計上するとともに、工場から引き継いだ原価400,000円を「売上原価」として計上し、その相手科目として「工場」勘定（内部債務）を計上します。'
+  },
+  { id:866, level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社の工場は、本社へ製品（原価400,000円）を振替価格500,000円（原価に25％の内部利益を加算）で発送している。決算時点で、本社の製品在庫のうち振替価格125,000円分（原価100,000円相当）が未販売のまま残っていた。この未実現の内部利益を消去する仕訳を示しなさい。',
+    en_q:"Company X's factory ships products to the head office at a transfer price of ¥500,000 (cost ¥400,000 plus a 25% internal markup). At year-end, ¥125,000 (at transfer price; ¥100,000 at cost) of this inventory remained unsold at the head office. Record the entry eliminating the unrealized internal profit.",
+    e:[{d:[['内部利益控除',25000]], c:[['繰延内部利益',25000]]}],
+    exp:'工場が本社へ製品を振替価格（原価400,000円に25％の利益を上乗せした500,000円）で送っている場合、本社に残っている未販売の製品在庫にも、まだ実現していない「内部利益」が含まれてしまっています。決算にあたっては、この未実現の内部利益（125,000円×25／125＝25,000円）を、貸借対照表上の棚卸資産の評価額から除く必要があります。借方に「内部利益控除」（損益計算書上、売上原価の調整項目）、貸方に「繰延内部利益」（貸借対照表の評価性引当のような性質の科目）を計上し、翌期に振り戻します。'
+  },
+  { id:867, level:2, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社の本社工場会計において、決算時に本社元帳の「工場」勘定残高は800,000円（借方）、工場元帳の「本社」勘定残高は800,000円（貸方）であり、両者は一致していた。この場合、合算財務諸表を作成するにあたり、内部取引を相殺消去する仕訳を示しなさい。',
+    en_q:"In Company X's head-office/factory accounting, at year-end the head office's \"Factory\" account had an ¥800,000 debit balance, matching the factory's \"Head Office\" account ¥800,000 credit balance. When preparing combined financial statements, record the entry eliminating this internal transaction.",
+    e:[{d:[['本社',800000]], c:[['工場',800000]]}],
+    exp:'本社工場会計では、本社の「工場」勘定と工場の「本社」勘定は、通常、常に同額（貸借逆）になっているはずです（内部取引のたびにセットで記帳しているため）。合算した財務諸表（本社と工場を1つにまとめたもの）を作成する際は、この内部取引専用の勘定（照合勘定）を相殺消去し、外部から見える金額だけを残します。連結会計における債権債務の相殺消去と同じ考え方が、本社工場会計にも当てはまります。'
   },
 
 ];
