@@ -750,7 +750,7 @@ const T = {
   '条件付取得対価':'liability','取得対価精算損':'expense','T社株式':'asset',
   '抱合せ株式評価益':'revenue','顧客関連資産':'asset',
   'スワップ資産':'asset','子会社株式評価損':'expense','デリバティブ負債':'liability',
-  '退職給付制度終了益':'revenue',
+  '退職給付制度終了益':'revenue','遊休資産':'asset',
   // 2級追加（新規科目）
   '商品券':'liability','他店商品券':'asset','仕入割引':'revenue','定期預金':'asset',
   '役員貸付金':'asset','役員借入金':'liability','引出金（事業主貸）':'other','圧縮積立金':'equity',
@@ -6815,6 +6815,66 @@ const ALL = [
     en_q:'For a finance lease (interest-excluded method, initial lease liability ¥1,000,000, 5-year term, annual lease payment ¥240,000, interest rate 4% per year), first-year interest was ¥40,000 (¥1,000,000 × 4%). Using the effective interest method, compute the second year\'s interest expense and record the second year\'s lease payment entry.',
     e:[{d:[['リース債務',208000],['支払利息',32000]], c:[['現金',240000]]}],
     exp:'利子抜き法では、リース料の支払いを「元本返済」と「利息」に分けますが、利息法では毎期の期首リース債務残高に利率を掛けて利息を計算します（元本が減るにつれ、利息も減っていきます）。1年目：利息40,000円（1,000,000×4%）、元本返済200,000円→期末残高800,000円。2年目：利息32,000円（800,000×4%）、元本返済208,000円（240,000－32,000）。単純に毎年同額の利息を計上する「定額法」とは異なり、実際の借入金の返済と同じ考え方で利息が逓減していく点が特徴です。'
+  },
+  { id:831, level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
+    q:'Ｘ社は建物（帳簿価額600,000円）と備品（帳簿価額300,000円）から成る資産グループについて、回収可能価額750,000円と算定され、減損損失150,000円を認識した。この損失を帳簿価額の比率で建物・備品に配分する仕訳を示しなさい。',
+    en_q:'For an asset group consisting of a building (book value ¥600,000) and equipment (book value ¥300,000), Company X determined a recoverable amount of ¥750,000, recognizing an impairment loss of ¥150,000. Record the entry allocating this loss to the building and equipment in proportion to book value.',
+    e:[{d:[['減損損失',150000]], c:[['建物',100000],['備品',50000]]}],
+    exp:'のれんを含まない資産グループの場合は、生じた減損損失をそのまま構成資産の帳簿価額の比率で配分します（のれんへの優先配分という手順がない、シンプルなケースです）。建物：150,000×(600,000／900,000)＝100,000円、備品：150,000×(300,000／900,000)＝50,000円。'
+  },
+  { id:832, level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
+    q:'Ｘ社は前期に減損損失を計上した備品（減損後帳簿価額300,000円）を、当期に350,000円で現金売却した。売却時の仕訳を示しなさい。',
+    en_q:'Company X sold equipment for ¥350,000 cash this period, on which an impairment loss had been recognized last period (post-impairment book value ¥300,000). Record the sale entry.',
+    e:[{d:[['現金',350000]], c:[['備品',300000],['固定資産売却益',50000]]}],
+    exp:'減損損失を計上した資産であっても、その後の売却処理は通常の固定資産売却と同じです。減損「後」の帳簿価額（300,000円、取得原価ではない点に注意）を基準に、売却額との差額を売却損益として計上します。日本基準では減損の戻し入れが禁止されているため、たとえ売却額が減損前の帳簿価額を上回っても、それは「売却益」として処理され、過去の減損損失が取り消されるわけではありません。'
+  },
+  { id:833, level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
+    q:'Ｘ社が保有する機械装置（帳簿価額800,000円、資産除去債務の資産計上額を含む）について、回収可能価額が600,000円と算定され、減損損失を計上する。仕訳を示しなさい。',
+    en_q:'Company X holds machinery (book value ¥800,000, including the asset-retirement-obligation capitalized amount) with a determined recoverable amount of ¥600,000. Record the impairment loss entry.',
+    e:[{d:[['減損損失',200000]], c:[['機械装置',200000]]}],
+    exp:'資産除去債務に対応する除去費用をあらかじめ資産計上している固定資産（帳簿価額に除去費用相当額が含まれている）も、通常の固定資産と同様に減損会計の対象になります。帳簿価額全体（除去費用の資産計上額を含む）と回収可能価額を比較し、差額を減損損失として計上します。「資産除去債務に対応する資産計上額も、他の取得原価部分とまとめて減損の判定対象になる」という点がポイントです。'
+  },
+  { id:834, level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
+    q:'Ｘ社が保有する機械装置（帳簿価額1,000,000円）について、正味売却価額は600,000円、使用価値（将来キャッシュ・フローの割引現在価値）は650,000円と算定された。回収可能価額はいずれか高い方を採用し、減損損失を計上する仕訳を示しなさい。',
+    en_q:"Company X's machinery (book value ¥1,000,000) had a net realizable value of ¥600,000 and a value in use (discounted present value of future cash flows) of ¥650,000. The recoverable amount is the higher of the two. Record the impairment loss entry.",
+    e:[{d:[['減損損失',350000]], c:[['機械装置',350000]]}],
+    exp:'回収可能価額は「正味売却価額」（今売ったらいくらか）と「使用価値」（今後使い続けることで得られる将来キャッシュ・フローの割引現在価値）のいずれか高い方を採用します。今回は使用価値650,000円の方が正味売却価額600,000円より高いため、回収可能価額は650,000円。帳簿価額1,000,000円－回収可能価額650,000円＝減損損失350,000円。「売った方が得か、使い続けた方が得か、高い方を選ぶ」というルールです。'
+  },
+  { id:835, level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
+    q:'Ｘ社は前期に減損処理した遊休資産である土地（減損後帳簿価額700,000円）を、当期から事業用に転用することとした。転用時点の時価は900,000円であったが、日本基準では減損の戻し入れを行わないため帳簿価額は変更しない。転用時に「遊休資産」から「土地」（事業用）へ勘定科目を振り替える仕訳を示しなさい（金額は変動しない）。',
+    en_q:'Company X is converting idle land (previously impaired, post-impairment book value ¥700,000) to operational use this period. The current fair value is ¥900,000, but since Japanese GAAP prohibits impairment reversal, the book value is not restored. Record the entry reclassifying the account from "idle assets" to "land" (operational use), with no change in amount.',
+    e:[{d:[['土地',700000]], c:[['遊休資産',700000]]}],
+    exp:'遊休資産を事業用に転用しても、日本基準では減損損失の戻し入れを行わないため、時価が回復していても帳簿価額はそのまま据え置かれます（700,000円のまま）。この仕訳は金額を変えずに勘定科目の表示区分だけを付け替えるものです。「一度計上した減損損失は、その後の状況好転があっても取り消さない」という日本基準の原則を、転用というイベントを通じて確認する問題です。'
+  },
+  { id:836, level:2, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
+    q:'Ｘ社はファイナンス・リース契約の開始にあたり、頭金（リース料の一部前払い）100,000円を現金で支払った。この頭金はリース資産の取得価額に含める処理をする場合の仕訳を示しなさい。',
+    en_q:'At the inception of a finance lease, Company X paid a ¥100,000 cash down payment (a partial prepayment of lease payments). Record the entry treating this down payment as part of the leased asset\'s acquisition cost.',
+    e:[{d:[['リース資産',100000]], c:[['現金',100000]]}],
+    exp:'リース契約開始時に支払う頭金（リース料の一部前払い）は、通常の前払費用のように扱うのではなく、リース資産の取得価額の一部として資産計上します。「将来支払うはずだったリース料の一部を、先に前払いした」と考え、リース債務ではなく、リース資産そのものの取得原価に含めます。'
+  },
+  { id:837, level:3, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
+    q:'Ｘ社は所有権移転ファイナンス・リース（リース資産計上額1,500,000円、経済的耐用年数6年、残存価額はリース資産計上額の10％）を契約した。1年分の減価償却費を計上する仕訳を示しなさい（定額法）。',
+    en_q:'Company X entered an ownership-transfer finance lease (leased asset ¥1,500,000, economic useful life 6 years, residual value 10% of the leased asset amount). Record one year of straight-line depreciation.',
+    e:[{d:[['減価償却費',225000]], c:[['リース資産減価償却累計額',225000]]}],
+    exp:'所有権移転ファイナンス・リースは、契約終了後に所有権が借手に移るため、自己所有の固定資産と全く同じ方法で減価償却します。残存価額が設定されている場合は、取得価額から残存価額を差し引いた金額（要償却額）を耐用年数で割ります。残存価額：1,500,000×10％＝150,000円。要償却額：1,500,000－150,000＝1,350,000円。年間償却額：1,350,000÷6年＝225,000円。所有権移転外リース（原則残存価額ゼロ）とは異なり、残存価額の考慮が必要な点に注意しましょう。'
+  },
+  { id:838, level:3, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
+    q:'Ｘ社は所有権移転外ファイナンス・リース（リース資産の取得原価1,000,000円、減価償却累計額800,000円）について、リース期間満了時に割安購入選択権を行使し、追加で50,000円を現金で支払って資産の所有権を取得した。リース資産を通常の固定資産である備品に振り替える仕訳を示しなさい。',
+    en_q:'Company X exercised a bargain purchase option at the end of a non-ownership-transfer finance lease term (leased asset acquisition cost ¥1,000,000, accumulated depreciation ¥800,000), paying an additional ¥50,000 cash to acquire ownership. Record the entry reclassifying the leased asset into ordinary owned equipment.',
+    e:[{d:[['備品',250000],['リース資産減価償却累計額',800000]], c:[['リース資産',1000000],['現金',50000]]}],
+    exp:'所有権移転外ファイナンス・リースでも、契約に「割安購入選択権」（相場よりかなり安い価格でリース物件を買い取れる権利）が付いている場合、これを行使すると、その時点でリース資産としての性格が終わり、通常の自己所有の固定資産（備品）に切り替わります。リース資産の帳簿価額200,000円（取得原価1,000,000円－減価償却累計額800,000円）に、追加で支払った買取り代金50,000円を加えた250,000円が、新たな備品としての取得原価になります。'
+  },
+  { id:839, level:2, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
+    q:'Ｘ社はオペレーティング・リース契約（月額リース料50,000円のうち、10,000円は付随するメンテナンスサービス費用）を締結し、1ヶ月分を現金で支払った。リース料とメンテナンス費用を区分して処理する仕訳を示しなさい。',
+    en_q:'Company X entered an operating lease (monthly payment ¥50,000, of which ¥10,000 is for bundled maintenance services) and paid one month\'s payment in cash. Record the entry separating the lease payment from the maintenance cost.',
+    e:[{d:[['支払リース料',40000],['修繕費',10000]], c:[['現金',50000]]}],
+    exp:'リース契約の中に、リース物件の借入とは別に、保守・メンテナンスサービスの提供が含まれている場合、契約書上の金額を「純粋なリース料」部分と「サービス費用」部分に区分して処理する必要があります。40,000円（リース料相当部分）は「支払リース料」、10,000円（メンテナンス部分）は「修繕費」として、それぞれ別の性質の費用として計上します。「リース料に何が含まれているか」を見極めることが実務上のポイントです。'
+  },
+  { id:840, level:3, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
+    q:'Ｘ社は保有する備品（帳簿価額500,000円）をリース会社に600,000円で売却し、現金を受け取った。同時にこの備品をオペレーティング・リースとしてリースバックする契約を締結した。オペレーティング・リースに該当する場合、売却損益は繰延べず、その場で認識する。売却時の仕訳を示しなさい。',
+    en_q:'Company X sold equipment (book value ¥500,000) to a leasing company for ¥600,000 cash, and simultaneously leased it back under an operating lease. Because the leaseback is an operating lease, the sale gain is not deferred and is recognized immediately. Record the entry at the time of sale.',
+    e:[{d:[['現金',600000]], c:[['備品',500000],['固定資産売却益',100000]]}],
+    exp:'セール・アンド・リースバックでも、リースバック部分がファイナンス・リースではなく「オペレーティング・リース」（単なる賃貸借）に該当する場合は、ファイナンス・リースのケース（前の応用問題を参照）とは異なり、売却損益を繰延べる必要はなく、通常の固定資産売却と同じようにその場で損益を認識します。現金600,000円－帳簿価額500,000円＝売却益100,000円をそのまま計上します。「リースバックがファイナンスか、オペレーティングか」によって処理が正反対になる点が、この論点のハイライトです。'
   },
 
   // ===== 1級：会計方針の変更・誤謬の訂正 =====
