@@ -714,7 +714,7 @@ const T = {
   '特許権償却':'expense','創立費償却':'expense','株式交付費償却':'expense',
   '開業費償却':'expense','ソフトウェア償却':'expense','研究開発費':'expense',
   '為替差損':'expense','固定資産圧縮損':'expense','法人税等調整額':'other',
-  '新築積立金':'equity',
+  '新築積立金':'equity','配当平均積立金':'equity','保証債務見返':'other','保証債務':'other',
   // 2級追加（新規科目）
   '商品券':'liability','他店商品券':'asset','仕入割引':'revenue','定期預金':'asset',
   '役員貸付金':'asset','役員借入金':'liability','引出金（事業主貸）':'other','圧縮積立金':'equity',
@@ -7423,6 +7423,109 @@ const ALL = [
     en_q:'Purchased goods for $2,000 on credit from a foreign supplier, simultaneously locking in a forward rate of ¥118/USD for the entire payable (the spot rate at the transaction date was ¥121/USD). Record the purchase entry, and state whether a foreign exchange gain/loss will be recognized at year-end.',
     e:[{d:[['仕入',236000]], c:[['買掛金',236000]]}],
     exp:'取引発生と同時に為替予約を行った場合、仕入・買掛金ともに為替予約レート（先物相場）で換算します（振当処理）。2,000ドル×予約レート118円＝236,000円。将来の決済レートが確定しているため、決算時に直物レートへの換算替えは行わず、為替差損益は生じません。取引発生後に為替予約を行った場合（為替予約時に換算替えを行い差損益が生じる）との違いに注意。'
+  },
+  // ===== テキスト網羅：問題単位の徹底照合による補充（第2弾） =====
+  { id:669, level:2, cat:'商品', chap:'第1章：商品売買',
+    q:'商品売買の記帳方法を売上原価対立法によった場合の仕訳を示しなさい。①仕入先から商品を＠2,000円で30個仕入れ、代金は掛けとした。②上記の商品のうち20個を＠3,500円で得意先へ販売し、代金は掛けとした。',
+    en_q:'Record the following under the cost-of-sales (perpetual) method: ①Purchased 30 units of merchandise at ¥2,000 each on credit. ②Sold 20 of those units at ¥3,500 each on credit.',
+    e:[{d:[['商品',60000]], c:[['買掛金',60000]]}, {d:[['売掛金',70000]], c:[['売上',70000]]}, {d:[['売上原価',40000]], c:[['商品',40000]]}],
+    exp:'売上原価対立法では、仕入時に「商品」勘定（資産）を計上し、売上時に「商品」勘定を「売上原価」勘定（費用）に振り替えます。①仕入：30個×＠2,000＝60,000円。②売上：20個×＠3,500＝70,000円。売上原価：20個×＠2,000＝40,000円。三分法と異なり、決算整理（売上原価の算定仕訳）が不要な点が特徴です。'
+  },
+  { id:670, level:3, cat:'収益認識', chap:'収益認識・現金預金',
+    q:'資格予備校を運営する当社は、講座開始にあたり講座代金180,000円が普通預金口座に振り込まれた。その後、講師料72,000円・教材制作費18,000円を現金で支払った。決算に際して、上記講座の進捗度は60％であった（進捗部分に係る費用は54,000円）。３つの仕訳を示しなさい。',
+    en_q:'A test-prep school received course fees of ¥180,000 into its bank account at the start of a course. It then paid instructor fees of ¥72,000 and course-material costs of ¥18,000 in cash. At year-end, the course was 60% complete (costs incurred to date: ¥54,000). Record all three entries.',
+    e:[{d:[['普通預金',180000]], c:[['契約負債',180000]]}, {d:[['仕掛品',90000]], c:[['現金',90000]]}, {d:[['契約負債',108000]], c:[['役務収益',108000]]}, {d:[['役務原価',54000]], c:[['仕掛品',54000]]}],
+    exp:'サービス業の会計処理：①サービス提供前に受け取った代金は「契約負債」（負債）で処理。②サービスに関連する費用の支払額はいったん「仕掛品」（資産）で処理。③決算時、提供済み部分を収益・費用に振り替える。役務収益：180,000×60%＝108,000円。役務原価：進捗費用そのまま54,000円（＝仕掛品の取崩額）。'
+  },
+  { id:671, level:2, cat:'現金預金', chap:'収益認識・現金預金',
+    q:'決算日に金庫を実査したところ、紙幣硬貨80,000円・他人振出の小切手25,000円・配当金領収証15,000円・収入印紙5,000円が保管されていた。現金の帳簿残高は115,000円であり、差異の原因は不明である。決算整理仕訳を示しなさい。',
+    en_q:'A cash count at year-end found: currency ¥80,000, a check issued by another party ¥25,000, a dividend receipt slip ¥15,000, and revenue stamps ¥5,000. The book balance of cash is ¥115,000, and the cause of the discrepancy is unknown. Record the year-end adjusting entry.',
+    e:[{d:[['現金',5000]], c:[['雑益',5000]]}],
+    exp:'現金の実査額＝通貨代用証券の合計：紙幣硬貨80,000＋他人振出小切手25,000＋配当金領収証15,000＝120,000円（収入印紙は通貨代用証券ではないため含めない）。実査額120,000－帳簿残高115,000＝5,000円（現金が多い＝雑益）。原因不明の現金超過は「雑益」、不足は「雑損」で処理します。'
+  },
+  { id:672, level:2, cat:'現金預金', chap:'収益認識・現金預金',
+    q:'銀行勘定調整表：得意先から売掛金23,000円を回収し当座預金に入金したが、当社では誤って32,000円と記帳していた。当社側の修正仕訳を示しなさい。',
+    en_q:'Bank reconciliation: Collected ¥23,000 in accounts receivable via bank deposit, but the company mistakenly recorded ¥32,000. Record the company-side correcting entry.',
+    e:[{d:[['売掛金',9000]], c:[['当座預金',9000]]}],
+    exp:'当社は正しくは23,000円を記帳すべきところ、誤って32,000円（当座預金32,000／売掛金32,000）と記帳していました。過大に減らしすぎた売掛金9,000円（32,000－23,000）を元に戻し、同時に当座預金も9,000円減らして修正します。銀行勘定調整の「誤記入」は当社側で修正が必要な項目の代表例です。'
+  },
+  { id:673, level:2, cat:'現金預金', chap:'収益認識・現金預金',
+    q:'銀行勘定調整表：仕入先への買掛金支払いのために振り出した小切手12,000円が未渡しであった。また、営業費の支払いのために振り出した小切手8,000円も未渡しであった。当社側の修正仕訳を示しなさい。',
+    en_q:'Bank reconciliation: A ¥12,000 check drawn to pay an accounts payable had not yet been handed over. Also, an ¥8,000 check drawn to pay operating expenses had not yet been handed over. Record the company-side correcting entries.',
+    e:[{d:[['当座預金',12000]], c:[['買掛金',12000]]}, {d:[['当座預金',8000]], c:[['未払金',8000]]}],
+    exp:'小切手を振り出す仕訳（当座預金の減少）は済んでいるのに、実際には相手に渡していない「未渡小切手」は、当座預金の減少を取り消す修正をします。仕入代金（商品の仕入債務）に関するものは「買掛金」、それ以外（営業費など）は「未払金」で戻す点に注意してください。'
+  },
+  { id:674, level:2, cat:'手形', chap:'第4章：債権債務（手形・電子記録債権）',
+    q:'得意先に商品90,000円を販売し、代金は得意先が保有していた他社振出の約束手形を裏書譲渡された。仕訳を示しなさい。',
+    en_q:'Sold goods for ¥90,000 to a customer, receiving payment via a promissory note (issued by yet another company) that the customer endorsed and transferred to us. Record the entry.',
+    e:[{d:[['受取手形',90000]], c:[['売上',90000]]}],
+    exp:'自社が「他社振出の約束手形」を裏書譲渡されて受け取った場合、その手形は自社にとって回収する権利があるため「受取手形」勘定（資産）の増加として処理します。手形を裏書して渡した側（相手方）ではなく、受け取った側の処理である点に注意。'
+  },
+  { id:675, level:2, cat:'手形', chap:'第4章：債権債務（手形・電子記録債権）',
+    q:'買掛金180,000円の支払いのため、譲渡記録を行い、保有する電子記録債権を仕入先に譲渡した。仕訳を示しなさい。',
+    en_q:'To settle an accounts payable of ¥180,000, filed a transfer record and assigned electronically recorded receivables to the supplier. Record the entry.',
+    e:[{d:[['買掛金',180000]], c:[['電子記録債権',180000]]}],
+    exp:'電子記録債権は、買掛金の支払いに充てるために仕入先へ譲渡することができます（譲渡記録）。電子記録債権を受け取る権利がなくなるため「電子記録債権」勘定（資産）を減少させ、同時に支払義務である「買掛金」勘定（負債）を減少させます。銀行で割り引く場合と異なり、売却損は生じません。'
+  },
+  { id:676, level:2, cat:'手形', chap:'第4章：債権債務（手形・電子記録債権）',
+    q:'A社から受け取った約束手形250,000円が不渡りとなった。その後、延滞利息5,000円を含めた255,000円が当座預金に振り込まれた。２つの仕訳を示しなさい。',
+    en_q:'A promissory note of ¥250,000 received from Company A was dishonored. It was later collected, including ¥5,000 of overdue interest, for a total of ¥255,000 deposited into the bank account. Record both entries.',
+    e:[{d:[['不渡手形',250000]], c:[['受取手形',250000]]}, {d:[['当座預金',255000]], c:[['不渡手形',250000],['受取利息',5000]]}],
+    exp:'保有する手形が不渡りとなった場合、回収可能性が低い債権として「不渡手形」勘定（資産）に振り替えます。後日回収できた場合、「不渡手形」勘定を取り崩し、延滞利息は「受取利息」勘定（収益）として別途処理します。'
+  },
+  { id:677, level:2, cat:'手形', chap:'第4章：債権債務（手形・電子記録債権）',
+    q:'B社に裏書譲渡していたC社振出の約束手形40,000円が不渡りとなったため、当座預金から支払いを行い買い戻した。仕訳を示しなさい。',
+    en_q:'A promissory note of ¥40,000 (issued by Company C) that we had endorsed and transferred to Company B was dishonored, so we paid from our bank account to buy it back. Record the entry.',
+    e:[{d:[['不渡手形',40000]], c:[['当座預金',40000]]}],
+    exp:'裏書譲渡（または割引）した手形が不渡りになった場合、譲渡先に対して償還義務を負うため、当座預金などで支払い、その金額を「不渡手形」勘定（資産）として処理します。後日、手形の振出人（本問ではC社）に対して償還請求を行います。'
+  },
+  { id:678, level:2, cat:'手形', chap:'第4章：債権債務（手形・電子記録債権）',
+    q:'当社は取得原価90,000円の土地を120,000円でA社に売却し、代金はA社振出の約束手形で受け取った。当社の仕訳を示しなさい。',
+    en_q:'Sold land (acquisition cost ¥90,000) to Company A for ¥120,000, receiving a promissory note issued by Company A as payment. Record our entry.',
+    e:[{d:[['営業外受取手形',120000]], c:[['土地',90000],['固定資産売却益',30000]]}],
+    exp:'商品売買以外（固定資産や有価証券の売買など）の取引によって生じた手形債権は「営業外受取手形」勘定（資産）、手形債務は「営業外支払手形」勘定（負債）で処理し、通常の「受取手形」「支払手形」とは区別します。固定資産売却益：売却額120,000－帳簿価額90,000＝30,000円。'
+  },
+  { id:679, level:3, cat:'手形', chap:'第4章：債権債務（手形・電子記録債権）',
+    q:'当社はD社の借入金400,000円の保証人となり、保証を行ったため対照勘定による備忘記録を行った。その後、D社が支払不能となったため、当社が代わりに当座預金から支払った。一連の仕訳を示しなさい。',
+    en_q:'The company guaranteed a ¥400,000 loan for Company D and recorded a memorandum entry using contra accounts. Company D later became unable to pay, so the company paid on its behalf from its bank account. Record the sequence of entries.',
+    e:[{d:[['保証債務見返',400000]], c:[['保証債務',400000]]}, {d:[['保証債務',400000]], c:[['保証債務見返',400000]]}, {d:[['未収入金',400000]], c:[['当座預金',400000]]}],
+    exp:'債務の保証人となった場合、「保証債務見返」（借方）と「保証債務」（貸方）という対照勘定で備忘記録を行います（財務諸表には計上されず、５要素のいずれにも該当しません）。代わりに弁済した場合は、対照勘定を取り消すと同時に、D社への請求権を「未収入金」（資産）として計上します。'
+  },
+  { id:680, level:3, cat:'有価証券', chap:'第5章：有価証券',
+    q:'A社株式を１株30,000円で５株購入し、手数料5,000円とともに現金で支払った。その後、A社株式を１株35,000円で５株購入し、手数料5,000円とともに現金で支払った。保有するA社株式のうち６株を１株33,000円で売却し、代金は現金で受け取った（売却原価は平均原価法による）。３つの仕訳を示しなさい。',
+    en_q:'Purchased 5 shares of Company A stock at ¥30,000 each, paying a ¥5,000 fee, all in cash. Later purchased another 5 shares at ¥35,000 each, paying a ¥5,000 fee, in cash. Then sold 6 of the shares held at ¥33,000 each for cash (cost of shares sold determined by the average cost method). Record all three entries.',
+    e:[{d:[['売買目的有価証券',155000]], c:[['現金',155000]]}, {d:[['売買目的有価証券',180000]], c:[['現金',180000]]}, {d:[['現金',198000],['有価証券売却損',3000]], c:[['売買目的有価証券',201000]]}],
+    exp:'取得原価には手数料を含めます。①５株×＠30,000＋5,000＝155,000円。②５株×＠35,000＋5,000＝180,000円。平均単価：(155,000＋180,000)÷10株＝＠33,500円。③売却金額：6株×＠33,000＝198,000円。売却原価：6株×＠33,500＝201,000円。有価証券売却損：198,000－201,000＝△3,000円。有価証券を２回以上取得した場合、売却原価は平均原価法で算定します。'
+  },
+  { id:681, level:2, cat:'無形固定資産', chap:'無形資産・リース・引当金',
+    q:'社内利用目的のソフトウェアの制作を1,200,000円で依頼し、手付金として現金500,000円を支払った。その後ソフトウェアが完成し引き渡しを受け、残額700,000円を現金で支払った。決算に際して、有効期間５年（当期12ヶ月分）で償却する。３つの仕訳を示しなさい。',
+    en_q:'Commissioned in-house-use software development for ¥1,200,000, paying a ¥500,000 deposit in cash. The software was later completed and delivered, and the remaining ¥700,000 was paid in cash. At year-end, amortize over a 5-year useful life (full 12 months this period). Record all three entries.',
+    e:[{d:[['ソフトウェア仮勘定',500000]], c:[['現金',500000]]}, {d:[['ソフトウェア',1200000]], c:[['ソフトウェア仮勘定',500000],['現金',700000]]}, {d:[['ソフトウェア償却',240000]], c:[['ソフトウェア',240000]]}],
+    exp:'ソフトウェアの制作を依頼し、完成前に支払った金額は「ソフトウェア仮勘定」（資産）で処理します。完成し引き渡しを受けた時点で「ソフトウェア」勘定へ振り替えます。無形固定資産は定額法・残存価額ゼロ・直接法で償却：1,200,000÷5年＝240,000円。'
+  },
+  { id:682, level:3, cat:'引当金', chap:'無形資産・リース・引当金',
+    q:'決算にあたり、売掛金残高300,000円のうち30,000円はX社に対するものである。X社は経営状態に重大な問題が生じているため、担保の処分見込額10,000円を控除した残額の50％を貸倒見積高とする。その他の売掛金については債権金額の２％を貸倒見積高とする。貸倒引当金の期首残高はゼロ（差額補充法）。決算整理仕訳を示しなさい。',
+    en_q:'At year-end, of a ¥300,000 accounts receivable balance, ¥30,000 relates to Company X, which is in serious financial distress. Estimate its bad debt allowance at 50% of the balance after deducting the ¥10,000 collateral recovery value. For the remaining receivables, estimate 2% of the balance. The opening allowance balance is zero (allowance method, incremental basis). Record the adjusting entry.',
+    e:[{d:[['貸倒引当金繰入',15400]], c:[['貸倒引当金',15400]]}],
+    exp:'個別評価と一括評価を使い分けます。X社（個別評価）：(売掛金30,000－担保の処分見込額10,000)×50％＝10,000円。その他の売掛金（一括評価）：(300,000－30,000)×2％＝5,400円。貸倒見積高合計：10,000＋5,400＝15,400円。期首残高がゼロなので、差額補充法によりそのまま15,400円を繰り入れます。'
+  },
+  { id:683, level:2, cat:'株式会社会計', chap:'第10章：株式会社会計',
+    q:'当期純損失の計上により、繰越利益剰余金が350,000円の借方残高となっている。株主総会の決議により、資本金と相殺して欠損を填補した。仕訳を示しなさい。',
+    en_q:'Due to a net loss, retained earnings (繰越利益剰余金) shows a ¥350,000 debit balance. By shareholders\' meeting resolution, this deficit was offset against paid-in capital. Record the entry.',
+    e:[{d:[['資本金',350000]], c:[['繰越利益剰余金',350000]]}],
+    exp:'繰越利益剰余金が借方残高（マイナス）ということは「欠損」が生じている状態です。株主総会の決議により、この欠損を埋め合わせるために、同額の資本金を減少させて繰越利益剰余金の借方残高をゼロにします。これを「欠損填補」といいます。'
+  },
+  { id:684, level:2, cat:'株式会社会計', chap:'第10章：株式会社会計',
+    q:'株主総会において、以下の決議を行った。新築積立金の積立て：15,000円　別途積立金の取崩し：35,000円。必要な仕訳を示しなさい。',
+    en_q:'At the shareholders\' meeting, the following were resolved: appropriation to a new-building reserve of ¥15,000; reversal of a general reserve of ¥35,000. Record the necessary entries.',
+    e:[{d:[['繰越利益剰余金',15000]], c:[['新築積立金',15000]]}, {d:[['別途積立金',35000]], c:[['繰越利益剰余金',35000]]}],
+    exp:'任意積立金を積み立てた場合、「繰越利益剰余金」勘定から積立金の勘定へ振り替えます。逆に取り崩した場合は、積立金の勘定から「繰越利益剰余金」勘定へ振り替えます。積立と取崩は逆方向の仕訳になる点を押さえましょう。'
+  },
+  { id:685, level:3, cat:'株式会社会計', chap:'第10章：株式会社会計',
+    q:'株主総会において、配当金90,000円の支払いを決議し、準備金は配当金の1/10を積み立てることとした。配当財源：繰越利益剰余金60,000円、その他資本剰余金30,000円。仕訳を示しなさい。',
+    en_q:'At the shareholders\' meeting, a dividend of ¥90,000 was resolved, with 1/10 of the dividend to be appropriated to statutory reserves. Dividend sources: retained earnings ¥60,000, other capital surplus ¥30,000. Record the entry.',
+    e:[{d:[['繰越利益剰余金',66000],['その他資本剰余金',33000]], c:[['未払配当金',90000],['利益準備金',6000],['資本準備金',3000]]}],
+    exp:'繰越利益剰余金を財源とした場合は「利益準備金」を、その他資本剰余金を財源とした場合は「資本準備金」を、それぞれの財源の1/10だけ積み立てます。利益準備金：60,000×1/10＝6,000円（繰越利益剰余金からは60,000＋6,000＝66,000円が減少）。資本準備金：30,000×1/10＝3,000円（その他資本剰余金からは30,000＋3,000＝33,000円が減少）。'
   },
   // ===== 有価証券の補充 =====
   { id:620, level:2, cat:'有価証券', chap:'第5章：有価証券',
