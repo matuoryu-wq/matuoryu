@@ -555,6 +555,7 @@
       <button class="ctrl-btn grp-btn" data-sec="chap:決算整理" title="決算整理" onclick="setSection('chap:決算整理')">決算整理</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:本支店・連結・個人事業主" title="本支店・連結・個人事業主" onclick="setSection('chap:本支店・連結・個人事業主')">本支店・連結等</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:工業簿記" title="工業簿記" onclick="setSection('chap:工業簿記')">工業簿記</button>
+      <button class="ctrl-btn grp-btn" data-sec="chap:1級：連結会計" title="1級：連結会計" onclick="setSection('chap:1級：連結会計')">🎓1級：連結会計</button>
     </div>
   </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
@@ -720,6 +721,8 @@ const T = {
   '新株予約権戻入益':'revenue','価格差異':'other','数量差異':'other','切削部門費':'other','組立部門費':'other','動力部門費':'other','修繕部門費':'other','製造間接費配賦差異':'other',
   '関連会社株式':'asset','持分法による投資利益':'revenue','異常仕損費':'expense','経費':'expense',
   '利益剰余金':'equity','支店へ売上':'revenue','本店より仕入':'expense','S社株式':'asset',
+  '評価差額':'equity','段階取得に係る差益':'revenue','資本剰余金':'equity','子会社株式売却益':'revenue',
+  '非支配株主に帰属する当期純利益':'other','棚卸資産':'asset','利益剰余金当期首残高':'equity',
   // 2級追加（新規科目）
   '商品券':'liability','他店商品券':'asset','仕入割引':'revenue','定期預金':'asset',
   '役員貸付金':'asset','役員借入金':'liability','引出金（事業主貸）':'other','圧縮積立金':'equity',
@@ -6218,6 +6221,92 @@ const ALL = [
     q:'手形の書き換え：支払手形200,000円を決済できず、利息2,000円を払い期日を延長（書き換え）。支払人側の仕訳をしなさい。',
     e:[{d:[['支払手形',200000],['支払利息',2000]], c:[['支払手形',200000],['現金',2000]]}],
     exp:'手形書き換えは旧手形を消滅させ新手形を振り出す処理。旧支払手形200,000円を消去し新手形200,000円を計上。利息2,000円は費用計上します。'
+  },
+
+  // ===== 1級：連結会計（応用） =====
+  { id:726, level:3, cat:'連結会計', chap:'1級：連結会計',
+    q:'Ｐ社はＳ社株式80％を取得し支配を獲得した。取得に際し、外部の会計士・弁護士への報酬（取得関連費用）30,000円を現金で支払った。この取得関連費用の仕訳を示しなさい。',
+    en_q:'Company P acquired 80% of Company S, gaining control. In connection with the acquisition, paid ¥30,000 cash in professional fees (acquisition-related costs) to outside accountants/lawyers. Record the entry for these acquisition-related costs.',
+    e:[{d:[['支払手数料',30000]], c:[['現金',30000]]}],
+    exp:'【初めての方へ】「取得関連費用」とは、M&A（会社を買うこと）のときに払う、弁護士や会計士への相談料・仲介手数料のことです。一見「S社株式を買うためのお金」に見えますが、会計のルールでは「S社株式の値段（取得原価）には含めず、払った期の費用として処理する」と決められています。理由は、この費用は「株式そのものの価値」ではなく「取引を成立させるための事務コスト」だからです。仕訳は普通の経費の支払いと同じで、「支払手数料（費用）／現金（資産の減少）」となります。'
+  },
+  { id:727, level:3, cat:'連結会計', chap:'1級：連結会計',
+    q:'Ｓ社（子会社）の土地は帳簿価額500,000円であるが、支配獲得時の時価は650,000円であった。子会社の資産を時価評価する連結修正仕訳を示しなさい（税効果は考慮しない）。',
+    en_q:'Subsidiary S\'s land has a book value of ¥500,000 but a fair value of ¥650,000 at the date control was obtained. Record the consolidation entry revaluing the subsidiary\'s asset to fair value (ignore tax effects).',
+    e:[{d:[['土地',150000]], c:[['評価差額',150000]]}],
+    exp:'【初めての方へ】連結会計では、子会社を「まるごと仲間に迎え入れる」ときに、子会社の資産・負債を「今の本当の価値（時価）」に評価し直すというルールがあります。これを「子会社の資産・負債の時価評価」と言います。土地の場合、帳簿には昔買ったときの値段（500,000円）が残っていますが、今売ったら650,000円になるなら、差額150,000円を「評価差額」という純資産の勘定に計上します。「評価差額」は、後で資本連結（親会社の投資とS社の純資産を相殺する処理）のときに、S社の純資産の一部として扱われます。'
+  },
+  { id:728, level:3, cat:'連結会計', chap:'1級：連結会計',
+    q:'Ｓ社（子会社）の土地は帳簿価額500,000円であるが、支配獲得時の時価は650,000円であった（実効税率30％）。税効果を考慮して子会社の資産を時価評価する連結修正仕訳を示しなさい。',
+    en_q:'Same fact pattern as above (land: book ¥500,000, fair value ¥650,000), but now apply a 30% effective tax rate. Record the fair-value revaluation entry including the tax effect.',
+    e:[{d:[['土地',150000]], c:[['繰延税金負債',45000],['評価差額',105000]]}],
+    exp:'【初めての方へ】前問に税金の影響を追加したバージョンです。土地の評価差額150,000円は、将来この土地を売却したときに税金がかかる原因になるので、その将来の税金分だけ「繰延税金負債」（将来支払う税金）として先取りで計上します。繰延税金負債：150,000×30％＝45,000円。残りの105,000円（＝150,000－45,000、税引後の正味の評価差額）だけが本当の意味での「評価差額」（純資産）になります。「評価が上がった分、丸ごと得するわけではなく、税金分は差し引いて考える」というのがポイントです。'
+  },
+  { id:729, level:3, cat:'連結会計', chap:'1級：連結会計',
+    q:'Ｐ社はＳ社（支配獲得時の純資産：資本金500,000円・利益剰余金200,000円・評価差額100,000円）の株式80％を700,000円で取得し支配を獲得した。資本連結（投資と資本の相殺消去）の仕訳を示しなさい。',
+    en_q:'Company P acquired 80% of Company S (net assets at acquisition: capital ¥500,000, retained earnings ¥200,000, revaluation surplus ¥100,000) for ¥700,000, gaining control. Record the capital consolidation entry (elimination of the investment against equity).',
+    e:[{d:[['資本金',500000],['利益剰余金',200000],['評価差額',100000],['のれん',60000]], c:[['S社株式',700000],['非支配株主持分',160000]]}],
+    exp:'【初めての方へ】資本連結は連結会計の一番の基本作業です。①まずS社の純資産をぜんぶ足します：資本金500,000＋利益剰余金200,000＋評価差額100,000＝800,000円（これが「時価ベースのS社の正味の価値」）。②Ｐ社の取り分（80％）＝640,000円、残り20％は「非支配株主持分」（P社以外の株主の取り分）として160,000円を純資産に計上します。③Ｐ社が払った700,000円と、Ｐ社の取り分640,000円との差額60,000円は「のれん」（S社を高く買った理由＝ブランド力や将来性への対価）として資産計上します。仕訳はS社の純資産の科目を全部借方で消し、Ｐ社の投資（S社株式）と非支配株主持分を貸方に計上する形になります。'
+  },
+  { id:730, level:3, cat:'連結会計', chap:'1級：連結会計',
+    q:'Ｐ社はＳ社株式を2段階で取得した。Ｘ1年度末：Ｓ社株式20％を180,000円で取得。Ｘ2年度末：追加でＳ社株式40％を400,000円で取得し、合計60％保有として支配を獲得した。支配獲得時点でのＳ社株式20％（既存保有分）の時価は200,000円であった。既存投資を時価に評価替えする仕訳を示しなさい（段階取得）。',
+    en_q:'Company P acquired Company S\'s shares in two stages: 20% for ¥180,000 at the end of Year 1, and an additional 40% for ¥400,000 at the end of Year 2 (gaining control with 60% total). At the date control was obtained, the fair value of the previously held 20% was ¥200,000. Record the entry revaluing the existing investment to fair value (step acquisition).',
+    e:[{d:[['S社株式',20000]], c:[['段階取得に係る差益',20000]]}],
+    exp:'【初めての方へ】「段階取得」とは、一気に支配株主になるのではなく、少しずつ株を買い増して最終的に子会社化するケースです。この場合、「支配を獲得した瞬間」に、それまで持っていた分（20％）も含めて全部を「今の時価」で評価し直すというルールがあります。以前180,000円で買った20％分が、今では200,000円の価値になっていたので、差額20,000円を「段階取得に係る差益」（連結上の収益）として計上します。「途中まで小口の株主だった人が、急に経営権を握る株主になった瞬間に、それまでの持ち分もまとめて今の値段で買い直したとみなす」というイメージです。'
+  },
+  { id:731, level:3, cat:'連結会計', chap:'1級：連結会計',
+    q:'Ｐ社はＳ社株式60％を保有し、既に支配している（非支配株主持分40％）。追加でＳ社株式20％を250,000円で取得した（合計80％保有）。追加取得時のＳ社純資産は1,000,000円であった。追加取得の連結修正仕訳を示しなさい。',
+    en_q:'Company P already controls Company S with a 60% holding (non-controlling interest 40%). P acquired an additional 20% for ¥250,000 (80% total). S\'s net assets at the time of additional acquisition were ¥1,000,000. Record the consolidation entry for the additional acquisition.',
+    e:[{d:[['非支配株主持分',200000],['資本剰余金',50000]], c:[['S社株式',250000]]}],
+    exp:'【初めての方へ】すでに子会社にしている会社の株を「追加で」買い増すケースです。もう支配は獲得済みなので、のれんは新たに計算しません。非支配株主（他の株主）から株を買い取るイメージなので、非支配株主持分のうち買い取った分（Ｓ社純資産1,000,000×20％＝200,000円）を減らします。実際に払った金額250,000円との差額50,000円は、損益ではなく「資本剰余金」（純資産の内訳の一つ）の減少として処理します。「グループ内の株主構成が変わっただけ」なので、儲けや損としては扱わないのがポイントです。'
+  },
+  { id:732, level:3, cat:'連結会計', chap:'1級：連結会計',
+    q:'Ｐ社はＳ社株式80％（取得原価800,000円）を保有している。このうち20％を300,000円で売却した（売却後60％保有・支配は継続）。売却時のＳ社純資産は1,200,000円。個別財務諸表上、売却価額300,000円と売却原価200,000円（＝800,000×20/80）の差額100,000円を「子会社株式売却益」として計上済みである。連結修正仕訳を示しなさい。',
+    en_q:'Company P holds 80% of Company S (cost ¥800,000). It sold 20% for ¥300,000 (retaining 60%, control continues). S\'s net assets at the time of sale were ¥1,200,000. On P\'s individual financial statements, a ¥100,000 gain (sale price ¥300,000 less cost basis ¥200,000, i.e. 800,000×20/80) was already recorded as "gain on sale of subsidiary shares." Record the consolidation adjusting entry.',
+    e:[{d:[['子会社株式売却益',100000],['資本剰余金',140000]], c:[['非支配株主持分',240000]]}],
+    exp:'【初めての方へ】子会社株式を一部だけ売っても、まだ支配が続いている（60％保有で子会社のまま）場合、連結上は「損益」として扱いません。理由は「グループの外に売ったわけではなく、単に株主の内訳（親会社の取り分と非支配株主の取り分）が変わっただけ」だからです。①個別財務諸表で計上した「子会社株式売却益」100,000円は、連結上は取り消します。②非支配株主の取り分は、売った20％分だけ増えます：Ｓ社純資産1,200,000×20％＝240,000円。③この240,000円と、取り消した売却益100,000円との差額140,000円は「資本剰余金」の減少として調整します。「連結では、支配が続く限り、子会社株式の一部売却は儲けではなく、株主間のお金の付け替えとして処理する」と覚えましょう。'
+  },
+  { id:733, level:2, cat:'連結会計', chap:'1級：連結会計',
+    q:'Ｐ社はＳ社（子会社）に対して500,000円を貸し付けている。連結財務諸表を作成するにあたり、この債権債務を相殺消去する仕訳を示しなさい。',
+    en_q:'Company P has lent ¥500,000 to subsidiary S. When preparing consolidated financial statements, record the entry eliminating this intercompany receivable/payable.',
+    e:[{d:[['借入金',500000]], c:[['貸付金',500000]]}],
+    exp:'【初めての方へ】連結財務諸表は「グループ全体を1つの会社」として見た財務諸表です。Ｐ社が貸してＳ社が借りたお金は、グループの外から見れば「自分の左のポケットから右のポケットにお金を移しただけ」で、実質的な貸し借りはありません。そこでＰ社の「貸付金」（資産）とＳ社の「借入金」（負債）を、金額をぶつけ合って両方ともゼロにします。この作業を「連結上の相殺消去」と呼びます。'
+  },
+  { id:734, level:2, cat:'連結会計', chap:'1級：連結会計',
+    q:'上記の貸付金に対応する利息について、Ｐ社は受取利息20,000円、Ｓ社は支払利息20,000円をそれぞれ計上している。連結財務諸表を作成するにあたり、この収益・費用を相殺消去する仕訳を示しなさい。',
+    en_q:'For the loan above, P recorded interest income of ¥20,000 and S recorded interest expense of ¥20,000. When preparing consolidated financial statements, record the entry eliminating this intercompany revenue/expense.',
+    e:[{d:[['受取利息',20000]], c:[['支払利息',20000]]}],
+    exp:'【初めての方へ】前問の貸付金・借入金とセットで発生する利息も同じ考え方です。Ｐ社が受け取った利息（収益）とＳ社が支払った利息（費用）は、グループ全体で見れば「グループ内でお金が動いただけ」で、外部から見た本当の収益・費用ではありません。そこで「受取利息」と「支払利息」を相殺してゼロにします。貸付金・借入金の元本だけでなく、そこから生まれる利息も必ずセットで消去する、と覚えておきましょう。'
+  },
+  { id:735, level:3, cat:'連結会計', chap:'1級：連結会計',
+    q:'Ｐ社はＳ社へ現金100,000円を送金したが、決算日時点でＳ社側では未処理（未達）であった。①Ｓ社側で未達取引を整理する仕訳（借入金として処理）②その後、債権債務を相殺消去する仕訳を示しなさい。',
+    en_q:'Company P remitted ¥100,000 cash to subsidiary S, but as of the balance sheet date, S had not yet recorded the receipt (in transit). Record ①the entry on S\'s books to recognize the in-transit item (as a loan payable) and ②the subsequent elimination of the intercompany receivable/payable.',
+    e:[{d:[['現金',100000]], c:[['借入金',100000]]}, {d:[['借入金',100000]], c:[['貸付金',100000]]}],
+    exp:'【初めての方へ】「未達取引」とは、親会社は送金の記録をつけたのに、子会社側の帳簿にまだその入金が反映されていない状態のことです（銀行の処理が決算日をまたいでしまった、などが原因）。このままでは相殺消去（貸付金と借入金をぶつけ合う作業）がうまくできないので、①まずＳ社側の帳簿を「本来あるべき状態」に修正します（現金を受け取った記録を追加）。②その上で、Ｐ社の「貸付金」とＳ社の「借入金」を相殺消去します。「相殺消去の前に、まず両社の帳簿の金額を一致させる」というのがこの処理のポイントです。'
+  },
+  { id:736, level:3, cat:'連結会計', chap:'1級：連結会計',
+    q:'Ｓ社（子会社、Ｐ社持分80％）は原価80,000円の商品をＰ社に100,000円で販売した。期末にＰ社の在庫にこの商品が全量残っている。①未実現利益の消去②非支配株主持分への按分の仕訳を示しなさい（アップストリーム取引）。',
+    en_q:'Subsidiary S (80% owned by P) sold goods costing ¥80,000 to P for ¥100,000. All of these goods remain in P\'s ending inventory. Record ①the elimination of unrealized profit and ②the allocation to non-controlling interests (upstream transaction).',
+    e:[{d:[['売上原価',20000]], c:[['棚卸資産',20000]]}, {d:[['非支配株主持分',4000]], c:[['非支配株主に帰属する当期純利益',4000]]}],
+    exp:'【初めての方へ】「アップストリーム」とは、子会社（Ｓ社）から親会社（Ｐ社）へ商品が流れる取引のことです（逆に親会社→子会社は「ダウンストリーム」）。①Ｓ社が乗せた利益20,000円（＝100,000－80,000）は、Ｐ社の在庫にまだ残っている＝グループ外にまだ売れていないので、「未実現利益」として消去します（売上原価を増やして在庫の評価を下げる）。②アップストリームの場合、この利益はもともと「Ｓ社の利益」なので、非支配株主（Ｓ社の他の株主）にも一部負担してもらう必要があります。非支配株主の負担分：20,000×20％＝4,000円。この4,000円分だけ、非支配株主の取り分（非支配株主持分）を減らします。ダウンストリーム（親→子）の場合はこの按分は行わない点が違いです。'
+  },
+  { id:737, level:2, cat:'連結会計', chap:'1級：連結会計',
+    q:'Ｓ社（子会社）の当期純利益は500,000円であった（Ｐ社持分80％、非支配株主持分20％）。非支配株主に帰属する当期純利益を非支配株主持分に振り替える仕訳を示しなさい。',
+    en_q:'Subsidiary S\'s net income for the period was ¥500,000 (P holds 80%, non-controlling interest 20%). Record the entry allocating the non-controlling interests\' share of net income to non-controlling interests.',
+    e:[{d:[['非支配株主に帰属する当期純利益',100000]], c:[['非支配株主持分',100000]]}],
+    exp:'【初めての方へ】子会社が稼いだ利益は、親会社の取り分だけでなく、非支配株主（他の株主）の取り分もあります。Ｓ社の当期純利益500,000円のうち、非支配株主の持分割合20％にあたる100,000円は、連結損益計算書上「非支配株主に帰属する当期純利益」として区分し、非支配株主持分（純資産）を増やします。「子会社の儲けのうち、親会社の分は親会社の利益剰余金へ、他の株主の分は非支配株主持分へ」と、取り分に応じて分けるイメージです。'
+  },
+  { id:738, level:3, cat:'連結会計', chap:'1級：連結会計',
+    q:'Ｓ社（子会社、Ｐ社持分80％）が保有するその他有価証券に評価益50,000円が生じた（税効果は考慮しない）。連結上、この評価差額のうち非支配株主に帰属する部分を非支配株主持分に振り替える仕訳を示しなさい。',
+    en_q:'Subsidiary S (80% owned by P) recognized a ¥50,000 unrealized gain on available-for-sale securities (ignore tax effects). Record the entry allocating the non-controlling interests\' share of this valuation gain to non-controlling interests.',
+    e:[{d:[['その他有価証券評価差額金',10000]], c:[['非支配株主持分',10000]]}],
+    exp:'【初めての方へ】子会社が保有する有価証券の評価差額（純資産直入項目）も、当期純利益と同じように、親会社と非支配株主で取り分を分ける必要があります。評価益50,000円のうち非支配株主の持分20％にあたる10,000円は、非支配株主持分（純資産）へ振り替えます。「損益計算書を通らない純資産の変動（評価差額など）も、当期純利益と同じ考え方で持分割合に応じて按分する」というのがポイントです。'
+  },
+  { id:739, level:3, cat:'連結会計', chap:'1級：連結会計',
+    q:'前期末に資本連結仕訳（資本金400,000円・利益剰余金100,000円・のれん50,000円／Ｓ社株式450,000円・非支配株主持分100,000円）を行った。前期中、のれん償却5,000円・非支配株主に帰属する前期純利益15,000円が発生した。当期首の開始仕訳（前期末までの純資産の動きを反映したもの）を示しなさい。',
+    en_q:'At the end of last period, a capital consolidation entry was recorded (capital ¥400,000, retained earnings ¥100,000, goodwill ¥50,000 / S shares ¥450,000, non-controlling interests ¥100,000). During last period, goodwill amortization of ¥5,000 and non-controlling interests\' share of last period\'s net income of ¥15,000 occurred. Record this period\'s opening entry, reflecting the cumulative effect through the end of last period.',
+    e:[{d:[['資本金',400000],['利益剰余金当期首残高',120000],['のれん',45000]], c:[['S社株式',450000],['非支配株主持分',115000]]}],
+    exp:'【初めての方へ】連結の仕訳は、個別財務諸表（Ｐ社・Ｓ社それぞれの帳簿）には一切記録されません。そのため、連結精算表を作るたびに「過去に行った連結修正を最初からもう一度全部やり直す」必要があります。これを「開始仕訳」と呼びます。前期末の資本連結仕訳をベースに、①のれん償却5,000円（費用なので利益剰余金を減らす）②非支配株主に帰属する前期純利益15,000円（非支配株主持分を増やす）の2つの累積効果を反映させます。過去分の損益の動きは、当期の損益計算書には出せないので、代わりに「利益剰余金当期首残高」という純資産の勘定にまとめて計上します：100,000＋5,000（のれん償却の累積）＋15,000（非支配株主帰属利益の累積）＝120,000円。のれんは償却済みの5,000円を差し引いて45,000円、非支配株主持分は15,000円増えて115,000円になります。'
   },
 
 ];
