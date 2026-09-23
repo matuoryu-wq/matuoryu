@@ -752,6 +752,8 @@ const T = {
   'スワップ資産':'asset','子会社株式評価損':'expense','デリバティブ負債':'liability',
   '退職給付制度終了益':'revenue','遊休資産':'asset',
   '材料受入価格差異':'other','材料副費差異':'other','内部利益控除':'expense','繰延内部利益':'other',
+  '未着品':'asset','未着品売上':'revenue','雑損失':'expense','A事業部':'other','B事業部':'other',
+  '製品振替収益':'revenue','工事損失引当金繰入':'expense','工事損失引当金':'liability',
   // 2級追加（新規科目）
   '商品券':'liability','他店商品券':'asset','仕入割引':'revenue','定期預金':'asset',
   '役員貸付金':'asset','役員借入金':'liability','引出金（事業主貸）':'other','圧縮積立金':'equity',
@@ -5956,6 +5958,66 @@ const ALL = [
     e:[{d:[['売掛金',300000]], c:[['売上',294000],['返金負債',6000]]}, {d:[['現金',294000],['返金負債',6000]], c:[['売掛金',300000]]}],
     exp:'収益認識基準では、売上割引のように「高い確率で発生する値引き」は変動対価として、販売時点であらかじめ売上から控除します。①売掛金は総額300,000円を計上しつつ、売上は割引後の294,000円のみを認識し、差額6,000円（300,000×2％）を「返金負債」（負債）として据え置きます。②実際に割引が適用され294,000円が入金されると、据え置いていた返金負債6,000円を取り崩して売掛金300,000円と相殺します。見積もり通りに確定したため、差額調整は生じません。'
   },
+  { id:868, level:2, cat:'未着品売買', chap:'収益認識・現金預金',
+    q:'Ｘ社は海外の仕入先から商品を輸入するにあたり、船荷証券（未着品を表す証券）を受け取り、代金500,000円は掛けとした。この時点では商品はまだ倉庫に到着していない。仕訳を示しなさい。',
+    en_q:'Company X received a bill of lading (representing goods in transit) for imported goods, with payment of ¥500,000 on account. The goods have not yet arrived at the warehouse. Record the entry.',
+    e:[{d:[['未着品',500000]], c:[['買掛金',500000]]}],
+    exp:'船で輸送中の商品は、実際に手元に届く前に、貨物を代表する証券（船荷証券など）を受け取ることで、所有権が移転し仕入取引として記録します。まだ商品そのものは倉庫に届いていない段階なので、通常の「仕入」ではなく「未着品」という資産勘定で処理します。「証券を持っている＝その商品の持ち主である」という状態を表す勘定です。'
+  },
+  { id:869, level:3, cat:'未着品売買', chap:'収益認識・現金預金',
+    q:'Ｘ社は上記の未着品（原価500,000円）を、実際に商品が到着する前に、船荷証券を裏書きすることでＹ社へ600,000円で転売した。代金は掛けとした。仕訳を示しなさい。',
+    en_q:'Company X resold the goods-in-transit above (cost ¥500,000) for ¥600,000 on credit, before physical arrival, by endorsing the bill of lading to Company Y. Record the entry.',
+    e:[{d:[['売掛金',600000]], c:[['未着品売上',600000]]}, {d:[['仕入',500000]], c:[['未着品',500000]]}],
+    exp:'船が港に到着する前でも、船荷証券を「裏書譲渡」することで、未着品をそのまま転売できます。①転売により生じた債権は「売掛金」、収益は区別して「未着品売上」として計上します。②同時に、未着品（資産）を仕入原価相当額だけ減らし、「仕入」（売上原価の元になる勘定）に振り替えます。「実際に商品を見ていなくても、証券のやり取りだけで売買が成立する」のが未着品売買の特徴です。'
+  },
+  { id:870, level:2, cat:'未着品売買', chap:'収益認識・現金預金',
+    q:'Ｘ社は保有する未着品（原価300,000円）について、商品が実際に倉庫へ到着したため、通常の「仕入」（商品）勘定へ振り替える仕訳を示しなさい。',
+    en_q:'Company X\'s goods-in-transit (cost ¥300,000) physically arrived at the warehouse. Record the entry reclassifying it into the ordinary "purchases" account.',
+    e:[{d:[['仕入',300000]], c:[['未着品',300000]]}],
+    exp:'未着品として計上していた商品が実際に倉庫へ到着すると、もはや「未着」ではなくなるため、通常の商品と同じ「仕入」勘定に振り替えます。以後は、他の仕入商品と同様に通常の販売・在庫管理の対象になります。「証券で管理していた期間が終わり、実物管理に切り替わる」タイミングを表す仕訳です。'
+  },
+  { id:871, level:3, cat:'未着品売買', chap:'収益認識・現金預金',
+    q:'Ｘ社が保有する未着品800,000円のうち、600,000円分は船荷証券のまま転売し（売価750,000円、掛け）、残り200,000円分は実際に商品が到着した。①転売による売上計上②未着品800,000円全額を仕入へ振り替える仕訳を示しなさい（転売分・到着分をまとめて仕入に振り替える）。',
+    en_q:'Of Company X\'s ¥800,000 goods-in-transit, ¥600,000 was resold via bill-of-lading endorsement (sale price ¥750,000, on credit), and the remaining ¥200,000 physically arrived. Record ①the sale entry and ②the entry reclassifying the full ¥800,000 into purchases.',
+    e:[{d:[['売掛金',750000]], c:[['未着品売上',750000]]}, {d:[['仕入',800000]], c:[['未着品',800000]]}],
+    exp:'未着品の一部を転売し、残りは実際に到着した場合でも、どちらのケースも最終的には「未着品」から「仕入」への振り替えが必要になります（転売した分はその後の売上原価計算のため、到着した分は通常の商品管理のため）。①転売分の売上を計上：売掛金750,000円／未着品売上750,000円。②未着品全額800,000円を仕入に振り替え：転売した600,000円分は売上原価の元に、到着した200,000円分は通常の商品在庫の元になります。'
+  },
+  { id:872, level:2, cat:'未着品売買', chap:'収益認識・現金預金',
+    q:'Ｘ社が保有する未着品400,000円のうち、輸送中の事故により100,000円分が滅失したことが判明した。保険をかけていなかった場合の仕訳を示しなさい。',
+    en_q:"¥100,000 of Company X's ¥400,000 goods-in-transit was lost in a shipping accident. Record the entry, assuming no insurance was carried.",
+    e:[{d:[['雑損失',100000]], c:[['未着品',100000]]}],
+    exp:'輸送中に事故が発生し、未着品の一部が失われてしまった場合、その分だけ未着品（資産）を減額し、保険による補填がなければ「雑損失」（特別損失）として処理します。「まだ手元にない商品でも、資産として計上している以上、滅失すれば損失を認識する」という点がポイントです。'
+  },
+  { id:873, level:3, cat:'未着品売買', chap:'収益認識・現金預金',
+    q:'Ｘ社が保有する未着品300,000円が輸送中の事故により全額滅失した。この未着品には海上保険が付されており、保険会社に対して保険金280,000円を請求できることが確定した。仕訳を示しなさい。',
+    en_q:"Company X's entire ¥300,000 goods-in-transit was lost in a shipping accident. The goods were covered by marine insurance, and a ¥280,000 insurance claim was confirmed as recoverable. Record the entry.",
+    e:[{d:[['未収入金',280000],['雑損失',20000]], c:[['未着品',300000]]}],
+    exp:'保険をかけていた場合は、滅失した金額の全額が損失になるわけではありません。保険金として回収できる見込みの金額（280,000円）は「未収入金」（資産）として計上し、保険でカバーされない差額（20,000円）だけを「雑損失」として処理します。「保険でどこまでカバーされるか」によって、損失として認識する金額が変わる点を確認する問題です。'
+  },
+  { id:874, level:3, cat:'工事契約', chap:'収益認識・現金預金',
+    q:'Ｘ社は工事契約（請負金額2,000,000円）について、工事の初期段階であり進捗度を合理的に見積ることができないため、原価回収基準を適用している。当期の工事原価発生額は300,000円であった。原価回収基準による当期の収益・原価の計上仕訳を示しなさい（発生原価と同額を限度として収益を認識する）。',
+    en_q:"Company X applies the cost-recovery method to a construction contract (contract price ¥2,000,000) because, in its early stage, progress cannot yet be reliably estimated. This period's costs incurred were ¥300,000. Record the entry recognizing revenue and expense under the cost-recovery method (revenue limited to costs incurred).",
+    e:[{d:[['完成工事原価',300000],['契約資産',300000]], c:[['現金',300000],['完成工事高',300000]]}],
+    exp:'原価回収基準は、工事の進捗度を合理的に見積ることができない場合に適用する、工事進行基準の例外的な処理方法です。この方法では、発生した工事原価と同額を限度として収益を認識します（利益はまだ計上しません）。当期発生原価300,000円をそのまま「完成工事原価」として費用計上するとともに、同額を「完成工事高」として収益計上するため、この時点での利益はゼロになります。「進捗が分からないなら、せめて使った分だけ回収できたとみなそう」という考え方です。'
+  },
+  { id:875, level:3, cat:'工事契約', chap:'収益認識・現金預金',
+    q:'上記のＸ社の工事契約について、翌期に進捗度を合理的に見積れるようになり、工事進行基準に切り替えることとなった。累計発生原価は900,000円（見積総原価1,800,000円、進捗率50％）であった。これまで原価回収基準により計上した収益の累計額は300,000円（前期発生原価分）である。工事進行基準による累計収益1,000,000円（請負金額2,000,000円×50％）との差額700,000円を、切替時に追加計上する仕訳を示しなさい。',
+    en_q:"For Company X's contract above, progress became reliably estimable the next period, triggering a switch to the percentage-of-completion method. Cumulative costs incurred were ¥900,000 (total estimated cost ¥1,800,000, 50% complete). Cumulative revenue previously recognized under the cost-recovery method was ¥300,000. Record the entry recognizing the additional ¥700,000 needed to reach the ¥1,000,000 cumulative revenue required under the percentage-of-completion method (contract price ¥2,000,000 × 50%).",
+    e:[{d:[['契約資産',700000]], c:[['完成工事高',700000]]}],
+    exp:'原価回収基準は「進捗度が分かるようになるまでの暫定的な処理」なので、進捗度を合理的に見積れるようになった時点で、通常の工事進行基準に切り替えます。切替時には、これまで原価回収基準で計上していた収益累計額（300,000円）と、工事進行基準によれば本来計上されているべき累計収益（1,000,000円）との差額700,000円を、その期に追加で収益計上します。「暫定的に少なめに計上していた収益を、進捗が分かった時点で一気に追いつかせる」というイメージです。'
+  },
+  { id:876, level:2, cat:'工事契約', chap:'収益認識・現金預金',
+    q:'Ｘ社は原価回収基準を適用している工事契約について、工事原価総額の見積りを見直した結果、総額で150,000円の損失が見込まれることが判明した。将来発生する損失に備えて工事損失引当金を計上する仕訳を示しなさい。',
+    en_q:"For a construction contract under the cost-recovery method, Company X revised its total estimated cost and determined the contract will result in a total loss of ¥150,000. Record the entry recognizing a provision for the anticipated future loss.",
+    e:[{d:[['工事損失引当金繰入',150000]], c:[['工事損失引当金',150000]]}],
+    exp:'原価回収基準を適用している場合でも、将来的に工事全体で損失が見込まれることが判明したら、通常の工事契約と同様に、その損失を見積った時点で全額を「工事損失引当金」として計上しなければなりません（保守主義の原則）。「収益の認識は慎重に（原価回収基準）、損失の認識は早めに」という、会計の基本姿勢がここにも表れています。'
+  },
+  { id:877, level:3, cat:'工事契約', chap:'収益認識・現金預金',
+    q:'Ｘ社の工事契約（請負金額2,000,000円、原価回収基準を経て、その後工事進行基準に切り替えた案件）が完成した。工事完成までの総原価は1,700,000円であった。工事完成時点までに計上済みの収益累計額は1,850,000円である場合、完成時に追加計上する収益150,000円の仕訳を示しなさい。',
+    en_q:"Company X's construction contract (contract price ¥2,000,000, initially under the cost-recovery method, later switched to percentage-of-completion) was completed, with total costs of ¥1,700,000. Cumulative revenue recognized to date was ¥1,850,000. Record the entry recognizing the additional ¥150,000 of revenue at completion.",
+    e:[{d:[['契約資産',150000]], c:[['完成工事高',150000]]}],
+    exp:'工事が完成すると、それまでの累計収益（1,850,000円）と、実際の請負金額（2,000,000円）との差額150,000円を、最終的に完成時点で計上します。工事完成基準ではなく工事進行基準・原価回収基準を採用していても、最終的には工事全体の収益合計が請負金額と一致するように調整される、という点を確認する問題です。'
+  },
   { id:710, level:3, cat:'手形', chap:'第4章：債権債務（手形・電子記録債権）',
     q:'保有する約束手形（額面80,000円）をＢ社への買掛金支払いのため裏書譲渡した。その後、この手形が不渡りとなったため、当座預金から支払い、手形を買い戻した。さらにその後、振出人に求償し、延滞利息2,000円を含めた82,000円を現金で回収した。一連の仕訳を示しなさい。',
     en_q:'Endorsed a held promissory note (face ¥80,000) to Company B to settle accounts payable. The note was later dishonored, so we paid from our bank account to buy it back. We then sought reimbursement from the original issuer and collected ¥82,000 in cash, including ¥2,000 of overdue interest. Record the sequence of entries.',
@@ -7122,6 +7184,42 @@ const ALL = [
     en_q:"In Company X's head-office/factory accounting, at year-end the head office's \"Factory\" account had an ¥800,000 debit balance, matching the factory's \"Head Office\" account ¥800,000 credit balance. When preparing combined financial statements, record the entry eliminating this internal transaction.",
     e:[{d:[['本社',800000]], c:[['工場',800000]]}],
     exp:'本社工場会計では、本社の「工場」勘定と工場の「本社」勘定は、通常、常に同額（貸借逆）になっているはずです（内部取引のたびにセットで記帳しているため）。合算した財務諸表（本社と工場を1つにまとめたもの）を作成する際は、この内部取引専用の勘定（照合勘定）を相殺消去し、外部から見える金額だけを残します。連結会計における債権債務の相殺消去と同じ考え方が、本社工場会計にも当てはまります。'
+  },
+  { id:878, level:2, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社は事業部制を採用しており、Ａ事業部はＢ事業部へ部品を全部原価（製造原価）400,000円で振り替えた。振替価格に利益を加算しない場合の①Ａ事業部側②Ｂ事業部側の仕訳を示しなさい。',
+    en_q:'Company X uses a divisional structure. Division A transferred parts to Division B at full cost (manufacturing cost) of ¥400,000, with no profit markup on the transfer price. Record the entries on (1) Division A\'s books and (2) Division B\'s books.',
+    e:[{d:[['B事業部',400000]], c:[['製品',400000]]}, {d:[['材料',400000]], c:[['A事業部',400000]]}],
+    exp:'全部原価基準による振替は、振り渡す事業部（Ａ事業部）が製造原価のまま、利益を一切乗せずに振り替える方法です。Ａ事業部にとっては利益がゼロなので、業績評価の観点からは不満が残る場合がありますが、グループ全体で見れば最もシンプルで、内部利益の消去も不要という利点があります。「A事業部」「B事業部」という勘定は、本社工場会計の「本社」「工場」勘定と同じ、事業部間の内部取引を管理するための照合勘定です。'
+  },
+  { id:879, level:3, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社のＡ事業部は、外部市場での販売価格（市価）500,000円（原価400,000円）でＢ事業部へ製品を振り替えた。Ａ事業部側の仕訳を示しなさい。',
+    en_q:"Company X's Division A transferred products to Division B at the external market price of ¥500,000 (cost ¥400,000). Record the entry on Division A's books.",
+    e:[{d:[['B事業部',500000]], c:[['製品振替収益',500000]]}, {d:[['売上原価',400000]], c:[['製品',400000]]}],
+    exp:'市価基準による振替は、外部の市場価格をそのまま使って事業部間の取引を行う方法です。Ａ事業部からみれば、外部に売ったのと同じように「収益」（製品振替収益）を認識でき、原価との差額100,000円が事業部の利益として業績評価に反映されます。ただし、Ｂ事業部にとっては外部から買うのと同じコストがかかるため、グループ全体で見ると「内部利益」が生じている点に注意が必要です（決算時の消去は別問参照）。'
+  },
+  { id:880, level:2, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'上記のＢ事業部は、Ａ事業部から振替価格500,000円で製品を受け入れた。Ｂ事業部側の仕訳を示しなさい。',
+    en_q:"Division B above received products from Division A at the transfer price of ¥500,000. Record the entry on Division B's books.",
+    e:[{d:[['材料',500000]], c:[['A事業部',500000]]}],
+    exp:'受け入れる側（Ｂ事業部）は、外部から購入する場合と同じように、振替価格（500,000円）をそのまま材料の取得原価として計上します。Ｂ事業部にとっては、この振替価格が外部購入価格と同じかどうかに関わらず、実際に支払った（負担した）金額として処理する点がポイントです。'
+  },
+  { id:881, level:3, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'上記の取引について、決算時点でＢ事業部がＡ事業部から受け入れた製品（振替価格500,000円、原価400,000円相当）のうち、300,000円分（原価240,000円相当）がまだ外部に販売されずＢ事業部の在庫として残っていた。この未実現の内部利益を消去する仕訳を示しなさい。',
+    en_q:"At year-end, of the products Division B received from Division A (transfer price ¥500,000, cost ¥400,000), ¥300,000 (at transfer price; cost ¥240,000) remained unsold in Division B's inventory. Record the entry eliminating the unrealized internal profit.",
+    e:[{d:[['内部利益控除',60000]], c:[['繰延内部利益',60000]]}],
+    exp:'市価基準や原価に利益を上乗せする方式で事業部間の振替を行うと、受け入れた事業部の在庫にまだ売れ残りがある場合、そこに含まれる内部利益（グループ全体では実現していない利益）を、連結財務諸表や合算財務諸表を作成する際に消去する必要があります。本社工場会計で学んだ「内部利益控除」「繰延内部利益」と全く同じ処理です。300,000円×20％（利益率）＝60,000円が未実現の内部利益です。'
+  },
+  { id:882, level:3, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社のＡ事業部とＢ事業部は、事業部間の交渉により振替価格を450,000円（Ａ事業部の原価400,000円、市価500,000円の中間）に合意した。Ａ事業部側の仕訳を示しなさい。',
+    en_q:"Divisions A and B of Company X negotiated a transfer price of ¥450,000 (between Division A's cost of ¥400,000 and the market price of ¥500,000). Record the entry on Division A's books.",
+    e:[{d:[['B事業部',450000]], c:[['製品振替収益',450000]]}, {d:[['売上原価',400000]], c:[['製品',400000]]}],
+    exp:'交渉価格基準は、全部原価（400,000円）と市価（500,000円）の間で、事業部同士が話し合って振替価格を決める方法です。今回は中間の450,000円で合意しました。Ａ事業部の利益は50,000円（450,000－400,000）となり、全部原価基準（利益ゼロ）と市価基準（利益100,000円）の中間的な結果になります。「両事業部が納得できる価格を交渉で決める」という、実務でもよく使われる柔軟な方法です。'
+  },
+  { id:883, level:2, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+    q:'Ｘ社の決算時、Ａ事業部元帳の「Ｂ事業部」勘定残高は450,000円（借方）、Ｂ事業部元帳の「Ａ事業部」勘定残高は450,000円（貸方）であった。合算財務諸表を作成するにあたり、この内部取引を相殺消去する仕訳を示しなさい。',
+    en_q:"At year-end, Division A's \"Division B\" account had a ¥450,000 debit balance, matching Division B's \"Division A\" account ¥450,000 credit balance. When preparing combined financial statements, record the entry eliminating this internal transaction.",
+    e:[{d:[['A事業部',450000]], c:[['B事業部',450000]]}],
+    exp:'事業部制でも、本社工場会計と同様に、事業部間の内部取引を管理するための照合勘定（「Ａ事業部」「Ｂ事業部」）を使います。決算時に合算財務諸表を作る際は、グループ内部でのお金の動きに過ぎない部分（内部取引残高）を相殺消去し、外部との取引だけが財務諸表に反映されるようにします。事業部制であっても本社工場会計であっても、「内部取引は最終的に相殺してゼロにする」という考え方は共通です。'
   },
 
 ];
