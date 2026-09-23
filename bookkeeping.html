@@ -560,6 +560,7 @@
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：金融商品" title="1級：金融商品（デリバティブ・ヘッジ会計）" onclick="setSection('chap:1級：金融商品')">🎓1級：金融商品</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：外貨換算会計" title="1級：外貨換算会計" onclick="setSection('chap:1級：外貨換算会計')">🎓1級：外貨換算</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：退職給付会計" title="1級：退職給付会計" onclick="setSection('chap:1級：退職給付会計')">🎓1級：退職給付</button>
+      <button class="ctrl-btn grp-btn" data-sec="chap:1級：減損会計（応用）" title="1級：減損会計（応用）" onclick="setSection('chap:1級：減損会計（応用）')">🎓1級：減損（応用）</button>
     </div>
   </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
@@ -6558,6 +6559,38 @@ const ALL = [
     en_q:"Company X amortizes past service cost of ¥240,000 (from a benefit-level increase) that arose last period straight-line over an average remaining service period of 8 years. Record this period's amortization in the separate financial statements.",
     e:[{d:[['退職給付費用',30000]], c:[['退職給付引当金',30000]]}],
     exp:'過去勤務費用（退職金規程の改定などにより生じる退職給付債務の変動額）も、数理計算上の差異と同様に、個別財務諸表では発生時に全額を費用処理せず、平均残存勤務期間等の一定の年数で規則的に償却します。240,000円÷8年＝30,000円を当期の「退職給付費用」に追加します。'
+  },
+
+  // ===== 1級：減損会計（応用） =====
+  { id:777, level:3, cat:'減損会計', chap:'1級：減損会計（応用）',
+    q:'Ｘ社は建物（帳簿価額800,000円）と機械装置（帳簿価額400,000円）を一体として使用しているため、これらをひとつの資産グループとして減損会計を適用している。資産グループ全体の回収可能価額は900,000円と算定され、減損損失の認識が必要と判定された。減損損失300,000円を帳簿価額の比率で建物・機械装置に配分する仕訳を示しなさい。',
+    en_q:'Company X treats a building (book value ¥800,000) and machinery (book value ¥400,000) as a single asset group because they are used together. The group\'s recoverable amount was determined to be ¥900,000, requiring recognition of an impairment loss. Record the entry allocating the ¥300,000 impairment loss to the building and machinery in proportion to their book values.',
+    e:[{d:[['減損損失',300000]], c:[['建物',200000],['機械装置',100000]]}],
+    exp:'複数の資産が一体となってキャッシュ・フローを生み出している場合、個々の資産ごとではなく「資産グループ」全体で減損会計を適用します。グループ全体の帳簿価額1,200,000円（800,000＋400,000）－回収可能価額900,000円＝減損損失300,000円。この総額を、個々の資産の帳簿価額の比率で配分します。建物：300,000×(800,000／1,200,000)＝200,000円、機械装置：300,000×(400,000／1,200,000)＝100,000円。「グループ全体でいくら損したか」を先に計算し、それを構成資産に振り分ける、という2段階の処理がポイントです。'
+  },
+  { id:778, level:3, cat:'減損会計', chap:'1級：減損会計（応用）',
+    q:'Ｘ社が買収した事業（資産グループ帳簿価額900,000円［内訳：建物600,000円・備品300,000円］、のれん帳簿価額300,000円、合計1,200,000円）について、のれんを含む、より大きな単位で減損損失600,000円を認識した。減損損失は原則としてのれんに優先的に配分するというルールに従い、まずのれんの帳簿価額300,000円全額を減損し、残額300,000円を資産グループの各資産の帳簿価額比で配分する場合の仕訳を示しなさい。',
+    en_q:'On testing a larger unit that includes goodwill (goodwill book value ¥300,000; asset group book value ¥900,000, consisting of a building at ¥600,000 and equipment at ¥300,000; total ¥1,200,000), an impairment loss of ¥600,000 was recognized. Per the rule that impairment losses are first allocated to goodwill, the entire ¥300,000 goodwill balance is written off first, and the remaining ¥300,000 is allocated to the asset group\'s assets by book value. Record the entry.',
+    e:[{d:[['減損損失',600000]], c:[['のれん',300000],['建物',200000],['備品',100000]]}],
+    exp:'「のれんを含む、より大きな単位」で減損テストを行った結果、減損損失が生じた場合、原則としてまず「のれん」の帳簿価額を優先的に減損します（のれんは単独では収益を生まない資産なので、最初に切り捨てる扱いです）。のれん300,000円を全額減損した後、なお残る損失300,000円を、資産グループを構成する各資産（建物・備品）の帳簿価額比率で配分します。建物：300,000×(600,000／900,000)＝200,000円、備品：300,000×(300,000／900,000)＝100,000円。'
+  },
+  { id:779, level:3, cat:'減損会計', chap:'1級：減損会計（応用）',
+    q:'Ｘ社の本社建物（共用資産、帳簿価額500,000円）を含めて、より大きな単位で減損テストを行った。この単位には資産グループＡ（機械装置、帳簿価額800,000円）と資産グループＢ（備品、帳簿価額700,000円）も含まれ、合計帳簿価額は2,000,000円である。より大きな単位全体の回収可能価額が1,500,000円と算定され、減損損失500,000円を認識した。この損失を帳簿価額の比率で機械装置・備品・建物（共用資産）に配分する仕訳を示しなさい。',
+    en_q:"Company X tested a larger unit that includes its headquarters building (a shared asset, book value ¥500,000), together with asset group A (machinery, ¥800,000) and asset group B (equipment, ¥700,000) — total book value ¥2,000,000. The unit's recoverable amount was ¥1,500,000, recognizing an impairment loss of ¥500,000. Record the entry allocating this loss to machinery, equipment, and the building (shared asset) by book value.",
+    e:[{d:[['減損損失',500000]], c:[['機械装置',200000],['備品',175000],['建物',125000]]}],
+    exp:'本社建物のように、複数の資産グループに共通して使われ、単独ではキャッシュ・フローを生み出さない資産を「共用資産」と呼びます。共用資産の減損は、共用資産を含む「より大きな単位」全体で判定し、生じた減損損失を各構成資産（資産グループＡ・Ｂ・共用資産）の帳簿価額の比率で配分します。機械装置：500,000×(800,000／2,000,000)＝200,000円、備品：500,000×(700,000／2,000,000)＝175,000円、建物：500,000×(500,000／2,000,000)＝125,000円。「個別の資産グループでは減損の兆候がなくても、共用資産を含めた全体で見ると回収できない」というケースを扱う、1級特有の論点です。'
+  },
+  { id:780, level:2, cat:'減損会計', chap:'1級：減損会計（応用）',
+    q:'Ｘ社が保有する使用を休止している土地（遊休資産、帳簿価額1,000,000円）について、正味売却価額が700,000円であることが判明した。遊休資産は使用価値を見積れないため、正味売却価額を回収可能価額として減損損失を計上する。仕訳を示しなさい。',
+    en_q:'Company X owns idle land (book value ¥1,000,000) that is not in use, and determined its net realizable value to be ¥700,000. Since value in use cannot be estimated for idle assets, the recoverable amount is based solely on net realizable value. Record the impairment loss entry.',
+    e:[{d:[['減損損失',300000]], c:[['土地',300000]]}],
+    exp:'稼働を停止している「遊休資産」は、将来キャッシュ・フローを生み出さない（使用価値を見積れない）ため、回収可能価額は正味売却価額（今売ったらいくらか）だけで判定します。帳簿価額1,000,000円－正味売却価額700,000円＝減損損失300,000円。通常の固定資産のように「使用価値と正味売却価額のいずれか高い方」を比較する必要がなく、シンプルに売却価値だけで判定する点が特徴です。'
+  },
+  { id:781, level:2, cat:'減損会計', chap:'1級：減損会計（応用）',
+    q:'Ｘ社は前期末に機械装置（取得原価1,000,000円、減損損失前の帳簿価額600,000円）について減損損失200,000円を計上した（減損後帳簿価額400,000円、残存耐用年数4年、残存価額ゼロ、定額法）。当期の減価償却費を計上する仕訳を示しなさい。',
+    en_q:'At the end of last period, Company X recognized a ¥200,000 impairment loss on machinery (acquisition cost ¥1,000,000; pre-impairment book value ¥600,000), leaving a post-impairment book value of ¥400,000, with 4 years of remaining useful life and zero residual value, depreciated straight-line. Record this period\'s depreciation entry.',
+    e:[{d:[['減価償却費',100000]], c:[['減価償却累計額',100000]]}],
+    exp:'減損損失を計上した後の資産は、減損後の帳簿価額（取得原価ではなく）を新たな基礎として、残存耐用年数にわたって減価償却を続けます（切放し法）。減損後帳簿価額400,000円÷残存耐用年数4年＝100,000円。減損は「その時点での評価減」であり、その後は通常どおり規則的に費用配分（減価償却）を続けていく、という考え方です。なお日本基準では、減損後に業績が回復しても減損損失の戻し入れは行いません（IFRSとの大きな違いの一つです）。'
   },
 
 ];
