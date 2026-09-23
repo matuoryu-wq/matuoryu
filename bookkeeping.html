@@ -561,6 +561,7 @@
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：外貨換算会計" title="1級：外貨換算会計" onclick="setSection('chap:1級：外貨換算会計')">🎓1級：外貨換算</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：退職給付会計" title="1級：退職給付会計" onclick="setSection('chap:1級：退職給付会計')">🎓1級：退職給付</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：減損会計（応用）" title="1級：減損会計（応用）" onclick="setSection('chap:1級：減損会計（応用）')">🎓1級：減損（応用）</button>
+      <button class="ctrl-btn grp-btn" data-sec="chap:1級：リース会計（応用）" title="1級：リース会計（応用）" onclick="setSection('chap:1級：リース会計（応用）')">🎓1級：リース（応用）</button>
     </div>
   </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
@@ -744,7 +745,7 @@ const T = {
   '国庫補助金収入':'revenue','事業譲渡益':'revenue','P社株式':'asset',
   '先物取引差入証拠金':'asset','先物取引差金':'asset','先物損益':'other','オプション資産':'asset',
   'オプション差損益':'other','為替予約':'asset','繰延ヘッジ損益':'equity','デリバティブ資産':'asset',
-  '為替換算調整勘定':'equity','退職給付に係る調整累計額':'equity',
+  '為替換算調整勘定':'equity','退職給付に係る調整累計額':'equity','長期前受収益':'liability',
   // 2級追加（新規科目）
   '商品券':'liability','他店商品券':'asset','仕入割引':'revenue','定期預金':'asset',
   '役員貸付金':'asset','役員借入金':'liability','引出金（事業主貸）':'other','圧縮積立金':'equity',
@@ -6591,6 +6592,38 @@ const ALL = [
     en_q:'At the end of last period, Company X recognized a ¥200,000 impairment loss on machinery (acquisition cost ¥1,000,000; pre-impairment book value ¥600,000), leaving a post-impairment book value of ¥400,000, with 4 years of remaining useful life and zero residual value, depreciated straight-line. Record this period\'s depreciation entry.',
     e:[{d:[['減価償却費',100000]], c:[['減価償却累計額',100000]]}],
     exp:'減損損失を計上した後の資産は、減損後の帳簿価額（取得原価ではなく）を新たな基礎として、残存耐用年数にわたって減価償却を続けます（切放し法）。減損後帳簿価額400,000円÷残存耐用年数4年＝100,000円。減損は「その時点での評価減」であり、その後は通常どおり規則的に費用配分（減価償却）を続けていく、という考え方です。なお日本基準では、減損後に業績が回復しても減損損失の戻し入れは行いません（IFRSとの大きな違いの一つです）。'
+  },
+
+  // ===== 1級：リース会計（応用） =====
+  { id:782, level:3, cat:'リース会計', chap:'1級：リース会計（応用）',
+    q:'Ｘ社は保有する機械装置（帳簿価額800,000円）をリース会社に1,000,000円で売却し、現金を受け取った。同時にこの機械装置をファイナンス・リースとしてリースバックする契約を締結した。セール・アンド・リースバック取引に該当するため、売却益は繰延べ処理する。売却時の仕訳を示しなさい。',
+    en_q:'Company X sold machinery (book value ¥800,000) to a leasing company for ¥1,000,000 cash, and simultaneously leased it back under a finance lease. Because this qualifies as a sale-and-leaseback transaction, the sale gain is deferred. Record the entry at the time of sale.',
+    e:[{d:[['現金',1000000]], c:[['機械装置',800000],['長期前受収益',200000]]}],
+    exp:'セール・アンド・リースバックとは、自社が保有する資産をいったんリース会社に売却し、その資産を改めてリースで借り受ける（リースバックする）取引です。リースバックがファイナンス・リースに該当する場合、実質的には「その資産を担保にお金を借りた」のと変わらないとみなされ、売却益を通常の固定資産売却益のようにその場で計上せず、いったん「長期前受収益」（負債）として繰延べます。現金1,000,000円－機械装置の帳簿価額800,000円＝売却益相当額200,000円を長期前受収益として計上します。'
+  },
+  { id:783, level:2, cat:'リース会計', chap:'1級：リース会計（応用）',
+    q:'上記のリースバック契約について、リース資産・リース債務を売却価額1,000,000円で計上する仕訳を示しなさい（利子込み法）。',
+    en_q:'For the leaseback above, record the entry recognizing the leased asset and lease liability at the ¥1,000,000 sale price (interest-included method).',
+    e:[{d:[['リース資産',1000000]], c:[['リース債務',1000000]]}],
+    exp:'リースバックの開始時は、通常のファイナンス・リースと同様に「リース資産／リース債務」を計上します。セール・アンド・リースバックでは、この金額は売却価額（＝リース物件の見積現金購入価額とみなす）を用いるのが一般的です。'
+  },
+  { id:784, level:3, cat:'リース会計', chap:'1級：リース会計（応用）',
+    q:'上記のリース資産（計上額1,000,000円、リース期間5年、残存価額ゼロ、定額法）について、1年分の減価償却費を計上するとともに、繰延べた長期前受収益200,000円を同じ耐用年数にわたって取り崩し、減価償却費から控除する。1年分の仕訳を示しなさい。',
+    en_q:'For the leased asset above (¥1,000,000, 5-year lease term, zero residual value, straight-line), record one year of depreciation, and also amortize the ¥200,000 deferred gain over the same term, offsetting it against depreciation expense.',
+    e:[{d:[['減価償却費',200000]], c:[['リース資産減価償却累計額',200000]]}, {d:[['長期前受収益',40000]], c:[['減価償却費',40000]]}],
+    exp:'繰延べた売却益（長期前受収益）は、リース資産の減価償却費の計上に対応させて、同じ期間・比率で取り崩し、減価償却費と相殺します。減価償却費：1,000,000÷5年＝200,000円。長期前受収益の取崩額：200,000÷5年＝40,000円。結果として、損益計算書に表示される正味の減価償却費は200,000－40,000＝160,000円となります。「売却益を一気に利益にせず、資産を使う期間にわたって少しずつ、費用を軽減する形で認識していく」というのがセール・アンド・リースバックの本質です。'
+  },
+  { id:785, level:3, cat:'リース会計', chap:'1級：リース会計（応用）',
+    q:'Ｘ社は所有権移転ファイナンス・リース（リース資産計上額1,200,000円、リース物件の経済的耐用年数8年、リース期間5年）を契約した。所有権移転ファイナンス・リースの場合、自己所有の固定資産と同様に経済的耐用年数で減価償却する。1年分の減価償却費を計上する仕訳を示しなさい（定額法・残存価額ゼロ）。',
+    en_q:'Company X entered an ownership-transfer finance lease (leased asset ¥1,200,000; economic useful life of the property 8 years; lease term 5 years). Under an ownership-transfer finance lease, depreciation follows the economic useful life, as for owned fixed assets. Record one year of straight-line depreciation with zero residual value.',
+    e:[{d:[['減価償却費',150000]], c:[['リース資産減価償却累計額',150000]]}],
+    exp:'リース取引には「所有権移転ファイナンス・リース」（リース期間終了後に所有権が借手に移る）と「所有権移転外ファイナンス・リース」（リース期間終了後に返却する）の2種類があります。所有権移転ファイナンス・リースは、実質的に資産を買ったのと同じなので、自己所有の固定資産と同様に「経済的耐用年数」（8年）で減価償却します。1,200,000円÷8年＝150,000円。これに対し、所有権移転外ファイナンス・リースは返却が前提のため「リース期間」（5年など、通常は経済的耐用年数より短い）を耐用年数として償却します。この違いを区別できるかが1級で問われるポイントです。'
+  },
+  { id:786, level:3, cat:'リース会計', chap:'1級：リース会計（応用）',
+    q:'ファイナンス・リース取引（利子抜き法、リース債務当初計上額1,000,000円、リース期間5年、年間リース料240,000円、利率年4%）について、1年目の利息は40,000円（1,000,000×4%）であった。2年目の利息費用を利息法で計算し、2年目のリース料支払いの仕訳を示しなさい。',
+    en_q:'For a finance lease (interest-excluded method, initial lease liability ¥1,000,000, 5-year term, annual lease payment ¥240,000, interest rate 4% per year), first-year interest was ¥40,000 (¥1,000,000 × 4%). Using the effective interest method, compute the second year\'s interest expense and record the second year\'s lease payment entry.',
+    e:[{d:[['リース債務',208000],['支払利息',32000]], c:[['現金',240000]]}],
+    exp:'利子抜き法では、リース料の支払いを「元本返済」と「利息」に分けますが、利息法では毎期の期首リース債務残高に利率を掛けて利息を計算します（元本が減るにつれ、利息も減っていきます）。1年目：利息40,000円（1,000,000×4%）、元本返済200,000円→期末残高800,000円。2年目：利息32,000円（800,000×4%）、元本返済208,000円（240,000－32,000）。単純に毎年同額の利息を計上する「定額法」とは異なり、実際の借入金の返済と同じ考え方で利息が逓減していく点が特徴です。'
   },
 
 ];
