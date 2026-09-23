@@ -6908,6 +6908,96 @@ const ALL = [
     e:[{d:[['利益剰余金期首残高',70000],['繰延税金資産',30000]], c:[['未払費用',100000]]}],
     exp:'修正再表示にも税効果会計を適用します。過去に計上漏れだった費用100,000円は、将来（税務上の扱いが確定した時点で）税金負担を軽減する効果を持つため、繰延税金資産30,000円（100,000×30％）を認識します。残り70,000円が税引後ベースでの利益剰余金期首残高の減額分です。誤謬の訂正であっても、通常の決算整理と同じように税効果会計のルールを適用する点を押さえておきましょう。'
   },
+  { id:841, level:3, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は機械装置（取得原価1,000,000円、期首時点の帳簿価額600,000円、残存耐用年数5年）の減価償却方法を、定率法から定額法に変更した。この変更は「会計上の見積りの変更と区別することが困難な会計方針の変更」に該当するため、遡及適用せず、変更後の方法により当期の減価償却費を計上する仕訳を示しなさい（残存価額ゼロ・定額法）。',
+    en_q:'Company X changed its depreciation method for machinery (acquisition cost ¥1,000,000, opening book value ¥600,000, 5 years remaining useful life) from the declining-balance method to straight-line. Because this qualifies as "a change in accounting policy that is difficult to distinguish from a change in accounting estimate," it is not applied retrospectively. Record this period\'s depreciation under the new method (zero residual value, straight-line).',
+    e:[{d:[['減価償却費',120000]], c:[['減価償却累計額',120000]]}],
+    exp:'減価償却方法の変更（定率法→定額法など）は、本来は「会計方針の変更」に見えますが、日本基準では「会計上の見積りの変更と区別することが困難な会計方針の変更」として特別に扱い、過去に遡って財務諸表を修正しません（遡及適用しません）。変更した期以後、新しい方法で将来に向かって計算するだけです。期首帳簿価額600,000円÷残存耐用年数5年＝120,000円。「会計方針の変更なのに、なぜか見積りの変更と同じ扱いになる」という、1級で頻出のひっかけポイントです。'
+  },
+  { id:842, level:3, cat:'会計方針の変更', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は売買目的有価証券の評価方法を移動平均法から総平均法に変更した。過去の財務諸表に遡って適用した結果、過去の有価証券の帳簿価額が総平均法によればより高い金額であったことが判明し、利益剰余金期首残高を60,000円増額修正する必要が生じた（税効果は考慮しない）。遡及適用による修正仕訳を示しなさい。',
+    en_q:'Company X changed its valuation method for trading securities from the moving-average method to the weighted-average method. Applying this retrospectively revealed that the securities\' book value under the new method would have been ¥60,000 higher, requiring a ¥60,000 increase to opening retained earnings, ignoring tax effects. Record the retrospective-application entry.',
+    e:[{d:[['売買目的有価証券',60000]], c:[['利益剰余金期首残高',60000]]}],
+    exp:'棚卸資産の評価方法と同様に、有価証券の評価方法（移動平均法・総平均法など）の変更も「会計方針の変更」に該当し、遡及適用が必要です。今回は変更後の方法（総平均法）によれば過去の有価証券の帳簿価額がより高かったことが判明したため、有価証券（資産）を増額し、対応する分だけ利益剰余金期首残高を増額します（前に学んだ棚卸資産のケースとは逆に、利益剰余金が増える方向の修正です）。'
+  },
+  { id:843, level:3, cat:'会計方針の変更', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は棚卸資産の評価方法を総平均法から先入先出法に変更した。この変更を過去の財務諸表に遡って適用した結果、過去の期首商品棚卸高が先入先出法によればより高い金額であったことが判明し、利益剰余金期首残高を90,000円増額修正する必要が生じた（税効果は考慮しない）。遡及適用による修正仕訳を示しなさい。',
+    en_q:'Company X changed its inventory valuation method from the weighted-average method to FIFO. Applying this retrospectively revealed that opening inventory under FIFO would have been ¥90,000 higher, requiring a ¥90,000 increase to opening retained earnings, ignoring tax effects. Record the retrospective-application entry.',
+    e:[{d:[['繰越商品',90000]], c:[['利益剰余金期首残高',90000]]}],
+    exp:'会計方針の変更による遡及適用は、必ずしも利益剰余金を減らす方向とは限りません。今回のように、変更後の方法（先入先出法）によれば過去の棚卸資産の評価額がより高かった場合は、逆に繰越商品（資産）を増額し、利益剰余金期首残高も増額修正します。「遡及適用は増える場合も減る場合もある」という点を、最初に学んだ問題（総平均法への変更で減額したケース）と対比して押さえておきましょう。'
+  },
+  { id:844, level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は前期の決算において、備品の減価償却費40,000円の計上を失念していたことを当期に発見した。修正再表示による仕訳を示しなさい（税効果は考慮しない）。',
+    en_q:'Company X discovered this period that it had forgotten to record ¥40,000 of depreciation on equipment last period. Record the retrospective restatement entry, ignoring tax effects.',
+    e:[{d:[['利益剰余金期首残高',40000]], c:[['減価償却累計額',40000]]}],
+    exp:'減価償却費の計上漏れも、過去の財務諸表の誤りです（誤謬）。当期の減価償却費として今さら計上するのではなく、過去の誤りとして「利益剰余金期首残高」を直接減額し、本来計上すべきだった減価償却累計額を追加します。「見つけた時点の費用にしない、過去に遡って直接純資産を修正する」という誤謬訂正の基本パターンをもう一度確認する問題です。'
+  },
+  { id:845, level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は前期に、本来は修繕費として費用処理すべきであった支出70,000円を、誤って建物の取得原価に含めて資産計上していたことを当期に発見した。修正再表示による仕訳を示しなさい（減価償却の影響は考慮しない、税効果は考慮しない）。',
+    en_q:'Company X discovered this period that it had mistakenly capitalized ¥70,000 of expenditure into the cost of a building last period, when it should have been expensed as repairs. Record the retrospective restatement entry (ignore the depreciation impact and tax effects).',
+    e:[{d:[['利益剰余金期首残高',70000]], c:[['建物',70000]]}],
+    exp:'本来は費用にすべき支出（収益的支出）を、誤って資産（建物などの資本的支出）に計上してしまうケースも誤謬に該当します。過大に計上されていた建物（資産）を減額し、対応する分だけ利益剰余金期首残高を減額して訂正します。「資産に計上しすぎていた」誤りも、収益・費用の計上誤りと同じように、利益剰余金期首残高を通じて修正する点は共通です。'
+  },
+  { id:846, level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は前期末の貸倒引当金の設定にあたり、計算式の入力ミスにより、本来120,000円計上すべきところを80,000円しか計上していなかったことを当期に発見した。修正再表示による仕訳を示しなさい（税効果は考慮しない）。',
+    en_q:'Company X discovered this period that a calculation input error had caused it to record only ¥80,000 of allowance for doubtful accounts last period, when ¥120,000 was required. Record the retrospective restatement entry, ignoring tax effects.',
+    e:[{d:[['利益剰余金期首残高',40000]], c:[['貸倒引当金',40000]]}],
+    exp:'単純な計算ミスによって引当金が過少に計上されていた場合も誤謬に該当します（後で判明した新しい情報に基づく「見積りの変更」とは違い、当時すでに入手できていた情報の使い方を間違えた場合は誤謬です）。不足していた40,000円（120,000円－80,000円）を追加計上し、利益剰余金期首残高を減額します。'
+  },
+  { id:847, level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は前期末の実地棚卸において、倉庫の一角にあった商品60,000円分を数え忘れており、期末商品棚卸高が過小に計上されていたことを当期に発見した。修正再表示による仕訳を示しなさい（税効果は考慮しない）。',
+    en_q:'Company X discovered this period that, during last period\'s physical inventory count, ¥60,000 of goods in a corner of the warehouse were overlooked, understating ending inventory. Record the retrospective restatement entry, ignoring tax effects.',
+    e:[{d:[['繰越商品',60000]], c:[['利益剰余金期首残高',60000]]}],
+    exp:'実地棚卸の数え忘れのような、単純な事実誤認・集計ミスも誤謬に該当します。過小だった繰越商品（資産）を追加計上し、対応する分だけ利益剰余金期首残高を増額修正します。誤謬の内容によって利益剰余金が増えるか減るかは変わりますが、「発見した期の損益にせず、利益剰余金期首残高を直接修正する」という処理方法自体は常に共通です。'
+  },
+  { id:848, level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は前期の法人税等の計算において、税率の適用誤りにより、本来より30,000円少なく法人税等を計上していたことを当期に発見した。修正再表示による仕訳を示しなさい。',
+    en_q:'Company X discovered this period that, due to an incorrect tax rate applied last period, income taxes were understated by ¥30,000. Record the retrospective restatement entry.',
+    e:[{d:[['利益剰余金期首残高',30000]], c:[['未払法人税等',30000]]}],
+    exp:'損益項目だけでなく、税金費用（法人税等）の計算誤りも誤謬の訂正の対象になります。過少に計上されていた未払法人税等（負債）を追加計上し、利益剰余金期首残高を減額します。「税金の計算を間違えていた」というのも、会計上は他の費用の計上漏れと同じ枠組みで訂正します。'
+  },
+  { id:849, level:2, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は過去の貸倒実績率の見直しにより、当期末の貸倒引当金の設定率を売掛金残高の2％から3％に変更した。当期末売掛金残高2,000,000円に対する引当金の追加計上額（見積りの変更に伴う当期の影響分）を計上する仕訳を示しなさい（差額補充法、前期末引当金残高40,000円）。',
+    en_q:"Company X revised its allowance rate for doubtful accounts from 2% to 3% of receivables, based on updated historical loss experience. Given a year-end receivables balance of ¥2,000,000 and a prior allowance balance of ¥40,000, record the entry recognizing the additional allowance required (using the incremental method).",
+    e:[{d:[['貸倒引当金繰入',20000]], c:[['貸倒引当金',20000]]}],
+    exp:'過去の貸倒実績（実際にどれくらい貸し倒れたか）が変化したことに基づいて引当金の設定率を見直すのは、新しい情報に基づく合理的な判断であり、「会計上の見積りの変更」に該当します。過去に遡って修正はせず、変更した当期以降の引当金の計算に、新しい設定率（3％）をそのまま反映させます。60,000円（2,000,000×3％）－40,000円（前期末残高）＝20,000円を当期に追加計上します。'
+  },
+  { id:850, level:2, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社が計上している資産除去債務（帳簿価額500,000円）について、将来の除去費用の見積りが変更され、資産除去債務の金額を550,000円に修正する必要が生じた。見積りの変更による増加額を計上する仕訳を示しなさい（対応する資産の帳簿価額を増加させる）。',
+    en_q:"Company X's recognized asset retirement obligation (book value ¥500,000) required revision to ¥550,000 due to a change in the estimated future removal cost. Record the entry recognizing the increase from this estimate change (increasing the corresponding asset's book value).",
+    e:[{d:[['機械装置',50000]], c:[['資産除去債務',50000]]}],
+    exp:'資産除去債務は「将来、その資産を撤去・処分するのにいくらかかるか」という見積りに基づいて計上します。物価上昇や技術動向の変化などにより、この見積り自体が変わることがあります。これも「会計上の見積りの変更」に該当し、過去に遡って修正せず、変更があった時点で差額（50,000円）を資産除去債務（負債）と対応する固定資産（資産）の両方に反映させます。増加した分の固定資産は、残存耐用年数にわたって今後の減価償却を通じて費用化されます。'
+  },
+  { id:851, level:2, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は過去の保証実績データの見直しにより、製品保証引当金の設定率を売上高の1％から1.5％に変更した。当期売上高4,000,000円に対する引当金の追加計上額を計上する仕訳を示しなさい（差額補充法、前期末引当金残高40,000円）。',
+    en_q:"Company X revised its product warranty provision rate from 1% to 1.5% of sales, based on updated warranty claim experience. Given sales of ¥4,000,000 and a prior provision balance of ¥40,000, record the entry recognizing the additional provision required.",
+    e:[{d:[['商品保証引当金繰入',20000]], c:[['商品保証引当金',20000]]}],
+    exp:'製品保証引当金の設定率の見直しも、貸倒引当金と同じ「会計上の見積りの変更」です。過去の実績データが更新されたことに基づく合理的な判断なので、遡及適用はせず、当期の引当金計算に新しい設定率（1.5％）をそのまま反映させます。60,000円（4,000,000×1.5％）－40,000円（前期末残高）＝20,000円を追加計上します。'
+  },
+  { id:852, level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は前期の退職給付費用の計算において、勤務費用の集計ミスにより、本来より50,000円少なく退職給付費用を計上していたことを当期に発見した。修正再表示による仕訳を示しなさい（税効果は考慮しない）。',
+    en_q:"Company X discovered this period that a clerical error in tallying service cost caused last period's retirement benefit expense to be understated by ¥50,000. Record the retrospective restatement entry, ignoring tax effects.",
+    e:[{d:[['利益剰余金期首残高',50000]], c:[['退職給付引当金',50000]]}],
+    exp:'退職給付会計のような複雑な見積りを伴う領域でも、「入手可能だった情報に基づく計算を単純に間違えた」場合は、見積りの変更ではなく誤謬に該当します。不足していた退職給付引当金50,000円を追加計上し、利益剰余金期首残高を減額して訂正します。「新しい情報で見積りが変わった」のか「当時の情報の使い方を間違えた」のかを区別することが、誤謬と見積りの変更を見分けるポイントです。'
+  },
+  { id:853, level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は前期に売上高（売掛金）を90,000円過大に計上していたことを当期に発見した。修正再表示にあたり、実効税率30％として税効果を考慮した仕訳を示しなさい。',
+    en_q:'Company X discovered this period that it had overstated sales revenue (accounts receivable) by ¥90,000 last period. In restating the financials, applying tax-effect accounting at an effective tax rate of 30%, record the correcting entry.',
+    e:[{d:[['利益剰余金期首残高',63000],['繰延税金資産',27000]], c:[['売掛金',90000]]}],
+    exp:'誤謬の訂正にも税効果会計を適用します。過大計上されていた売上高（売掛金）90,000円を取り消すと、将来的に税務上の調整を通じて税金負担が軽減される効果を持つため、繰延税金資産27,000円（90,000×30％）を認識します。残り63,000円が税引後ベースでの利益剰余金期首残高の減額分です。'
+  },
+  { id:854, level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は前期末の実地棚卸において、商品50,000円分を数え忘れており、期末商品棚卸高が過小に計上されていたことを当期に発見した。修正再表示にあたり、実効税率30％として税効果を考慮した仕訳を示しなさい。',
+    en_q:'Company X discovered this period that, during last period\'s physical inventory count, ¥50,000 of goods were overlooked, understating ending inventory. In restating the financials, applying tax-effect accounting at an effective tax rate of 30%, record the correcting entry.',
+    e:[{d:[['繰越商品',50000]], c:[['繰延税金負債',15000],['利益剰余金期首残高',35000]]}],
+    exp:'資産の過小計上（棚卸資産の数え忘れなど）を修正すると、過去の利益がその分増えていたはずだったことになるため、将来的な税金負担が増える効果（将来加算一時差異）を持ち、繰延税金負債15,000円（50,000×30％）を認識します。残り35,000円が税引後ベースでの利益剰余金期首残高の増額分です。修正再表示のたびに、その内容が「将来減算」なのか「将来加算」なのかを見極めて、繰延税金資産・負債のどちらを計上するか判断する必要があります。'
+  },
+  { id:855, level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
+    q:'Ｘ社は前々期および前期の2期にわたり、リース料の計上区分を誤っており、各期10,000円ずつ、合計20,000円の費用の計上漏れがあったことを当期に発見した。この累積影響額を修正再表示する仕訳を示しなさい（税効果は考慮しない）。',
+    en_q:'Company X discovered this period that a misclassification of lease payments over two prior periods resulted in ¥10,000 of unrecorded expense each period, totaling ¥20,000. Record the entry restating this cumulative effect, ignoring tax effects.',
+    e:[{d:[['利益剰余金期首残高',20000]], c:[['未払費用',20000]]}],
+    exp:'誤謬が1期だけでなく複数の過去の期間にわたって生じていた場合は、それぞれの期の影響額を合計した「累積影響額」を、当期首の利益剰余金期首残高に対する一括修正として反映させます。前々期分10,000円＋前期分10,000円＝合計20,000円。何年前の誤りであっても、発見した期の損益には一切影響させず、あくまで期首の純資産を直接修正する、という誤謬訂正の原則は変わりません。'
+  },
 
   // ===== 1級：標準原価計算（差異分析・応用） =====
   { id:792, level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
