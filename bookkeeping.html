@@ -558,6 +558,7 @@
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：連結会計" title="1級：連結会計" onclick="setSection('chap:1級：連結会計')">🎓1級：連結会計</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：企業結合・事業分離" title="1級：企業結合・事業分離" onclick="setSection('chap:1級：企業結合・事業分離')">🎓1級：企業結合</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：金融商品" title="1級：金融商品（デリバティブ・ヘッジ会計）" onclick="setSection('chap:1級：金融商品')">🎓1級：金融商品</button>
+      <button class="ctrl-btn grp-btn" data-sec="chap:1級：外貨換算会計" title="1級：外貨換算会計" onclick="setSection('chap:1級：外貨換算会計')">🎓1級：外貨換算</button>
     </div>
   </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
@@ -741,6 +742,7 @@ const T = {
   '国庫補助金収入':'revenue','事業譲渡益':'revenue','P社株式':'asset',
   '先物取引差入証拠金':'asset','先物取引差金':'asset','先物損益':'other','オプション資産':'asset',
   'オプション差損益':'other','為替予約':'asset','繰延ヘッジ損益':'equity','デリバティブ資産':'asset',
+  '為替換算調整勘定':'equity',
   // 2級追加（新規科目）
   '商品券':'liability','他店商品券':'asset','仕入割引':'revenue','定期預金':'asset',
   '役員貸付金':'asset','役員借入金':'liability','引出金（事業主貸）':'other','圧縮積立金':'equity',
@@ -6455,6 +6457,56 @@ const ALL = [
     en_q:'The bondholder exercised the conversion right on the entire convertible bond above (bond component book value ¥950,000, warrants ¥50,000). Record the conversion entry, assuming the full amount is credited to Common Stock.',
     e:[{d:[['社債',950000],['新株予約権',50000]], c:[['資本金',1000000]]}],
     exp:'転換社債が株式に転換されると、それまで負債だった「社債」と純資産だった「新株予約権」が、どちらも新しく発行する株式の対価（＝資本金）に振り替わります。区分法で処理していた場合は、社債部分と新株予約権部分をそれぞれ帳簿価額のまま資本金に振り替えるだけで、転換時に損益は発生しません。'
+  },
+
+  // ===== 1級：外貨換算会計（在外子会社の換算） =====
+  { id:761, level:3, cat:'外貨換算', chap:'1級：外貨換算会計',
+    q:'Ｐ社は在外子会社Ｓ社の株式80％を取得し支配を獲得した。取得対価は60,000ドルで、取得時のレートは1ドル＝100円であり、現金で支払った。個別財務諸表上の仕訳を示しなさい。',
+    en_q:"Company P acquired an 80% stake in overseas subsidiary S, obtaining control, for $60,000 paid in cash at the transaction-date rate of ¥100/USD. Record the entry in P's separate financial statements.",
+    e:[{d:[['S社株式',6000000]], c:[['現金',6000000]]}],
+    exp:'在外子会社の株式を外貨で取得した場合も、通常の外貨建取引と同じく「取得時のレート（HR：Historical Rate）」で円換算します。60,000ドル×100円＝6,000,000円。この金額は、その後為替レートが変動しても動かしません（非貨幣性項目として取得時のレートで固定されます）。'
+  },
+  { id:762, level:3, cat:'外貨換算', chap:'1級：外貨換算会計',
+    q:'Ｐ社は在外子会社Ｓ社の支配獲得にあたり、外貨建てのれん40,000ドル（取得時レート1ドル＝100円、円換算額4,000,000円）を連結上計上した。決算時レートが1ドル＝110円になった場合、連結上ののれんを決算時レートで再換算し、差額を「為替換算調整勘定」として計上する仕訳を示しなさい。',
+    en_q:"Company P recognized foreign-currency-denominated goodwill of $40,000 (¥4,000,000 at the ¥100/USD transaction-date rate) on consolidation. When the closing rate became ¥110/USD, record the entry retranslating the goodwill at the closing rate, with the difference recognized as a foreign currency translation adjustment.",
+    e:[{d:[['のれん',400000]], c:[['為替換算調整勘定',400000]]}],
+    exp:'連結上計上した外貨建てのれんは、外貨建ての「資産」として扱われるため、決算時レート（CR）で換算替えします。40,000ドル×取得時100円＝4,000,000円（計上時）→40,000ドル×決算時110円＝4,400,000円（換算後）。差額400,000円は、のれん自体の価値が変わったわけではなく為替相場の変動によるものなので、損益（のれん償却額など）にはせず、純資産の部の「為替換算調整勘定」に計上します。'
+  },
+  { id:763, level:3, cat:'外貨換算', chap:'1級：外貨換算会計',
+    q:'在外子会社Ｓ社（Ｐ社の持株比率80％）の財務諸表を換算した結果、連結上「為替換算調整勘定」（貸方）500,000円が生じた。このうち非支配株主持分相当額（20％）を按分する仕訳を示しなさい。',
+    en_q:"Translating overseas subsidiary S's (80%-owned by P) financial statements produced a credit foreign currency translation adjustment of ¥500,000 on consolidation. Record the entry allocating the non-controlling interests' 20% share.",
+    e:[{d:[['為替換算調整勘定',100000]], c:[['非支配株主持分',100000]]}],
+    exp:'為替換算調整勘定は「在外子会社の純資産全体」に対して生じるものなので、親会社の持分だけでなく非支配株主の持分にも按分する必要があります。500,000円×非支配株主持分比率20％＝100,000円を、親会社持分の為替換算調整勘定から非支配株主持分に付け替えます（残り400,000円が親会社に帰属する為替換算調整勘定として連結貸借対照表に残ります）。'
+  },
+  { id:764, level:3, cat:'外貨換算', chap:'1級：外貨換算会計',
+    q:'Ｐ社は連結上計上した外貨建てのれん（取得時40,000ドル、取得時レート1ドル＝100円）を10年間で均等償却している。当期の償却額（4,000ドル）を、期中平均レート（AR）1ドル＝105円で換算した仕訳を示しなさい。',
+    en_q:"Company P amortizes foreign-currency goodwill (acquired for $40,000 at ¥100/USD) recognized on consolidation over 10 years straight-line. Record this period's amortization of $4,000, translated at the average rate (AR) of ¥105/USD.",
+    e:[{d:[['のれん償却額',420000]], c:[['のれん',420000]]}],
+    exp:'のれんの「償却額」は費用（フロー項目）にあたるため、決算時レート（CR）ではなく「期中平均レート（AR）」で換算するのが原則です。4,000ドル×105円＝420,000円。一方、のれんという「資産」の残高そのものは決算時レートで換算するため（前問参照）、償却額の換算レートと残高の換算レートが異なる点が実務上のポイントです。'
+  },
+  { id:765, level:3, cat:'外貨換算', chap:'1級：外貨換算会計',
+    q:'在外子会社Ｓ社（Ｐ社の持株比率80％）の当期純利益は50,000ドルであった。連結上、期中平均レート（AR）1ドル＝103円で換算する。非支配株主に帰属する当期純利益（20％相当）を計上する仕訳を示しなさい。',
+    en_q:"Overseas subsidiary S's (80%-owned by P) net income was $50,000. On consolidation this is translated at the average rate (AR) of ¥103/USD. Record the entry recognizing the 20% portion attributable to non-controlling interests.",
+    e:[{d:[['非支配株主に帰属する当期純利益',1030000]], c:[['非支配株主持分',1030000]]}],
+    exp:'損益計算書の項目（収益・費用・当期純利益）は、原則として「期中平均レート（AR）」で円換算します。50,000ドル×103円＝5,150,000円（円換算後の当期純利益）。このうち非支配株主の持分20％相当額1,030,000円を、非支配株主に帰属する当期純利益として振り替えます。'
+  },
+  { id:766, level:3, cat:'外貨換算', chap:'1級：外貨換算会計',
+    q:'Ｐ社は保有する在外子会社Ｓ社株式をすべて売却し、連結上計上されていた為替換算調整勘定300,000円（貸方残高、親会社帰属分）を、子会社株式売却損益に振り替えることとした。仕訳を示しなさい。',
+    en_q:"Company P sold its entire stake in overseas subsidiary S. Record the entry reclassifying the ¥300,000 credit-balance foreign currency translation adjustment (the parent's attributable portion) recognized on consolidation into gain/loss on sale of subsidiary shares.",
+    e:[{d:[['為替換算調整勘定',300000]], c:[['子会社株式売却益',300000]]}],
+    exp:'「その他有価証券評価差額金」は売却しても損益に振り替えられませんが、「為替換算調整勘定」は在外子会社株式を売却（連結範囲から外れる）した時点で、これとは異なり「実現」したものとしてその期の損益に振り替えられます（リサイクリング）。これは1級試験でよく問われる重要な相違点です。'
+  },
+  { id:767, level:2, cat:'外貨換算', chap:'1級：外貨換算会計',
+    q:'在外子会社Ｓ社は、現地で機械装置を30,000ドルで購入し、現金で支払った。取得時のレートは1ドル＝105円であった。Ｓ社の現地帳簿（円換算後）における仕訳を示しなさい。',
+    en_q:"Overseas subsidiary S purchased machinery locally for $30,000 cash. The transaction-date rate was ¥105/USD. Record the entry in S's local books, translated to yen.",
+    e:[{d:[['機械装置',3150000]], c:[['現金',3150000]]}],
+    exp:'固定資産のような非貨幣性項目は、取得時のレート（HR）で換算し、その後の決算時レートの変動があっても換算替えしません（取得原価のまま据え置きます）。30,000ドル×105円＝3,150,000円。この金額は、減価償却を通じて費用化される際も、取得時に確定したこの円換算額を基準に計算します。'
+  },
+  { id:768, level:2, cat:'外貨換算', chap:'1級：外貨換算会計',
+    q:'在外子会社Ｓ社は、当期に商品を80,000ドル分販売した（掛け）。連結上の損益計算書に反映させる際は、期中平均レート（AR）1ドル＝104円で換算する。この売上高を計上する仕訳を示しなさい。',
+    en_q:"Overseas subsidiary S sold $80,000 of merchandise on credit during the period. For consolidation purposes this is translated at the average rate (AR) of ¥104/USD. Record the entry recognizing this sales revenue.",
+    e:[{d:[['売掛金',8320000]], c:[['売上',8320000]]}],
+    exp:'損益計算書項目（収益・費用）は、個々の取引が発生した都度のレートではなく、実務上は簡便的に「期中平均レート（AR）」でまとめて換算するのが一般的です。80,000ドル×104円＝8,320,000円。これに対し、対応する売掛金（貸借対照表項目）は、決算時には改めて決算時レート（CR）で換算し直される点に注意が必要です（のれんと同じ考え方です）。'
   },
 
 ];
