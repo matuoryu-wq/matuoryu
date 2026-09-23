@@ -563,6 +563,7 @@
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：減損会計（応用）" title="1級：減損会計（応用）" onclick="setSection('chap:1級：減損会計（応用）')">🎓1級：減損（応用）</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：リース会計（応用）" title="1級：リース会計（応用）" onclick="setSection('chap:1級：リース会計（応用）')">🎓1級：リース（応用）</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:1級：会計方針の変更・誤謬の訂正" title="1級：会計方針の変更・誤謬の訂正" onclick="setSection('chap:1級：会計方針の変更・誤謬の訂正')">🎓1級：会計方針・誤謬</button>
+      <button class="ctrl-btn grp-btn" data-sec="chap:1級：標準原価計算（差異分析）" title="1級：標準原価計算（差異分析）" onclick="setSection('chap:1級：標準原価計算（差異分析）')">🎓1級：標準原価差異</button>
     </div>
   </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
@@ -747,6 +748,7 @@ const T = {
   '先物取引差入証拠金':'asset','先物取引差金':'asset','先物損益':'other','オプション資産':'asset',
   'オプション差損益':'other','為替予約':'asset','繰延ヘッジ損益':'equity','デリバティブ資産':'asset',
   '為替換算調整勘定':'equity','退職給付に係る調整累計額':'equity','長期前受収益':'liability',
+  '配合差異':'other','歩留差異':'other','原価差異':'other',
   // 2級追加（新規科目）
   '商品券':'liability','他店商品券':'asset','仕入割引':'revenue','定期預金':'asset',
   '役員貸付金':'asset','役員借入金':'liability','引出金（事業主貸）':'other','圧縮積立金':'equity',
@@ -6657,6 +6659,32 @@ const ALL = [
     en_q:'Company X discovered this period that it had failed to record ¥100,000 of expenses last period. In restating the financials, applying tax-effect accounting at an effective tax rate of 30%, record the correcting entry.',
     e:[{d:[['利益剰余金期首残高',70000],['繰延税金資産',30000]], c:[['未払費用',100000]]}],
     exp:'修正再表示にも税効果会計を適用します。過去に計上漏れだった費用100,000円は、将来（税務上の扱いが確定した時点で）税金負担を軽減する効果を持つため、繰延税金資産30,000円（100,000×30％）を認識します。残り70,000円が税引後ベースでの利益剰余金期首残高の減額分です。誤謬の訂正であっても、通常の決算整理と同じように税効果会計のルールを適用する点を押さえておきましょう。'
+  },
+
+  // ===== 1級：標準原価計算（差異分析・応用） =====
+  { id:792, level:3, cat:'標準原価計算', chap:'1級：標準原価計算（差異分析）',
+    q:'Ｘ社は製品を製造するにあたり、材料Ａ（標準単価＠200円）と材料Ｂ（標準単価＠100円）を標準配合比率7：3で投入している。当月、実際には材料Ａ750kg・材料Ｂ300kgを投入し（合計1,050kg）、標準配合比率で計算した実際投入量ベースの配合量は材料Ａ735kg・材料Ｂ315kgであった。配合差異を計算し、仕掛品から配合差異勘定へ振り替える仕訳を示しなさい（不利差異）。',
+    en_q:'Company X combines material A (standard price ¥200/kg) and material B (standard price ¥100/kg) in a standard mix ratio of 7:3. This month it actually used 750kg of A and 300kg of B (total 1,050kg); at the standard mix ratio, the actual total input implies 735kg of A and 315kg of B. Compute the mix variance and record the entry transferring it from work-in-process to the mix variance account (unfavorable).',
+    e:[{d:[['配合差異',1500]], c:[['仕掛品',1500]]}],
+    exp:'配合差異とは、複数の材料を組み合わせて製品を作る場合に、実際の配合比率が標準の配合比率とズレたことによって生じる差異です。標準よりも単価の高い材料Ａを多く（735kg→750kg、15kg超過）、単価の低い材料Ｂを少なく（315kg→300kg、15kg減少）投入した結果、材料Ａ：200円×(735－750)＝△3,000円、材料Ｂ：100円×(315－300)＝＋1,500円、合計△1,500円（不利差異）が生じました。投入量の合計（1,050kg）は変わらなくても、「高い材料の比率を増やした」ことでコストが増加しています。'
+  },
+  { id:793, level:3, cat:'標準原価計算', chap:'1級：標準原価計算（差異分析）',
+    q:'上記のＸ社において、標準投入量は材料Ａ700kg・材料Ｂ300kg（標準配合比率での実際生産量に対する必要量）であった。歩留差異を計算し、仕掛品から歩留差異勘定へ振り替える仕訳を示しなさい（不利差異）。',
+    en_q:'For Company X above, the standard input required for actual output (at the standard mix ratio) was 700kg of A and 300kg of B. Compute the yield variance and record the entry transferring it from work-in-process to the yield variance account (unfavorable).',
+    e:[{d:[['歩留差異',8500]], c:[['仕掛品',8500]]}],
+    exp:'歩留差異とは、材料の配合比率は標準どおりだったとしても、投入量の合計そのものが標準より多かった（＝歩留り＝原材料が製品に変わる効率が悪かった）ことによって生じる差異です。標準配合比率のまま計算した必要量合計1,000kg（700kg＋300kg）に対し、実際には1,050kg（配合比率どおりで735kg＋315kg）を投入したため、50kg分（歩留りの悪化分）が余分にコストとしてかかっています。材料Ａ：200円×(700－735)＝△7,000円、材料Ｂ：100円×(300－315)＝△1,500円、合計△8,500円（不利差異）。'
+  },
+  { id:794, level:3, cat:'標準原価計算', chap:'1級：標準原価計算（差異分析）',
+    q:'Ｘ社は標準原価計算を採用しており、当月の原価差異（不利差異）100,000円が比較的多額であったため、期末の仕掛品・製品・売上原価の標準原価の比率（仕掛品20％・製品30％・売上原価50％）で配分することとした。原価差異を配分する仕訳を示しなさい。',
+    en_q:'Company X uses standard costing. This month\'s cost variance (¥100,000 unfavorable) was relatively large, so it is allocated across ending work-in-process, finished goods, and cost of goods sold in proportion to their standard cost balances (WIP 20%, finished goods 30%, COGS 50%). Record the allocation entry.',
+    e:[{d:[['仕掛品',20000],['製品',30000],['売上原価',50000]], c:[['原価差異',100000]]}],
+    exp:'標準原価計算で生じた原価差異は、原則として当月の売上原価に賦課（すべて売上原価に加算）します。ただし、差異の金額が「比較的多額」である場合は、棚卸資産（期末仕掛品・期末製品）にもその発生原因が及んでいると考え、各在庫と売上原価の残高比率で配分します。100,000円×仕掛品20％＝20,000円、製品30％＝30,000円、売上原価50％＝50,000円。「差異が小さければ全部売上原価、大きければ在庫にも配分」という原価差異の会計処理の原則を扱う問題です。'
+  },
+  { id:795, level:2, cat:'標準原価計算', chap:'1級：標準原価計算（差異分析）',
+    q:'Ｘ社は標準原価計算を採用しており、当月の原価差異（有利差異）15,000円は少額であったため、全額を売上原価に賦課することとした。仕訳を示しなさい（有利差異のため売上原価を減額する）。',
+    en_q:"Company X uses standard costing. This month's cost variance (¥15,000 favorable) was small, so it is charged entirely to cost of goods sold. Record the entry (a favorable variance reduces cost of goods sold).",
+    e:[{d:[['原価差異',15000]], c:[['売上原価',15000]]}],
+    exp:'原価差異が少額の場合は、簡便的に全額をその月の売上原価に賦課します。有利差異（実際原価が標準原価より少なくて済んだ）の場合は、売上原価を減額する方向で処理します。「儲けが出た分だけ、売上原価が少なくて済んだ」というイメージです。'
   },
 
 ];
