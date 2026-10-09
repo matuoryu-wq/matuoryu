@@ -581,11 +581,12 @@
   </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
     <button class="apx-btn" onclick="showApx()">📖 勘定科目一覧</button>
+    <button class="apx-btn" id="disp-quiz-btn" onclick="startDispQuiz()">📊 表示区分クイズ</button>
   </div>
 </div>
 <div class="controls" id="group-row" style="padding-top:6px;border-top:1px solid var(--border);display:none;"></div>
 
-<div class="check-bar">
+<div class="check-bar" id="check-bar">
   <span style="font-size:12px;font-weight:700;color:var(--muted);">問題数：<strong id="s-total" style="color:var(--primary);">0</strong>問</span>
   <span style="font-size:12px;font-weight:700;color:var(--muted);">チェック：<strong id="s-check" style="color:#E65100;">0</strong>問</span>
   <button class="ctrl-btn" id="btn-check-only" onclick="toggleCheckOnly()">チェックのみ</button>
@@ -5891,6 +5892,130 @@ function expNextEntry(){
 }
 
 // ===== スクロールモードここまで =====
+
+// ===== 表示区分クイズ（選択式・仕訳とは別枠） =====
+let dispQuizDeck = [];
+let dispQuizIdx = 0;
+let dispQuizScore = 0;
+let dispQuizWrong = [];
+
+function shuffleArr(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function dispAnsText(item){
+  return item.ans.map(([s,c])=>`${s}　${c}`).join('　／　');
+}
+
+function startDispQuiz(){
+  dispQuizDeck = shuffleArr(DISPLAY_DATA.slice());
+  dispQuizIdx = 0;
+  dispQuizScore = 0;
+  dispQuizWrong = [];
+  document.getElementById('controls-main').style.display='none';
+  document.getElementById('check-bar').style.display='none';
+  document.getElementById('group-row').style.display='none';
+  renderDispQuiz();
+  document.getElementById('exp-panel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function exitDispQuiz(){
+  document.getElementById('controls-main').style.display='';
+  document.getElementById('check-bar').style.display='';
+  updateGroupButtons();
+  loadExpQ();
+}
+
+function dispQuizNavBar(){
+  const total=dispQuizDeck.length, i=dispQuizIdx;
+  return `<div class="exp-nav-row">
+    <button class="exp-nav-btn" onclick="exitDispQuiz()">✕ 終了</button>
+    <span class="exp-nav-info">問${i+1} / ${total}（正解 ${dispQuizScore}）</span>
+    <span style="width:64px;"></span>
+  </div>`;
+}
+
+function renderDispQuiz(){
+  if(dispQuizIdx >= dispQuizDeck.length){ renderDispQuizFinish(); return; }
+  const item = dispQuizDeck[dispQuizIdx];
+  const correctText = dispAnsText(item);
+  const poolMap = new Map();
+  DISPLAY_DATA.forEach(d => {
+    if(d.no===item.no) return;
+    const t = dispAnsText(d);
+    if(t!==correctText && !poolMap.has(t)) poolMap.set(t, d);
+  });
+  const distractors = shuffleArr([...poolMap.values()]).slice(0,3).map(d=>dispAnsText(d));
+  const choices = shuffleArr([correctText, ...distractors]);
+  window._dispChoices = choices;
+  window._dispCorrect = correctText;
+  const main=document.getElementById('exp-main');
+  main.innerHTML = `
+    ${dispQuizNavBar()}
+    <div class="exp-q-card" style="text-align:center;">
+      <div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この勘定科目は、財務諸表のどこに表示される？</div>
+      <div style="font-size:22px;font-weight:800;">${item.name}</div>
+    </div>
+    <div class="exp-step-choices wide" id="disp-choices">
+      ${choices.map((c,i)=>`<button class="exp-step-choice-btn" onclick="selectDispChoice(this,${i})">${c}</button>`).join('')}
+    </div>
+    <div class="exp-result" id="disp-res"></div>`;
+}
+
+function selectDispChoice(btn, i){
+  const chosen = window._dispChoices[i];
+  const correct = window._dispCorrect;
+  const item = dispQuizDeck[dispQuizIdx];
+  const ok = chosen === correct;
+  document.querySelectorAll('#disp-choices .exp-step-choice-btn').forEach(b=>{
+    b.disabled = true;
+    if(b.textContent === correct) b.classList.add('correct');
+    else if(b === btn) b.classList.add('wrong');
+  });
+  if(ok) dispQuizScore++;
+  else dispQuizWrong.push(item.no);
+  const isLast = dispQuizIdx>=dispQuizDeck.length-1;
+  const res = document.getElementById('disp-res');
+  res.className = `exp-result ${ok?'ok':'ng'}`;
+  res.style.display = 'block';
+  const dispLine = item.disp ? `<div style="font-size:12px;color:var(--muted);margin-bottom:6px;">表示科目：${item.disp}</div>` : '';
+  res.innerHTML = `
+    <div class="exp-res-hd">${ok?'⭕ 正解！':'❌ 不正解'}</div>
+    ${dispLine}
+    <div class="exp-res-exp">${item.reason}</div>
+    <button class="exp-nav-btn exp-nav-next" style="width:100%;margin-top:10px;" onclick="dispQuizNext()">${isLast?'結果を見る →':'次の問題 →'}</button>`;
+  res.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function dispQuizNext(){
+  dispQuizIdx++;
+  renderDispQuiz();
+}
+
+function renderDispQuizFinish(){
+  const total = dispQuizDeck.length;
+  const pct = total ? Math.round(dispQuizScore/total*100) : 0;
+  const wrongNames = dispQuizWrong.map(no => DISPLAY_DATA.find(d=>d.no===no)?.name).filter(Boolean);
+  const wrongHtml = wrongNames.length
+    ? `<div style="text-align:left;font-size:12px;color:var(--muted);margin-top:14px;padding:10px 12px;background:rgba(0,0,0,0.04);border-radius:8px;">間違えた科目：${wrongNames.join('、')}</div>`
+    : '';
+  const main=document.getElementById('exp-main');
+  main.innerHTML = `
+    <div class="exp-fin">
+      <div class="exp-fin-score">${dispQuizScore} / ${total}</div>
+      <div class="exp-fin-label">正答率 ${pct}%</div>
+      <div class="exp-fin-btns">
+        <button class="exp-fin-btn exp-fin-btn-retry" onclick="startDispQuiz()">もう一度</button>
+        <button class="exp-fin-btn exp-fin-btn-back" onclick="exitDispQuiz()">仕訳問題に戻る</button>
+      </div>
+      ${wrongHtml}
+    </div>`;
+}
+// ===== 表示区分クイズここまで =====
 
 function setSection(sec){
   sectionFilter=sec;
