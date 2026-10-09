@@ -220,6 +220,16 @@
     .tag.other     { background: #fff; color: #333; border: 1.5px solid #9E9E9E; }
     /* 資産のマイナス（減価償却累計額・貸倒引当金等）：白地に資産の黄枠 */
     .tag.other.contra-asset { border: 1.5px solid #F9C400; }
+    /* 勘定科目名の色分けタグ（表示区分クイズ等、"解答を隠す"の対象にしないため.tagとは別クラス） */
+    .acct-tag { padding: 4px 11px; border-radius: 12px; font-size: 13px; font-weight: 700; text-align: center; display:inline-block; }
+    .acct-tag.asset     { background: #FFF9C4; color: #5D4037; border: 1.5px solid #F9C400; }
+    .acct-tag.liability { background: #FCE4EC; color: #880E4F; border: 1.5px solid #C2185B; }
+    .acct-tag.expense   { background: #E8F5E9; color: #1B5E20; border: 1.5px solid #388E3C; }
+    .acct-tag.revenue   { background: #E1F5FE; color: #01579B; border: 1.5px solid #0288D1; }
+    .acct-tag.equity    { background: #FFF3E0; color: #E65100; border: 1.5px solid #FB8C00; }
+    .acct-tag.other     { background: #fff; color: #333; border: 1.5px solid #9E9E9E; }
+    .acct-tag.other.contra-asset { border: 1.5px solid #F9C400; }
+    .acct-tag.acct-tag-lg { font-size:16px; padding:7px 18px; border-radius:14px; }
 
     .note-box {
       margin-top: 6px;
@@ -1970,6 +1980,34 @@ const DISPLAY_DATA = [
   { no:192, name:'商品保証費', ans:[['P/L','販売費及び一般管理費']], reason:'商品保証費とは、引当金を設定せず、実際に保証修理が発生したときにその場で費用として処理する場合の科目です。売った商品のアフターサービスにかかる費用なので、P/L上は販売費及び一般管理費に表示します。' },
 ];
 
+// ===== 一問一答（表示区分の意味）：グループ0 - 区分そのものの定義を問う =====
+const CONCEPT_DATA = [
+  { no:1, q:'決算日の翌日から起算して、1年以内に支払期限が到来する負債を何という？', ans:'流動負債', reason:'流動負債とは、決算日の翌日から1年以内に支払期限が来る負債のことです（1年基準）。買掛金・支払手形・未払費用・短期借入金などが含まれます。' },
+  { no:2, q:'決算日の翌日から起算して、支払期限が1年を超える負債を何という？', ans:'固定負債', reason:'固定負債とは、決算日の翌日から1年を超えてから支払期限が来る負債のことです（1年基準）。長期借入金・社債・退職給付引当金などが含まれます。' },
+  { no:3, q:'現金預金のようにすぐに使える資産や、1年以内に現金化・費用化される資産、あるいは商品・売掛金のように通常の営業サイクルの中にある資産を何という？', ans:'流動資産', reason:'流動資産とは、現金預金のようにすぐに使えるお金や、1年以内に現金化・費用化される資産、あるいは商品・売掛金のように通常の営業サイクル（正常営業循環基準）の中にある資産のことです。' },
+  { no:4, q:'1年を超えて長期的に使用または保有する資産を何という？', ans:'固定資産', reason:'固定資産とは、1年を超えて長期間、事業のために使用または保有する資産のことです。さらに「有形固定資産」「無形固定資産」「投資その他の資産」の3つに分かれます。' },
+  { no:5, q:'建物・土地・機械装置・備品など、長期間使用する形のある資産が分類される区分を何という？', ans:'有形固定資産', reason:'有形固定資産とは、建物・土地・機械装置・備品など、形があって長期間使用する資産の区分です。土地以外は、使用にともなって減価償却を行います。' },
+  { no:6, q:'のれん・特許権・商標権・ソフトウェアなど、長期間事業に役立つ、形のない資産が分類される区分を何という？', ans:'無形固定資産', reason:'無形固定資産とは、のれん・特許権・商標権・ソフトウェアなど、形はないが長期間にわたって事業に役立つ資産の区分です。' },
+  { no:7, q:'子会社株式・その他有価証券・長期貸付金・繰延税金資産など、短期売買ではなく長期的な投資や関係維持のために保有する資産が分類される区分を何という？', ans:'投資その他の資産', reason:'投資その他の資産とは、子会社株式・その他有価証券・長期貸付金・繰延税金資産など、短期的な売買や使用ではなく、長期的な投資や関係維持のために保有する資産の区分です。' },
+  { no:8, q:'創立費・開業費・株式交付費・社債発行費のように、すでに支払った費用の効果が将来にも及ぶため、資産としていったん計上し、数年かけて償却していく特殊な資産の区分を何という？', ans:'繰延資産', reason:'繰延資産とは、すでに現金を支払ったものの、その効果が将来の期間にも及ぶため、いったん資産として計上し、数年かけて償却していく特殊な資産の区分です。' },
+  { no:9, q:'資本金・資本剰余金・利益剰余金・自己株式など、株主が出資した元手や会社が稼いで蓄積した利益をまとめた、純資産の中の区分を何という？', ans:'株主資本', reason:'株主資本とは、純資産のうち、株主が出資したお金（資本金・資本剰余金）と、会社がこれまでに稼いで蓄積した利益（利益剰余金）、および自己株式をまとめた区分です。' },
+  { no:10, q:'その他有価証券評価差額金のように、決算時の時価評価で生じたが、まだ売却などで損益として確定していない評価差額が分類される、純資産の中の区分を何という？', ans:'評価・換算差額等', reason:'評価・換算差額等とは、その他有価証券評価差額金など、決算時の時価評価によって生じたものの、まだ売却などで確定していない評価差額を計上する、純資産の中の区分です。' },
+  { no:11, q:'商品の販売やサービスの提供など、会社の本業そのものから得られる収益を何という？', ans:'売上高', reason:'売上高とは、商品の販売やサービスの提供など、会社の本業そのものから得られる収益のことです。P/Lの一番上に表示される、会社の存在意義を表す数字です。' },
+  { no:12, q:'売上高から差し引く、売れた商品の仕入原価や、提供したサービスの原価を何という？', ans:'売上原価', reason:'売上原価とは、売れた商品の仕入原価や、提供したサービスの原価のことです。売上高からこれを差し引くと、売上総利益（粗利）が計算できます。' },
+  { no:13, q:'売上高から売上原価を差し引いた、商品そのものの儲け（粗利）を何という？', ans:'売上総利益', reason:'売上総利益とは、売上高から売上原価を差し引いた、商品そのものの儲け（粗利）のことです。ここからさらに販売費及び一般管理費を差し引いて、営業利益を計算します。' },
+  { no:14, q:'給料・広告宣伝費・減価償却費・貸倒引当金繰入など、商品を販売するための費用と、会社全体を管理するための費用をまとめた区分を何という？', ans:'販売費及び一般管理費', reason:'販売費及び一般管理費とは、商品を販売するための費用（広告宣伝費・発送費など）と、会社全体を管理するための費用（給料・家賃・減価償却費など）をまとめた区分です。「販管費」と略されることもあります。' },
+  { no:15, q:'売上総利益から販売費及び一般管理費を差し引いた、本業そのものの儲けを何という？', ans:'営業利益', reason:'営業利益とは、売上総利益から販売費及び一般管理費を差し引いた利益で、「本業でどれだけ稼げているか」を示す、最も重要な利益指標の1つです。' },
+  { no:16, q:'受取利息・受取配当金・有価証券売却益など、本業以外から毎期ふつうに生じる収益を何という？', ans:'営業外収益', reason:'営業外収益とは、受取利息・受取配当金・有価証券売却益など、商品販売という本業以外から、毎期ふつうに生じる収益のことです。主に資金運用（財務活動）の成果です。' },
+  { no:17, q:'支払利息・手形売却損・有価証券評価損など、本業以外から毎期ふつうに生じる費用を何という？', ans:'営業外費用', reason:'営業外費用とは、支払利息・手形売却損・有価証券評価損など、商品販売という本業以外から、毎期ふつうに生じる費用のことです。主に資金調達（財務活動）に伴うコストです。' },
+  { no:18, q:'営業利益に、営業外収益を加え、営業外費用を差し引いた利益を何という？', ans:'経常利益', reason:'経常利益とは、営業利益に営業外収益を足し、営業外費用を引いた利益です。本業の儲けに、財務活動の結果まで加味した「会社の通常の活動全体の儲け」を表します。' },
+  { no:19, q:'固定資産売却益・負ののれん発生益・国庫補助金受贈益など、毎期ふつうには生じない臨時的な利益を何という？', ans:'特別利益', reason:'特別利益とは、固定資産売却益や負ののれん発生益など、毎期ふつうに生じるものではない、臨時的・偶発的な利益のことです。' },
+  { no:20, q:'固定資産売却損・火災損失・減損損失など、毎期ふつうには生じない臨時的な損失を何という？', ans:'特別損失', reason:'特別損失とは、固定資産売却損や火災損失、減損損失など、毎期ふつうに生じるものではない、臨時的・偶発的な損失のことです。' },
+  { no:21, q:'経常利益に、特別利益を加え、特別損失を差し引いた、法人税等を差し引く前の利益を何という？', ans:'税引前当期純利益', reason:'税引前当期純利益とは、経常利益に特別利益・特別損失まで加味した、法人税等を差し引く前の、最終的な儲けのことです。ここから法人税、住民税及び事業税を差し引くと当期純利益になります。' },
+  { no:22, q:'税引前当期純利益から、法人税、住民税及び事業税を差し引いた、1年間の最終的な儲けを何という？', ans:'当期純利益', reason:'当期純利益とは、税引前当期純利益から法人税等を差し引いた、1年間の会社の最終的な儲けのことです。この金額が、B/Sの純資産（繰越利益剰余金）に積み上がっていきます。' },
+  { no:23, q:'製造業において、1期間の製品製造にかかった材料費・労務費・製造間接費の内訳と、当期製品製造原価の計算過程をまとめて示す書類を何という？', ans:'製造原価報告書', reason:'製造原価報告書とは、製造業において、1期間の製品の製造にかかった原価（材料費・労務費・製造間接費）の内訳と、当期製品製造原価の計算過程をまとめて示す書類です。P/Lの売上原価の計算に使われます。' },
+  { no:24, q:'貸倒引当金や減価償却累計額のように、対応する資産の帳簿価額を直接書き換えず、資産の下に△（マイナス）として別掲し、差し引きで正味の価値を示す項目を何という？', ans:'評価勘定（控除項目）', reason:'評価勘定（控除項目）とは、貸倒引当金や減価償却累計額のように、対応する資産の帳簿価額を直接書き換えるのではなく、資産の下に△（マイナス）として別掲し、差し引きで正味の価値を示すための項目です。' },
+];
+
 const APX_TYPE_INFO = {
   asset:      { name:'資産 (Assets)',              sub:'会社が持っているもの・もらえる権利' },
   liability:  { name:'負債 (Liabilities)',          sub:'将来払わなければならない義務・借金' },
@@ -2104,7 +2142,7 @@ function buildApxContent(){
       }).join('');
       return `<div class="disp-row" data-name="${name}">
         <div class="disp-no">No.${no}</div>
-        <div class="disp-q">${name}</div>
+        <div class="disp-q"><span class="acct-tag acct-tag-lg ${tagType(dispBaseName(name))}">${name}</span></div>
         <div class="disp-ans-wrap">
           ${ansLines}
           ${disp ? `<div class="disp-dispname">表示科目：${disp}</div>` : ''}
@@ -6005,6 +6043,7 @@ let dispQuizIdx = 0;
 let dispQuizScore = 0;
 let dispQuizWrong = [];
 let dispQuizLastGroup = -1;
+let dispQuizKind = 'account'; // 'account' | 'concept'
 
 const DISP_QUIZ_GROUPS = [
   { label:'グループ1', range:[1,48] },
@@ -6025,6 +6064,14 @@ function dispAnsText(item){
   return item.ans.map(([s,c])=>`${s}　${c}`).join('　／　');
 }
 
+function dispBaseName(name){
+  return name.replace(/（.*/,'');
+}
+
+function dispChoiceText(kind, raw){
+  return kind === 'concept' ? raw.ans : dispAnsText(raw);
+}
+
 function startDispQuiz(){
   document.getElementById('controls-main').style.display='none';
   document.getElementById('check-bar').style.display='none';
@@ -6035,7 +6082,8 @@ function startDispQuiz(){
 
 function renderDispQuizGroupSelect(){
   const opts = [
-    { label:`全問（${DISPLAY_DATA.length}問）`, g:-1 },
+    { label:`グループ0（表示区分の意味・${CONCEPT_DATA.length}問）`, g:'concept' },
+    { label:`全問（勘定科目・${DISPLAY_DATA.length}問）`, g:-1 },
     ...DISP_QUIZ_GROUPS.map((grp,i)=>({ label:`${grp.label}（No.${grp.range[0]}〜${grp.range[1]}・${grp.range[1]-grp.range[0]+1}問）`, g:i })),
   ];
   const main=document.getElementById('exp-main');
@@ -6046,21 +6094,28 @@ function renderDispQuizGroupSelect(){
       <span style="width:64px;"></span>
     </div>
     <div class="exp-q-card" style="text-align:center;">
-      <div style="font-size:14px;font-weight:700;">出題範囲を選んでください（全${DISPLAY_DATA.length}問を4つに分割）</div>
+      <div style="font-size:14px;font-weight:700;">出題範囲を選んでください</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">グループ0は「表示区分」そのものの意味、それ以外は勘定科目ごとの表示区分を問います</div>
     </div>
     <div class="exp-step-choices wide">
-      ${opts.map(o=>`<button class="exp-step-choice-btn" onclick="launchDispQuiz(${o.g})">${o.label}</button>`).join('')}
+      ${opts.map(o=>`<button class="exp-step-choice-btn" onclick='launchDispQuiz(${JSON.stringify(o.g)})'>${o.label}</button>`).join('')}
     </div>`;
 }
 
 function launchDispQuiz(g){
   dispQuizLastGroup = g;
-  let pool = DISPLAY_DATA;
-  if(g>=0){
-    const [lo,hi]=DISP_QUIZ_GROUPS[g].range;
-    pool = DISPLAY_DATA.filter(d=>d.no>=lo && d.no<=hi);
+  if(g === 'concept'){
+    dispQuizKind = 'concept';
+    dispQuizDeck = shuffleArr(CONCEPT_DATA.slice());
+  } else {
+    dispQuizKind = 'account';
+    let pool = DISPLAY_DATA;
+    if(g>=0){
+      const [lo,hi]=DISP_QUIZ_GROUPS[g].range;
+      pool = DISPLAY_DATA.filter(d=>d.no>=lo && d.no<=hi);
+    }
+    dispQuizDeck = shuffleArr(pool.slice());
   }
-  dispQuizDeck = shuffleArr(pool.slice());
   dispQuizIdx = 0;
   dispQuizScore = 0;
   dispQuizWrong = [];
@@ -6086,24 +6141,28 @@ function dispQuizNavBar(){
 function renderDispQuiz(){
   if(dispQuizIdx >= dispQuizDeck.length){ renderDispQuizFinish(); return; }
   const item = dispQuizDeck[dispQuizIdx];
-  const correctText = dispAnsText(item);
+  const kind = dispQuizKind;
+  const correctText = dispChoiceText(kind, item);
+  const sourcePool = kind === 'concept' ? CONCEPT_DATA : DISPLAY_DATA;
   const poolMap = new Map();
-  DISPLAY_DATA.forEach(d => {
+  sourcePool.forEach(d => {
     if(d.no===item.no) return;
-    const t = dispAnsText(d);
+    const t = dispChoiceText(kind, d);
     if(t!==correctText && !poolMap.has(t)) poolMap.set(t, d);
   });
-  const distractors = shuffleArr([...poolMap.values()]).slice(0,3).map(d=>dispAnsText(d));
+  const distractors = shuffleArr([...poolMap.values()]).slice(0,3).map(d=>dispChoiceText(kind,d));
   const choices = shuffleArr([correctText, ...distractors]);
   window._dispChoices = choices;
   window._dispCorrect = correctText;
   const main=document.getElementById('exp-main');
+  const promptHtml = kind === 'concept'
+    ? `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この説明にあてはまる区分は？</div>
+       <div style="font-size:16px;font-weight:700;line-height:1.7;">${item.q}</div>`
+    : `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この勘定科目は、財務諸表のどこに表示される？</div>
+       <span class="acct-tag acct-tag-lg ${tagType(dispBaseName(item.name))}">${item.name}</span>`;
   main.innerHTML = `
     ${dispQuizNavBar()}
-    <div class="exp-q-card" style="text-align:center;">
-      <div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この勘定科目は、財務諸表のどこに表示される？</div>
-      <div style="font-size:22px;font-weight:800;">${item.name}</div>
-    </div>
+    <div class="exp-q-card" style="text-align:center;">${promptHtml}</div>
     <div class="exp-step-choices wide" id="disp-choices">
       ${choices.map((c,i)=>`<button class="exp-step-choice-btn" onclick="selectDispChoice(this,${i})">${c}</button>`).join('')}
     </div>
@@ -6126,7 +6185,7 @@ function selectDispChoice(btn, i){
   const res = document.getElementById('disp-res');
   res.className = `exp-result ${ok?'ok':'ng'}`;
   res.style.display = 'block';
-  const dispLine = item.disp ? `<div style="font-size:12px;color:var(--muted);margin-bottom:6px;">表示科目：${item.disp}</div>` : '';
+  const dispLine = (dispQuizKind==='account' && item.disp) ? `<div style="font-size:12px;color:var(--muted);margin-bottom:6px;">表示科目：${item.disp}</div>` : '';
   res.innerHTML = `
     <div class="exp-res-hd">${ok?'⭕ 正解！':'❌ 不正解'}</div>
     ${dispLine}
@@ -6143,9 +6202,15 @@ function dispQuizNext(){
 function renderDispQuizFinish(){
   const total = dispQuizDeck.length;
   const pct = total ? Math.round(dispQuizScore/total*100) : 0;
-  const wrongNames = dispQuizWrong.map(no => DISPLAY_DATA.find(d=>d.no===no)?.name).filter(Boolean);
-  const wrongHtml = wrongNames.length
-    ? `<div style="text-align:left;font-size:12px;color:var(--muted);margin-top:14px;padding:10px 12px;background:rgba(0,0,0,0.04);border-radius:8px;">間違えた科目：${wrongNames.join('、')}</div>`
+  const kind = dispQuizKind;
+  const sourceArr = kind === 'concept' ? CONCEPT_DATA : DISPLAY_DATA;
+  const wrongItems = dispQuizWrong.map(no => sourceArr.find(d=>d.no===no)).filter(Boolean);
+  const wrongLabel = kind === 'concept' ? '間違えた区分：' : '間違えた科目：';
+  const wrongBody = kind === 'concept'
+    ? wrongItems.map(d=>d.ans).join('、')
+    : wrongItems.map(d=>`<span class="acct-tag ${tagType(dispBaseName(d.name))}" style="margin:2px;">${d.name}</span>`).join(' ');
+  const wrongHtml = wrongItems.length
+    ? `<div style="text-align:left;font-size:12px;color:var(--muted);margin-top:14px;padding:10px 12px;background:rgba(0,0,0,0.04);border-radius:8px;">${wrongLabel}${wrongBody}</div>`
     : '';
   const main=document.getElementById('exp-main');
   main.innerHTML = `
@@ -6153,7 +6218,7 @@ function renderDispQuizFinish(){
       <div class="exp-fin-score">${dispQuizScore} / ${total}</div>
       <div class="exp-fin-label">正答率 ${pct}%</div>
       <div class="exp-fin-btns">
-        <button class="exp-fin-btn exp-fin-btn-retry" onclick="launchDispQuiz(${dispQuizLastGroup})">もう一度</button>
+        <button class="exp-fin-btn exp-fin-btn-retry" onclick='launchDispQuiz(${JSON.stringify(dispQuizLastGroup)})'>もう一度</button>
         <button class="exp-fin-btn exp-fin-btn-back" onclick="exitDispQuiz()">仕訳問題に戻る</button>
       </div>
       <button class="exp-nav-btn" style="width:100%;margin-top:10px;" onclick="renderDispQuizGroupSelect()">↩ 別の範囲を選ぶ</button>
