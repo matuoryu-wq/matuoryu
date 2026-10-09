@@ -5898,6 +5898,14 @@ let dispQuizDeck = [];
 let dispQuizIdx = 0;
 let dispQuizScore = 0;
 let dispQuizWrong = [];
+let dispQuizLastGroup = -1;
+
+const DISP_QUIZ_GROUPS = [
+  { label:'グループ1', range:[1,22] },
+  { label:'グループ2', range:[23,44] },
+  { label:'グループ3', range:[45,66] },
+  { label:'グループ4', range:[67,86] },
+];
 
 function shuffleArr(arr){
   for(let i=arr.length-1;i>0;i--){
@@ -5912,15 +5920,45 @@ function dispAnsText(item){
 }
 
 function startDispQuiz(){
-  dispQuizDeck = shuffleArr(DISPLAY_DATA.slice());
-  dispQuizIdx = 0;
-  dispQuizScore = 0;
-  dispQuizWrong = [];
   document.getElementById('controls-main').style.display='none';
   document.getElementById('check-bar').style.display='none';
   document.getElementById('group-row').style.display='none';
-  renderDispQuiz();
+  renderDispQuizGroupSelect();
   document.getElementById('exp-panel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderDispQuizGroupSelect(){
+  const opts = [
+    { label:`全問（86問）`, g:-1 },
+    ...DISP_QUIZ_GROUPS.map((grp,i)=>({ label:`${grp.label}（No.${grp.range[0]}〜${grp.range[1]}・${grp.range[1]-grp.range[0]+1}問）`, g:i })),
+  ];
+  const main=document.getElementById('exp-main');
+  main.innerHTML = `
+    <div class="exp-nav-row">
+      <button class="exp-nav-btn" onclick="exitDispQuiz()">✕ 終了</button>
+      <span class="exp-nav-info">表示区分クイズ：範囲を選択</span>
+      <span style="width:64px;"></span>
+    </div>
+    <div class="exp-q-card" style="text-align:center;">
+      <div style="font-size:14px;font-weight:700;">出題範囲を選んでください（全86問を4つに分割）</div>
+    </div>
+    <div class="exp-step-choices wide">
+      ${opts.map(o=>`<button class="exp-step-choice-btn" onclick="launchDispQuiz(${o.g})">${o.label}</button>`).join('')}
+    </div>`;
+}
+
+function launchDispQuiz(g){
+  dispQuizLastGroup = g;
+  let pool = DISPLAY_DATA;
+  if(g>=0){
+    const [lo,hi]=DISP_QUIZ_GROUPS[g].range;
+    pool = DISPLAY_DATA.filter(d=>d.no>=lo && d.no<=hi);
+  }
+  dispQuizDeck = shuffleArr(pool.slice());
+  dispQuizIdx = 0;
+  dispQuizScore = 0;
+  dispQuizWrong = [];
+  renderDispQuiz();
 }
 
 function exitDispQuiz(){
@@ -6009,9 +6047,10 @@ function renderDispQuizFinish(){
       <div class="exp-fin-score">${dispQuizScore} / ${total}</div>
       <div class="exp-fin-label">正答率 ${pct}%</div>
       <div class="exp-fin-btns">
-        <button class="exp-fin-btn exp-fin-btn-retry" onclick="startDispQuiz()">もう一度</button>
+        <button class="exp-fin-btn exp-fin-btn-retry" onclick="launchDispQuiz(${dispQuizLastGroup})">もう一度</button>
         <button class="exp-fin-btn exp-fin-btn-back" onclick="exitDispQuiz()">仕訳問題に戻る</button>
       </div>
+      <button class="exp-nav-btn" style="width:100%;margin-top:10px;" onclick="renderDispQuizGroupSelect()">↩ 別の範囲を選ぶ</button>
       ${wrongHtml}
     </div>`;
 }
