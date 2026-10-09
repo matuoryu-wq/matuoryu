@@ -421,6 +421,21 @@
     .gloss-def-en { font-size:12px; color:var(--text); line-height:1.6; }
     .apx-note .apx-note-ja { font-size:11px; color:var(--muted); line-height:1.55; margin-top:5px; padding-top:5px; border-top:1px dashed var(--border); }
     .gloss-def .gloss-def-ja { font-size:11px; color:var(--muted); line-height:1.55; margin-top:5px; padding-top:5px; border-top:1px dashed var(--border); }
+    /* ===== 表示区分（一問一答） ===== */
+    .disp-section { margin-bottom:10px; }
+    .disp-row { padding:10px 4px; border-bottom:1px solid var(--border); }
+    .disp-no { font-size:10px; color:var(--muted); font-weight:700; }
+    .disp-q { font-size:15px; font-weight:800; margin:2px 0 7px; color:#1A2B3C; }
+    .disp-ans-line { display:flex; align-items:baseline; gap:7px; margin-bottom:4px; flex-wrap:wrap; }
+    .disp-stmt { display:inline-block; font-size:10px; font-weight:800; color:#fff; border-radius:4px; padding:2px 7px; flex-shrink:0; white-space:nowrap; }
+    .disp-stmt.pl { background:#1565C0; }
+    .disp-stmt.bs { background:#2E7D32; }
+    .disp-stmt.cost { background:#E65100; }
+    .disp-stmt.none { background:#757575; }
+    .disp-cat { font-size:13px; font-weight:700; color:#1A2B3C; }
+    .disp-dispname { font-size:11px; color:var(--muted); margin:4px 0 0; }
+    .disp-reason { font-size:12px; color:#444; line-height:1.6; margin-top:6px; padding-top:6px; border-top:1px dashed var(--border); }
+    #apx-content.ans-hidden .disp-ans-wrap { display:none; }
 
     /* ===== 勘定科目一覧 TTS ===== */
     .apx-tts-ctrl { display:flex; align-items:center; gap:8px; margin-top:8px; font-size:12px; color:var(--muted); flex-wrap:wrap; }
@@ -594,6 +609,7 @@
           <button class="apx-tab active" data-type="all" onclick="setApxTab('all')">全て</button>
           <button class="apx-tab" data-type="industrial" onclick="setApxTab('industrial')">🏭 工業簿記</button>
           <button class="apx-tab" data-type="glossary" onclick="setApxTab('glossary')">📖 用語集</button>
+          <button class="apx-tab" data-type="display" onclick="setApxTab('display')">📊 表示区分</button>
         </div>
       </div>
       <div class="apx-hide-btns">
@@ -1757,6 +1773,96 @@ const GLOSSARY_DATA = [
   ]},
 ];
 
+// ===== 一問一答（表示区分）：勘定科目がP/L・B/S・製造原価報告書のどこに表示されるか =====
+const DISPLAY_DATA = [
+  { no:1, name:'材料', ans:[['B/S','流動資産']], disp:'原材料（問題の指示による）', reason:'製品を作るために持っている資産で、製造業の商売のサイクルの中にあるから。' },
+  { no:2, name:'受取家賃', ans:[['P/L','営業外収益']], reason:'不動産業でなければ、部屋の貸し出しは本業ではなく、本業以外で毎年ふつうに生じる収益だから。' },
+  { no:3, name:'仕入', ans:[['P/L','売上原価']], disp:'当期商品仕入高（売上原価の内訳）', reason:'売るための商品を仕入れた代金で、売れた分が売上原価になるから。' },
+  { no:4, name:'前払保険料', ans:[['B/S','流動資産（1年以内の分）'],['B/S','投資その他の資産（1年より先の分）']], disp:'前払費用 ／ 長期前払費用', reason:'まだ受けていないサービスを受ける権利。いつ受けるかで1年基準により分ける。' },
+  { no:5, name:'長期借入金', ans:[['B/S','固定負債（返済が1年より先の分）'],['B/S','流動負債（1年以内に返済する分）']], disp:'流動負債に移す分は「1年内返済予定の長期借入金」など', reason:'返済日が決算日の翌日から1年以内かどうかで分ける（1年基準）。' },
+  { no:6, name:'法人税、住民税及び事業税', ans:[['P/L','税引前当期純利益の下で差し引く']], reason:'もうけに対してかかる税金なので、すべての利益を計算した後に差し引くから。' },
+  { no:7, name:'電子記録債権', ans:[['B/S','流動資産']], reason:'売掛金と同じく、本業の販売から生じる債権だから。' },
+  { no:8, name:'賞与引当金繰入', ans:[['P/L','販売費及び一般管理費']], reason:'今期の勤務に対するボーナスの見積額で、人件費の一種だから。' },
+  { no:9, name:'減価償却費', ans:[['P/L','販売費及び一般管理費'],['製造原価報告書','経費（工場の資産の分）']], reason:'本業で使う資産の取得原価を、使う期間に配分した費用だから。工場の機械などの分は製造原価になる。' },
+  { no:10, name:'未払法人税等', ans:[['B/S','流動負債']], reason:'法人税等のうち中間納付していない分で、決算後すぐに納付するから。' },
+  { no:11, name:'修繕引当金', ans:[['B/S','流動負債']], reason:'通常は翌期に行う修繕に備えるものだから。' },
+  { no:12, name:'リース債務', ans:[['B/S','流動負債（1年以内に支払う分）'],['B/S','固定負債（1年より先に支払う分）']], reason:'支払いの時期で分ける（1年基準）。' },
+  { no:13, name:'売買目的有価証券', ans:[['B/S','流動資産']], disp:'有価証券', reason:'値上がりで売るために短期間持つものなので、すぐ現金化できる流動資産だから。' },
+  { no:14, name:'建物', ans:[['B/S','有形固定資産']], reason:'本業で長く使うために持っている、形のある資産だから。' },
+  { no:15, name:'資本金', ans:[['B/S','純資産（株主資本）']], reason:'株主が出したお金の中心部分だから。' },
+  { no:16, name:'役務収益', ans:[['P/L','売上高']], reason:'サービス業では、サービスの提供が本業の収益だから。' },
+  { no:17, name:'未払消費税', ans:[['B/S','流動負債']], reason:'消費税の納付額で、決算後すぐに納付するから。P/Lには出ない（税抜方式）。' },
+  { no:18, name:'ソフトウェア償却', ans:[['P/L','販売費及び一般管理費']], reason:'本業で使う無形固定資産の取得原価を、使う期間に配分した費用だから。' },
+  { no:19, name:'負ののれん発生益', ans:[['P/L','特別利益']], reason:'子会社を割安に取得したことによる一時的な利益だから。' },
+  { no:20, name:'売掛金', ans:[['B/S','流動資産']], reason:'商品の販売で生じる債権で、商売のサイクルの中にある（正常営業循環基準）から。' },
+  { no:21, name:'固定資産圧縮損', ans:[['P/L','特別損失']], reason:'国庫補助金受贈益を打ち消すためのもので、臨時的な損失だから。' },
+  { no:22, name:'ソフトウェア', ans:[['B/S','無形固定資産']], reason:'長く使うが、形のない資産だから。' },
+  { no:23, name:'その他有価証券評価差額金', ans:[['B/S','純資産（評価・換算差額等）']], reason:'値上がり・値下がりはまだもうけ（損）とは言えないので、P/Lを通さず純資産に直接入れるから。' },
+  { no:24, name:'未収利息', ans:[['B/S','流動資産']], disp:'未収収益', reason:'すでに生じた収益の代金を、近いうちに受け取る権利だから。' },
+  { no:25, name:'棚卸減耗損', ans:[['P/L','売上原価'],['P/L','販売費及び一般管理費']], reason:'毎期ふつうに生じる程度の減耗は原価性があるので、売上原価か販管費に入れる。どちらかは問題文の指示に従う。' },
+  { no:26, name:'繰延税金負債', ans:[['B/S','固定負債']], reason:'2級の範囲では固定負債に表示するルールだから。繰延税金資産があれば相殺し、差額だけを書く。' },
+  { no:27, name:'電子記録債務', ans:[['B/S','流動負債']], reason:'買掛金と同じく、本業の仕入れから生じる債務だから。' },
+  { no:28, name:'仕掛品', ans:[['B/S','流動資産']], reason:'製造途中の製品で、製造業の商売のサイクルの中にあるから。' },
+  { no:29, name:'支払家賃', ans:[['P/L','販売費及び一般管理費']], reason:'本業を営むための場所の費用だから。' },
+  { no:30, name:'契約資産', ans:[['B/S','流動資産']], reason:'約束を果たしたがまだ請求できない権利で、近いうちに売掛金になるから。' },
+  { no:31, name:'貯蔵品', ans:[['B/S','流動資産']], reason:'未使用の切手や、除却した資産の処分価値など、近いうちに使う・売るものだから。' },
+  { no:32, name:'製造間接費配賦差異', ans:[['表示なし','売上原価に振り替える']], disp:'P/Lでは「原価差異」（売上原価の内訳）', reason:'予定配賦額と実際額のずれで、年度末に売上原価に加減するから。' },
+  { no:33, name:'リース資産', ans:[['B/S','有形固定資産']], reason:'ファイナンス・リースは実質的に買ったのと同じで、形のある資産を長く使うから。' },
+  { no:34, name:'有価証券利息', ans:[['P/L','営業外収益']], reason:'社債などの債券から得る利息で、資金運用の成果だから。' },
+  { no:35, name:'退職給付引当金', ans:[['B/S','固定負債']], reason:'退職金の支払いは通常ずっと先なので、固定負債として扱うから。' },
+  { no:36, name:'商品保証引当金', ans:[['B/S','流動負債']], reason:'通常は1年以内に生じる無料修理に備えるものだから。' },
+  { no:37, name:'投資有価証券売却益', ans:[['P/L','特別利益']], reason:'長く持つ目的の有価証券の売却は臨時的な取引と考えるから。売買目的有価証券の売却益（営業外収益）と区別する。' },
+  { no:38, name:'建設仮勘定', ans:[['B/S','有形固定資産']], reason:'完成すれば建物などになるもので、その建設中の支払額だから。' },
+  { no:39, name:'売上', ans:[['P/L','売上高']], disp:'売上高', reason:'本業の収益そのものだから。' },
+  { no:40, name:'繰延税金資産', ans:[['B/S','投資その他の資産']], reason:'2級の範囲では固定資産に表示するルールだから。繰延税金負債があれば相殺し、差額だけを書く。' },
+  { no:41, name:'のれん', ans:[['B/S','無形固定資産']], reason:'子会社の収益力などに対して支払った、形のない資産だから。' },
+  { no:42, name:'商品保証引当金繰入', ans:[['P/L','販売費及び一般管理費']], reason:'売った商品の無料修理に備える費用で、販売に伴う費用だから。' },
+  { no:43, name:'貸付金', ans:[['B/S','流動資産（1年以内に回収する分）'],['B/S','投資その他の資産（1年より先に回収する分）']], disp:'短期貸付金 ／ 長期貸付金', reason:'回収の時期で分ける（1年基準）。' },
+  { no:44, name:'土地', ans:[['B/S','有形固定資産']], reason:'長く使う形のある資産だから。価値が減らないので減価償却はしない。' },
+  { no:45, name:'給料', ans:[['P/L','販売費及び一般管理費']], reason:'本業（商品を売る仕事）を営むための人件費だから。工場で働く人の給料なら製造原価報告書の労務費になる。' },
+  { no:46, name:'子会社株式', ans:[['B/S','投資その他の資産']], disp:'関係会社株式', reason:'他社を支配するために長く持つ株式だから。関連会社株式も合わせて「関係会社株式」と表示する。' },
+  { no:47, name:'前払金（商品代金の前払い）', ans:[['B/S','流動資産']], disp:'前渡金', reason:'商品を受け取る権利で、商売のサイクルの中にあるから。' },
+  { no:48, name:'当座預金', ans:[['B/S','流動資産']], disp:'現金預金（現金・普通預金などと合算）', reason:'すぐに支払いに使えるお金だから。' },
+  { no:49, name:'有価証券評価損益', ans:[['P/L','営業外収益（益の場合）'],['P/L','営業外費用（損の場合）']], disp:'有価証券評価益 ／ 有価証券評価損', reason:'売買目的有価証券の時価評価による損益で、資金運用（投資）の結果だから。' },
+  { no:50, name:'繰越商品', ans:[['B/S','流動資産']], disp:'商品', reason:'販売のために持っている資産で、商売のサイクルの中にある（正常営業循環基準）から。' },
+  { no:51, name:'非支配株主に帰属する当期純利益', ans:[['P/L','当期純利益の下で差し引く']], reason:'連結で、子会社のもうけのうち親会社以外の株主の分を、親会社株主の利益と分けて示すため。' },
+  { no:52, name:'未払家賃', ans:[['B/S','流動負債']], disp:'未払費用', reason:'すでに受けたサービスの代金を、近いうちに払う義務だから。' },
+  { no:53, name:'満期保有目的債券', ans:[['B/S','投資その他の資産（満期が1年より先）'],['B/S','流動資産（満期が1年以内）']], disp:'投資有価証券（固定）／ 有価証券（流動）', reason:'満期までの期間で分ける（1年基準）。' },
+  { no:54, name:'固定資産除却損', ans:[['P/L','特別損失']], reason:'固定資産を使うのをやめて処分するのは臨時的なことだから。' },
+  { no:55, name:'その他有価証券', ans:[['B/S','投資その他の資産']], disp:'投資有価証券', reason:'長く持つ目的の有価証券だから。' },
+  { no:56, name:'退職給付費用', ans:[['P/L','販売費及び一般管理費'],['製造原価報告書','労務費（工場の従業員の分）']], reason:'従業員の退職金の見積額で、人件費の一種だから。' },
+  { no:57, name:'未払金', ans:[['B/S','流動負債']], reason:'商品以外のもの（備品など）の代金の未払いで、1年以内に払うから。商品の未払いである買掛金とは区別する。' },
+  { no:58, name:'利益準備金', ans:[['B/S','純資産（株主資本の利益剰余金）']], reason:'もうけのうち、配当の際に法律に従って積み立てたものだから。' },
+  { no:59, name:'為替差損益', ans:[['P/L','営業外収益（貸方残の場合）'],['P/L','営業外費用（借方残の場合）']], disp:'為替差益 ／ 為替差損', reason:'為替相場の変動による損益で本業以外のもの。差益と差損を相殺した純額で表示する。' },
+  { no:60, name:'契約負債', ans:[['B/S','流動負債']], reason:'代金を先に受け取り、これから約束を果たす義務だから。' },
+  { no:61, name:'当期純利益', ans:[['P/L','最後の行'],['B/S','純資産（繰越利益剰余金に含めて表示）']], reason:'1年間のもうけは会社に残り、返さなくてよいお金（純資産）を増やすから。P/LとB/Sをつなぐ数字。' },
+  { no:62, name:'受取配当金', ans:[['P/L','営業外収益']], reason:'株式投資の成果で、本業以外の、毎年ふつうに生じる収益だから。' },
+  { no:63, name:'固定資産売却損', ans:[['P/L','特別損失']], reason:'建物や備品の売却は毎年ふつうに起きる取引ではなく、臨時的なものだから。売却益なら特別利益。' },
+  { no:64, name:'商品評価損', ans:[['P/L','売上原価（原則）'],['P/L','特別損失（臨時かつ多額の場合）']], reason:'商品の値下がりは、商品を売るための原価の一部と考えるから。ふつうは売上原価の内訳に入れる。' },
+  { no:65, name:'支払利息', ans:[['P/L','営業外費用']], reason:'お金を借りたことによる費用で、本業ではなく資金調達（金融）の結果だから。' },
+  { no:66, name:'国庫補助金受贈益', ans:[['P/L','特別利益']], reason:'補助金の受け取りは臨時的なものだから。圧縮記帳の固定資産圧縮損（特別損失）と対になる。' },
+  { no:67, name:'別途積立金', ans:[['B/S','純資産（株主資本の利益剰余金）']], reason:'もうけのうち、会社が自分の判断で目的を決めて取っておいたもの（任意積立金）だから。' },
+  { no:68, name:'賞与引当金', ans:[['B/S','流動負債']], reason:'次のボーナス（通常は1年以内に支給）に備えるものだから。' },
+  { no:69, name:'建物減価償却累計額', ans:[['B/S','有形固定資産（建物の下に△で控除）']], disp:'減価償却累計額', reason:'建物の価値の減少分を表す評価勘定。負債ではなく、建物から差し引いて書く。' },
+  { no:70, name:'電子記録債権売却損', ans:[['P/L','営業外費用']], reason:'期日前にお金に換えるときの割引料で、実質は利息（資金調達の費用）だから。手形売却損も同じ。' },
+  { no:71, name:'貸倒引当金繰入', ans:[['P/L','販売費及び一般管理費（売掛金など営業債権の分）'],['P/L','営業外費用（貸付金など営業外の債権の分）']], reason:'どの債権に対する備えかで分ける。売掛金は本業から、貸付金は本業以外から生じた債権だから。' },
+  { no:72, name:'のれん償却', ans:[['P/L','販売費及び一般管理費']], reason:'のれんは本業の収益力に対して払ったものなので、その償却も本業の費用として扱うから。' },
+  { no:73, name:'前受家賃', ans:[['B/S','流動負債']], disp:'前受収益', reason:'代金を先に受け取り、これからサービスを提供する義務だから。' },
+  { no:74, name:'未払配当金', ans:[['B/S','流動負債']], reason:'株主総会で決めた配当で、近いうちに支払うから。' },
+  { no:75, name:'貸倒引当金', ans:[['B/S','流動資産（売掛金などの下に△で控除）'],['B/S','投資その他の資産（長期貸付金の下に△で控除）']], reason:'資産の金額を間接的に減らす評価勘定。負債ではなく、対応する資産から差し引いて書く。' },
+  { no:76, name:'火災損失', ans:[['P/L','特別損失']], reason:'災害による損失は臨時的なものだから。' },
+  { no:77, name:'現金過不足', ans:[['表示なし','雑損・雑益に振り替える']], disp:'雑損（営業外費用）／ 雑益（営業外収益）', reason:'決算までに原因がわからなかった分は、雑損または雑益に振り替えるから。' },
+  { no:78, name:'役務原価', ans:[['P/L','売上原価']], reason:'サービスを提供するためにかかった原価で、商品販売業の売上原価にあたるから。' },
+  { no:79, name:'法人税等調整額', ans:[['P/L','法人税、住民税及び事業税の下で加減する']], reason:'税効果会計で、税金の金額を利益に対応させるための調整だから。営業外や特別には入れない。' },
+  { no:80, name:'仮払法人税等', ans:[['表示なし','法人税等を計上するときに差し引く']], reason:'中間納付額は、決算で法人税等を計上するときに差し引き、残りを未払法人税等にするから。' },
+  { no:81, name:'非支配株主持分', ans:[['B/S','純資産（株主資本とは別の区分）']], reason:'連結で、子会社の資本のうち親会社以外の株主の分。親会社の株主資本ではないから。' },
+  { no:82, name:'買掛金', ans:[['B/S','流動負債']], reason:'商品の仕入れで生じる債務で、商売のサイクルの中にある（正常営業循環基準）から。' },
+  { no:83, name:'広告宣伝費', ans:[['P/L','販売費及び一般管理費']], reason:'商品を売るための費用だから。' },
+  { no:84, name:'仮払金', ans:[['表示なし','決算で正しい科目に振り替える']], reason:'中身が決まっていない仮の科目なので、決算で必ず整理するから。' },
+  { no:85, name:'資本準備金', ans:[['B/S','純資産（株主資本の資本剰余金）']], reason:'株主が出したお金のうち、資本金にしなかった部分を法律に従って積み立てたものだから。' },
+  { no:86, name:'仮受消費税', ans:[['表示なし','仮払消費税と相殺する']], disp:'差額は「未払消費税」（流動負債）', reason:'預かった消費税と払った消費税を相殺し、差額だけを納付額として表示するから。' },
+];
+
 const APX_TYPE_INFO = {
   asset:      { name:'資産 (Assets)',              sub:'会社が持っているもの・もらえる権利' },
   liability:  { name:'負債 (Liabilities)',          sub:'将来払わなければならない義務・借金' },
@@ -1883,7 +1989,25 @@ function buildApxContent(){
     ).join('') +
   '</div>';
 
-  return chapHtml + commercialHtml + indHtml + glossHtml;
+  const dispHtml = '<div class="disp-section" data-type="display">' +
+    DISPLAY_DATA.map(({ no, name, ans, disp, reason }) => {
+      const ansLines = ans.map(([stmt, cat]) => {
+        const cls = stmt === 'P/L' ? 'pl' : stmt === 'B/S' ? 'bs' : stmt === '製造原価報告書' ? 'cost' : 'none';
+        return `<div class="disp-ans-line"><span class="disp-stmt ${cls}">${stmt}</span><span class="disp-cat">${cat}</span></div>`;
+      }).join('');
+      return `<div class="disp-row" data-name="${name}">
+        <div class="disp-no">No.${no}</div>
+        <div class="disp-q">${name}</div>
+        <div class="disp-ans-wrap">
+          ${ansLines}
+          ${disp ? `<div class="disp-dispname">表示科目：${disp}</div>` : ''}
+          <div class="disp-reason">${reason}</div>
+        </div>
+      </div>`;
+    }).join('') +
+  '</div>';
+
+  return chapHtml + commercialHtml + indHtml + glossHtml + dispHtml;
 }
 
 let apxCurrentTab = 'all';
@@ -2289,6 +2413,13 @@ function applyApxFilter(tab){
     glossEl.style.display = (tab === 'glossary') ? '' : 'none';
     if(tab === 'glossary')
       glossEl.querySelectorAll('.gloss-row,.gloss-hd').forEach(el => el.style.display = '');
+  }
+
+  const dispEl = content.querySelector('.disp-section');
+  if(dispEl){
+    dispEl.style.display = (tab === 'display') ? '' : 'none';
+    if(tab === 'display')
+      dispEl.querySelectorAll('.disp-row').forEach(el => el.style.display = '');
   }
 
   content.querySelectorAll('.apx-section').forEach(sec => {
