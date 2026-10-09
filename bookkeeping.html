@@ -6045,12 +6045,21 @@ let dispQuizWrong = [];
 let dispQuizLastGroup = -1;
 let dispQuizKind = 'account'; // 'account' | 'concept'
 
-const DISP_QUIZ_GROUPS = [
-  { label:'グループ1', range:[1,48] },
-  { label:'グループ2', range:[49,96] },
-  { label:'グループ3', range:[97,144] },
-  { label:'グループ4', range:[145,192] },
-];
+function buildDispQuizGroups(total, targetSize){
+  const numGroups = Math.max(1, Math.round(total / targetSize));
+  const base = Math.floor(total / numGroups);
+  const remainder = total - base * numGroups;
+  const groups = [];
+  let start = 1;
+  for(let i=0;i<numGroups;i++){
+    const size = base + (i < remainder ? 1 : 0);
+    const end = start + size - 1;
+    groups.push({ label:`グループ${i+1}`, range:[start,end] });
+    start = end + 1;
+  }
+  return groups;
+}
+const DISP_QUIZ_GROUPS = buildDispQuizGroups(DISPLAY_DATA.length, 20);
 
 function shuffleArr(arr){
   for(let i=arr.length-1;i>0;i--){
