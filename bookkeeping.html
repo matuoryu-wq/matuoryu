@@ -3569,6 +3569,16 @@ function fmtQ(q){
 
 function loadExpQ(){
   const q=expQuestions[expQIdx];
+  if(!q){
+    document.getElementById('exp-main').innerHTML = `
+      <div class="exp-fin" style="padding:30px 16px;">
+        <div style="font-size:40px;">☐</div>
+        <div style="font-size:15px;font-weight:700;margin:10px 0 6px;">まだチェックした問題がありません</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8;">問題に正解・不正解した後に表示される「☐ チェックをつける」を押すと、その問題がここに集まります。</div>
+        <button class="exp-fin-btn exp-fin-btn-back" style="width:100%;margin-top:16px;" onclick="toggleCheckOnly()">通常モードに戻る</button>
+      </div>`;
+    return;
+  }
   expEntryIdx=0; expQOk=true;
   if(q.steps){ loadExpSteps(); return; }
   const main=document.getElementById('exp-main');
