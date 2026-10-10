@@ -367,41 +367,12 @@
       font-size: 16px;
       font-weight: 700;
     }
-    /* ===== 表示区分モーダル ===== */
-    .apx-btn { background:var(--primary); color:#fff; border:none; border-radius:20px; padding:6px 14px; font-size:13px; font-weight:600; cursor:pointer; }
-    .apx-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:200; padding:0; }
-    .apx-overlay.show { display:flex; }
-    .apx-modal { background:#fff; width:100%; max-width:none; border-radius:0; display:flex; flex-direction:column; height:100vh; max-height:100vh; overflow:hidden; margin:0; }
-    .apx-sticky-header { flex-shrink:0; padding:16px 18px 10px; background:#fff; border-bottom:1px solid var(--border); }
-    .apx-modal-body { overflow-y:auto; flex:1; padding:10px 18px 20px; -webkit-overflow-scrolling:touch; }
-    .apx-hd { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
-    .apx-title { font-size:17px; font-weight:800; color:var(--primary); }
-    .apx-subtitle { font-size:11px; color:var(--muted); margin-top:2px; }
-    .apx-close { background:none; border:none; font-size:22px; cursor:pointer; color:var(--muted); line-height:1; }
     .sec-tabs-wrap { width:100%; }
     .sec-tabs-toggle { display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none; font-size:12px; color:var(--muted); font-weight:600; margin-bottom:4px; }
     .sec-tabs-toggle-arrow { font-size:10px; transition:transform 0.2s; }
     .sec-tabs-wrap.collapsed .sec-tabs-toggle-arrow { transform:rotate(-90deg); }
     .sec-tabs-wrap.collapsed .sec-tabs { display:none; }
     .sec-tabs { display:flex; flex-wrap:wrap; gap:6px; }
-    .apx-hide-btns { display:flex; gap:8px; margin-bottom:0; }
-    .apx-hide-btn { flex:1; padding:7px 10px; border:1.5px solid var(--border); border-radius:10px; background:#fff; font-size:12px; cursor:pointer; color:var(--text); font-weight:600; text-align:center; transition:background 0.15s; }
-    .apx-hide-btn.active { background:#eee; border-color:#999; }
-    /* ===== 表示区分（一問一答） ===== */
-    .disp-section { margin-bottom:10px; }
-    .disp-row { padding:10px 4px; border-bottom:1px solid var(--border); }
-    .disp-no { font-size:10px; color:var(--muted); font-weight:700; }
-    .disp-q { font-size:15px; font-weight:800; margin:2px 0 7px; color:#1A2B3C; }
-    .disp-ans-line { display:flex; align-items:baseline; gap:7px; margin-bottom:4px; flex-wrap:wrap; }
-    .disp-stmt { display:inline-block; font-size:10px; font-weight:800; color:#fff; border-radius:4px; padding:2px 7px; flex-shrink:0; white-space:nowrap; }
-    .disp-stmt.pl { background:#1565C0; }
-    .disp-stmt.bs { background:#2E7D32; }
-    .disp-stmt.cost { background:#E65100; }
-    .disp-stmt.none { background:#757575; }
-    .disp-cat { font-size:13px; font-weight:700; color:#1A2B3C; }
-    .disp-dispname { font-size:11px; color:var(--muted); margin:4px 0 0; }
-    .disp-reason { font-size:12px; color:#444; line-height:1.6; margin-top:6px; padding-top:6px; border-top:1px dashed var(--border); }
-    #apx-content.ans-hidden .disp-ans-wrap { display:none; }
 
     /* ===== 総合問題（財務諸表作成・本支店会計・株主資本等変動・標準原価計算・CVP分析） ===== */
     .comp-title { font-size:15px; font-weight:800; margin-bottom:8px; color:var(--primary); }
@@ -535,7 +506,6 @@
     </div>
   </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-    <button class="apx-btn" onclick="showApx()">📊 表示区分一覧</button>
     <button class="apx-btn" id="disp-quiz-btn" onclick="startDispQuiz()">📊 表示区分クイズ</button>
     <button class="apx-btn" id="comp-quiz-btn" onclick="startCompQuiz()">🧮 総合問題</button>
   </div>
@@ -549,23 +519,6 @@
 </div>
 
 <div class="exp-panel" id="exp-panel"><div id="exp-main"></div></div>
-
-<div class="apx-overlay" id="apx-overlay" onclick="if(event.target===this)hideApx()">
-  <div class="apx-modal">
-    <div class="apx-sticky-header">
-      <div class="apx-hd">
-        <div><div class="apx-title">📊 表示区分一覧</div><div class="apx-subtitle">勘定科目がP/L・B/S・製造原価報告書のどこに表示されるか</div></div>
-        <button class="apx-close" onclick="hideApx()">✕</button>
-      </div>
-      <div class="apx-hide-btns">
-        <button class="apx-hide-btn" id="apx-hide-ans-btn" onclick="toggleHideAnswer()">👁 解答を隠す</button>
-      </div>
-    </div>
-    <div class="apx-modal-body">
-      <div id="apx-content"></div>
-    </div>
-  </div>
-</div>
 
 <script>
 const T = {
@@ -958,35 +911,6 @@ const CONCEPT_DATA = [
   { no:24, q:'貸倒引当金や減価償却累計額のように、対応する資産の帳簿価額を直接書き換えず、資産の下に△（マイナス）として別掲し、差し引きで正味の価値を示す項目を何という？', ans:'評価勘定（控除項目）', reason:'評価勘定（控除項目）とは、貸倒引当金や減価償却累計額のように、対応する資産の帳簿価額を直接書き換えるのではなく、資産の下に△（マイナス）として別掲し、差し引きで正味の価値を示すための項目です。' },
 ];
 
-function buildApxContent(){
-  return '<div class="disp-section" data-type="display">' +
-    '<div style="font-size:12px;color:var(--muted);margin:2px 0 12px;">※は、帳簿上の勘定科目名と、財務諸表に実際に書かれる表示科目名が異なることを表します。</div>' +
-    DISPLAY_DATA.map(({ no, name, ans, disp, reason }) => {
-      const ansLines = ans.map(([stmt, cat]) => {
-        const cls = stmt === 'P/L' ? 'pl' : stmt === 'B/S' ? 'bs' : stmt === '製造原価報告書' ? 'cost' : 'none';
-        return `<div class="disp-ans-line"><span class="disp-stmt ${cls}">${stmt}</span><span class="disp-cat">${cat}</span></div>`;
-      }).join('');
-      return `<div class="disp-row" data-name="${name}">
-        <div class="disp-no">No.${no}</div>
-        <div class="disp-q"><span class="acct-tag acct-tag-lg ${tagType(dispBaseName(name))}">${name}${disp ? '　※' : ''}</span></div>
-        <div class="disp-ans-wrap">
-          ${ansLines}
-          ${disp ? `<div class="disp-dispname">※表示科目：${disp}</div>` : ''}
-          <div class="disp-reason">${reason}</div>
-        </div>
-      </div>`;
-    }).join('') +
-  '</div>';
-}
-
-function showApx(){
-  const el = document.getElementById('apx-overlay');
-  if(!document.getElementById('apx-content').innerHTML){
-    document.getElementById('apx-content').innerHTML = buildApxContent();
-  }
-  el.classList.add('show');
-}
-function hideApx(){ document.getElementById('apx-overlay').classList.remove('show'); }
 
 function toggleSecTabs(){
   const wrap = document.getElementById('sec-tabs-wrap');
@@ -995,13 +919,6 @@ function toggleSecTabs(){
   label.textContent = collapsed ? '分野を表示' : '分野を隠す';
 }
 
-function toggleHideAnswer(){
-  const btn = document.getElementById('apx-hide-ans-btn');
-  const content = document.getElementById('apx-content');
-  const nowActive = btn.classList.toggle('active');
-  content.classList.toggle('ans-hidden', nowActive);
-  btn.textContent = nowActive ? '👁 解答を表示' : '👁 解答を隠す';
-}
 
 // ===================== 一問一答モード =====================
 function styleParens(html){
