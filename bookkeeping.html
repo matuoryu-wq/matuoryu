@@ -2135,6 +2135,7 @@ function buildApxContent(){
   '</div>';
 
   const dispHtml = '<div class="disp-section" data-type="display">' +
+    '<div style="font-size:12px;color:var(--muted);margin:2px 0 12px;">※は、帳簿上の勘定科目名と、財務諸表に実際に書かれる表示科目名が異なることを表します。</div>' +
     DISPLAY_DATA.map(({ no, name, ans, disp, reason }) => {
       const ansLines = ans.map(([stmt, cat]) => {
         const cls = stmt === 'P/L' ? 'pl' : stmt === 'B/S' ? 'bs' : stmt === '製造原価報告書' ? 'cost' : 'none';
@@ -2142,10 +2143,10 @@ function buildApxContent(){
       }).join('');
       return `<div class="disp-row" data-name="${name}">
         <div class="disp-no">No.${no}</div>
-        <div class="disp-q"><span class="acct-tag acct-tag-lg ${tagType(dispBaseName(name))}">${name}</span></div>
+        <div class="disp-q"><span class="acct-tag acct-tag-lg ${tagType(dispBaseName(name))}">${name}${disp ? '　※' : ''}</span></div>
         <div class="disp-ans-wrap">
           ${ansLines}
-          ${disp ? `<div class="disp-dispname">表示科目：${disp}</div>` : ''}
+          ${disp ? `<div class="disp-dispname">※表示科目：${disp}</div>` : ''}
           <div class="disp-reason">${reason}</div>
         </div>
       </div>`;
@@ -6173,7 +6174,8 @@ function renderDispQuiz(){
     ? `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この説明にあてはまる区分は？</div>
        <div style="font-size:16px;font-weight:700;line-height:1.7;">${item.q}</div>`
     : `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この勘定科目は、財務諸表のどこに表示される？</div>
-       <span class="acct-tag acct-tag-lg ${tagType(dispBaseName(item.name))}">${item.name}</span>`;
+       <span class="acct-tag acct-tag-lg ${tagType(dispBaseName(item.name))}">${item.name}${item.disp ? '　※' : ''}</span>
+       ${item.disp ? `<div style="font-size:11px;color:var(--muted);margin-top:8px;">※表示科目名が異なります（詳細は解答で確認）</div>` : ''}`;
   main.innerHTML = `
     ${dispQuizNavBar()}
     <div class="exp-q-card" style="text-align:center;">${promptHtml}</div>
@@ -6199,12 +6201,12 @@ function selectDispChoice(btn, i){
   const res = document.getElementById('disp-res');
   res.className = `exp-result ${ok?'ok':'ng'}`;
   res.style.display = 'block';
-  const dispLine = (dispQuizKind==='account' && item.disp) ? `<div style="font-size:12px;color:var(--muted);margin-bottom:6px;">表示科目：${item.disp}</div>` : '';
+  const dispLine = (dispQuizKind==='account' && item.disp) ? `<div style="font-size:12px;color:var(--muted);margin-bottom:6px;">※表示科目：${item.disp}</div>` : '';
   res.innerHTML = `
     <div class="exp-res-hd">${ok?'⭕ 正解！':'❌ 不正解'}</div>
+    <button class="exp-nav-btn exp-nav-next" style="width:100%;margin:10px 0;" onclick="dispQuizNext()">${isLast?'結果を見る →':'次の問題 →'}</button>
     ${dispLine}
-    <div class="exp-res-exp">${item.reason}</div>
-    <button class="exp-nav-btn exp-nav-next" style="width:100%;margin-top:10px;" onclick="dispQuizNext()">${isLast?'結果を見る →':'次の問題 →'}</button>`;
+    <div class="exp-res-exp">${item.reason}</div>`;
   res.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
