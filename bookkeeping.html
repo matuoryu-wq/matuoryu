@@ -403,6 +403,17 @@
     .disp-reason { font-size:12px; color:#444; line-height:1.6; margin-top:6px; padding-top:6px; border-top:1px dashed var(--border); }
     #apx-content.ans-hidden .disp-ans-wrap { display:none; }
 
+    /* ===== 総合問題（財務諸表作成・本支店会計・株主資本等変動・標準原価計算・CVP分析） ===== */
+    .comp-title { font-size:15px; font-weight:800; margin-bottom:8px; color:var(--primary); }
+    .comp-sect-hd { font-size:12px; font-weight:700; color:var(--muted); margin:12px 0 4px; }
+    .comp-table { font-size:13px; line-height:1.6; }
+    .comp-row { display:flex; justify-content:space-between; gap:10px; border-bottom:1px dashed var(--border); padding:3px 0; }
+    .comp-row .l { color:#333; }
+    .comp-row .r { font-weight:700; color:#1A2B3C; white-space:nowrap; }
+    .comp-note, .comp-list { font-size:12px; color:#444; line-height:1.75; margin:6px 0; }
+    .comp-list div { margin-bottom:4px; }
+    .comp-counter { font-size:11px; color:var(--muted); font-weight:700; margin-bottom:6px; }
+
     /* ===== スクロールモード ===== */
     .exp-panel { display:block; max-width:640px; margin:0 auto; padding:14px 14px; }
     .exp-q-card { background:#fff; border-radius:12px; padding:14px 16px; margin-bottom:14px; border:1.5px solid var(--border); font-size:14px; line-height:2.0; font-weight:500; }
@@ -526,6 +537,7 @@
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
     <button class="apx-btn" onclick="showApx()">📊 表示区分一覧</button>
     <button class="apx-btn" id="disp-quiz-btn" onclick="startDispQuiz()">📊 表示区分クイズ</button>
+    <button class="apx-btn" id="comp-quiz-btn" onclick="startCompQuiz()">🧮 総合問題</button>
   </div>
 </div>
 <div class="controls" id="group-row" style="padding-top:6px;border-top:1px solid var(--border);display:none;"></div>
@@ -4076,6 +4088,524 @@ function renderDispQuizFinish(){
     </div>`;
 }
 // ===== 表示区分クイズここまで =====
+
+// ===== 総合問題（財務諸表作成・本支店会計・株主資本等変動・標準原価計算・CVP分析） =====
+const COMP_CATS = [
+  { key:'fs', label:'財務諸表作成（B/S・P/L）' },
+  { key:'branch', label:'本支店会計（合併財務諸表）' },
+  { key:'equity', label:'株主資本等変動計算書' },
+  { key:'stdcost', label:'標準原価計算（差異分析）' },
+  { key:'cvp', label:'CVP分析・直接原価計算' },
+];
+
+const COMP_DATA = [
+  // ---------- 財務諸表作成 ----------
+  { no:1, cat:'fs', title:'財務諸表作成①：決算整理後のP/L・B/S',
+    scenario_html: `
+      <div class="comp-sect-hd">決算整理前残高試算表（一部・単位：円）</div>
+      <div class="comp-table">
+        <div class="comp-row"><span class="l">現金</span><span class="r">326,000</span></div>
+        <div class="comp-row"><span class="l">受取手形</span><span class="r">150,000</span></div>
+        <div class="comp-row"><span class="l">売掛金</span><span class="r">250,000</span></div>
+        <div class="comp-row"><span class="l">貸倒引当金</span><span class="r">2,000（貸方）</span></div>
+        <div class="comp-row"><span class="l">繰越商品（期首）</span><span class="r">80,000</span></div>
+        <div class="comp-row"><span class="l">建物</span><span class="r">500,000</span></div>
+        <div class="comp-row"><span class="l">建物減価償却累計額</span><span class="r">180,000（貸方）</span></div>
+        <div class="comp-row"><span class="l">備品</span><span class="r">100,000</span></div>
+        <div class="comp-row"><span class="l">備品減価償却累計額</span><span class="r">36,000（貸方）</span></div>
+        <div class="comp-row"><span class="l">買掛金</span><span class="r">120,000</span></div>
+        <div class="comp-row"><span class="l">借入金</span><span class="r">200,000</span></div>
+        <div class="comp-row"><span class="l">資本金</span><span class="r">500,000（貸方）</span></div>
+        <div class="comp-row"><span class="l">繰越利益剰余金（期首）</span><span class="r">100,000（貸方）</span></div>
+        <div class="comp-row"><span class="l">売上</span><span class="r">1,200,000（貸方）</span></div>
+        <div class="comp-row"><span class="l">仕入</span><span class="r">750,000</span></div>
+        <div class="comp-row"><span class="l">給料</span><span class="r">150,000</span></div>
+        <div class="comp-row"><span class="l">保険料</span><span class="r">24,000</span></div>
+        <div class="comp-row"><span class="l">支払利息</span><span class="r">8,000</span></div>
+      </div>
+      <div class="comp-sect-hd">決算整理事項</div>
+      <div class="comp-list">
+        <div>① 期末商品棚卸高は90,000円である。</div>
+        <div>② 受取手形と売掛金の期末残高合計に対し3%の貸倒引当金を差額補充法により設定する。</div>
+        <div>③ 建物：耐用年数25年、残存価額ゼロ、定額法で減価償却する（取得原価500,000円）。備品：耐用年数10年、残存価額ゼロ、定額法で減価償却する（取得原価100,000円）。</div>
+        <div>④ 保険料のうち6,000円は次期分の前払いである。</div>
+        <div>⑤ 借入金200,000円は当期7月1日に借入れたもの（利率年4%、利息は返済時に一括払い）である。決算日（3月31日）までの9か月分を月割りで未払利息として計上する。</div>
+        <div>⑥ 税引前当期純利益に対して30%の法人税、住民税及び事業税を計上する（全額未払いとする）。</div>
+      </div>`,
+    steps: [
+      { label:'売上原価はいくらか？', ans:740000, unit:'円', choices:[740000, 750000, 830000, 650000] },
+      { label:'営業利益はいくらか？', ans:252000, unit:'円', choices:[252000, 262000, 208000, 460000] },
+      { label:'当期純利益はいくらか？', ans:166600, unit:'円', choices:[166600, 238000, 176600, 156600] },
+      { label:'B/Sに計上する貸倒引当金の金額はいくらか？', ans:12000, unit:'円', choices:[12000, 10000, 2000, 14000] },
+      { label:'B/Sに計上する建物の帳簿価額（取得原価－減価償却累計額）はいくらか？', ans:300000, unit:'円', choices:[300000, 320000, 280000, 500000] },
+      { label:'資産合計はいくらか？', ans:1164000, unit:'円', choices:[1164000, 1038000, 1174000, 1154000] },
+    ],
+    explanation_html: `
+      <div class="comp-note"><strong>売上原価</strong> ＝ 期首商品棚卸高80,000＋仕入750,000－期末商品棚卸高90,000 ＝ <strong>740,000円</strong>（三分法では、仕入高を期首・期末の棚卸高で調整して売上原価を求めます）。</div>
+      <div class="comp-note"><strong>貸倒引当金繰入</strong> ＝ (受取手形150,000＋売掛金250,000)×3%－期首残高2,000 ＝ 12,000－2,000 ＝ 10,000円。B/S上の貸倒引当金は<strong>12,000円</strong>（差額補充法は、見積額と現在の残高の“差額”だけを繰り入れる方法です）。</div>
+      <div class="comp-note"><strong>減価償却費</strong> ＝ 建物500,000÷25年＋備品100,000÷10年 ＝ 20,000＋10,000 ＝ 30,000円。建物の帳簿価額＝500,000－(180,000＋20,000) ＝ <strong>300,000円</strong>。</div>
+      <div class="comp-note"><strong>保険料（費用）</strong> ＝ 24,000－6,000(前払分) ＝ 18,000円。<strong>支払利息（費用）</strong> ＝ 8,000＋6,000(未払分：200,000×4%×9/12) ＝ 14,000円。</div>
+      <div class="comp-note"><strong>営業利益</strong> ＝ 売上総利益(1,200,000－740,000＝460,000)－販管費(給料150,000＋保険料18,000＋貸倒引当金繰入10,000＋減価償却費30,000＝208,000) ＝ <strong>252,000円</strong>。</div>
+      <div class="comp-note"><strong>当期純利益</strong> ＝ 経常利益(252,000－支払利息14,000＝238,000)－法人税等(238,000×30%＝71,400) ＝ <strong>166,600円</strong>。</div>
+      <div class="comp-note">資産合計＝現金326,000＋受取手形150,000＋売掛金250,000－貸倒引当金12,000＋商品90,000＋前払保険料6,000＋建物300,000＋備品54,000 ＝ <strong>1,164,000円</strong>（負債326,000＋未払法人税等71,400＋純資産766,600＝1,164,000円で一致します）。</div>`
+  },
+  { no:2, cat:'fs', title:'財務諸表作成②：決算整理後のP/L・B/S',
+    scenario_html: `
+      <div class="comp-sect-hd">決算整理前残高試算表（一部・単位：円）</div>
+      <div class="comp-table">
+        <div class="comp-row"><span class="l">現金預金</span><span class="r">190,000</span></div>
+        <div class="comp-row"><span class="l">売掛金</span><span class="r">300,000</span></div>
+        <div class="comp-row"><span class="l">貸倒引当金</span><span class="r">3,000（貸方）</span></div>
+        <div class="comp-row"><span class="l">繰越商品（期首）</span><span class="r">60,000</span></div>
+        <div class="comp-row"><span class="l">備品</span><span class="r">240,000</span></div>
+        <div class="comp-row"><span class="l">備品減価償却累計額</span><span class="r">72,000（貸方）</span></div>
+        <div class="comp-row"><span class="l">買掛金</span><span class="r">90,000</span></div>
+        <div class="comp-row"><span class="l">資本金</span><span class="r">400,000（貸方）</span></div>
+        <div class="comp-row"><span class="l">繰越利益剰余金（期首）</span><span class="r">50,000（貸方）</span></div>
+        <div class="comp-row"><span class="l">売上</span><span class="r">900,000（貸方）</span></div>
+        <div class="comp-row"><span class="l">仕入</span><span class="r">560,000</span></div>
+        <div class="comp-row"><span class="l">給料</span><span class="r">120,000</span></div>
+        <div class="comp-row"><span class="l">広告宣伝費</span><span class="r">36,000</span></div>
+        <div class="comp-row"><span class="l">雑費</span><span class="r">9,000</span></div>
+      </div>
+      <div class="comp-sect-hd">決算整理事項</div>
+      <div class="comp-list">
+        <div>① 期末商品棚卸高は55,000円である。</div>
+        <div>② 売掛金の期末残高に対し2%の貸倒引当金を差額補充法により設定する。</div>
+        <div>③ 備品：耐用年数8年、残存価額ゼロ、定額法で減価償却する（取得原価240,000円）。</div>
+        <div>④ 広告宣伝費のうち9,000円は次期分の前払いである。</div>
+        <div>⑤ 当期の法人税等は20,000円と計算された（全額未払いとする）。</div>
+      </div>`,
+    steps: [
+      { label:'売上原価はいくらか？', ans:565000, unit:'円', choices:[565000, 560000, 575000, 505000] },
+      { label:'営業利益はいくらか？', ans:146000, unit:'円', choices:[146000, 156000, 136000, 189000] },
+      { label:'当期純利益はいくらか？', ans:126000, unit:'円', choices:[126000, 146000, 116000, 166000] },
+      { label:'B/Sに計上する貸倒引当金の金額はいくらか？', ans:6000, unit:'円', choices:[6000, 3000, 9000, 12000] },
+      { label:'B/Sに計上する備品の帳簿価額はいくらか？', ans:138000, unit:'円', choices:[138000, 168000, 108000, 240000] },
+      { label:'資産合計はいくらか？', ans:686000, unit:'円', choices:[686000, 676000, 696000, 548000] },
+    ],
+    explanation_html: `
+      <div class="comp-note"><strong>売上原価</strong> ＝ 期首60,000＋仕入560,000－期末55,000 ＝ <strong>565,000円</strong>。</div>
+      <div class="comp-note"><strong>貸倒引当金繰入</strong> ＝ 売掛金300,000×2%－期首残高3,000 ＝ 6,000－3,000 ＝ 3,000円。B/S上の貸倒引当金は<strong>6,000円</strong>。</div>
+      <div class="comp-note"><strong>減価償却費</strong> ＝ 240,000÷8年 ＝ 30,000円。備品の帳簿価額＝240,000－(72,000＋30,000) ＝ <strong>138,000円</strong>。</div>
+      <div class="comp-note"><strong>広告宣伝費（費用）</strong> ＝ 36,000－9,000(前払分) ＝ 27,000円。</div>
+      <div class="comp-note"><strong>営業利益</strong> ＝ 売上総利益(900,000－565,000＝335,000)－販管費(給料120,000＋広告宣伝費27,000＋雑費9,000＋貸倒引当金繰入3,000＋減価償却費30,000＝189,000) ＝ <strong>146,000円</strong>。</div>
+      <div class="comp-note"><strong>当期純利益</strong> ＝ 146,000(営業外収支なし)－法人税等20,000 ＝ <strong>126,000円</strong>。</div>
+      <div class="comp-note">資産合計＝現金預金190,000＋売掛金300,000－貸倒引当金6,000＋商品55,000＋前払広告費9,000＋備品138,000 ＝ <strong>686,000円</strong>（負債110,000＋純資産576,000＝686,000円で一致します）。</div>`
+  },
+  // ---------- 本支店会計 ----------
+  { no:3, cat:'branch', title:'本支店会計①：合併損益計算書の作成（内部取引の相殺消去）',
+    scenario_html: `
+      <div class="comp-sect-hd">本店の損益計算書（一部・単位：円）</div>
+      <div class="comp-table">
+        <div class="comp-row"><span class="l">売上高</span><span class="r">800,000</span></div>
+        <div class="comp-row"><span class="l">支店へ売上（本店→支店への内部売上）</span><span class="r">150,000</span></div>
+        <div class="comp-row"><span class="l">期首商品棚卸高</span><span class="r">50,000</span></div>
+        <div class="comp-row"><span class="l">仕入（外部からの仕入）</span><span class="r">500,000</span></div>
+        <div class="comp-row"><span class="l">期末商品棚卸高</span><span class="r">60,000</span></div>
+        <div class="comp-row"><span class="l">給料</span><span class="r">100,000</span></div>
+      </div>
+      <div class="comp-sect-hd">支店の損益計算書（一部・単位：円）</div>
+      <div class="comp-table">
+        <div class="comp-row"><span class="l">売上高</span><span class="r">300,000</span></div>
+        <div class="comp-row"><span class="l">本店より仕入（本店からの内部仕入）</span><span class="r">150,000</span></div>
+        <div class="comp-row"><span class="l">期首商品棚卸高</span><span class="r">20,000</span></div>
+        <div class="comp-row"><span class="l">仕入（外部からの仕入）</span><span class="r">100,000</span></div>
+        <div class="comp-row"><span class="l">期末商品棚卸高</span><span class="r">40,000</span></div>
+        <div class="comp-row"><span class="l">給料</span><span class="r">40,000</span></div>
+      </div>
+      <div class="comp-note">本店から支店への商品の送付は、すべて<strong>仕入原価のまま（内部利益の加算なし）</strong>で行われている。</div>`,
+    steps: [
+      { label:'合併後の売上高はいくらか？（内部取引を相殺消去すること）', ans:950000, unit:'円', choices:[950000, 1100000, 800000, 1250000] },
+      { label:'合併後の仕入高（外部からの仕入のみ）はいくらか？', ans:600000, unit:'円', choices:[600000, 450000, 650000, 550000] },
+      { label:'合併後の売上原価はいくらか？', ans:570000, unit:'円', choices:[570000, 420000, 520000, 620000] },
+      { label:'合併後の売上総利益はいくらか？', ans:380000, unit:'円', choices:[380000, 530000, 430000, 330000] },
+      { label:'合併後の営業利益はいくらか？', ans:240000, unit:'円', choices:[240000, 390000, 340000, 190000] },
+    ],
+    explanation_html: `
+      <div class="comp-note">本支店合併財務諸表を作るときは、本店と支店の内部だけで行われた取引（「支店へ売上」と「本店より仕入」）を<strong>相殺消去</strong>します。これを消さないと、会社全体では一度も外部に売れていない商品の売上まで二重にカウントしてしまうからです。</div>
+      <div class="comp-note"><strong>合併売上高</strong> ＝ 800,000＋300,000－150,000(内部売上) ＝ <strong>950,000円</strong>。</div>
+      <div class="comp-note"><strong>合併仕入高</strong> ＝ 本店の外部仕入500,000＋支店の外部仕入100,000 ＝ <strong>600,000円</strong>（「本店より仕入」150,000は内部取引として別に消去するだけなので、外部仕入の合計からさらに差し引く必要はありません）。</div>
+      <div class="comp-note"><strong>合併売上原価</strong> ＝ 期首棚卸高(50,000＋20,000＝70,000)＋仕入600,000－期末棚卸高(60,000＋40,000＝100,000) ＝ <strong>570,000円</strong>。</div>
+      <div class="comp-note"><strong>合併売上総利益</strong> ＝ 950,000－570,000 ＝ <strong>380,000円</strong>。<strong>合併営業利益</strong> ＝ 380,000－給料(100,000＋40,000＝140,000) ＝ <strong>240,000円</strong>。</div>`
+  },
+  { no:4, cat:'branch', title:'本支店会計②：未実現利益の消去',
+    scenario_html: `
+      <div class="comp-sect-hd">本店の損益計算書（一部・単位：円）</div>
+      <div class="comp-table">
+        <div class="comp-row"><span class="l">売上高</span><span class="r">800,000</span></div>
+        <div class="comp-row"><span class="l">支店へ売上</span><span class="r">150,000</span></div>
+        <div class="comp-row"><span class="l">期首商品棚卸高</span><span class="r">50,000</span></div>
+        <div class="comp-row"><span class="l">仕入（外部からの仕入）</span><span class="r">500,000</span></div>
+        <div class="comp-row"><span class="l">期末商品棚卸高</span><span class="r">60,000</span></div>
+        <div class="comp-row"><span class="l">給料</span><span class="r">100,000</span></div>
+      </div>
+      <div class="comp-sect-hd">支店の損益計算書（一部・単位：円）</div>
+      <div class="comp-table">
+        <div class="comp-row"><span class="l">売上高</span><span class="r">300,000</span></div>
+        <div class="comp-row"><span class="l">本店より仕入</span><span class="r">150,000</span></div>
+        <div class="comp-row"><span class="l">期首商品棚卸高（すべて外部から仕入れたもの）</span><span class="r">20,000</span></div>
+        <div class="comp-row"><span class="l">仕入（外部からの仕入）</span><span class="r">100,000</span></div>
+        <div class="comp-row"><span class="l">期末商品棚卸高</span><span class="r">40,000</span></div>
+        <div class="comp-row"><span class="l">給料</span><span class="r">40,000</span></div>
+      </div>
+      <div class="comp-note">本店は支店に商品を送付する際、<strong>仕入原価に20%の利益を加算した価格</strong>（原価×1.2）で送付している。支店の期末商品棚卸高40,000円のうち、<strong>24,000円は本店から仕入れた商品</strong>（加算後の価格のまま）であり、残り16,000円は支店が外部から仕入れたものである。</div>`,
+    steps: [
+      { label:'合併後の売上高はいくらか？', ans:950000, unit:'円', choices:[950000, 1150000, 900000, 1050000] },
+      { label:'支店の期末商品棚卸高に含まれる未実現利益（消去すべき金額）はいくらか？', ans:4000, unit:'円', choices:[4000, 5000, 20000, 24000] },
+      { label:'合併後の（内部利益消去後の）期末商品棚卸高はいくらか？', ans:96000, unit:'円', choices:[96000, 100000, 90000, 116000] },
+      { label:'合併後の売上原価はいくらか？', ans:574000, unit:'円', choices:[574000, 570000, 580000, 600000] },
+      { label:'合併後の営業利益はいくらか？', ans:236000, unit:'円', choices:[236000, 240000, 226000, 376000] },
+    ],
+    explanation_html: `
+      <div class="comp-note">本店が支店に原価の1.2倍の価格で送付しているため、支店の期末棚卸高にある「本店仕入分24,000円」には、まだ外部に売れていない利益（未実現利益）が含まれています。未実現利益＝24,000－24,000÷1.2＝24,000－20,000＝<strong>4,000円</strong>。これは会社全体ではまだ儲けが確定していないので、消去します。</div>
+      <div class="comp-note"><strong>合併売上高</strong> ＝ 800,000＋300,000－150,000(内部売上消去) ＝ <strong>950,000円</strong>。</div>
+      <div class="comp-note"><strong>内部利益消去後の期末棚卸高</strong> ＝ 本店60,000＋支店の真実の原価(24,000－4,000＝20,000、外部仕入分16,000を合わせて36,000) ＝ 60,000＋36,000 ＝ <strong>96,000円</strong>。</div>
+      <div class="comp-note"><strong>合併売上原価</strong> ＝ 期首棚卸高70,000＋仕入高(500,000＋100,000＝600,000)－期末棚卸高96,000 ＝ <strong>574,000円</strong>。</div>
+      <div class="comp-note"><strong>合併営業利益</strong> ＝ 売上総利益(950,000－574,000＝376,000)－給料140,000 ＝ <strong>236,000円</strong>。未実現利益4,000円を消去した分、消去しなかった場合（240,000円）より利益が4,000円少なくなっています。</div>`
+  },
+  // ---------- 株主資本等変動計算書 ----------
+  { no:5, cat:'equity', title:'株主資本等変動計算書①：配当・利益準備金の積立・増資',
+    scenario_html: `
+      <div class="comp-sect-hd">期首（前期末）残高（単位：円）</div>
+      <div class="comp-table">
+        <div class="comp-row"><span class="l">資本金</span><span class="r">2,000,000</span></div>
+        <div class="comp-row"><span class="l">資本準備金</span><span class="r">300,000</span></div>
+        <div class="comp-row"><span class="l">利益準備金</span><span class="r">50,000</span></div>
+        <div class="comp-row"><span class="l">繰越利益剰余金</span><span class="r">600,000</span></div>
+      </div>
+      <div class="comp-sect-hd">当期中の事項</div>
+      <div class="comp-list">
+        <div>① 株主総会で、繰越利益剰余金を原資として配当200,000円を行うことを決議し、会社法の規定により利益準備金20,000円を積み立てた。</div>
+        <div>② 増資を行い、新株を発行して300,000円の払込みを受けた。払込金額はすべて資本金とした。</div>
+        <div>③ 当期純利益は450,000円であった。</div>
+      </div>`,
+    steps: [
+      { label:'期末の資本金はいくらか？', ans:2300000, unit:'円', choices:[2300000, 2000000, 2600000, 2320000] },
+      { label:'期末の利益準備金はいくらか？', ans:70000, unit:'円', choices:[70000, 50000, 90000, 20000] },
+      { label:'期末の繰越利益剰余金はいくらか？', ans:830000, unit:'円', choices:[830000, 850000, 600000, 1050000] },
+      { label:'期末の株主資本合計はいくらか？', ans:3500000, unit:'円', choices:[3500000, 3200000, 3700000, 3300000] },
+    ],
+    explanation_html: `
+      <div class="comp-note">配当を行うと、繰越利益剰余金が減り、その一部が利益準備金として積み立てられます。増資は払込金額を全額資本金としたので、資本準備金は変化しません。</div>
+      <div class="comp-note"><strong>資本金</strong> ＝ 2,000,000＋300,000(増資) ＝ <strong>2,300,000円</strong>。</div>
+      <div class="comp-note"><strong>利益準備金</strong> ＝ 50,000＋20,000(積立) ＝ <strong>70,000円</strong>。</div>
+      <div class="comp-note"><strong>繰越利益剰余金</strong> ＝ 600,000－200,000(配当)－20,000(利益準備金積立)＋450,000(当期純利益) ＝ <strong>830,000円</strong>。</div>
+      <div class="comp-note"><strong>株主資本合計</strong> ＝ 資本金2,300,000＋資本準備金300,000＋利益準備金70,000＋繰越利益剰余金830,000 ＝ <strong>3,500,000円</strong>。</div>`
+  },
+  { no:6, cat:'equity', title:'株主資本等変動計算書②：自己株式の取得・処分',
+    scenario_html: `
+      <div class="comp-sect-hd">期首（前期末）残高（単位：円）</div>
+      <div class="comp-table">
+        <div class="comp-row"><span class="l">資本金</span><span class="r">1,500,000</span></div>
+        <div class="comp-row"><span class="l">資本準備金</span><span class="r">200,000</span></div>
+        <div class="comp-row"><span class="l">利益準備金</span><span class="r">40,000</span></div>
+        <div class="comp-row"><span class="l">繰越利益剰余金</span><span class="r">500,000</span></div>
+        <div class="comp-row"><span class="l">自己株式</span><span class="r">0</span></div>
+      </div>
+      <div class="comp-sect-hd">当期中の事項</div>
+      <div class="comp-list">
+        <div>① 自己株式100株を1株800円（合計80,000円）で取得し、現金で支払った。</div>
+        <div>② ①のうち50株を1株900円（合計45,000円）で処分した。処分した株式の取得原価相当額は40,000円（80,000円÷100株×50株）であり、差額5,000円は「自己株式処分差益」としてその他資本剰余金に計上する。</div>
+        <div>③ 当期純利益は300,000円であった。</div>
+      </div>`,
+    steps: [
+      { label:'期末のその他資本剰余金はいくらか？', ans:5000, unit:'円', choices:[5000, 0, 10000, 45000] },
+      { label:'期末の自己株式（マイナス表示される金額の絶対値）はいくらか？', ans:40000, unit:'円', choices:[40000, 80000, 30000, 50000] },
+      { label:'期末の繰越利益剰余金はいくらか？', ans:800000, unit:'円', choices:[800000, 500000, 300000, 760000] },
+      { label:'期末の株主資本合計はいくらか？', ans:2505000, unit:'円', choices:[2505000, 2545000, 2465000, 2585000] },
+    ],
+    explanation_html: `
+      <div class="comp-note">自己株式は、取得した時点では株主資本の<strong>マイナス項目</strong>として表示します。処分時に生じた差益（処分価額－取得原価相当額）は「その他資本剰余金」に加えます。</div>
+      <div class="comp-note"><strong>自己株式処分差益</strong> ＝ 処分価額45,000－取得原価相当額40,000 ＝ <strong>5,000円</strong>（その他資本剰余金）。</div>
+      <div class="comp-note"><strong>期末の自己株式</strong> ＝ 取得80,000－処分した分の原価40,000 ＝ <strong>40,000円</strong>（残り50株分、マイナス表示）。</div>
+      <div class="comp-note"><strong>繰越利益剰余金</strong> ＝ 500,000＋300,000(当期純利益) ＝ <strong>800,000円</strong>（自己株式の取得・処分はここには影響しません）。</div>
+      <div class="comp-note"><strong>株主資本合計</strong> ＝ 資本金1,500,000＋(資本準備金200,000＋その他資本剰余金5,000)＋(利益準備金40,000＋繰越利益剰余金800,000)－自己株式40,000 ＝ <strong>2,505,000円</strong>。</div>`
+  },
+  // ---------- 標準原価計算：差異分析 ----------
+  { no:7, cat:'stdcost', title:'標準原価計算①：材料費差異（価格差異・数量差異）',
+    scenario_html: `
+      <div class="comp-table">
+        <div class="comp-row"><span class="l">標準単価</span><span class="r">200円／kg</span></div>
+        <div class="comp-row"><span class="l">標準消費量</span><span class="r">製品1個につき3kg</span></div>
+        <div class="comp-row"><span class="l">当月実際生産量</span><span class="r">1,000個</span></div>
+        <div class="comp-row"><span class="l">当月実際材料消費量</span><span class="r">3,100kg</span></div>
+        <div class="comp-row"><span class="l">当月実際材料消費額</span><span class="r">651,000円</span></div>
+      </div>
+      <div class="comp-note">価格差異＝(標準単価－実際単価)×実際消費量、数量差異＝(標準消費量－実際消費量)×標準単価、で計算する。</div>`,
+    steps: [
+      { label:'標準材料費（標準消費量×標準単価）はいくらか？', ans:600000, unit:'円', choices:[600000, 620000, 651000, 580000] },
+      { label:'価格差異はいくらか？', ans:'31,000円（不利差異）', choices:['31,000円（不利差異）','31,000円（有利差異）','20,000円（不利差異）','11,000円（不利差異）'] },
+      { label:'数量差異はいくらか？', ans:'20,000円（不利差異）', choices:['20,000円（不利差異）','20,000円（有利差異）','31,000円（不利差異）','51,000円（不利差異）'] },
+      { label:'材料費の総差異はいくらか？', ans:'51,000円（不利差異）', choices:['51,000円（不利差異）','51,000円（有利差異）','31,000円（不利差異）','20,000円（不利差異）'] },
+    ],
+    explanation_html: `
+      <div class="comp-note">標準消費量＝1,000個×3kg＝3,000kg。<strong>標準材料費</strong>＝3,000kg×200円＝<strong>600,000円</strong>。実際単価＝651,000円÷3,100kg＝210円／kg。</div>
+      <div class="comp-note"><strong>価格差異</strong>＝(200－210)×3,100＝－31,000円（＝<strong>31,000円の不利差異</strong>。実際単価が標準より高かったので不利）。</div>
+      <div class="comp-note"><strong>数量差異</strong>＝(3,000－3,100)×200＝－20,000円（＝<strong>20,000円の不利差異</strong>。実際消費量が標準より多かったので不利）。</div>
+      <div class="comp-note"><strong>総差異</strong>＝標準材料費600,000－実際材料費651,000＝－51,000円（＝<strong>51,000円の不利差異</strong>＝価格差異31,000円＋数量差異20,000円）。</div>`
+  },
+  { no:8, cat:'stdcost', title:'標準原価計算②：労務費差異（賃率差異・時間差異）',
+    scenario_html: `
+      <div class="comp-table">
+        <div class="comp-row"><span class="l">標準賃率</span><span class="r">1,200円／時間</span></div>
+        <div class="comp-row"><span class="l">標準直接作業時間</span><span class="r">製品1個につき2時間</span></div>
+        <div class="comp-row"><span class="l">当月実際生産量</span><span class="r">500個</span></div>
+        <div class="comp-row"><span class="l">当月実際直接作業時間</span><span class="r">1,050時間</span></div>
+        <div class="comp-row"><span class="l">当月実際労務費（賃金）</span><span class="r">1,281,000円</span></div>
+      </div>
+      <div class="comp-note">賃率差異＝(標準賃率－実際賃率)×実際作業時間、時間差異＝(標準作業時間－実際作業時間)×標準賃率、で計算する。</div>`,
+    steps: [
+      { label:'標準労務費（標準作業時間×標準賃率）はいくらか？', ans:1200000, unit:'円', choices:[1200000, 1260000, 1281000, 1150000] },
+      { label:'賃率差異はいくらか？', ans:'21,000円（不利差異）', choices:['21,000円（不利差異）','21,000円（有利差異）','60,000円（不利差異）','81,000円（不利差異）'] },
+      { label:'時間差異はいくらか？', ans:'60,000円（不利差異）', choices:['60,000円（不利差異）','60,000円（有利差異）','21,000円（不利差異）','81,000円（不利差異）'] },
+      { label:'労務費の総差異はいくらか？', ans:'81,000円（不利差異）', choices:['81,000円（不利差異）','81,000円（有利差異）','60,000円（不利差異）','21,000円（不利差異）'] },
+    ],
+    explanation_html: `
+      <div class="comp-note">標準作業時間＝500個×2時間＝1,000時間。<strong>標準労務費</strong>＝1,000時間×1,200円＝<strong>1,200,000円</strong>。実際賃率＝1,281,000円÷1,050時間＝1,220円／時間。</div>
+      <div class="comp-note"><strong>賃率差異</strong>＝(1,200－1,220)×1,050＝－21,000円（＝<strong>21,000円の不利差異</strong>）。</div>
+      <div class="comp-note"><strong>時間差異</strong>＝(1,000－1,050)×1,200＝－60,000円（＝<strong>60,000円の不利差異</strong>。実際の作業時間が標準より長くかかったので不利）。</div>
+      <div class="comp-note"><strong>総差異</strong>＝1,200,000－1,281,000＝－81,000円（＝<strong>81,000円の不利差異</strong>＝賃率差異21,000円＋時間差異60,000円）。</div>`
+  },
+  { no:9, cat:'stdcost', title:'標準原価計算③：製造間接費差異（予算差異・能率差異・操業度差異）',
+    scenario_html: `
+      <div class="comp-table">
+        <div class="comp-row"><span class="l">変動費率</span><span class="r">300円／時間</span></div>
+        <div class="comp-row"><span class="l">固定費予算（月間）</span><span class="r">540,000円</span></div>
+        <div class="comp-row"><span class="l">基準操業度（月間正常直接作業時間）</span><span class="r">1,800時間</span></div>
+        <div class="comp-row"><span class="l">当月の標準直接作業時間（実際生産量に対して）</span><span class="r">1,700時間</span></div>
+        <div class="comp-row"><span class="l">当月実際直接作業時間</span><span class="r">1,750時間</span></div>
+        <div class="comp-row"><span class="l">当月実際製造間接費発生額</span><span class="r">1,580,000円</span></div>
+      </div>
+      <div class="comp-note">公式法変動予算・三分法で分析する。固定費率＝固定費予算÷基準操業度。</div>`,
+    steps: [
+      { label:'標準配賦額（標準直接作業時間×標準配賦率）はいくらか？', ans:1020000, unit:'円', choices:[1020000, 1050000, 1080000, 990000] },
+      { label:'予算差異はいくらか？', ans:'515,000円（不利差異）', choices:['515,000円（不利差異）','515,000円（有利差異）','500,000円（不利差異）','560,000円（不利差異）'] },
+      { label:'能率差異はいくらか？', ans:'30,000円（不利差異）', choices:['30,000円（不利差異）','30,000円（有利差異）','15,000円（不利差異）','50,000円（不利差異）'] },
+      { label:'操業度差異はいくらか？', ans:'15,000円（不利差異）', choices:['15,000円（不利差異）','15,000円（有利差異）','30,000円（不利差異）','45,000円（不利差異）'] },
+      { label:'製造間接費の総差異はいくらか？', ans:'560,000円（不利差異）', choices:['560,000円（不利差異）','560,000円（有利差異）','515,000円（不利差異）','545,000円（不利差異）'] },
+    ],
+    explanation_html: `
+      <div class="comp-note">固定費率＝540,000円÷1,800時間＝300円／時間。標準配賦率＝変動費率300＋固定費率300＝600円／時間。</div>
+      <div class="comp-note"><strong>標準配賦額</strong>＝1,700時間×600円＝<strong>1,020,000円</strong>。</div>
+      <div class="comp-note">予算許容額＝変動費率300×実際時間1,750＋固定費予算540,000＝525,000＋540,000＝1,065,000円。<strong>予算差異</strong>＝予算許容額1,065,000－実際発生額1,580,000＝－515,000円（＝<strong>515,000円の不利差異</strong>）。</div>
+      <div class="comp-note"><strong>能率差異</strong>＝標準配賦率600×(標準時間1,700－実際時間1,750)＝600×(－50)＝－30,000円（＝<strong>30,000円の不利差異</strong>。実際の作業が標準より手間取ったことを表す）。</div>
+      <div class="comp-note"><strong>操業度差異</strong>＝固定費率300×(実際時間1,750－基準操業度1,800)＝300×(－50)＝－15,000円（＝<strong>15,000円の不利差異</strong>。工場の設備を基準より使いこなせなかったことを表す）。</div>
+      <div class="comp-note"><strong>総差異</strong>＝標準配賦額1,020,000－実際発生額1,580,000＝－560,000円（＝<strong>560,000円の不利差異</strong>＝予算差異515,000円＋能率差異30,000円＋操業度差異15,000円）。</div>`
+  },
+  // ---------- CVP分析・直接原価計算 ----------
+  { no:10, cat:'cvp', title:'CVP分析①：損益分岐点と目標利益・安全余裕率',
+    scenario_html: `
+      <div class="comp-table">
+        <div class="comp-row"><span class="l">販売価格</span><span class="r">1個2,000円</span></div>
+        <div class="comp-row"><span class="l">変動費</span><span class="r">1個あたり1,200円</span></div>
+        <div class="comp-row"><span class="l">固定費（月間）</span><span class="r">2,400,000円</span></div>
+        <div class="comp-row"><span class="l">目標営業利益</span><span class="r">600,000円</span></div>
+        <div class="comp-row"><span class="l">当月の実際売上高</span><span class="r">8,000,000円</span></div>
+      </div>`,
+    steps: [
+      { label:'損益分岐点の売上高はいくらか？', ans:6000000, unit:'円', choices:[6000000, 6500000, 5000000, 7500000] },
+      { label:'損益分岐点の販売量はいくらか？', ans:3000, unit:'個', choices:[3000, 3250, 2800, 3750] },
+      { label:'目標営業利益600,000円を達成する売上高はいくらか？', ans:7500000, unit:'円', choices:[7500000, 7200000, 6600000, 8000000] },
+      { label:'目標営業利益600,000円を達成する販売量はいくらか？', ans:3750, unit:'個', choices:[3750, 3600, 3000, 4000] },
+      { label:'当月の安全余裕率は何%か？', ans:25, unit:'%', choices:[25, 20, 30, 15] },
+    ],
+    explanation_html: `
+      <div class="comp-note">貢献利益＝販売価格2,000－変動費1,200＝800円／個。貢献利益率＝800÷2,000＝40%。</div>
+      <div class="comp-note"><strong>損益分岐点売上高</strong>＝固定費2,400,000÷貢献利益率40% ＝ <strong>6,000,000円</strong>。<strong>損益分岐点販売量</strong>＝固定費2,400,000÷貢献利益800円 ＝ <strong>3,000個</strong>。</div>
+      <div class="comp-note"><strong>目標利益達成の売上高</strong>＝(固定費2,400,000＋目標利益600,000)÷40% ＝ 3,000,000÷40% ＝ <strong>7,500,000円</strong>。<strong>目標利益達成の販売量</strong>＝3,000,000÷800円 ＝ <strong>3,750個</strong>。</div>
+      <div class="comp-note"><strong>安全余裕率</strong>＝(実際売上高8,000,000－損益分岐点売上高6,000,000)÷実際売上高8,000,000 ＝ 2,000,000÷8,000,000 ＝ <strong>25%</strong>（売上が何%落ちても損益分岐点を割らないかを示す指標）。</div>`
+  },
+  { no:11, cat:'cvp', title:'CVP分析②：直接原価計算によるP/Lと損益分岐点',
+    scenario_html: `
+      <div class="comp-table">
+        <div class="comp-row"><span class="l">販売価格</span><span class="r">1個3,000円</span></div>
+        <div class="comp-row"><span class="l">変動製造費（1個あたり）</span><span class="r">1,400円</span></div>
+        <div class="comp-row"><span class="l">変動販売費（1個あたり）</span><span class="r">100円</span></div>
+        <div class="comp-row"><span class="l">固定製造間接費（月間）</span><span class="r">900,000円</span></div>
+        <div class="comp-row"><span class="l">固定販売費及び一般管理費（月間）</span><span class="r">300,000円</span></div>
+        <div class="comp-row"><span class="l">当月の生産・販売量（期首期末在庫なし）</span><span class="r">1,000個</span></div>
+      </div>`,
+    steps: [
+      { label:'製品1個あたりの貢献利益はいくらか？', ans:1500, unit:'円', choices:[1500, 1400, 1600, 1900] },
+      { label:'当月の貢献利益（総額）はいくらか？', ans:1500000, unit:'円', choices:[1500000, 1600000, 1400000, 1900000] },
+      { label:'当月の営業利益はいくらか？', ans:300000, unit:'円', choices:[300000, 400000, 200000, 500000] },
+      { label:'損益分岐点の販売量はいくらか？', ans:800, unit:'個', choices:[800, 750, 900, 1000] },
+      { label:'損益分岐点の売上高はいくらか？', ans:2400000, unit:'円', choices:[2400000, 2250000, 2700000, 3000000] },
+    ],
+    explanation_html: `
+      <div class="comp-note">直接原価計算では、変動費だけを売上高から差し引いて「貢献利益」を求め、固定費は期間費用としてまとめて差し引きます。</div>
+      <div class="comp-note"><strong>単位貢献利益</strong>＝販売価格3,000－変動製造費1,400－変動販売費100 ＝ <strong>1,500円</strong>。</div>
+      <div class="comp-note"><strong>貢献利益（総額）</strong>＝1,500円×1,000個 ＝ <strong>1,500,000円</strong>。</div>
+      <div class="comp-note"><strong>営業利益</strong>＝貢献利益1,500,000－固定費(900,000＋300,000＝1,200,000) ＝ <strong>300,000円</strong>。</div>
+      <div class="comp-note"><strong>損益分岐点販売量</strong>＝固定費1,200,000÷単位貢献利益1,500円 ＝ <strong>800個</strong>。<strong>損益分岐点売上高</strong>＝800個×3,000円 ＝ <strong>2,400,000円</strong>。</div>`
+  },
+];
+
+let compQuizDeck = [];
+let compQuizIdx = 0;
+let compQuizStepIdx = 0;
+let compQuizCorrectFirstTry = 0;
+let compQuizTotalSteps = 0;
+let compQuizFirstAttemptUsed = false;
+let compQuizLastCat = null;
+
+function startCompQuiz(){
+  document.getElementById('controls-main').style.display='none';
+  document.getElementById('check-bar').style.display='none';
+  document.getElementById('group-row').style.display='none';
+  renderCompCatSelect();
+  document.getElementById('exp-panel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderCompCatSelect(){
+  const main=document.getElementById('exp-main');
+  main.innerHTML = `
+    <div class="exp-nav-row">
+      <button class="exp-nav-btn" onclick="exitCompQuiz()">✕ 終了</button>
+      <span class="exp-nav-info">総合問題：分野を選択</span>
+      <span style="width:64px;"></span>
+    </div>
+    <div class="exp-q-card" style="text-align:center;">
+      <div style="font-size:14px;font-weight:700;">仕訳一問一答だけでは対応しづらい「財務諸表作成」「差異分析」「CVP分析」などの計算問題です</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">与えられたデータから金額を計算し、正しい選択肢を選んでください</div>
+    </div>
+    <div class="exp-step-choices wide">
+      ${COMP_CATS.map(c=>{
+        const n = COMP_DATA.filter(d=>d.cat===c.key).length;
+        return `<button class="exp-step-choice-btn" onclick="launchCompCat('${c.key}')">${c.label}（${n}問）</button>`;
+      }).join('')}
+    </div>`;
+}
+
+function launchCompCat(key){
+  compQuizLastCat = key;
+  compQuizDeck = COMP_DATA.filter(d=>d.cat===key);
+  compQuizIdx = 0;
+  compQuizStepIdx = 0;
+  compQuizCorrectFirstTry = 0;
+  compQuizTotalSteps = compQuizDeck.reduce((s,d)=>s+d.steps.length,0);
+  compQuizFirstAttemptUsed = false;
+  renderCompProblem();
+}
+
+function exitCompQuiz(){
+  document.getElementById('controls-main').style.display='';
+  document.getElementById('check-bar').style.display='';
+  updateGroupButtons();
+  loadExpQ();
+}
+
+function compQuizNavBar(){
+  const total=compQuizDeck.length, i=compQuizIdx;
+  return `<div class="exp-nav-row">
+    <button class="exp-nav-btn" onclick="exitCompQuiz()">✕ 終了</button>
+    <span class="exp-nav-info">問題 ${i+1} / ${total}</span>
+    <span style="width:64px;"></span>
+  </div>`;
+}
+
+function compFmtChoice(v){
+  return typeof v === 'number' ? v.toLocaleString() : String(v);
+}
+
+function renderCompProblem(){
+  if(compQuizIdx >= compQuizDeck.length){ renderCompQuizFinish(); return; }
+  const item = compQuizDeck[compQuizIdx];
+  const main=document.getElementById('exp-main');
+  main.innerHTML = `
+    ${compQuizNavBar()}
+    <div class="exp-q-card">
+      <div class="comp-title">${item.title}</div>
+      ${item.scenario_html}
+    </div>
+    <div id="comp-step-area"></div>
+    <div class="exp-result" id="comp-res"></div>`;
+  compQuizStepIdx = 0;
+  compQuizFirstAttemptUsed = false;
+  renderCompStep();
+}
+
+function renderCompStep(){
+  const item = compQuizDeck[compQuizIdx];
+  const step = item.steps[compQuizStepIdx];
+  const area = document.getElementById('comp-step-area');
+  const dots = item.steps.map((_,i)=>{
+    const cls = i<compQuizStepIdx ? 'done' : (i===compQuizStepIdx ? 'active' : '');
+    return `<span class="exp-step-dot ${cls}"></span>`;
+  }).join('');
+  const shuffled = [...step.choices].sort(()=>Math.random()-0.5);
+  window._compChoices = shuffled;
+  const isLong = shuffled.some(v=>String(compFmtChoice(v)).length>10) || typeof step.ans !== 'number';
+  compQuizFirstAttemptUsed = false;
+  area.innerHTML = `
+    <div class="exp-step-header">
+      <span class="exp-step-label">設問 ${compQuizStepIdx+1}/${item.steps.length}：${step.label}</span>
+      <div class="exp-step-progress">${dots}</div>
+    </div>
+    <div class="exp-step-choices${isLong?' wide':''}">
+      ${shuffled.map((c,i)=>`<button class="exp-step-choice-btn" onclick="selectCompChoice(this,${i})">${compFmtChoice(c)}${(typeof c==='number' && step.unit)?('　'+step.unit):''}</button>`).join('')}
+    </div>`;
+}
+
+function selectCompChoice(btn, idx){
+  const item = compQuizDeck[compQuizIdx];
+  const step = item.steps[compQuizStepIdx];
+  const chosen = window._compChoices[idx];
+  const ok = chosen === step.ans;
+  if(ok){
+    if(!compQuizFirstAttemptUsed) compQuizCorrectFirstTry++;
+    document.querySelectorAll('#comp-step-area .exp-step-choice-btn').forEach(b=>{
+      b.disabled = true;
+      if(b===btn) b.classList.add('correct');
+      else b.style.opacity = '0.4';
+    });
+    setTimeout(()=>{
+      compQuizStepIdx++;
+      if(compQuizStepIdx >= item.steps.length){ showCompExplanation(); }
+      else { renderCompStep(); }
+    }, 700);
+  } else {
+    compQuizFirstAttemptUsed = true;
+    btn.classList.add('wrong');
+    setTimeout(()=>btn.classList.remove('wrong'), 500);
+  }
+}
+
+function showCompExplanation(){
+  const item = compQuizDeck[compQuizIdx];
+  const isLast = compQuizIdx >= compQuizDeck.length-1;
+  const res = document.getElementById('comp-res');
+  res.className = 'exp-result ok';
+  res.style.display = 'block';
+  res.innerHTML = `
+    <div class="exp-res-hd">⭕ この問題は終了です</div>
+    <button class="exp-nav-btn exp-nav-next" style="width:100%;margin:10px 0;" onclick="compQuizNextProblem()">${isLast?'結果を見る →':'次の問題 →'}</button>
+    ${item.explanation_html}`;
+  res.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function compQuizNextProblem(){
+  compQuizIdx++;
+  renderCompProblem();
+}
+
+function renderCompQuizFinish(){
+  const pct = compQuizTotalSteps ? Math.round(compQuizCorrectFirstTry/compQuizTotalSteps*100) : 0;
+  const main=document.getElementById('exp-main');
+  main.innerHTML = `
+    <div class="exp-fin">
+      <div class="exp-fin-score">${compQuizCorrectFirstTry} / ${compQuizTotalSteps}</div>
+      <div class="exp-fin-label">1回目で正解した設問の割合：${pct}%</div>
+      <div class="exp-fin-btns">
+        <button class="exp-fin-btn exp-fin-btn-retry" onclick="launchCompCat('${compQuizLastCat}')">もう一度</button>
+        <button class="exp-fin-btn exp-fin-btn-back" onclick="exitCompQuiz()">仕訳問題に戻る</button>
+      </div>
+      <button class="exp-nav-btn" style="width:100%;margin-top:10px;" onclick="renderCompCatSelect()">↩ 別の分野を選ぶ</button>
+    </div>`;
+}
+// ===== 総合問題ここまで =====
+
 
 function setSection(sec){
   sectionFilter=sec;
