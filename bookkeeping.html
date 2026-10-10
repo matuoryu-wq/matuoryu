@@ -388,6 +388,16 @@
     .comp-counter { font-size:11px; color:var(--muted); font-weight:700; margin-bottom:6px; }
     .comp-row[data-key], .comp-list > div[data-key] { transition:background-color 0.25s, box-shadow 0.25s; border-radius:6px; }
     .comp-row.comp-hl, .comp-list > div.comp-hl { background:#FFF59D; box-shadow:0 0 0 4px #FFF59D; font-weight:700; }
+    .comp-stmt-wrap { margin-top:12px; padding-top:10px; border-top:1.5px dashed var(--border); }
+    .comp-stmt-title { font-size:12px; font-weight:800; color:var(--primary); margin:4px 0 6px; }
+    .comp-stmt { width:100%; border-collapse:collapse; font-size:12.5px; }
+    .comp-stmt td { padding:3px 4px; border-bottom:1px dashed var(--border); }
+    .comp-stmt td:last-child { text-align:right; white-space:nowrap; font-weight:600; }
+    .comp-stmt tr.i td:first-child { padding-left:18px; color:var(--muted); }
+    .comp-stmt tr.sub td { font-weight:800; border-top:1.5px solid var(--text); border-bottom:1.5px solid var(--text); }
+    .comp-stmt tr.hd td { font-weight:800; color:var(--primary); padding-top:8px; border-bottom:none; }
+    .comp-stmt tr[data-line] td { transition:background-color 0.25s; }
+    .comp-stmt tr[data-line].comp-hl td { background:#FFF59D; }
 
     /* ===== スクロールモード ===== */
     .exp-panel { display:block; max-width:640px; margin:0 auto; padding:14px 14px; }
@@ -4023,7 +4033,8 @@ function renderDispQuizFinish(){
 
 // ===== 総合問題（財務諸表作成・本支店会計・株主資本等変動・標準原価計算・CVP分析）=====
 // 数字は起動のたびにランダム生成。各設問にrelKeysを持たせ、解説表示中は
-// 問題文中の該当データ(data-key)をハイライトする。設問は細分化して出題。
+// 問題文中の該当データ(data-key)をハイライトする。stmtKey/stmtLinesで
+// 財務諸表（P/L・B/S・合併P/L・株主資本等変動計算書等）上の該当行も表示。
 // ===== shared helpers =====
 function compRandMult(base, loMult, hiMult){
   const n = loMult + Math.floor(Math.random()*(hiMult-loMult+1));
@@ -4069,6 +4080,24 @@ function varChoices(correctN, candidateNs){
     if(!seen.has(f)){ seen.add(f); out.push(jitter); }
   }
   return out.map(fmtVar);
+}
+
+// ===== financial-statement rendering helpers =====
+// stmtRow(label, value, lineKey, cls): one line of a statement table.
+//   lineKey: data-line id used to highlight this row from a step (omit for non-highlightable rows)
+//   cls: 'i' = indented sub-item, 'sub' = subtotal/bold row
+//   value: pass a string (already formatted, e.g. '△12,000円') to override the default '<number>円' format
+function stmtRow(label, value, lineKey, cls){
+  const dk = lineKey ? ` data-line="${lineKey}"` : '';
+  const c = cls ? ` class="${cls}"` : '';
+  const v = typeof value === 'string' ? value : `${yen(value)}円`;
+  return `<tr${dk}${c}><td>${label}</td><td>${v}</td></tr>`;
+}
+function stmtHd(label){
+  return `<tr class="hd"><td colspan="2">${label}</td></tr>`;
+}
+function stmtTable(rows){
+  return `<table class="comp-stmt">${rows.join('')}</table>`;
 }
 
 // ===== FS-1 generator =====
@@ -4133,8 +4162,49 @@ function genFS1(){
   // balance check
   if(Math.abs((fusai+jyunshisan) - shisanGoukei) > 0) return genFS1();
 
+  const plHtml = stmtTable([
+    stmtRow('売上高', uriage, 'uriage'),
+    stmtRow('売上原価', urigenka, 'urigenka'),
+    stmtRow('売上総利益', uriageSorieki, 'sorieki', 'sub'),
+    stmtHd('販売費及び一般管理費'),
+    stmtRow('給料', kyuryo, null, 'i'),
+    stmtRow('保険料', hokenHiyou, 'hoken', 'i'),
+    stmtRow('貸倒引当金繰入', taoreireKurinyure, 'taoreireKurinyure', 'i'),
+    stmtRow('減価償却費', genkahi, 'genka', 'i'),
+    stmtRow('販管費計', hanri, null, 'i'),
+    stmtRow('営業利益', eigyouRieki, 'eigyou', 'sub'),
+    stmtHd('営業外費用'),
+    stmtRow('支払利息', shiharaiRisoku, null, 'i'),
+    stmtRow('経常利益', keijou, 'keijou', 'sub'),
+    stmtRow('法人税、住民税及び事業税', hojinzei, 'hojinzei'),
+    stmtRow('当期純利益', junRieki, 'junrieki', 'sub'),
+  ]);
+  const bsHtml = stmtTable([
+    stmtHd('資産の部'),
+    stmtRow('現金', genkin, null),
+    stmtRow('受取手形', uketori, null),
+    stmtRow('売掛金', urikake, null),
+    stmtRow('貸倒引当金', `△${yen(taoreireNeed)}円`, 'taoreireBs', 'i'),
+    stmtRow('商品', genmatsuShouhin, null),
+    stmtRow('前払費用', hokenMaebarai, null),
+    stmtRow('建物', tatemonoBs, 'tatemonoBs'),
+    stmtRow('備品', bihinBs, 'bihinBs'),
+    stmtRow('資産合計', shisanGoukei, 'shisanGoukei', 'sub'),
+    stmtHd('負債の部'),
+    stmtRow('買掛金', kakekin, null),
+    stmtRow('未払利息', risokuMikarai, 'risokuMikaraiBs'),
+    stmtRow('未払法人税等', hojinzei, null),
+    stmtRow('借入金', kariirekin, null),
+    stmtRow('負債合計', fusai, null, 'sub'),
+    stmtHd('純資産の部'),
+    stmtRow('資本金', shihonkin, null),
+    stmtRow('繰越利益剰余金', kurikoshiKishu+junRieki, null),
+    stmtRow('純資産合計', jyunshisan, null, 'sub'),
+  ]);
+
   return {
     title: '財務諸表作成①：決算整理後のP/L・B/S',
+    stmt: { pl:{title:'損益計算書', html:plHtml}, bs:{title:'貸借対照表', html:bsHtml} },
     scenario_html: `
       <div class="comp-sect-hd">決算整理前残高試算表（一部・単位：円）</div>
       <div class="comp-table">
@@ -4167,46 +4237,46 @@ function genFS1(){
         <div data-key="tax-adj">⑥ 税引前当期純利益に対して30%の法人税、住民税及び事業税を計上する（全額未払いとする）。</div>
       </div>`,
     steps: [
-      { label:'貸倒引当金繰入額はいくらか？', ans:taoreireKurinyure, unit:'円', relKeys:['uketori','urikake','taoreire-adj','taoreire-existing'],
+      { label:'貸倒引当金繰入額はいくらか？', ans:taoreireKurinyure, unit:'円', relKeys:['uketori','urikake','taoreire-adj','taoreire-existing'], stmtKey:'pl', stmtLines:['taoreireKurinyure'],
         choices:numChoices(taoreireKurinyure, [taoreireNeed, taoreireExisting]),
         exp:`差額補充法では、期末に必要な金額（受取手形${yen(uketori)}＋売掛金${yen(urikake)}の合計に${taoreireRate}%をかけた${yen(taoreireNeed)}円）と、すでに帳簿にある残高${yen(taoreireExisting)}円との“差額”だけを繰り入れます。${yen(taoreireNeed)}－${yen(taoreireExisting)}＝<strong>${yen(taoreireKurinyure)}円</strong>。` },
-      { label:'減価償却費（建物＋備品）はいくらか？', ans:genkahi, unit:'円', relKeys:['tatemono','genka-adj','bihin'],
+      { label:'減価償却費（建物＋備品）はいくらか？', ans:genkahi, unit:'円', relKeys:['tatemono','genka-adj','bihin'], stmtKey:'pl', stmtLines:['genka'],
         choices:numChoices(genkahi, [tatemonoGenkaYr, bihinGenkaYr, tatemonoGenkaYr+bihinGenkaYr*2]),
         exp:`建物の減価償却費＝取得原価${yen(tatemono)}円÷耐用年数${tatemonoNensuu}年＝${yen(tatemonoGenkaYr)}円。備品の減価償却費＝取得原価${yen(bihin)}円÷耐用年数${bihinNensuu}年＝${yen(bihinGenkaYr)}円。合計${yen(tatemonoGenkaYr)}＋${yen(bihinGenkaYr)}＝<strong>${yen(genkahi)}円</strong>。` },
-      { label:'保険料（当期の費用）はいくらか？', ans:hokenHiyou, unit:'円', relKeys:['hoken','hoken-adj'],
+      { label:'保険料（当期の費用）はいくらか？', ans:hokenHiyou, unit:'円', relKeys:['hoken','hoken-adj'], stmtKey:'pl', stmtLines:['hoken'],
         choices:numChoices(hokenHiyou, [hoken, hoken+hokenMaebarai]),
         exp:`支払った保険料${yen(hoken)}円のうち、次期分の前払い${yen(hokenMaebarai)}円はまだサービスを受けていない期間の分なので、当期の費用からは除きます。${yen(hoken)}－${yen(hokenMaebarai)}＝<strong>${yen(hokenHiyou)}円</strong>。` },
-      { label:'売上原価はいくらか？', ans:urigenka, unit:'円', relKeys:['kishu','shiire','genmatsu'],
+      { label:'売上原価はいくらか？', ans:urigenka, unit:'円', relKeys:['kishu','shiire','genmatsu'], stmtKey:'pl', stmtLines:['urigenka'],
         choices:numChoices(urigenka, [kishuShouhin+shiire, shiire-genmatsuShouhin+kishuShouhin*0, shiire]),
         exp:`売上原価は「期首にあった商品の在庫」＋「当期に仕入れた金額」－「期末に残っている商品の在庫」で計算します。${yen(kishuShouhin)}＋${yen(shiire)}－${yen(genmatsuShouhin)}＝<strong>${yen(urigenka)}円</strong>。` },
-      { label:'売上総利益はいくらか？', ans:uriageSorieki, unit:'円', relKeys:['uriage','kishu','shiire','genmatsu'],
+      { label:'売上総利益はいくらか？', ans:uriageSorieki, unit:'円', relKeys:['uriage','kishu','shiire','genmatsu'], stmtKey:'pl', stmtLines:['sorieki'],
         choices:numChoices(uriageSorieki, [uriage, uriage-shiire]),
         exp:`売上総利益＝売上高－売上原価です。${yen(uriage)}－${yen(urigenka)}＝<strong>${yen(uriageSorieki)}円</strong>。` },
-      { label:'営業利益はいくらか？', ans:eigyouRieki, unit:'円', relKeys:['uriage','kishu','shiire','genmatsu','kyuryo','hoken','hoken-adj','taoreire-existing','taoreire-adj','genka-adj'],
+      { label:'営業利益はいくらか？', ans:eigyouRieki, unit:'円', relKeys:['uriage','kishu','shiire','genmatsu','kyuryo','hoken','hoken-adj','taoreire-existing','taoreire-adj','genka-adj'], stmtKey:'pl', stmtLines:['eigyou'],
         choices:numChoices(eigyouRieki, [eigyouRieki+taoreireKurinyure, eigyouRieki-genkahi+genkahi*0+hokenMaebarai, uriageSorieki]),
         exp:`売上総利益${yen(uriageSorieki)}円から、販売費及び一般管理費（給料${yen(kyuryo)}＋保険料${yen(hokenHiyou)}＋貸倒引当金繰入${yen(taoreireKurinyure)}＋減価償却費${yen(genkahi)}＝${yen(hanri)}円）を差し引きます。${yen(uriageSorieki)}－${yen(hanri)}＝<strong>${yen(eigyouRieki)}円</strong>。` },
-      { label:'未払利息はいくらか？', ans:risokuMikarai, unit:'円', relKeys:['kariirekin','risoku-adj'],
+      { label:'未払利息はいくらか？', ans:risokuMikarai, unit:'円', relKeys:['kariirekin','risoku-adj'], stmtKey:'bs', stmtLines:['risokuMikaraiBs'],
         choices:numChoices(risokuMikarai, [shiharaiRisokuMoto, risokuMikarai+shiharaiRisokuMoto]),
         exp:`借入金${yen(kariirekin)}円に対し、利率年${kariirekinRate}%、決算日までの${kariirekinMonths}か月分を月割りで未払計上します。${yen(kariirekin)}×${kariirekinRate}%×${kariirekinMonths}/12＝<strong>${yen(risokuMikarai)}円</strong>。` },
-      { label:'経常利益はいくらか？', ans:keijou, unit:'円', relKeys:['shiharai-risoku','risoku-adj','kariirekin'],
+      { label:'経常利益はいくらか？', ans:keijou, unit:'円', relKeys:['shiharai-risoku','risoku-adj','kariirekin'], stmtKey:'pl', stmtLines:['keijou'],
         choices:numChoices(keijou, [eigyouRieki, keijou+risokuMikarai]),
         exp:`営業利益${yen(eigyouRieki)}円から、営業外費用である支払利息${yen(shiharaiRisoku)}円（本来分${yen(shiharaiRisokuMoto)}＋未払分${yen(risokuMikarai)}）を差し引きます。${yen(eigyouRieki)}－${yen(shiharaiRisoku)}＝<strong>${yen(keijou)}円</strong>。` },
-      { label:'法人税、住民税及び事業税はいくらか？', ans:hojinzei, unit:'円', relKeys:['tax-adj'],
+      { label:'法人税、住民税及び事業税はいくらか？', ans:hojinzei, unit:'円', relKeys:['tax-adj'], stmtKey:'pl', stmtLines:['hojinzei'],
         choices:numChoices(hojinzei, [Math.round(eigyouRieki*0.3), Math.round(keijou*0.2)]),
         exp:`税引前当期純利益（＝経常利益）${yen(keijou)}円に対して30%の税率をかけます。${yen(keijou)}×30%＝<strong>${yen(hojinzei)}円</strong>。` },
-      { label:'当期純利益はいくらか？', ans:junRieki, unit:'円', relKeys:['shiharai-risoku','risoku-adj','kariirekin','tax-adj'],
+      { label:'当期純利益はいくらか？', ans:junRieki, unit:'円', relKeys:['shiharai-risoku','risoku-adj','kariirekin','tax-adj'], stmtKey:'pl', stmtLines:['junrieki'],
         choices:numChoices(junRieki, [keijou, junRieki+hojinzei, eigyouRieki]),
         exp:`経常利益${yen(keijou)}円から法人税等${yen(hojinzei)}円を差し引きます。${yen(keijou)}－${yen(hojinzei)}＝<strong>${yen(junRieki)}円</strong>。` },
-      { label:'B/Sに計上する貸倒引当金の金額はいくらか？', ans:taoreireNeed, unit:'円', relKeys:['uketori','urikake','taoreire-adj','taoreire-existing'],
+      { label:'B/Sに計上する貸倒引当金の金額はいくらか？', ans:taoreireNeed, unit:'円', relKeys:['uketori','urikake','taoreire-adj','taoreire-existing'], stmtKey:'bs', stmtLines:['taoreireBs'],
         choices:numChoices(taoreireNeed, [taoreireKurinyure, taoreireExisting, taoreireNeed+taoreireExisting]),
         exp:`差額補充法で繰り入れた後のB/S上の残高は、見積額そのものです。(受取手形${yen(uketori)}＋売掛金${yen(urikake)})×${taoreireRate}%＝<strong>${yen(taoreireNeed)}円</strong>。` },
-      { label:'B/Sに計上する建物の帳簿価額（取得原価－減価償却累計額）はいくらか？', ans:tatemonoBs, unit:'円', relKeys:['tatemono','tatemono-ruikei','genka-adj'],
+      { label:'B/Sに計上する建物の帳簿価額（取得原価－減価償却累計額）はいくらか？', ans:tatemonoBs, unit:'円', relKeys:['tatemono','tatemono-ruikei','genka-adj'], stmtKey:'bs', stmtLines:['tatemonoBs'],
         choices:numChoices(tatemonoBs, [tatemono-tatemonoGenkaYr, tatemono, tatemono-tatemonoRuikei0]),
         exp:`期末の建物減価償却累計額＝既存${yen(tatemonoRuikei0)}円＋当期の減価償却費${yen(tatemonoGenkaYr)}円＝${yen(tatemonoRuikeiMatsu)}円。帳簿価額＝${yen(tatemono)}－${yen(tatemonoRuikeiMatsu)}＝<strong>${yen(tatemonoBs)}円</strong>。` },
-      { label:'B/Sに計上する備品の帳簿価額はいくらか？', ans:bihinBs, unit:'円', relKeys:['bihin','bihin-ruikei','genka-adj'],
+      { label:'B/Sに計上する備品の帳簿価額はいくらか？', ans:bihinBs, unit:'円', relKeys:['bihin','bihin-ruikei','genka-adj'], stmtKey:'bs', stmtLines:['bihinBs'],
         choices:numChoices(bihinBs, [bihin-bihinGenkaYr, bihin, bihin-bihinRuikei0]),
         exp:`期末の備品減価償却累計額＝既存${yen(bihinRuikei0)}円＋当期の減価償却費${yen(bihinGenkaYr)}円＝${yen(bihinRuikeiMatsu)}円。帳簿価額＝${yen(bihin)}－${yen(bihinRuikeiMatsu)}＝<strong>${yen(bihinBs)}円</strong>。` },
-      { label:'資産合計はいくらか？', ans:shisanGoukei, unit:'円', relKeys:['genkin','uketori','urikake','taoreire-adj','genmatsu','hoken-adj','tatemono','tatemono-ruikei','bihin','bihin-ruikei','genka-adj'],
+      { label:'資産合計はいくらか？', ans:shisanGoukei, unit:'円', relKeys:['genkin','uketori','urikake','taoreire-adj','genmatsu','hoken-adj','tatemono','tatemono-ruikei','bihin','bihin-ruikei','genka-adj'], stmtKey:'bs', stmtLines:['shisanGoukei'],
         choices:numChoices(shisanGoukei, [shisanGoukei-taoreireNeed+taoreireKurinyure, shisanGoukei+taoreireNeed, shisanGoukei-hokenMaebarai]),
         exp:`資産合計は、B/Sの借方に並ぶ項目をすべて足した金額です。現金${yen(genkin)}＋受取手形${yen(uketori)}＋売掛金${yen(urikake)}－貸倒引当金${yen(taoreireNeed)}＋商品${yen(genmatsuShouhin)}＋前払保険料${yen(hokenMaebarai)}＋建物${yen(tatemonoBs)}＋備品${yen(bihinBs)}＝<strong>${yen(shisanGoukei)}円</strong>。負債${yen(fusai)}円＋純資産${yen(jyunshisan)}円＝${yen(fusai+jyunshisan)}円で一致します。` },
     ]
@@ -4259,7 +4329,42 @@ function genFS2(){
   const jyunshisan = shihonkin + (kurikoshiKishu + junRieki);
   if(Math.abs((fusai+jyunshisan)-shisanGoukei) > 0) return genFS2();
 
+  const plHtml = stmtTable([
+    stmtRow('売上高', uriage, 'uriage'),
+    stmtRow('売上原価', urigenka, 'urigenka'),
+    stmtRow('売上総利益', uriageSorieki, 'sorieki', 'sub'),
+    stmtHd('販売費及び一般管理費'),
+    stmtRow('給料', kyuryo, null, 'i'),
+    stmtRow('広告宣伝費', koukokuHiyou, 'koukoku', 'i'),
+    stmtRow('雑費', zappi, null, 'i'),
+    stmtRow('貸倒引当金繰入', taoreireKurinyure, 'taoreireKurinyure', 'i'),
+    stmtRow('減価償却費', bihinGenkaYr, 'genka', 'i'),
+    stmtRow('販管費計', hanri, null, 'i'),
+    stmtRow('営業利益＝経常利益＝税引前当期純利益', eigyouRieki, 'eigyou', 'sub'),
+    stmtRow('法人税、住民税及び事業税', hojinzei, 'hojinzei'),
+    stmtRow('当期純利益', junRieki, 'junrieki', 'sub'),
+  ]);
+  const bsHtml = stmtTable([
+    stmtHd('資産の部'),
+    stmtRow('現金預金', genkin, null),
+    stmtRow('売掛金', urikake, null),
+    stmtRow('貸倒引当金', `△${yen(taoreireNeed)}円`, 'taoreireBs', 'i'),
+    stmtRow('商品', genmatsuShouhin, null),
+    stmtRow('前払費用', koukokuMaebarai, null),
+    stmtRow('備品', bihinBs, 'bihinBs'),
+    stmtRow('資産合計', shisanGoukei, 'shisanGoukei', 'sub'),
+    stmtHd('負債の部'),
+    stmtRow('買掛金', kakekin, null),
+    stmtRow('未払法人税等', hojinzei, null),
+    stmtRow('負債合計', fusai, null, 'sub'),
+    stmtHd('純資産の部'),
+    stmtRow('資本金', shihonkin, null),
+    stmtRow('繰越利益剰余金', kurikoshiKishu+junRieki, null),
+    stmtRow('純資産合計', jyunshisan, null, 'sub'),
+  ]);
+
   return {
+    stmt: { pl:{title:'損益計算書', html:plHtml}, bs:{title:'貸借対照表', html:bsHtml} },
     title: '財務諸表作成②：決算整理後のP/L・B/S',
     scenario_html: `
       <div class="comp-sect-hd">決算整理前残高試算表（一部・単位：円）</div>
@@ -4288,34 +4393,34 @@ function genFS2(){
         <div data-key="tax-adj">⑤ 当期の法人税等は${yen(hojinzei)}円と計算された（全額未払いとする）。</div>
       </div>`,
     steps: [
-      { label:'貸倒引当金繰入額はいくらか？', ans:taoreireKurinyure, unit:'円', relKeys:['urikake','taoreire-adj','taoreire-existing'],
+      { label:'貸倒引当金繰入額はいくらか？', ans:taoreireKurinyure, unit:'円', relKeys:['urikake','taoreire-adj','taoreire-existing'], stmtKey:'pl', stmtLines:['taoreireKurinyure'],
         choices:numChoices(taoreireKurinyure, [taoreireNeed, taoreireExisting]),
         exp:`差額補充法では、期末に必要な金額（売掛金${yen(urikake)}×${taoreireRate}%＝${yen(taoreireNeed)}円）と現在の残高${yen(taoreireExisting)}円との“差額”だけを繰り入れます。${yen(taoreireNeed)}－${yen(taoreireExisting)}＝<strong>${yen(taoreireKurinyure)}円</strong>。` },
-      { label:'減価償却費（備品）はいくらか？', ans:bihinGenkaYr, unit:'円', relKeys:['bihin','genka-adj'],
+      { label:'減価償却費（備品）はいくらか？', ans:bihinGenkaYr, unit:'円', relKeys:['bihin','genka-adj'], stmtKey:'pl', stmtLines:['genka'],
         choices:numChoices(bihinGenkaYr, [bihin, Math.round(bihin/(bihinNensuu-1))]),
         exp:`取得原価${yen(bihin)}円÷耐用年数${bihinNensuu}年＝<strong>${yen(bihinGenkaYr)}円</strong>。` },
-      { label:'広告宣伝費（当期の費用）はいくらか？', ans:koukokuHiyou, unit:'円', relKeys:['koukoku','koukoku-adj'],
+      { label:'広告宣伝費（当期の費用）はいくらか？', ans:koukokuHiyou, unit:'円', relKeys:['koukoku','koukoku-adj'], stmtKey:'pl', stmtLines:['koukoku'],
         choices:numChoices(koukokuHiyou, [koukoku, koukoku+koukokuMaebarai]),
         exp:`支払った広告宣伝費${yen(koukoku)}円のうち、次期分の前払い${yen(koukokuMaebarai)}円は当期の費用から除きます。${yen(koukoku)}－${yen(koukokuMaebarai)}＝<strong>${yen(koukokuHiyou)}円</strong>。` },
-      { label:'売上原価はいくらか？', ans:urigenka, unit:'円', relKeys:['kishu','shiire','genmatsu'],
+      { label:'売上原価はいくらか？', ans:urigenka, unit:'円', relKeys:['kishu','shiire','genmatsu'], stmtKey:'pl', stmtLines:['urigenka'],
         choices:numChoices(urigenka, [kishuShouhin+shiire, shiire, shiire-genmatsuShouhin]),
         exp:`売上原価＝期首商品棚卸高${yen(kishuShouhin)}＋当期仕入高${yen(shiire)}－期末商品棚卸高${yen(genmatsuShouhin)}＝<strong>${yen(urigenka)}円</strong>。` },
-      { label:'売上総利益はいくらか？', ans:uriageSorieki, unit:'円', relKeys:['uriage','kishu','shiire','genmatsu'],
+      { label:'売上総利益はいくらか？', ans:uriageSorieki, unit:'円', relKeys:['uriage','kishu','shiire','genmatsu'], stmtKey:'pl', stmtLines:['sorieki'],
         choices:numChoices(uriageSorieki, [uriage, uriage-shiire]),
         exp:`売上総利益＝売上高${yen(uriage)}－売上原価${yen(urigenka)}＝<strong>${yen(uriageSorieki)}円</strong>。` },
-      { label:'営業利益はいくらか？', ans:eigyouRieki, unit:'円', relKeys:['uriage','kishu','shiire','genmatsu','kyuryo','koukoku','koukoku-adj','zappi','taoreire-existing','taoreire-adj','genka-adj'],
+      { label:'営業利益はいくらか？', ans:eigyouRieki, unit:'円', relKeys:['uriage','kishu','shiire','genmatsu','kyuryo','koukoku','koukoku-adj','zappi','taoreire-existing','taoreire-adj','genka-adj'], stmtKey:'pl', stmtLines:['eigyou'],
         choices:numChoices(eigyouRieki, [uriageSorieki, eigyouRieki+taoreireKurinyure, eigyouRieki+koukokuMaebarai]),
         exp:`売上総利益${yen(uriageSorieki)}円から、販売費及び一般管理費（給料${yen(kyuryo)}＋広告宣伝費${yen(koukokuHiyou)}＋雑費${yen(zappi)}＋貸倒引当金繰入${yen(taoreireKurinyure)}＋減価償却費${yen(bihinGenkaYr)}＝${yen(hanri)}円）を差し引きます。${yen(uriageSorieki)}－${yen(hanri)}＝<strong>${yen(eigyouRieki)}円</strong>。` },
-      { label:'当期純利益はいくらか？', ans:junRieki, unit:'円', relKeys:['tax-adj'],
+      { label:'当期純利益はいくらか？', ans:junRieki, unit:'円', relKeys:['tax-adj'], stmtKey:'pl', stmtLines:['junrieki'],
         choices:numChoices(junRieki, [eigyouRieki, junRieki+hojinzei*2]),
         exp:`この問題では営業外収益・費用がないため、営業利益＝経常利益＝税引前当期純利益＝${yen(eigyouRieki)}円です。ここから法人税等${yen(hojinzei)}円を差し引いて、当期純利益<strong>${yen(junRieki)}円</strong>を求めます。` },
-      { label:'B/Sに計上する貸倒引当金の金額はいくらか？', ans:taoreireNeed, unit:'円', relKeys:['urikake','taoreire-adj','taoreire-existing'],
+      { label:'B/Sに計上する貸倒引当金の金額はいくらか？', ans:taoreireNeed, unit:'円', relKeys:['urikake','taoreire-adj','taoreire-existing'], stmtKey:'bs', stmtLines:['taoreireBs'],
         choices:numChoices(taoreireNeed, [taoreireKurinyure, taoreireExisting, taoreireNeed+taoreireExisting]),
         exp:`差額補充法で繰り入れた後のB/S上の残高は、見積額そのものです。売掛金${yen(urikake)}×${taoreireRate}%＝<strong>${yen(taoreireNeed)}円</strong>。` },
-      { label:'B/Sに計上する備品の帳簿価額はいくらか？', ans:bihinBs, unit:'円', relKeys:['bihin','bihin-ruikei','genka-adj'],
+      { label:'B/Sに計上する備品の帳簿価額はいくらか？', ans:bihinBs, unit:'円', relKeys:['bihin','bihin-ruikei','genka-adj'], stmtKey:'bs', stmtLines:['bihinBs'],
         choices:numChoices(bihinBs, [bihin-bihinGenkaYr, bihin, bihin-bihinRuikei0]),
         exp:`期末の備品減価償却累計額＝既存${yen(bihinRuikei0)}円＋当期${yen(bihinGenkaYr)}円＝${yen(bihinRuikeiMatsu)}円。帳簿価額＝${yen(bihin)}－${yen(bihinRuikeiMatsu)}＝<strong>${yen(bihinBs)}円</strong>。` },
-      { label:'資産合計はいくらか？', ans:shisanGoukei, unit:'円', relKeys:['genkin','urikake','taoreire-adj','genmatsu','koukoku-adj','bihin','bihin-ruikei','genka-adj'],
+      { label:'資産合計はいくらか？', ans:shisanGoukei, unit:'円', relKeys:['genkin','urikake','taoreire-adj','genmatsu','koukoku-adj','bihin','bihin-ruikei','genka-adj'], stmtKey:'bs', stmtLines:['shisanGoukei'],
         choices:numChoices(shisanGoukei, [shisanGoukei-taoreireNeed+taoreireKurinyure, shisanGoukei+taoreireNeed, shisanGoukei-koukokuMaebarai]),
         exp:`現金預金${yen(genkin)}＋売掛金${yen(urikake)}－貸倒引当金${yen(taoreireNeed)}＋商品${yen(genmatsuShouhin)}＋前払広告費${yen(koukokuMaebarai)}＋備品${yen(bihinBs)}＝<strong>${yen(shisanGoukei)}円</strong>。負債${yen(fusai)}円＋純資産${yen(jyunshisan)}円＝${yen(fusai+jyunshisan)}円で一致します。` },
     ]
@@ -4347,7 +4452,20 @@ function genBranch1(){
 
   if(gappeiGenka<=0 || gappeiSorieki<=0 || gappeiEigyou<=0) return genBranch1();
 
+  const stmtHtml = stmtTable([
+    stmtRow('売上高', gappeiUriage, 'uriage'),
+    stmtHd('売上原価の内訳'),
+    stmtRow('期首商品棚卸高', gappeiKishu, 'kishu', 'i'),
+    stmtRow('仕入高', gappeiShiire, 'shiire', 'i'),
+    stmtRow('期末商品棚卸高', gappeiKimatsu, 'kimatsu', 'i'),
+    stmtRow('売上原価', gappeiGenka, 'genka', 'sub'),
+    stmtRow('売上総利益', gappeiSorieki, 'sorieki', 'sub'),
+    stmtRow('給料', gappeiKyuryo, 'kyuryo'),
+    stmtRow('営業利益', gappeiEigyou, 'eigyou', 'sub'),
+  ]);
+
   return {
+    stmt: { stmt:{title:'合併損益計算書', html:stmtHtml} },
     title: '本支店会計①：合併損益計算書の作成（内部取引の相殺消去）',
     scenario_html: `
       <div class="comp-sect-hd">本店の損益計算書（一部・単位：円）</div>
@@ -4370,28 +4488,28 @@ function genBranch1(){
       </div>
       <div class="comp-note">本店から支店への商品の送付は、すべて<strong>仕入原価のまま（内部利益の加算なし）</strong>で行われている。</div>`,
     steps: [
-      { label:'合併後の期首商品棚卸高はいくらか？', ans:gappeiKishu, unit:'円', relKeys:['honten-kishu','shiten-kishu'],
+      { label:'合併後の期首商品棚卸高はいくらか？', ans:gappeiKishu, unit:'円', relKeys:['honten-kishu','shiten-kishu'], stmtKey:'stmt', stmtLines:['kishu'],
         choices:numChoices(gappeiKishu, [hontenKishu, shitenKishu]),
         exp:`期首商品棚卸高に内部取引は含まれないので、本店・支店の金額をそのまま合算します。${yen(hontenKishu)}＋${yen(shitenKishu)}＝<strong>${yen(gappeiKishu)}円</strong>。` },
-      { label:'合併後の仕入高（外部からの仕入のみ）はいくらか？', ans:gappeiShiire, unit:'円', relKeys:['honten-shiire','shiten-shiire','naibu-uriage'],
+      { label:'合併後の仕入高（外部からの仕入のみ）はいくらか？', ans:gappeiShiire, unit:'円', relKeys:['honten-shiire','shiten-shiire','naibu-uriage'], stmtKey:'stmt', stmtLines:['shiire'],
         choices:numChoices(gappeiShiire, [gappeiShiire-naibuUriage, hontenShiire, shitenShiire]),
         exp:`外部から仕入れた金額だけを合算します。${yen(hontenShiire)}＋${yen(shitenShiire)}＝<strong>${yen(gappeiShiire)}円</strong>。「本店より仕入」${yen(naibuUriage)}円は社内の付け替えにすぎず、「支店へ売上」と対で消去されるので、外部仕入高からさらに差し引く必要はありません。` },
-      { label:'合併後の期末商品棚卸高はいくらか？', ans:gappeiKimatsu, unit:'円', relKeys:['honten-kimatsu','shiten-kimatsu'],
+      { label:'合併後の期末商品棚卸高はいくらか？', ans:gappeiKimatsu, unit:'円', relKeys:['honten-kimatsu','shiten-kimatsu'], stmtKey:'stmt', stmtLines:['kimatsu'],
         choices:numChoices(gappeiKimatsu, [hontenKimatsu, shitenKimatsu]),
         exp:`期末商品棚卸高も内部取引を含まないので、そのまま合算します。${yen(hontenKimatsu)}＋${yen(shitenKimatsu)}＝<strong>${yen(gappeiKimatsu)}円</strong>。` },
-      { label:'合併後の売上高はいくらか？（内部取引を相殺消去すること）', ans:gappeiUriage, unit:'円', relKeys:['honten-uriage','shiten-uriage','naibu-uriage'],
+      { label:'合併後の売上高はいくらか？（内部取引を相殺消去すること）', ans:gappeiUriage, unit:'円', relKeys:['honten-uriage','shiten-uriage','naibu-uriage'], stmtKey:'stmt', stmtLines:['uriage'],
         choices:numChoices(gappeiUriage, [hontenUriage+shitenUriage, hontenUriage, hontenUriage+shitenUriage+naibuUriage]),
         exp:`本店と支店の売上高をそのまま足すと、内部取引（支店へ売上${yen(naibuUriage)}円）まで二重に数えてしまいます。${yen(hontenUriage)}＋${yen(shitenUriage)}－${yen(naibuUriage)}＝<strong>${yen(gappeiUriage)}円</strong>。` },
-      { label:'合併後の売上原価はいくらか？', ans:gappeiGenka, unit:'円', relKeys:['honten-kishu','shiten-kishu','honten-shiire','shiten-shiire','honten-kimatsu','shiten-kimatsu'],
+      { label:'合併後の売上原価はいくらか？', ans:gappeiGenka, unit:'円', relKeys:['honten-kishu','shiten-kishu','honten-shiire','shiten-shiire','honten-kimatsu','shiten-kimatsu'], stmtKey:'stmt', stmtLines:['genka'],
         choices:numChoices(gappeiGenka, [gappeiKishu+gappeiShiire, gappeiShiire-gappeiKimatsu]),
         exp:`売上原価＝期首商品棚卸高${yen(gappeiKishu)}＋仕入高${yen(gappeiShiire)}－期末商品棚卸高${yen(gappeiKimatsu)}＝<strong>${yen(gappeiGenka)}円</strong>。` },
-      { label:'合併後の売上総利益はいくらか？', ans:gappeiSorieki, unit:'円', relKeys:['honten-uriage','shiten-uriage','naibu-uriage','honten-kishu','shiten-kishu','honten-shiire','shiten-shiire','honten-kimatsu','shiten-kimatsu'],
+      { label:'合併後の売上総利益はいくらか？', ans:gappeiSorieki, unit:'円', relKeys:['honten-uriage','shiten-uriage','naibu-uriage','honten-kishu','shiten-kishu','honten-shiire','shiten-shiire','honten-kimatsu','shiten-kimatsu'], stmtKey:'stmt', stmtLines:['sorieki'],
         choices:numChoices(gappeiSorieki, [gappeiSorieki+gappeiKyuryo, gappeiUriage-gappeiShiire]),
         exp:`売上総利益＝合併後の売上高${yen(gappeiUriage)}－合併後の売上原価${yen(gappeiGenka)}＝<strong>${yen(gappeiSorieki)}円</strong>。` },
-      { label:'合併後の給料（合計）はいくらか？', ans:gappeiKyuryo, unit:'円', relKeys:['honten-kyuryo','shiten-kyuryo'],
+      { label:'合併後の給料（合計）はいくらか？', ans:gappeiKyuryo, unit:'円', relKeys:['honten-kyuryo','shiten-kyuryo'], stmtKey:'stmt', stmtLines:['kyuryo'],
         choices:numChoices(gappeiKyuryo, [hontenKyuryo, shitenKyuryo]),
         exp:`給料は内部取引ではないので、本店・支店の金額をそのまま合算します。${yen(hontenKyuryo)}＋${yen(shitenKyuryo)}＝<strong>${yen(gappeiKyuryo)}円</strong>。` },
-      { label:'合併後の営業利益はいくらか？', ans:gappeiEigyou, unit:'円', relKeys:['honten-kyuryo','shiten-kyuryo'],
+      { label:'合併後の営業利益はいくらか？', ans:gappeiEigyou, unit:'円', relKeys:['honten-kyuryo','shiten-kyuryo'], stmtKey:'stmt', stmtLines:['eigyou'],
         choices:numChoices(gappeiEigyou, [gappeiSorieki, gappeiEigyou+naibuUriage]),
         exp:`営業利益＝売上総利益${yen(gappeiSorieki)}－給料${yen(gappeiKyuryo)}＝<strong>${yen(gappeiEigyou)}円</strong>。` },
     ]
@@ -4430,7 +4548,21 @@ function genBranch2(){
 
   if(gappeiGenka<=0 || gappeiSorieki<=0 || gappeiEigyou<=0 || miJitsugen<=0) return genBranch2();
 
+  const stmtHtml = stmtTable([
+    stmtRow('売上高', gappeiUriage, 'uriage'),
+    stmtHd('売上原価の内訳'),
+    stmtRow('期首商品棚卸高', gappeiKishu, 'kishu', 'i'),
+    stmtRow('仕入高', gappeiShiire, 'shiire', 'i'),
+    stmtRow('未実現利益（消去額）', miJitsugen, 'mijitsugen', 'i'),
+    stmtRow('期末商品棚卸高（消去後）', gappeiKimatsuShinjitsu, 'kimatsu', 'i'),
+    stmtRow('売上原価', gappeiGenka, 'genka', 'sub'),
+    stmtRow('売上総利益', gappeiSorieki, 'sorieki', 'sub'),
+    stmtRow('給料', gappeiKyuryo, 'kyuryo'),
+    stmtRow('営業利益', gappeiEigyou, 'eigyou', 'sub'),
+  ]);
+
   return {
+    stmt: { stmt:{title:'合併損益計算書', html:stmtHtml} },
     title: '本支店会計②：未実現利益の消去',
     scenario_html: `
       <div class="comp-sect-hd">本店の損益計算書（一部・単位：円）</div>
@@ -4453,31 +4585,31 @@ function genBranch2(){
       </div>
       <div class="comp-note" data-key="markup-note">本店は支店に商品を送付する際、<strong>仕入原価に${markupPct}%の利益を加算した価格</strong>（原価×${(1+markupPct/100).toFixed(2)}）で送付している。支店の期末商品棚卸高${yen(shitenKimatsuTotal)}円のうち、<strong>${yen(shitenKimatsuHonten)}円は本店から仕入れた商品</strong>（加算後の価格のまま）であり、残り${yen(shitenKimatsuGai)}円は支店が外部から仕入れたものである。</div>`,
     steps: [
-      { label:'支店の期末商品棚卸高に含まれる未実現利益（消去すべき金額）はいくらか？', ans:miJitsugen, unit:'円', relKeys:['markup-note','shiten-kimatsu'],
+      { label:'支店の期末商品棚卸高に含まれる未実現利益（消去すべき金額）はいくらか？', ans:miJitsugen, unit:'円', relKeys:['markup-note','shiten-kimatsu'], stmtKey:'stmt', stmtLines:['mijitsugen'],
         choices:numChoices(miJitsugen, [shitenKimatsuHonten, shitenKimatsuHontenGenka]),
         exp:`本店は支店に、原価に${markupPct}%上乗せした価格で商品を送っています。支店の期末棚卸高に含まれる「本店から仕入れた${yen(shitenKimatsuHonten)}円分」の本当の原価は${yen(shitenKimatsuHonten)}÷${(1+markupPct/100).toFixed(2)}＝${yen(shitenKimatsuHontenGenka)}円。差額の${yen(shitenKimatsuHonten)}－${yen(shitenKimatsuHontenGenka)}＝<strong>${yen(miJitsugen)}円</strong>が未実現利益です。` },
-      { label:'合併後の期首商品棚卸高はいくらか？', ans:gappeiKishu, unit:'円', relKeys:['honten-kishu','shiten-kishu'],
+      { label:'合併後の期首商品棚卸高はいくらか？', ans:gappeiKishu, unit:'円', relKeys:['honten-kishu','shiten-kishu'], stmtKey:'stmt', stmtLines:['kishu'],
         choices:numChoices(gappeiKishu, [hontenKishu, shitenKishu]),
         exp:`支店の期首棚卸高はすべて外部から仕入れたもの（内部利益を含まない）なので、そのまま合算できます。${yen(hontenKishu)}＋${yen(shitenKishu)}＝<strong>${yen(gappeiKishu)}円</strong>。` },
-      { label:'合併後の仕入高（外部からの仕入のみ）はいくらか？', ans:gappeiShiire, unit:'円', relKeys:['honten-shiire','shiten-shiire'],
+      { label:'合併後の仕入高（外部からの仕入のみ）はいくらか？', ans:gappeiShiire, unit:'円', relKeys:['honten-shiire','shiten-shiire'], stmtKey:'stmt', stmtLines:['shiire'],
         choices:numChoices(gappeiShiire, [hontenShiire, shitenShiireGai]),
         exp:`外部から仕入れた金額だけを合算します。${yen(hontenShiire)}＋${yen(shitenShiireGai)}＝<strong>${yen(gappeiShiire)}円</strong>。` },
-      { label:'合併後の（内部利益消去後の）期末商品棚卸高はいくらか？', ans:gappeiKimatsuShinjitsu, unit:'円', relKeys:['honten-kimatsu','shiten-kimatsu','markup-note'],
+      { label:'合併後の（内部利益消去後の）期末商品棚卸高はいくらか？', ans:gappeiKimatsuShinjitsu, unit:'円', relKeys:['honten-kimatsu','shiten-kimatsu','markup-note'], stmtKey:'stmt', stmtLines:['kimatsu'],
         choices:numChoices(gappeiKimatsuShinjitsu, [hontenKimatsu+shitenKimatsuTotal, gappeiKimatsuShinjitsu+miJitsugen]),
         exp:`本店の期末棚卸高${yen(hontenKimatsu)}円はそのまま使えます。支店の期末棚卸高は、本店仕入分を未実現利益${yen(miJitsugen)}円を除いた${yen(shitenKimatsuHontenGenka)}円に直し、外部仕入分${yen(shitenKimatsuGai)}円と合わせて${yen(shitenKimatsuHontenGenka+shitenKimatsuGai)}円。合計${yen(hontenKimatsu)}＋${yen(shitenKimatsuHontenGenka+shitenKimatsuGai)}＝<strong>${yen(gappeiKimatsuShinjitsu)}円</strong>。` },
-      { label:'合併後の売上高はいくらか？', ans:gappeiUriage, unit:'円', relKeys:['honten-uriage','shiten-uriage','naibu-baika'],
+      { label:'合併後の売上高はいくらか？', ans:gappeiUriage, unit:'円', relKeys:['honten-uriage','shiten-uriage','naibu-baika'], stmtKey:'stmt', stmtLines:['uriage'],
         choices:numChoices(gappeiUriage, [hontenUriage+shitenUriage, hontenUriage]),
         exp:`本店の売上高${yen(hontenUriage)}と支店の売上高${yen(shitenUriage)}を合算し、内部取引である「支店へ売上」${yen(naibuBaika)}円を相殺消去します。${yen(hontenUriage)}＋${yen(shitenUriage)}－${yen(naibuBaika)}＝<strong>${yen(gappeiUriage)}円</strong>。` },
-      { label:'合併後の売上原価はいくらか？', ans:gappeiGenka, unit:'円', relKeys:['honten-kishu','shiten-kishu','honten-shiire','shiten-shiire','honten-kimatsu','shiten-kimatsu','markup-note'],
+      { label:'合併後の売上原価はいくらか？', ans:gappeiGenka, unit:'円', relKeys:['honten-kishu','shiten-kishu','honten-shiire','shiten-shiire','honten-kimatsu','shiten-kimatsu','markup-note'], stmtKey:'stmt', stmtLines:['genka'],
         choices:numChoices(gappeiGenka, [gappeiGenka+miJitsugen, gappeiGenka-miJitsugen]),
         exp:`売上原価＝期首棚卸高${yen(gappeiKishu)}＋仕入高${yen(gappeiShiire)}－期末棚卸高${yen(gappeiKimatsuShinjitsu)}＝<strong>${yen(gappeiGenka)}円</strong>。` },
-      { label:'合併後の売上総利益はいくらか？', ans:gappeiSorieki, unit:'円', relKeys:['honten-uriage','shiten-uriage','naibu-baika','honten-kishu','shiten-kishu','honten-shiire','shiten-shiire','honten-kimatsu','shiten-kimatsu','markup-note'],
+      { label:'合併後の売上総利益はいくらか？', ans:gappeiSorieki, unit:'円', relKeys:['honten-uriage','shiten-uriage','naibu-baika','honten-kishu','shiten-kishu','honten-shiire','shiten-shiire','honten-kimatsu','shiten-kimatsu','markup-note'], stmtKey:'stmt', stmtLines:['sorieki'],
         choices:numChoices(gappeiSorieki, [gappeiSorieki+miJitsugen, gappeiUriage-gappeiShiire]),
         exp:`売上総利益＝合併後の売上高${yen(gappeiUriage)}－合併後の売上原価${yen(gappeiGenka)}＝<strong>${yen(gappeiSorieki)}円</strong>。` },
-      { label:'合併後の給料（合計）はいくらか？', ans:gappeiKyuryo, unit:'円', relKeys:['honten-kyuryo','shiten-kyuryo'],
+      { label:'合併後の給料（合計）はいくらか？', ans:gappeiKyuryo, unit:'円', relKeys:['honten-kyuryo','shiten-kyuryo'], stmtKey:'stmt', stmtLines:['kyuryo'],
         choices:numChoices(gappeiKyuryo, [hontenKyuryo, shitenKyuryo]),
         exp:`給料は内部取引ではないので、本店・支店の金額をそのまま合算します。${yen(hontenKyuryo)}＋${yen(shitenKyuryo)}＝<strong>${yen(gappeiKyuryo)}円</strong>。` },
-      { label:'合併後の営業利益はいくらか？', ans:gappeiEigyou, unit:'円', relKeys:['honten-kyuryo','shiten-kyuryo'],
+      { label:'合併後の営業利益はいくらか？', ans:gappeiEigyou, unit:'円', relKeys:['honten-kyuryo','shiten-kyuryo'], stmtKey:'stmt', stmtLines:['eigyou'],
         choices:numChoices(gappeiEigyou, [gappeiEigyou+miJitsugen, gappeiSorieki]),
         exp:`営業利益＝売上総利益${yen(gappeiSorieki)}－給料${yen(gappeiKyuryo)}＝<strong>${yen(gappeiEigyou)}円</strong>。未実現利益${yen(miJitsugen)}円を消去し忘れると、利益が${yen(miJitsugen)}円多い${yen(gappeiEigyou+miJitsugen)}円になってしまいます。` },
     ]
@@ -4502,7 +4634,28 @@ function genEquity1(){
 
   if(kurikoshiMatsu<=0 || (haitou+riekiJunbiTumitate)>=kurikoshiKishu) return genEquity1();
 
+  const stmtHtml = stmtTable([
+    stmtHd('【資本金】'),
+    stmtRow('当期首残高', shihonkinKishu, null, 'i'),
+    stmtRow('新株の発行', `+${yen(zouka)}円`, 'shihonkin-zouka', 'i'),
+    stmtRow('当期末残高', shihonkinMatsu, 'shihonkin-matsu', 'i'),
+    stmtHd('【利益準備金】'),
+    stmtRow('当期首残高', riekiJunbiKishu, null, 'i'),
+    stmtRow('利益準備金の積立', `+${yen(riekiJunbiTumitate)}円`, 'riekijunbi-tumitate', 'i'),
+    stmtRow('当期末残高', riekiJunbiMatsu, 'riekijunbi-matsu', 'i'),
+    stmtHd('【繰越利益剰余金】'),
+    stmtRow('当期首残高', kurikoshiKishu, null, 'i'),
+    stmtRow('剰余金の配当', `△${yen(haitou)}円`, 'kurikoshi-haitou', 'i'),
+    stmtRow('利益準備金の積立', `△${yen(riekiJunbiTumitate)}円`, 'kurikoshi-tumitate', 'i'),
+    stmtRow('当期純利益', `+${yen(junRieki)}円`, 'kurikoshi-junrieki', 'i'),
+    stmtRow('当期末残高', kurikoshiMatsu, 'kurikoshi-matsu', 'i'),
+    stmtHd('【株主資本合計】'),
+    stmtRow('当期首残高', shihonkinKishu+shihonJunbiKishu+riekiJunbiKishu+kurikoshiKishu, null, 'i'),
+    stmtRow('当期末残高', goukei, 'goukei-matsu', 'i'),
+  ]);
+
   return {
+    stmt: { stmt:{title:'株主資本等変動計算書', html:stmtHtml} },
     title: '株主資本等変動計算書①：配当・利益準備金の積立・増資',
     scenario_html: `
       <div class="comp-sect-hd">期首（前期末）残高（単位：円）</div>
@@ -4519,22 +4672,22 @@ function genEquity1(){
         <div data-key="jun-rieki">③ 当期純利益は${yen(junRieki)}円であった。</div>
       </div>`,
     steps: [
-      { label:'会社法の規定により積み立てる利益準備金はいくらか？', ans:riekiJunbiTumitate, unit:'円', relKeys:['haitou'],
+      { label:'会社法の規定により積み立てる利益準備金はいくらか？', ans:riekiJunbiTumitate, unit:'円', relKeys:['haitou'], stmtKey:'stmt', stmtLines:['riekijunbi-tumitate'],
         choices:numChoices(riekiJunbiTumitate, [haitou, Math.round(haitou/5)]),
         exp:`配当額${yen(haitou)}円の10分の1を利益準備金として積み立てます。${yen(haitou)}÷10＝<strong>${yen(riekiJunbiTumitate)}円</strong>。` },
-      { label:'期末の資本金はいくらか？', ans:shihonkinMatsu, unit:'円', relKeys:['shihonkin','zouka'],
+      { label:'期末の資本金はいくらか？', ans:shihonkinMatsu, unit:'円', relKeys:['shihonkin','zouka'], stmtKey:'stmt', stmtLines:['shihonkin-matsu'],
         choices:numChoices(shihonkinMatsu, [shihonkinKishu, shihonkinMatsu-zouka*2]),
         exp:`増資で新株を発行し、払込金額${yen(zouka)}円の全額を資本金に組み入れたので、期首の資本金${yen(shihonkinKishu)}円に足します。${yen(shihonkinKishu)}＋${yen(zouka)}＝<strong>${yen(shihonkinMatsu)}円</strong>。配当は資本金には影響しません。` },
-      { label:'期末の利益準備金はいくらか？', ans:riekiJunbiMatsu, unit:'円', relKeys:['rieki-junbi','haitou'],
+      { label:'期末の利益準備金はいくらか？', ans:riekiJunbiMatsu, unit:'円', relKeys:['rieki-junbi','haitou'], stmtKey:'stmt', stmtLines:['riekijunbi-matsu'],
         choices:numChoices(riekiJunbiMatsu, [riekiJunbiKishu, riekiJunbiTumitate]),
         exp:`期首の利益準備金${yen(riekiJunbiKishu)}円に、今回の積立額${yen(riekiJunbiTumitate)}円を足します。${yen(riekiJunbiKishu)}＋${yen(riekiJunbiTumitate)}＝<strong>${yen(riekiJunbiMatsu)}円</strong>。` },
-      { label:'配当・利益準備金積立後（当期純利益を加える前）の繰越利益剰余金はいくらか？', ans:kurikoshiKishu-haitou-riekiJunbiTumitate, unit:'円', relKeys:['kurikoshi','haitou'],
+      { label:'配当・利益準備金積立後（当期純利益を加える前）の繰越利益剰余金はいくらか？', ans:kurikoshiKishu-haitou-riekiJunbiTumitate, unit:'円', relKeys:['kurikoshi','haitou'], stmtKey:'stmt', stmtLines:['kurikoshi-haitou','kurikoshi-tumitate'],
         choices:numChoices(kurikoshiKishu-haitou-riekiJunbiTumitate, [kurikoshiKishu-haitou, kurikoshiKishu]),
         exp:`期首の繰越利益剰余金${yen(kurikoshiKishu)}円から、社外に出ていく配当${yen(haitou)}円と、社内に残るが繰越利益剰余金からは出ていく利益準備金積立${yen(riekiJunbiTumitate)}円を差し引きます。${yen(kurikoshiKishu)}－${yen(haitou)}－${yen(riekiJunbiTumitate)}＝<strong>${yen(kurikoshiKishu-haitou-riekiJunbiTumitate)}円</strong>。` },
-      { label:'期末の繰越利益剰余金はいくらか？', ans:kurikoshiMatsu, unit:'円', relKeys:['kurikoshi','haitou','jun-rieki'],
+      { label:'期末の繰越利益剰余金はいくらか？', ans:kurikoshiMatsu, unit:'円', relKeys:['kurikoshi','haitou','jun-rieki'], stmtKey:'stmt', stmtLines:['kurikoshi-matsu'],
         choices:numChoices(kurikoshiMatsu, [kurikoshiKishu+junRieki, kurikoshiKishu-haitou+junRieki]),
         exp:`配当・積立後の金額${yen(kurikoshiKishu-haitou-riekiJunbiTumitate)}円に、当期純利益${yen(junRieki)}円を足します。${yen(kurikoshiKishu-haitou-riekiJunbiTumitate)}＋${yen(junRieki)}＝<strong>${yen(kurikoshiMatsu)}円</strong>。` },
-      { label:'期末の株主資本合計はいくらか？', ans:goukei, unit:'円', relKeys:['shihonkin','shihon-junbi','rieki-junbi','kurikoshi','zouka','haitou','jun-rieki'],
+      { label:'期末の株主資本合計はいくらか？', ans:goukei, unit:'円', relKeys:['shihonkin','shihon-junbi','rieki-junbi','kurikoshi','zouka','haitou','jun-rieki'], stmtKey:'stmt', stmtLines:['goukei-matsu'],
         choices:numChoices(goukei, [goukei-shihonJunbiKishu, goukei+haitou]),
         exp:`資本金・資本準備金・利益準備金・繰越利益剰余金をすべて足します。${yen(shihonkinMatsu)}＋${yen(shihonJunbiKishu)}＋${yen(riekiJunbiMatsu)}＋${yen(kurikoshiMatsu)}＝<strong>${yen(goukei)}円</strong>。` },
     ]
@@ -4560,7 +4713,28 @@ function genEquity2(){
 
   if(!Number.isInteger(genkaSoutou) || shobunSagaku<=0 || jikokabuMatsu<=0) return genEquity2();
 
+  const stmtHtml = stmtTable([
+    stmtHd('【資本剰余金】（資本準備金＋その他資本剰余金）'),
+    stmtRow('当期首残高', shihonJunbiKishu, null, 'i'),
+    stmtRow('自己株式の処分差益', `+${yen(shobunSagaku)}円`, 'shobun-sagaku', 'i'),
+    stmtRow('当期末残高', shihonJunbiKishu+shobunSagaku, 'shihon-jyoyo-matsu', 'i'),
+    stmtHd('【自己株式】'),
+    stmtRow('当期首残高', 0, null, 'i'),
+    stmtRow('自己株式の取得', `△${yen(jikokabuShutoku)}円`, 'jikokabu-shutoku', 'i'),
+    stmtRow('自己株式の処分', `+${yen(genkaSoutou)}円`, 'jikokabu-shobun', 'i'),
+    stmtRow('当期末残高', `△${yen(jikokabuMatsu)}円`, 'jikokabu-matsu', 'i'),
+    stmtHd('【繰越利益剰余金】'),
+    stmtRow('当期首残高', kurikoshiKishu, null, 'i'),
+    stmtRow('当期純利益', `+${yen(junRieki)}円`, 'kurikoshi-junrieki', 'i'),
+    stmtRow('当期末残高', kurikoshiMatsu, 'kurikoshi-matsu', 'i'),
+    stmtHd('【利益剰余金合計】（利益準備金＋繰越利益剰余金）'),
+    stmtRow('当期末残高', riekiJunbiKishu+kurikoshiMatsu, 'rieki-jyoyo-matsu', 'i'),
+    stmtHd('【株主資本合計】'),
+    stmtRow('当期末残高', goukei, 'goukei-matsu', 'i'),
+  ]);
+
   return {
+    stmt: { stmt:{title:'株主資本等変動計算書', html:stmtHtml} },
     title: '株主資本等変動計算書②：自己株式の取得・処分',
     scenario_html: `
       <div class="comp-sect-hd">期首（前期末）残高（単位：円）</div>
@@ -4578,22 +4752,22 @@ function genEquity2(){
         <div data-key="jun-rieki">③ 当期純利益は${yen(junRieki)}円であった。</div>
       </div>`,
     steps: [
-      { label:'期末のその他資本剰余金はいくらか？', ans:shobunSagaku, unit:'円', relKeys:['shobun'],
+      { label:'期末のその他資本剰余金はいくらか？', ans:shobunSagaku, unit:'円', relKeys:['shobun'], stmtKey:'stmt', stmtLines:['shobun-sagaku'],
         choices:numChoices(shobunSagaku, [shobunKakaku, genkaSoutou]),
         exp:`自己株式の処分価額${yen(shobunKakaku)}円が取得原価相当額${yen(genkaSoutou)}円を上回った差額は「自己株式処分差益」として、その他資本剰余金に計上します。${yen(shobunKakaku)}－${yen(genkaSoutou)}＝<strong>${yen(shobunSagaku)}円</strong>。` },
-      { label:'期末の資本剰余金合計（資本準備金＋その他資本剰余金）はいくらか？', ans:shihonJunbiKishu+shobunSagaku, unit:'円', relKeys:['shihon-junbi','shobun'],
+      { label:'期末の資本剰余金合計（資本準備金＋その他資本剰余金）はいくらか？', ans:shihonJunbiKishu+shobunSagaku, unit:'円', relKeys:['shihon-junbi','shobun'], stmtKey:'stmt', stmtLines:['shihon-jyoyo-matsu'],
         choices:numChoices(shihonJunbiKishu+shobunSagaku, [shihonJunbiKishu, shobunSagaku]),
         exp:`資本準備金${yen(shihonJunbiKishu)}円は変化しないので、新たに生じたその他資本剰余金${yen(shobunSagaku)}円を足します。${yen(shihonJunbiKishu)}＋${yen(shobunSagaku)}＝<strong>${yen(shihonJunbiKishu+shobunSagaku)}円</strong>。` },
-      { label:'期末の自己株式（マイナス表示される金額の絶対値）はいくらか？', ans:jikokabuMatsu, unit:'円', relKeys:['jikokabu','shutoku','shobun'],
+      { label:'期末の自己株式（マイナス表示される金額の絶対値）はいくらか？', ans:jikokabuMatsu, unit:'円', relKeys:['jikokabu','shutoku','shobun'], stmtKey:'stmt', stmtLines:['jikokabu-matsu'],
         choices:numChoices(jikokabuMatsu, [jikokabuShutoku, genkaSoutou]),
         exp:`自己株式は株主資本のマイナス項目です。取得${yen(jikokabuShutoku)}円から、処分した分の原価相当額${yen(genkaSoutou)}円を差し引いた<strong>${yen(jikokabuMatsu)}円</strong>が残っています。` },
-      { label:'期末の繰越利益剰余金はいくらか？', ans:kurikoshiMatsu, unit:'円', relKeys:['kurikoshi','jun-rieki'],
+      { label:'期末の繰越利益剰余金はいくらか？', ans:kurikoshiMatsu, unit:'円', relKeys:['kurikoshi','jun-rieki'], stmtKey:'stmt', stmtLines:['kurikoshi-matsu'],
         choices:numChoices(kurikoshiMatsu, [kurikoshiKishu, kurikoshiMatsu+shobunSagaku]),
         exp:`自己株式の取得・処分はどちらも「資本」に関する取引であり、繰越利益剰余金には影響しません。期首${yen(kurikoshiKishu)}円に当期純利益${yen(junRieki)}円を足すだけです。${yen(kurikoshiKishu)}＋${yen(junRieki)}＝<strong>${yen(kurikoshiMatsu)}円</strong>。` },
-      { label:'期末の利益剰余金合計（利益準備金＋繰越利益剰余金）はいくらか？', ans:riekiJunbiKishu+kurikoshiMatsu, unit:'円', relKeys:['rieki-junbi','kurikoshi','jun-rieki'],
+      { label:'期末の利益剰余金合計（利益準備金＋繰越利益剰余金）はいくらか？', ans:riekiJunbiKishu+kurikoshiMatsu, unit:'円', relKeys:['rieki-junbi','kurikoshi','jun-rieki'], stmtKey:'stmt', stmtLines:['rieki-jyoyo-matsu'],
         choices:numChoices(riekiJunbiKishu+kurikoshiMatsu, [kurikoshiMatsu, riekiJunbiKishu]),
         exp:`利益準備金${yen(riekiJunbiKishu)}円は変化しないので、期末の繰越利益剰余金${yen(kurikoshiMatsu)}円を足します。${yen(riekiJunbiKishu)}＋${yen(kurikoshiMatsu)}＝<strong>${yen(riekiJunbiKishu+kurikoshiMatsu)}円</strong>。` },
-      { label:'期末の株主資本合計はいくらか？', ans:goukei, unit:'円', relKeys:['shihonkin','shihon-junbi','rieki-junbi','kurikoshi','jikokabu','shutoku','shobun','jun-rieki'],
+      { label:'期末の株主資本合計はいくらか？', ans:goukei, unit:'円', relKeys:['shihonkin','shihon-junbi','rieki-junbi','kurikoshi','jikokabu','shutoku','shobun','jun-rieki'], stmtKey:'stmt', stmtLines:['goukei-matsu'],
         choices:numChoices(goukei, [goukei+jikokabuMatsu*2, goukei-shobunSagaku]),
         exp:`株主資本合計＝資本金${yen(shihonkinKishu)}＋資本剰余金合計${yen(shihonJunbiKishu+shobunSagaku)}＋利益剰余金合計${yen(riekiJunbiKishu+kurikoshiMatsu)}－自己株式${yen(jikokabuMatsu)}＝<strong>${yen(goukei)}円</strong>。自己株式は最後にマイナスするのを忘れないようにしましょう。` },
     ]
@@ -4836,7 +5010,18 @@ function genCVP2(){
   const eigyouRieki = koukenTotal - koteiTotal;
   if(eigyouRieki<=0 || koteiHankan<=0 || koteiSeizou<=0) return genCVP2();
 
+  const uriageTotal = hanbaikakaku*hanbairyou;
+  const hendouTotal = uriageTotal - koukenTotal;
+  const stmtHtml = stmtTable([
+    stmtRow('売上高', uriageTotal, null),
+    stmtRow('変動費（変動製造費＋変動販売費）', hendouTotal, null),
+    stmtRow('貢献利益', koukenTotal, 'kouken-total', 'sub'),
+    stmtRow('固定費（固定製造間接費＋固定販管費）', koteiTotal, 'kotei-total'),
+    stmtRow('営業利益', eigyouRieki, 'eigyou', 'sub'),
+  ]);
+
   return {
+    stmt: { stmt:{title:'直接原価計算による損益計算書', html:stmtHtml} },
     title: 'CVP分析②：直接原価計算によるP/Lと損益分岐点',
     scenario_html: `
       <div class="comp-table">
@@ -4848,16 +5033,16 @@ function genCVP2(){
         <div class="comp-row" data-key="hanbairyou"><span class="l">当月の生産・販売量（期首期末在庫なし）</span><span class="r">${yen(hanbairyou)}個</span></div>
       </div>`,
     steps: [
-      { label:'固定費合計（固定製造間接費＋固定販管費）はいくらか？', ans:koteiTotal, unit:'円', relKeys:['kotei-seizou','kotei-hankan'],
+      { label:'固定費合計（固定製造間接費＋固定販管費）はいくらか？', ans:koteiTotal, unit:'円', relKeys:['kotei-seizou','kotei-hankan'], stmtKey:'stmt', stmtLines:['kotei-total'],
         choices:numChoices(koteiTotal, [koteiSeizou, koteiHankan]),
         exp:`固定製造間接費${yen(koteiSeizou)}円と固定販売費及び一般管理費${yen(koteiHankan)}円は、どちらも生産・販売量に関わらずかかる期間費用なので、まとめて合計します。${yen(koteiSeizou)}＋${yen(koteiHankan)}＝<strong>${yen(koteiTotal)}円</strong>。` },
       { label:'製品1個あたりの貢献利益はいくらか？', ans:taniKouken, unit:'円', relKeys:['hanbaikakaku','hendou-seizouhi','hendou-hanbaihi'],
         choices:numChoices(taniKouken, [hanbaikakaku-hendouSeizouhi, hanbaikakaku-hendouHanbaihi]),
         exp:`販売価格${yen(hanbaikakaku)}円から変動製造費${yen(hendouSeizouhi)}円と変動販売費${yen(hendouHanbaihi)}円を引きます。${yen(hanbaikakaku)}－${yen(hendouSeizouhi)}－${yen(hendouHanbaihi)}＝<strong>${yen(taniKouken)}円</strong>。` },
-      { label:'当月の貢献利益（総額）はいくらか？', ans:koukenTotal, unit:'円', relKeys:['hanbairyou'],
+      { label:'当月の貢献利益（総額）はいくらか？', ans:koukenTotal, unit:'円', relKeys:['hanbairyou'], stmtKey:'stmt', stmtLines:['kouken-total'],
         choices:numChoices(koukenTotal, [koukenTotal-taniKouken*10, eigyouRieki]),
         exp:`1個あたりの貢献利益${yen(taniKouken)}円に、当月の販売量${yen(hanbairyou)}個をかけます。${yen(taniKouken)}×${yen(hanbairyou)}＝<strong>${yen(koukenTotal)}円</strong>。` },
-      { label:'当月の営業利益はいくらか？', ans:eigyouRieki, unit:'円', relKeys:['kotei-seizou','kotei-hankan'],
+      { label:'当月の営業利益はいくらか？', ans:eigyouRieki, unit:'円', relKeys:['kotei-seizou','kotei-hankan'], stmtKey:'stmt', stmtLines:['eigyou'],
         choices:numChoices(eigyouRieki, [koukenTotal, koukenTotal-koteiSeizou]),
         exp:`貢献利益${yen(koukenTotal)}円から固定費（${yen(koteiSeizou)}＋${yen(koteiHankan)}＝${yen(koteiTotal)}円）を差し引きます。${yen(koukenTotal)}－${yen(koteiTotal)}＝<strong>${yen(eigyouRieki)}円</strong>。` },
       { label:'損益分岐点の販売量はいくらか？', ans:bepRyou, unit:'個', relKeys:['kotei-seizou','kotei-hankan'],
@@ -5025,6 +5210,15 @@ function selectCompChoice(btn, idx){
   }
 }
 
+function compStmtHtml(item, step){
+  if(!step.stmtKey || !item.stmt || !item.stmt[step.stmtKey]) return '';
+  const entry = item.stmt[step.stmtKey];
+  return `<div class="comp-stmt-wrap" id="comp-stmt-area">
+    <div class="comp-stmt-title">${entry.title}のどこに入るか</div>
+    ${entry.html}
+  </div>`;
+}
+
 function showCompStepExplanation(){
   const item = compQuizDeck[compQuizIdx];
   const step = item.steps[compQuizStepIdx];
@@ -5037,7 +5231,13 @@ function showCompStepExplanation(){
   res.innerHTML = `
     <div class="exp-res-hd">⭕ 正解</div>
     <button class="exp-nav-btn exp-nav-next" style="width:100%;margin:10px 0;" onclick="compQuizNextStep()">${nextLabel}</button>
-    <div class="exp-res-exp">${step.exp}</div>`;
+    <div class="exp-res-exp">${step.exp}</div>
+    ${compStmtHtml(item, step)}`;
+  if(step.stmtKey && step.stmtLines){
+    (step.stmtLines||[]).forEach(k=>{
+      document.querySelectorAll(`#comp-stmt-area [data-line="${k}"]`).forEach(el=>el.classList.add('comp-hl'));
+    });
+  }
   res.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
