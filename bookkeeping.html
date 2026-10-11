@@ -3853,15 +3853,35 @@ function buildDispQuizGroups(total, targetSize){
   }
   return groups;
 }
+// 固定の グループ数 で range[0,1] の範囲を分割する（offset・ラベル開始番号を指定可能）。
+function buildDispQuizGroupsFixedCount(total, numGroups, rangeOffset, labelStart){
+  const base = Math.floor(total / numGroups);
+  const remainder = total - base * numGroups;
+  const groups = [];
+  let start = rangeOffset + 1;
+  for(let i=0;i<numGroups;i++){
+    const size = base + (i < remainder ? 1 : 0);
+    const end = start + size - 1;
+    groups.push({ label:`グループ${labelStart+i}`, range:[start,end] });
+    start = end + 1;
+  }
+  return groups;
+}
 // クイズはDISPLAY_DATA全192科目を網羅的に出題する（勘定科目一覧の閲覧タブと同じ母集団）。
 // 1級特有・レア度の高い科目（圧縮記帳、繰延資産、建設業会計、役員賞与引当金など）は
-// 後半グループにまとめ、前半グループだけで3級・2級の基本科目を一通りカバーできるようにする。
+// 後半グループにまとめ、グループ1〜5だけで3級・2級の基本科目を一通りカバーできるようにする。
 const DISP_ADVANCED_NOS = new Set([21,66,91,96,97,99,100,101,102,117,118,119,120,121,122,123,124,125,126,135,140,141,142,143,145,149,150,151,152,153,172,180,181,182,186,187,191]);
 const DISP_QUIZ_POOL = [
   ...DISPLAY_DATA.filter(d => !DISP_ADVANCED_NOS.has(d.no)),
   ...DISPLAY_DATA.filter(d => DISP_ADVANCED_NOS.has(d.no)),
 ];
-const DISP_QUIZ_GROUPS = buildDispQuizGroups(DISP_QUIZ_POOL.length, 20);
+const DISP_BASIC_COUNT = DISP_QUIZ_POOL.length - DISP_ADVANCED_NOS.size;
+// 基本（3級・2級）は固定5グループに分割 → グループ1〜5で必ず知識が完成する。
+const DISP_BASIC_GROUPS = buildDispQuizGroupsFixedCount(DISP_BASIC_COUNT, 5, 0, 1);
+// 発展（1級特有・レア科目）はグループ6以降に続ける。
+const DISP_ADVANCED_GROUPS = buildDispQuizGroups(DISP_QUIZ_POOL.length - DISP_BASIC_COUNT, 20)
+  .map((g,i) => ({ label:`グループ${DISP_BASIC_GROUPS.length+1+i}`, range:[g.range[0]+DISP_BASIC_COUNT, g.range[1]+DISP_BASIC_COUNT] }));
+const DISP_QUIZ_GROUPS = [...DISP_BASIC_GROUPS, ...DISP_ADVANCED_GROUPS];
 function dispGroupHasAdvanced(grp){
   for(let i=grp.range[0]; i<=grp.range[1]; i++){
     if(DISP_ADVANCED_NOS.has(DISP_QUIZ_POOL[i-1].no)) return true;
