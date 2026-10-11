@@ -4143,7 +4143,7 @@ function renderDispQuiz(){
     ${dispTabsHtml()}
     <div class="exp-q-card" style="text-align:center;">
       <div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">① この英語の勘定科目を、日本語で選んでください</div>
-      <div style="font-size:20px;font-weight:800;line-height:1.4;">${item.en}</div>
+      <span class="acct-tag acct-tag-lg ${dispTagClass(item)}" style="font-size:18px;">${item.en}</span>
     </div>
     <div class="exp-step-choices wide" id="disp-ja-choices">
       ${jaChoices.map((c,i)=>`<button class="exp-step-choice-btn" onclick="selectDispJa(this,${i})">${c}</button>`).join('')}
