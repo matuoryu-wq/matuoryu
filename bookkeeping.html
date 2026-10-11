@@ -2228,13 +2228,13 @@ const ALL = [
     e:[{d:[['仕掛品',60000]], c:[['製造間接費',60000]]}],
     exp:'検査活動という別のコストプールについても同様に、活動の発生量（検査時間）を基準に配賦率を計算します。150,000円÷500時間＝＠300円／時間。製品Ｃに200時間の検査が行われたため、60,000円（200時間×300円）が製品Ｃに配賦されます。ABCでは、このように活動（コストドライバー）ごとに複数の配賦基準を使い分けるのが特徴です。'
   },
-  { id:798, level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+  { id:798, sides:['本社側','工場側'], level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は本社会計と工場会計を独立させている（本社工場会計）。<mark class="q-asset">本社は工場のために材料500,000円を購入し</mark>、<mark class="q-asset">現金で支払い</mark>、そのまま<mark class="q-other">工場へ送付した</mark>（<mark class="q-other">工場側では本社勘定で受け入れる</mark>）。①本社側②工場側の仕訳をそれぞれ示しなさい。',
     en_q:"Company X keeps separate head-office and factory ledgers. The head office purchased ¥500,000 of materials for the factory, paying cash, and shipped them directly to the factory. Record the entries on (1) the head office's books and (2) the factory's books.",
     e:[{d:[['工場',500000]], c:[['現金',500000]]}, {d:[['材料',500000]], c:[['本社',500000]]}],
     exp:'本社工場会計では、本社と工場がそれぞれ独立した帳簿を持ちます。まるで支店と本店がそれぞれ独自の家計簿をつけているようなイメージで、本社と工場の間の取引は、通常の外部取引と同じように仕訳しますが、相手科目には「工場」「本社」という内部取引専用の勘定（照合勘定）を使います。①本社側：材料代金を立替払いし、工場に送付したので「工場」勘定（本社から見た工場への債権のようなもの）を借方に、現金を貸方に計上。②工場側：材料を受け入れたので「材料」を借方に、本社からの送付分として「本社」勘定（工場から見た本社への債務）を貸方に計上します。この2つの帳簿を合算すると、内部取引（工場・本社勘定）は相殺されて消えます。'
   },
-  { id:799, level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+  { id:799, sides:['工場側','本社側'], level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'上記のＸ社において、<mark class="q-asset">工場で製品600,000円が完成し</mark>、<mark class="q-other">ただちに本社倉庫へ発送した</mark>（工場では製品勘定を持たず、<mark class="q-asset">完成した製品はすべて本社が管理する</mark>。<mark class="q-other">本社側は工場勘定を相手に受け入れる</mark>）。①工場側②本社側の仕訳をそれぞれ示しなさい。',
     en_q:"For Company X above, the factory completed ¥600,000 of finished goods and shipped them directly to the head office warehouse (the factory keeps no finished goods account; the head office manages all finished goods). Record the entries on (1) the factory's books and (2) the head office's books.",
     e:[{d:[['本社',600000]], c:[['仕掛品',600000]]}, {d:[['製品',600000]], c:[['工場',600000]]}],
@@ -2282,19 +2282,19 @@ const ALL = [
     e:[{d:[['仕掛品',70000]], c:[['製造間接費',70000]]}],
     exp:'検査活動のコストドライバーは「検査時間」（すでに学んだ例）だけでなく、「検査回数」を使うこともあります。どちらのドライバーがより実態を表すかは、活動の性質によって使い分けます。200,000円÷100回＝＠2,000円／回。製品Ｆに35回の検査が行われたため、70,000円（35回×2,000円）が配賦されます。同じ「検査」という活動でも、時間基準か回数基準かでコストドライバーの選び方が変わる、という実務上の判断ポイントを扱う問題です。'
   },
-  { id:863, level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+  { id:863, sides:['本社側','工場側'], level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は本社工場会計を採用しており、本社が全従業員の<mark class="q-expense">給与500,000円</mark>（うち<mark class="q-expense">工場従業員分300,000円</mark>）を、<mark class="q-asset">現金で一括支払った</mark>。<mark class="q-other">工場従業員分は工場勘定で工場へ付け替え</mark>、<mark class="q-other">工場側は本社勘定で受け入れる</mark>。①本社側②工場側の仕訳をそれぞれ示しなさい。',
     en_q:"Company X keeps separate head-office and factory ledgers. The head office paid all employees' salaries of ¥500,000 in cash in one lump sum (of which ¥300,000 relates to factory employees). Record the entries on (1) the head office's books and (2) the factory's books.",
     e:[{d:[['給料',200000],['工場',300000]], c:[['現金',500000]]}, {d:[['賃金・給料',300000]], c:[['本社',300000]]}],
     exp:'本社が全社員分の給与をまとめて支払う場合、本社は自社負担分（本社従業員分200,000円）を「給料」として計上し、工場負担分（300,000円）は「工場」勘定（内部取引の照合勘定）として区分します。まるで家族の共通口座から全員分の支払いをまとめて済ませ、後で誰がいくら使ったか精算するようなイメージで、工場側は、本社が立て替えて支払ってくれた自分たちの給与を「賃金・給料」として計上し、相手科目に「本社」勘定（本社への債務）を計上します。「本社が全部払うが、工場の分は内部で精算する」という構造です。'
   },
-  { id:864, level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+  { id:864, sides:['本社側','工場側'], level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は本社工場会計を採用しており、固定資産（機械装置）はすべて本社の帳簿で管理している。工場で使用する<mark class="q-expense">機械装置の当月減価償却費50,000円について</mark>、<mark class="q-other">本社は減価償却累計額を計上し</mark>、<mark class="q-other">工場勘定に付け替え</mark>、<mark class="q-other">工場は本社勘定を相手に受け入れる</mark>。①本社側②工場側の仕訳をそれぞれ示しなさい。',
     en_q:"Company X keeps separate head-office and factory ledgers, with all fixed assets (machinery) recorded on the head office's books. Record the entries on (1) the head office's books and (2) the factory's books for this month's ¥50,000 depreciation on machinery used at the factory.",
     e:[{d:[['工場',50000]], c:[['減価償却累計額',50000]]}, {d:[['製造間接費',50000]], c:[['本社',50000]]}],
     exp:'固定資産を本社が一括管理している場合、工場で使う機械装置の減価償却費であっても、資産の減少（減価償却累計額の増加）自体は本社の帳簿で記録します。まるでグループ会社の設備を親会社が一括管理し、使用料だけを子会社に請求するようなイメージで、本社は工場のための費用を負担した形になるので「工場」勘定（内部債権）を借方に計上します。工場側は、この減価償却費を自らの製造原価（製造間接費）として受け入れ、相手科目に「本社」勘定（内部債務）を計上します。「資産の管理は本社、費用の発生は工場」という役割分担を仕訳で表現しています。'
   },
-  { id:865, level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+  { id:865, sides:['工場側','本社側'], level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は本社工場会計を採用しており、工場は完成した製品を本社を経由せず、得意先へ直接発送・販売することがある。工場が<mark class="q-asset">製品（原価400,000円）を</mark>得意先へ<mark class="q-revenue">600,000円で直接販売し</mark>、<mark class="q-asset">販売代金は本社の当座預金口座に振り込まれた</mark>。①工場側（<mark class="q-expense">売上原価</mark>を<mark class="q-other">本社勘定で本社へ付け替える</mark>）②本社側（売上を計上し、<mark class="q-other">売上原価を工場勘定で受け入れる</mark>）の仕訳をそれぞれ示しなさい。',
     en_q:"Company X's factory sometimes ships and sells finished goods directly to customers without routing through the head office. The factory sold goods (cost ¥400,000) directly to a customer, and the ¥600,000 proceeds were deposited into the head office's checking account. Record the entries on (1) the factory's books (transferring the cost) and (2) the head office's books (recognizing the sale).",
     e:[{d:[['本社',400000]], c:[['製品',400000]]}, {d:[['当座預金',600000],['売上原価',400000]], c:[['売上',600000],['工場',400000]]}],
@@ -2306,25 +2306,25 @@ const ALL = [
     e:[{d:[['内部利益控除',25000]], c:[['繰延内部利益',25000]]}],
     exp:'工場が本社へ製品を振替価格（原価400,000円に25％の利益を上乗せした500,000円）で送っている場合、本社に残っている未販売の製品在庫にも、まだ実現していない「内部利益」が含まれてしまっています。まるでグループ会社間で商品を転売するたびに少しずつ利益を上乗せしていくと、在庫の評価額が実態より膨らんでしまうようなイメージで、決算にあたっては、この未実現の内部利益（125,000円×25／125＝25,000円）を、貸借対照表上の棚卸資産の評価額から除く必要があります。借方に「内部利益控除」（損益計算書上、売上原価の調整項目）、貸方に「繰延内部利益」（貸借対照表の評価性引当のような性質の科目）を計上し、翌期に振り戻します。'
   },
-  { id:867, level:2, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+  { id:867, sides:['合算時'], level:2, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社の本社工場会計において、決算時に<mark class="q-other">本社元帳の「工場」勘定残高は800,000円（借方）</mark>、<mark class="q-other">工場元帳の「本社」勘定残高は800,000円（貸方）</mark>であり、両者は一致していた。この場合、合算財務諸表を作成するにあたり、内部取引を相殺消去する仕訳を示しなさい。',
     en_q:"In Company X's head-office/factory accounting, at year-end the head office's \"Factory\" account had an ¥800,000 debit balance, matching the factory's \"Head Office\" account ¥800,000 credit balance. When preparing combined financial statements, record the entry eliminating this internal transaction.",
     e:[{d:[['本社',800000]], c:[['工場',800000]]}],
     exp:'本社工場会計では、本社の「工場」勘定と工場の「本社」勘定は、通常、常に同額（貸借逆）になっているはずです（内部取引のたびにセットで記帳しているため）。まるで家計簿の「貸した」「借りた」がぴったり一致するのを確認するようなイメージで、合算した財務諸表（本社と工場を1つにまとめたもの）を作成する際は、この内部取引専用の勘定（照合勘定）を相殺消去し、外部から見える金額だけを残します。連結会計における債権債務の相殺消去と同じ考え方が、本社工場会計にも当てはまります。'
   },
-  { id:878, level:2, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+  { id:878, sides:['Ａ事業部側','Ｂ事業部側'], level:2, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は事業部制を採用しており、<mark class="q-asset">Ａ事業部は製品（部品）を</mark>全部原価（製造原価）400,000円で<mark class="q-other">Ｂ事業部へ振り替え</mark>、<mark class="q-asset">Ｂ事業部はこれを材料として</mark><mark class="q-other">Ａ事業部から受け入れた</mark>。振替価格に利益を加算しない場合の①Ａ事業部側②Ｂ事業部側の仕訳を示しなさい。',
     en_q:'Company X uses a divisional structure. Division A transferred parts to Division B at full cost (manufacturing cost) of ¥400,000, with no profit markup on the transfer price. Record the entries on (1) Division A\'s books and (2) Division B\'s books.',
     e:[{d:[['B事業部',400000]], c:[['製品',400000]]}, {d:[['材料',400000]], c:[['A事業部',400000]]}],
     exp:'全部原価基準による振替は、振り渡す事業部（Ａ事業部）が製造原価のまま、利益を一切乗せずに振り替える方法です。まるで社内の別部署に材料を「原価そのまま」で融通するイメージで、Ａ事業部にとっては利益がゼロなので、業績評価の観点からは不満が残る場合がありますが、グループ全体で見れば最もシンプルで、内部利益の消去も不要という利点があります。「A事業部」「B事業部」という勘定は、本社工場会計の「本社」「工場」勘定と同じ、事業部間の内部取引を管理するための照合勘定です。'
   },
-  { id:879, level:3, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+  { id:879, sides:['Ａ事業部側','Ａ事業部側'], level:3, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社のＡ事業部は、<mark class="q-revenue">外部市場での販売価格（市価）500,000円</mark>（<mark class="q-expense">原価400,000円</mark>）で<mark class="q-other">Ｂ事業部へ</mark><mark class="q-asset">製品を振り替えた</mark>。Ａ事業部側の仕訳を示しなさい。',
     en_q:"Company X's Division A transferred products to Division B at the external market price of ¥500,000 (cost ¥400,000). Record the entry on Division A's books.",
     e:[{d:[['B事業部',500000]], c:[['製品振替収益',500000]]}, {d:[['売上原価',400000]], c:[['製品',400000]]}],
     exp:'市価基準による振替は、外部の市場価格をそのまま使って事業部間の取引を行う方法です。まるで社内の別部署にも「外部のお客さんと同じ値段」で売るようなイメージで、Ａ事業部からみれば、外部に売ったのと同じように「収益」（製品振替収益）を認識でき、原価との差額100,000円が事業部の利益として業績評価に反映されます。ただし、Ｂ事業部にとっては外部から買うのと同じコストがかかるため、グループ全体で見ると「内部利益」が生じている点に注意が必要です（決算時の消去は別問参照）。'
   },
-  { id:880, level:2, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+  { id:880, sides:['Ｂ事業部側'], level:2, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'上記のＢ事業部は、<mark class="q-other">Ａ事業部から</mark>振替価格500,000円で<mark class="q-asset">製品を材料として受け入れた</mark>。Ｂ事業部側の仕訳を示しなさい。',
     en_q:"Division B above received products from Division A at the transfer price of ¥500,000. Record the entry on Division B's books.",
     e:[{d:[['材料',500000]], c:[['A事業部',500000]]}],
@@ -2336,13 +2336,13 @@ const ALL = [
     e:[{d:[['内部利益控除',60000]], c:[['繰延内部利益',60000]]}],
     exp:'市価基準や原価に利益を上乗せする方式で事業部間の振替を行うと、受け入れた事業部の在庫にまだ売れ残りがある場合、そこに含まれる内部利益（グループ全体では実現していない利益）を、連結財務諸表や合算財務諸表を作成する際に消去する必要があります。本社工場会計で学んだ「内部利益控除」「繰延内部利益」と全く同じ処理です。300,000円×20％（利益率）＝60,000円が未実現の内部利益です。'
   },
-  { id:882, level:3, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+  { id:882, sides:['Ａ事業部側','Ａ事業部側'], level:3, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社のＡ事業部とＢ事業部は、事業部間の交渉により<mark class="q-revenue">振替価格を450,000円</mark>（<mark class="q-expense">Ａ事業部の原価400,000円</mark>、市価500,000円の中間）に合意し、<mark class="q-asset">製品を</mark><mark class="q-other">Ｂ事業部へ振り替えた</mark>。Ａ事業部側の仕訳を示しなさい。',
     en_q:"Divisions A and B of Company X negotiated a transfer price of ¥450,000 (between Division A's cost of ¥400,000 and the market price of ¥500,000). Record the entry on Division A's books.",
     e:[{d:[['B事業部',450000]], c:[['製品振替収益',450000]]}, {d:[['売上原価',400000]], c:[['製品',400000]]}],
     exp:'交渉価格基準は、全部原価（400,000円）と市価（500,000円）の間で、事業部同士が話し合って振替価格を決める方法です。まるで社内の2つのチームが「お互い納得できる値段」を話し合って決めるようなイメージで、今回は中間の450,000円で合意しました。Ａ事業部の利益は50,000円（450,000－400,000）となり、全部原価基準（利益ゼロ）と市価基準（利益100,000円）の中間的な結果になります。「両事業部が納得できる価格を交渉で決める」という、実務でもよく使われる柔軟な方法です。'
   },
-  { id:883, level:2, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
+  { id:883, sides:['合算時'], level:2, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社の決算時、<mark class="q-other">Ａ事業部元帳の「Ｂ事業部」勘定残高は450,000円（借方）</mark>、<mark class="q-other">Ｂ事業部元帳の「Ａ事業部」勘定残高は450,000円（貸方）</mark>であった。合算財務諸表を作成するにあたり、この内部取引を相殺消去する仕訳を示しなさい。',
     en_q:"At year-end, Division A's \"Division B\" account had a ¥450,000 debit balance, matching Division B's \"Division A\" account ¥450,000 credit balance. When preparing combined financial statements, record the entry eliminating this internal transaction.",
     e:[{d:[['A事業部',450000]], c:[['B事業部',450000]]}],
@@ -3219,22 +3219,22 @@ const ALL = [
     exp:'3種類の一時差異を1問でまとめて処理する、税効果会計の総まとめ問題です。①貸倒れに備えた費用の超過額（将来減算一時差異）：10円×30％＝3円の繰延税金資産。②減価償却費の超過額（同じく将来減算一時差異）：20円×30％＝6円の繰延税金資産。①と②を合わせて繰延税金資産3円。①②は損益項目（法人税等調整額）として処理します。③その他有価証券の評価益（将来売却時に課税される＝将来加算一時差異）：10円×30％＝3円を繰延税金負債に計上し、純資産（その他有価証券評価差額金）を同額減らします。損益を通る項目（①②）と、純資産に直接計上する項目（③）を、しっかり区別して処理するのがポイントです。'
   },
   // --- 本支店・連結・個人事業主 ---
-  { id:1168, cat:'本支店会計', chap:'本支店・連結・個人事業主',
+  { id:1168, sides:['本店側','支店側'], cat:'本支店会計', chap:'本支店・連結・個人事業主',
     q:'雑貨を卸しているX社は、本店のほかに、支店を持っている。支店は、仕入先に対する未払いの代金を、支払う必要があったが、支店の手元の現金が、足りなかった。そこで、<mark class="q-other">本店</mark>が、<mark class="q-asset">支店</mark>に、<mark class="q-asset">現金50円を送金</mark>した。本店と支店は、それぞれ、別々に帳簿をつけている。この送金について、本店と支店の、それぞれの仕訳を行いなさい。',
     e:[{d:[['支店',50]],c:[['現金',50]]},{d:[['現金',50]],c:[['本店',50]]}],
     exp:'「本店・支店」とは、本店は会社の中心となる営業所、支店は本店とは別の場所にある営業所のことです（会計では、本店と支店が、それぞれ別に帳簿をつけることがあります）。本店は、支店に送った現金を「支店」という内部取引専用の勘定（照合勘定）で管理し、支店は受け取った現金の相手科目として「本店」という勘定を使います。この「本店」勘定と「支店」勘定は、いわば会社内部でのお金の貸し借りを記録する鏡のような関係で、最終的に本店・支店をまとめた財務諸表を作るときには、お互いに相殺して消えます。'
   },
-  { id:1169, cat:'本支店会計', chap:'本支店・連結・個人事業主',
+  { id:1169, sides:['本店側'], cat:'本支店会計', chap:'本支店・連結・個人事業主',
     q:'X社の<mark class="q-asset">支店</mark>は、決算日に、<mark class="q-expense">本店へ商品10円を発送</mark>した。支店は、そのことを、本店に連絡し、支店の帳簿には、すでに処理している。ところが、決算日の時点で、商品は、まだ本店に届いていない。そのため、本店の帳簿には、この商品の受入れが、記録されていない。本店が、決算日に行うべき仕訳を行いなさい。',
     e:[{d:[['支店より仕入',10]],c:[['支店',10]]}],
     exp:'「未達」とは、一方の帳簿では処理済みだが、もう一方には、まだ届いていない取引や商品のことです。支店はすでに発送した記録をつけていますが、本店にはまだ商品が届いておらず、記録が漏れている状態です。決算にあたっては、本店側でもこの未達分を認識し、「支店より仕入」という費用（本店から見た支店からの仕入）を計上し、相手科目として「支店」勘定を増やします。こうすることで、本店と支店の帳簿の金額が、最終的に一致するように調整されます。'
   },
-  { id:1170, cat:'本支店会計', chap:'本支店・連結・個人事業主',
+  { id:1170, sides:['九州支店側','本店側','関西支店側'], cat:'本支店会計', chap:'本支店・連結・個人事業主',
     q:'X社は、本店のほかに、九州支店と関西支店を持っている。X社は、支店どうしの取引も、すべて本店を通したものとして、<mark class="q-other">記帳する仕組み（本店集中計算制度）</mark>を採用している。<mark class="q-other">九州支店</mark>が、<mark class="q-other">関西支店</mark>に、<mark class="q-asset">現金20円を送金</mark>した。この送金について、九州支店・本店・関西支店の、それぞれの帳簿の仕訳を行いなさい。',
     e:[{d:[['本店',20]],c:[['現金',20]]},{d:[['関西支店',20]],c:[['九州支店',20]]},{d:[['現金',20]],c:[['本店',20]]}],
     exp:'「本店集中計算制度」とは、支店どうしの取引を、直接のやりとりとはせず、すべて本店を通したものとして、記帳する制度のことです。実際には九州支店から関西支店へ直接送金していても、帳簿上は「まず九州支店から本店へ」「それから本店から関西支店へ」という2段階の取引があったかのように記録します。九州支店は「本店」勘定、本店は「関西支店」勘定と「九州支店」勘定、関西支店は「本店」勘定を使い、支店どうしが直接勘定を持ち合わない点がポイントです。すべての支店間取引の窓口を本店に一本化することで、本店が全社のお金の流れを把握しやすくなります。'
   },
-  { id:1171, cat:'本支店会計', chap:'本支店・連結・個人事業主',
+  { id:1171, sides:['本店側'], cat:'本支店会計', chap:'本支店・連結・個人事業主',
     q:'X社の本店は、原価80円の商品に、内部利益10円を加えた90円で、支店に商品を発送している。決算にあたり、支店の期末商品のうち、本店から発送された商品の金額は、発送価額（90円）で、45円分ある。この45円分の商品に含まれている<mark class="q-expense">内部利益を、控除し</mark>、<mark class="q-other">繰延内部利益として繰り延べる</mark>。本店の決算に必要な仕訳を行いなさい。',
     e:[{d:[['繰延内部利益控除',5]],c:[['繰延内部利益',5]]}],
     exp:'「内部利益」とは、本店が、支店に商品を発送するときに、原価に上乗せした利益のことです（会社全体で見ると、まだ実現していない利益なので、決算で控除します）。本店は商品を80円の原価に10円の利益を乗せた90円で支店に送っていますが、会社全体（本店＋支店）で見れば、まだ外部のお客さんに売れていない商品にすぎません。支店の期末在庫45円のうち、含まれている内部利益（45円×10／90＝5円）を、損益計算書上は「繰延内部利益控除」で取り除き、貸借対照表上は「繰延内部利益」という資産のマイナス項目として計上し、翌期に振り戻します。'
@@ -3471,7 +3471,7 @@ const ALL = [
     e:[{d:[['異常仕損費',6]],c:[['仕掛品',6]]}],
     exp:'「営業外費用」とは、会社の本来の営業活動とは関係なく生じた費用や損失のことです。機械の大故障のような、通常では考えられない異常な原因で生じた仕損は、正常な製造活動のコストとはみなさず、「異常仕損費」として製品原価から切り離し、特別な損失として処理します。「正常な仕損は原価に、異常な仕損は損失に」という区別がポイントです。'
   },
-  { id:1223, cat:'本社工場会計', chap:'工業簿記',
+  { id:1223, sides:['本社側','工場側'], cat:'本社工場会計', chap:'工業簿記',
     q:'X社は、本社と工場で、それぞれ別々に帳簿をつけている（<strong>本社工場会計</strong>）。工場の帳簿には、現金の勘定がなく、お金の支払いは、すべて本社が行う。当月、本社は、工場の<mark class="q-expense">作業員の労働の対価30円を</mark>、<mark class="q-asset">現金で支払った</mark>。<mark class="q-other">本社は工場勘定で工場に付け替え</mark>、<mark class="q-other">工場は本社勘定を相手に記帳する</mark>。本社と工場の、それぞれの仕訳を行いなさい。',
     e:[{d:[['工場',30]],c:[['現金',30]]},{d:[['賃金',30]],c:[['本社',30]]}],
     exp:'「本社工場会計」とは、本社と工場が、それぞれ別々に帳簿をつける仕組みのことです（本社と工場の間のやりとりは、相手を表す勘定で記録します）。本社は、工場のために立て替えて払った現金を「工場」という内部取引専用の勘定（照合勘定）で記録し、工場は、受け取った労働対価を「賃金」という費用として計上し、相手科目に「本社」勘定を使います。この2つの帳簿を合算すると、内部取引（本社・工場勘定）は相殺されて消えます。'
@@ -3782,7 +3782,9 @@ function loadExpQ(){
 function loadExpEntry(){
   const q=expQuestions[expQIdx];
   const multi=q.e.length>1;
-  const label=multi?`<div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px;">【仕訳 ${expEntryIdx+1}／${q.e.length}】</div>`:'';
+  const side=q.sides&&q.sides[expEntryIdx];
+  const labelText=side?`【${side}の仕訳】${multi?`（${expEntryIdx+1}／${q.e.length}）`:''}`:`【仕訳 ${expEntryIdx+1}／${q.e.length}】`;
+  const label=(multi||side)?`<div style="font-size:${side?14:12}px;font-weight:700;color:var(--primary);margin-bottom:6px;">${labelText}</div>`:'';
   const accounts=getExpEntryAccounts(q, expEntryIdx);
   const _sh=[...accounts];for(let _i=_sh.length-1;_i>0;_i--){const _j=Math.floor(Math.random()*(_i+1));[_sh[_i],_sh[_j]]=[_sh[_j],_sh[_i]];}
   window._expCards=_sh;
@@ -3963,8 +3965,10 @@ function expCheckResult(){
   const debit=entryAccounts.filter(a=>a.side==='d');
   const credit=entryAccounts.filter(a=>a.side==='c');
   const tagHtml=arr=>arr.map(a=>`<span class="tag ${tagType(a.name)}">${a.name}${a.amt!=null?`<span class="tag-amt"> ${a.amt.toLocaleString()}円</span>`:''}</span>`).join('');
-  const multiLabel=q.e.length>1?` (${expEntryIdx+1}／${q.e.length})`:'';
-  const nextEntryBtn=isLastEntry?'':`<button class="exp-nav-btn exp-nav-next" style="width:100%;margin-top:10px;" onclick="expNextEntry()">次の仕訳へ →</button>`;
+  const side=q.sides&&q.sides[expEntryIdx];
+  const multiLabel=(side?`【${side}】`:'')+(q.e.length>1?` (${expEntryIdx+1}／${q.e.length})`:'');
+  const nextSide=q.sides&&q.sides[expEntryIdx+1];
+  const nextEntryBtn=isLastEntry?'':`<button class="exp-nav-btn exp-nav-next" style="width:100%;margin-top:10px;" onclick="expNextEntry()">${nextSide?`次：${nextSide}の仕訳へ →`:'次の仕訳へ →'}</button>`;
   res.className=`exp-result ${ok?'ok':'ng'}`;
   res.style.display='block';
   const isChecked=!!checked[q.id];
