@@ -3876,11 +3876,11 @@ const DISP_QUIZ_POOL = [
   ...DISPLAY_DATA.filter(d => DISP_ADVANCED_NOS.has(d.no)),
 ];
 const DISP_BASIC_COUNT = DISP_QUIZ_POOL.length - DISP_ADVANCED_NOS.size;
-// 基本（3級・2級）は固定5グループに分割 → グループ1〜5で必ず知識が完成する。
-const DISP_BASIC_GROUPS = buildDispQuizGroupsFixedCount(DISP_BASIC_COUNT, 5, 0, 1);
-// 発展（1級特有・レア科目）はグループ6以降に続ける。
-const DISP_ADVANCED_GROUPS = buildDispQuizGroups(DISP_QUIZ_POOL.length - DISP_BASIC_COUNT, 20)
-  .map((g,i) => ({ label:`グループ${DISP_BASIC_GROUPS.length+1+i}`, range:[g.range[0]+DISP_BASIC_COUNT, g.range[1]+DISP_BASIC_COUNT] }));
+// 合計グループ数は常に10（元の仕様を維持）。基本（3級・2級）を5グループ、
+// 発展（1級特有・レア科目）を残り5グループに固定し、グループ1〜5で必ず知識が完成する。
+const DISP_TOTAL_GROUPS = 10;
+const DISP_BASIC_GROUPS = buildDispQuizGroupsFixedCount(DISP_BASIC_COUNT, DISP_TOTAL_GROUPS/2, 0, 1);
+const DISP_ADVANCED_GROUPS = buildDispQuizGroupsFixedCount(DISP_QUIZ_POOL.length - DISP_BASIC_COUNT, DISP_TOTAL_GROUPS/2, DISP_BASIC_COUNT, DISP_BASIC_GROUPS.length+1);
 const DISP_QUIZ_GROUPS = [...DISP_BASIC_GROUPS, ...DISP_ADVANCED_GROUPS];
 function dispGroupHasAdvanced(grp){
   for(let i=grp.range[0]; i<=grp.range[1]; i++){
