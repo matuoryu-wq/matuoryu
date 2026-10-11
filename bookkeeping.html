@@ -205,6 +205,7 @@
       font-weight: 700;
       text-align: center;
     }
+    .tag-en { display: block; font-size: 9.5px; font-weight: 600; opacity: 0.8; white-space: normal; line-height: 1.25; margin-top: 1px; }
     .tag-amt { display: block; font-size: 11px; font-weight: 400; opacity: 0.75; margin-top: 1px; }
     /* 資産：黄色 */
     .tag.asset     { background: #FFF9C4; color: #5D4037; border: 1.5px solid #F9C400; }
@@ -1064,6 +1065,11 @@ const DISPLAY_DATA = [
   {"no":354,"en":"Provision for Construction Contract Loss (Liability)","name":"工事損失引当金","bucket":"1級","cat":"liability","ans":[["B/S","流動負債"]],"disp":null,"def":"<strong>工事損失引当金</strong>とは、工事契約全体で見込まれる将来の損失に備えて、あらかじめ見積り計上しておく引当金のこと。","cls":"近い将来に発生する可能性が高い損失に備える引当金なので、<strong>B/S上は流動負債</strong>に表示する。"},
   {"no":355,"en":"Securities (Aggregate Display Name)","name":"有価証券","bucket":"1級","cat":"asset","ans":[["B/S","流動資産または投資その他の資産"]],"disp":"有価証券／投資有価証券","def":"<strong>有価証券</strong>とは、売買目的有価証券や、1年以内に満期がくる満期保有目的債券など、さまざまな保有目的の証券をB/S上で表示するときに使う総称的な科目名。","cls":"保有目的や満期までの期間に応じて、<strong>B/S上は流動資産（有価証券）または投資その他の資産（投資有価証券）</strong>に分けて表示する。"}
 ];
+
+// 勘定科目の英語名（仕訳問題で科目名の下に表示）
+const ACCT_EN = Object.fromEntries(DISPLAY_DATA.map(d=>[d.name,d.en]));
+Object.assign(ACCT_EN, {"S社株式": "Shares of Company S", "P社株式": "Shares of Company P", "T社株式": "Shares of Company T", "諸資産": "Various Assets", "諸負債": "Various Liabilities", "A事業部": "Division A", "B事業部": "Division B", "関西支店": "Kansai Branch", "九州支店": "Kyushu Branch", "切削部門費": "Cutting Department Costs", "組立部門費": "Assembly Department Costs", "動力部門費": "Power Department Costs", "第1工程仕掛品": "Work in Process (Process 1)", "第2工程仕掛品": "Work in Process (Process 2)", "A組仕掛品": "Work in Process (Group A)", "B組仕掛品": "Work in Process (Group B)", "製品（A品）": "Finished Goods (Product A)", "製品（B品）": "Finished Goods (Product B)", "製品（1級品）": "Finished Goods (Grade 1)", "製品（2級品）": "Finished Goods (Grade 2)", "製品（3級品）": "Finished Goods (Grade 3)", "製品（P重油）": "Finished Goods (Heavy Fuel Oil P)", "製品（軽油）": "Finished Goods (Light Oil)"});
+function acctEnHtml(n){ const e=ACCT_EN[n]; return e?`<span class="tag-en">(${e})</span>`:''; }
 
 // ===== 一問一答（表示区分の意味）：グループ0 - 区分そのものの定義を問う =====
 const CONCEPT_DATA = [
@@ -3889,7 +3895,7 @@ function renderExpCard(){
   card.className='exp-swipe-card';
   const len=acc.name.length;
   const fs=len<=5?15:len<=7?13:len<=9?11:10;
-  card.innerHTML=`<span class="tag ${tagType(acc.name)}" style="font-size:${fs}px;white-space:nowrap;">${acc.name}</span>${acc.amt!=null?`<div style="font-size:12px;color:var(--muted);margin-top:5px;font-weight:600;">${acc.amt.toLocaleString()}円</div>`:''}`;
+  card.innerHTML=`<span class="tag ${tagType(acc.name)}" style="font-size:${fs}px;white-space:nowrap;display:inline-block;max-width:240px;">${acc.name}${acctEnHtml(acc.name)}</span>${acc.amt!=null?`<div style="font-size:12px;color:var(--muted);margin-top:5px;font-weight:600;">${acc.amt.toLocaleString()}円</div>`:''}`;
   wrap.appendChild(card);
   initExpSwipe(card);
 }
@@ -3915,7 +3921,7 @@ function initExpSwipe(card){
 function updateExpZones(){
   ['d','c'].forEach(s=>{
     const el=document.getElementById('exp-p'+s);
-    if(el) el.innerHTML=expPlaced[s].map(a=>`<span class="tag ${tagType(a.name)}">${a.name}${a.amt!=null?`<span class="tag-amt"> ${a.amt.toLocaleString()}円</span>`:''}</span>`).join('');
+    if(el) el.innerHTML=expPlaced[s].map(a=>`<span class="tag ${tagType(a.name)}">${a.name}${acctEnHtml(a.name)}${a.amt!=null?`<span class="tag-amt"> ${a.amt.toLocaleString()}円</span>`:''}</span>`).join('');
   });
 }
 
@@ -3964,7 +3970,7 @@ function expCheckResult(){
   const entryAccounts=getExpEntryAccounts(q, expEntryIdx);
   const debit=entryAccounts.filter(a=>a.side==='d');
   const credit=entryAccounts.filter(a=>a.side==='c');
-  const tagHtml=arr=>arr.map(a=>`<span class="tag ${tagType(a.name)}">${a.name}${a.amt!=null?`<span class="tag-amt"> ${a.amt.toLocaleString()}円</span>`:''}</span>`).join('');
+  const tagHtml=arr=>arr.map(a=>`<span class="tag ${tagType(a.name)}">${a.name}${acctEnHtml(a.name)}${a.amt!=null?`<span class="tag-amt"> ${a.amt.toLocaleString()}円</span>`:''}</span>`).join('');
   const side=q.sides&&q.sides[expEntryIdx];
   const multiLabel=(side?`【${side}】`:'')+(q.e.length>1?` (${expEntryIdx+1}／${q.e.length})`:'');
   const nextSide=q.sides&&q.sides[expEntryIdx+1];
@@ -5619,9 +5625,9 @@ function makeTags(arr){
     if(Array.isArray(a)){
       const [name, amt] = a;
       const amtStr = typeof amt === 'number' ? amt.toLocaleString() : String(amt);
-      return `<span class="tag ${tagType(name)}">${name}<span class="tag-amt">${amtStr}円</span></span>`;
+      return `<span class="tag ${tagType(name)}">${name}${acctEnHtml(name)}<span class="tag-amt">${amtStr}円</span></span>`;
     }
-    return `<span class="tag ${tagType(a)}">${a}</span>`;
+    return `<span class="tag ${tagType(a)}">${a}${acctEnHtml(a)}</span>`;
   }).join('');
 }
 
