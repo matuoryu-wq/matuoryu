@@ -3854,8 +3854,20 @@ function buildDispQuizGroups(total, targetSize){
   return groups;
 }
 // クイズはDISPLAY_DATA全192科目を網羅的に出題する（勘定科目一覧の閲覧タブと同じ母集団）。
-const DISP_QUIZ_POOL = DISPLAY_DATA;
+// 1級特有・レア度の高い科目（圧縮記帳、繰延資産、建設業会計、役員賞与引当金など）は
+// 後半グループにまとめ、前半グループだけで3級・2級の基本科目を一通りカバーできるようにする。
+const DISP_ADVANCED_NOS = new Set([21,66,91,96,97,99,100,101,102,117,118,119,120,121,122,123,124,125,126,135,140,141,142,143,145,149,150,151,152,153,172,180,181,182,186,187,191]);
+const DISP_QUIZ_POOL = [
+  ...DISPLAY_DATA.filter(d => !DISP_ADVANCED_NOS.has(d.no)),
+  ...DISPLAY_DATA.filter(d => DISP_ADVANCED_NOS.has(d.no)),
+];
 const DISP_QUIZ_GROUPS = buildDispQuizGroups(DISP_QUIZ_POOL.length, 20);
+function dispGroupHasAdvanced(grp){
+  for(let i=grp.range[0]; i<=grp.range[1]; i++){
+    if(DISP_ADVANCED_NOS.has(DISP_QUIZ_POOL[i-1].no)) return true;
+  }
+  return false;
+}
 
 function shuffleArr(arr){
   for(let i=arr.length-1;i>0;i--){
@@ -3886,11 +3898,14 @@ function startDispQuiz(){
 }
 
 function renderDispQuizGroupSelect(){
-  const opts = [
+  const topOpts = [
     { label:`グループ0（表示区分の意味・${CONCEPT_DATA.length}問）`, g:'concept' },
     { label:`全問（勘定科目・${DISP_QUIZ_POOL.length}問）`, g:-1 },
-    ...DISP_QUIZ_GROUPS.map((grp,i)=>({ label:`${grp.label}（No.${grp.range[0]}〜${grp.range[1]}・${grp.range[1]-grp.range[0]+1}問）`, g:i })),
   ];
+  const groupOpts = DISP_QUIZ_GROUPS.map((grp,i)=>({ label:`${grp.label}（No.${grp.range[0]}〜${grp.range[1]}・${grp.range[1]-grp.range[0]+1}問）`, g:i, advanced:dispGroupHasAdvanced(grp) }));
+  const basicOpts = groupOpts.filter(o=>!o.advanced);
+  const advancedOpts = groupOpts.filter(o=>o.advanced);
+  const btn = o => `<button class="exp-step-choice-btn" onclick='launchDispQuiz(${JSON.stringify(o.g)})'>${o.label}</button>`;
   const main=document.getElementById('exp-main');
   main.innerHTML = `
     <div class="exp-nav-row">
@@ -3903,7 +3918,16 @@ function renderDispQuizGroupSelect(){
       <div style="font-size:11px;color:var(--muted);margin-top:4px;">グループ0は「表示区分」そのものの意味、それ以外は勘定科目ごとの表示区分を問います</div>
     </div>
     <div class="exp-step-choices wide">
-      ${opts.map(o=>`<button class="exp-step-choice-btn" onclick='launchDispQuiz(${JSON.stringify(o.g)})'>${o.label}</button>`).join('')}
+      ${topOpts.map(btn).join('')}
+    </div>
+    <div class="comp-sect-hd">基本（3級・2級の科目・グループ1〜${basicOpts.length}でひととおり網羅）</div>
+    <div class="exp-step-choices wide">
+      ${basicOpts.map(btn).join('')}
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin:8px 2px;">👆 ここまでで基本的な科目は十分カバーしています。以下は1級特有・レア度の高い科目です。</div>
+    <div class="comp-sect-hd">発展（1級特有・レア度の高い科目）</div>
+    <div class="exp-step-choices wide">
+      ${advancedOpts.map(btn).join('')}
     </div>`;
 }
 
