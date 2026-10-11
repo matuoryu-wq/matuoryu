@@ -3839,6 +3839,7 @@ let dispQuizWrong = [];
 let dispQuizLastGroup = -1;
 let dispQuizKind = 'account'; // 'account' | 'concept'
 
+// 元の仕様どおり：1グループ目安20問、グループ数は科目数から自動計算（変更しない）。
 function buildDispQuizGroups(total, targetSize){
   const numGroups = Math.max(1, Math.round(total / targetSize));
   const base = Math.floor(total / numGroups);
@@ -3853,35 +3854,16 @@ function buildDispQuizGroups(total, targetSize){
   }
   return groups;
 }
-// 固定の グループ数 で range[0,1] の範囲を分割する（offset・ラベル開始番号を指定可能）。
-function buildDispQuizGroupsFixedCount(total, numGroups, rangeOffset, labelStart){
-  const base = Math.floor(total / numGroups);
-  const remainder = total - base * numGroups;
-  const groups = [];
-  let start = rangeOffset + 1;
-  for(let i=0;i<numGroups;i++){
-    const size = base + (i < remainder ? 1 : 0);
-    const end = start + size - 1;
-    groups.push({ label:`グループ${labelStart+i}`, range:[start,end] });
-    start = end + 1;
-  }
-  return groups;
-}
 // クイズはDISPLAY_DATA全192科目を網羅的に出題する（勘定科目一覧の閲覧タブと同じ母集団）。
-// 1級特有・レア度の高い科目（圧縮記帳、繰延資産、建設業会計、役員賞与引当金など）は
-// 後半グループにまとめ、グループ1〜5だけで3級・2級の基本科目を一通りカバーできるようにする。
-const DISP_ADVANCED_NOS = new Set([21,66,91,96,97,99,100,101,102,117,118,119,120,121,122,123,124,125,126,135,140,141,142,143,145,149,150,151,152,153,172,180,181,182,186,187,191]);
+// 3級・2級の基礎97科目を前方に、1級特有・レア度の高い95科目を後方に並べ替えるだけで、
+// グループの作り方（1グループ目安20問・グループ数は自動計算）は一切変更しない。
+// これによりグループ1〜5（計97問）で基礎が完成し、グループ6〜10が発展科目になる。
+const DISP_ADVANCED_NOS = new Set([1,4,5,12,13,16,18,19,21,22,23,26,28,30,32,33,34,35,37,38,40,41,46,49,51,53,55,56,59,60,66,70,72,78,79,81,91,93,96,97,98,99,100,101,102,107,108,111,112,113,115,116,117,118,119,120,121,122,123,124,125,126,129,135,139,140,141,142,143,145,147,148,149,150,151,152,153,165,167,168,169,170,172,178,179,180,181,182,184,185,186,187,190,191,192]);
 const DISP_QUIZ_POOL = [
   ...DISPLAY_DATA.filter(d => !DISP_ADVANCED_NOS.has(d.no)),
   ...DISPLAY_DATA.filter(d => DISP_ADVANCED_NOS.has(d.no)),
 ];
-const DISP_BASIC_COUNT = DISP_QUIZ_POOL.length - DISP_ADVANCED_NOS.size;
-// 合計グループ数は常に10（元の仕様を維持）。基本（3級・2級）を5グループ、
-// 発展（1級特有・レア科目）を残り5グループに固定し、グループ1〜5で必ず知識が完成する。
-const DISP_TOTAL_GROUPS = 10;
-const DISP_BASIC_GROUPS = buildDispQuizGroupsFixedCount(DISP_BASIC_COUNT, DISP_TOTAL_GROUPS/2, 0, 1);
-const DISP_ADVANCED_GROUPS = buildDispQuizGroupsFixedCount(DISP_QUIZ_POOL.length - DISP_BASIC_COUNT, DISP_TOTAL_GROUPS/2, DISP_BASIC_COUNT, DISP_BASIC_GROUPS.length+1);
-const DISP_QUIZ_GROUPS = [...DISP_BASIC_GROUPS, ...DISP_ADVANCED_GROUPS];
+const DISP_QUIZ_GROUPS = buildDispQuizGroups(DISP_QUIZ_POOL.length, 20);
 function dispGroupHasAdvanced(grp){
   for(let i=grp.range[0]; i<=grp.range[1]; i++){
     if(DISP_ADVANCED_NOS.has(DISP_QUIZ_POOL[i-1].no)) return true;
