@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>要件事実ポーカー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap">
+<style>
+/* Layout: one-column card table — お題, 言い分, all fact cards, action bar, 添削, and the player's own block diagram. Single deliberate look: 紺の卓 + 象牙のカード. */
+:root{
+  --table:#16233b; --table-2:#1e2f4d; --line:#34496d;
+  --ivory:#f5efe0; --ink:#1f1b16; --gold:#d4ad5c;
+  --text:#e9e4d6; --muted:#a3adc0;
+  --ok-bg:#e3f1e8; --ng-bg:#f8e4e0; --warn-bg:#f7ecd6;
+  --serif:"Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0}
+html,body{background:var(--table);color:var(--text)}
+body{font-family:var(--sans);font-size:15px;line-height:1.65}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px}
+h1{font-family:var(--serif);font-size:1.6rem;margin:0;letter-spacing:.06em;text-wrap:balance}
+h1 small{display:block;font-family:var(--sans);font-size:.72rem;color:var(--muted);letter-spacing:.08em;font-weight:400}
+.stats{display:flex;gap:16px;font-variant-numeric:tabular-nums}
+.stat{display:flex;flex-direction:column;align-items:flex-end}
+.stat b{font-size:1.35rem;color:var(--gold);line-height:1.1}
+.stat span{font-size:.7rem;color:var(--muted);letter-spacing:.1em}
+
+.odai{background:var(--table-2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-size:.7rem;letter-spacing:.14em;color:var(--gold)}
+.odai h2{font-family:var(--serif);font-size:1.2rem;margin:0}
+.claim{font-size:.85rem;color:var(--muted)}
+.claim b{color:var(--text);font-weight:700}
+.flow{display:flex;flex-wrap:wrap;gap:4px 6px;font-size:.8rem;color:var(--muted);margin-top:2px}
+.flow span.on{color:var(--gold);font-weight:700}
+.flow span.done{color:var(--text)}
+.map{margin-top:10px}
+.map svg{display:block;width:100%;max-width:460px;height:auto;margin:0 auto;font-family:var(--sans)}
+.map .pty rect{fill:var(--ivory)}
+.map .pty .id{fill:var(--ink);font-size:20px;font-weight:700;font-family:var(--serif)}
+.map .pty .rl{fill:#6b604c;font-size:10px}
+.map .rel line{stroke:var(--text);stroke-width:1.4}
+.map .rel .t{fill:var(--text);font-size:11.5px}
+.map .rel .sb{fill:var(--muted);font-size:10px}
+.map .suit line{stroke:var(--gold);stroke-width:3}
+.map .suit .t{fill:var(--gold);font-size:12px;font-weight:700}
+.map .ah{fill:var(--text)} .map .ah.g{fill:var(--gold)}
+.say{margin:6px 0 0;font-size:.92rem;border-top:1px solid var(--line);padding-top:8px}
+.say b{color:var(--gold);font-weight:700}
+.say .line{margin:2px 0 0;font-size:1.02rem;line-height:1.75}
+.say .note{margin:4px 0 0;font-size:.82rem;color:var(--muted)}
+.say .prev{color:var(--muted);font-size:.84rem;margin-top:6px}
+
+.howto{font-size:1rem;font-weight:700;margin:0}
+.hand{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:10px}
+.card{position:relative;text-align:left;font:inherit;cursor:pointer;background:var(--ivory);color:var(--ink);border:2px solid transparent;border-radius:10px;padding:14px 12px 12px;min-height:150px;display:flex;flex-direction:column;gap:8px;box-shadow:0 2px 0 rgba(0,0,0,.35);transition:transform .15s ease,border-color .15s ease}
+.card .no{font-size:.66rem;letter-spacing:.12em;color:#7b6f58}
+.card .tx{font-family:var(--serif);font-size:.92rem;line-height:1.6}
+.card:hover:not(:disabled){transform:translateY(-2px)}
+.card[aria-pressed="true"]{border-color:var(--gold);transform:translateY(-6px);box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.card[aria-pressed="true"]::after{content:"選択";position:absolute;top:8px;right:10px;font-size:.66rem;background:var(--gold);color:var(--ink);border-radius:999px;padding:1px 8px;font-weight:700}
+.card:disabled{cursor:default}
+.card:focus-visible,.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font:inherit;font-weight:700;border-radius:8px;padding:10px 16px;cursor:pointer;border:1px solid var(--line);background:var(--table-2);color:var(--text)}
+.btn.primary{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.meta{font-size:.8rem;color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums}
+
+.result{background:var(--ivory);color:var(--ink);border-radius:12px;padding:18px 16px;display:flex;flex-direction:column;gap:14px}
+.verdict{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px}
+.verdict h3{font-family:var(--serif);font-size:1.3rem;margin:0}
+.delta{font-weight:700;font-variant-numeric:tabular-nums;border-radius:999px;padding:2px 10px;font-size:.9rem}
+.delta.plus{background:var(--ok-bg);color:#24603f}
+.delta.minus{background:var(--ng-bg);color:#8f2e22}
+.delta.zero{background:var(--warn-bg);color:#7a5414}
+.result p{margin:0}
+.yaku{border-left:3px solid var(--gold);padding-left:12px;font-size:.9rem}
+.yaku b{font-family:var(--serif)}
+.result .src{font-size:.78rem;color:#6b604c}
+.review{display:flex;flex-direction:column;gap:8px;list-style:none;margin:0;padding:0}
+.review li{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;padding:10px 12px;border-radius:8px;background:#fffaf0;border:1px solid #e3d9c2}
+.review .tag{grid-row:span 2;align-self:start;font-size:.7rem;font-weight:700;border-radius:4px;padding:2px 6px;white-space:nowrap}
+.tag.req{background:var(--ok-bg);color:#24603f}
+.tag.dum{background:#ece6d6;color:#5d5442}
+.review .ft{font-family:var(--serif);font-size:.9rem;min-width:0}
+.review .ex{font-size:.82rem;color:#4b4436;min-width:0}
+.mark{font-size:.72rem;font-weight:700;margin-left:6px}
+.mark.good{color:#24603f}.mark.bad{color:#a0362a}.mark.miss{color:#8a6414}
+
+.bd{background:var(--table-2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.bd h3{margin:0;font-size:.85rem;padding:8px 14px;border-bottom:1px solid var(--line);color:var(--gold);letter-spacing:.08em;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.bd h3 span{color:var(--muted);letter-spacing:0;font-weight:400}
+.blk{display:grid;grid-template-columns:4.2em minmax(0,1fr);border-bottom:1px solid var(--line)}
+.blk:last-child{border-bottom:0}
+.blk .ab{font-family:var(--serif);font-weight:700;color:var(--gold);text-align:center;padding:10px 0;border-right:1px solid var(--line);font-size:1.05rem}
+.blk .ab small{display:block;font-family:var(--sans);font-weight:400;font-size:.66rem;color:var(--muted)}
+.blk ol{margin:0;padding:10px 12px 10px 2.2em;font-size:.86rem;display:flex;flex-direction:column;gap:4px}
+.blk ol li b{color:var(--text)}
+.blk ol li span{display:block;font-family:var(--serif);color:var(--muted);font-size:.8rem;line-height:1.5}
+.blk .nm{padding:10px 12px 0;font-weight:700;font-size:.88rem;color:var(--text)}
+.now{font-size:.88rem}
+.now b{color:var(--gold)}
+.blk .empty{padding:12px;color:var(--muted);font-size:.82rem}
+.blk .st{padding:0 12px 8px 2.2em;font-size:.75rem;color:var(--gold)}
+
+.final{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;padding:28px 16px;background:var(--table-2);border:1px solid var(--line);border-radius:12px}
+.final b{font-size:2.4rem;color:var(--gold);font-variant-numeric:tabular-nums}
+footer{font-size:.74rem;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+@media (prefers-reduced-motion:reduce){.card{transition:none}}
+@media (max-width:480px){.hand{grid-template-columns:1fr 1fr}.card{min-height:130px}.meta{margin-left:0;width:100%}}
+</style>
+</head>
+<body>
+
+
+<style>
+/* 目次 */
+.toc{display:flex;flex-direction:column;gap:18px}
+.toc .lead{margin:0;font-size:.88rem;color:var(--muted)}
+.theme{background:var(--table-2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.theme h2{margin:0;padding:10px 14px;font-family:var(--serif);font-size:1.05rem;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.theme h2 span{font-family:var(--sans);font-size:.75rem;color:var(--muted);font-weight:400}
+.qlist{list-style:none;margin:0;padding:0}
+.qlist li+li{border-top:1px solid var(--line)}
+.qbtn{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:2.2em minmax(0,1fr) auto;gap:4px 10px;align-items:baseline;padding:10px 14px}
+.qbtn:hover{background:rgba(212,173,92,.08)}
+.qbtn:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+.qbtn .no{color:var(--muted);font-size:.8rem;font-variant-numeric:tabular-nums}
+.qbtn .tt{font-weight:700;min-width:0}
+.qbtn .fl{grid-column:2;font-size:.76rem;color:var(--muted)}
+.qbtn .ck{grid-row:1;grid-column:3;font-size:.72rem;color:var(--gold);font-weight:700}
+.back{all:unset;cursor:pointer;color:var(--gold);font-size:.85rem;font-weight:700;align-self:flex-start}
+.back:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.say .aside{margin:4px 0 0;font-size:.82rem;color:var(--muted)}
+.result .note{font-size:.8rem;color:#6b604c}
+.map .bot line{stroke:var(--text);stroke-width:1.3}
+.map .bot .t{fill:var(--text);font-size:11px;paint-order:stroke;stroke:var(--table-2);stroke-width:4px;stroke-linejoin:round}
+footer p{margin:0 0 4px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>要件事実ポーカー</h1>
+    <div class="stats" id="stats" hidden>
+      <div class="stat"><b id="score">0</b><span>点数</span></div>
+      <div class="stat"><b id="stage">Kg</b><span>段階</span></div>
+    </div>
+  </header>
+
+  <section class="toc" id="toc"></section>
+
+  <div id="game" hidden style="display:flex;flex-direction:column;gap:18px">
+    <button class="back" id="btnBack" type="button">← 目次</button>
+    <section class="odai" id="odai" aria-live="polite"></section>
+    <section id="table">
+      <p class="howto" id="howto"></p>
+      <div class="hand" id="hand"></div>
+    </section>
+    <div class="actions" id="actions">
+      <button class="btn primary" id="btnPlay" type="button">選んだカードで主張する</button>
+      <button class="btn" id="btnReveal" type="button" hidden>解答を表示</button>
+      <span class="meta" id="meta"></span>
+    </div>
+    <section id="result" hidden></section>
+    <section class="bd" id="bd" aria-label="ブロック・ダイアグラム"></section>
+  </div>
+
+  <footer>
+    <p>参考文献：司法研修所編『新問題研究 要件事実』、司法研修所編『4訂 紛争類型別の要件事実』</p>
+    <p>事案はすべて学習用に作成したものです。附帯請求（利息・遅延損害金）と認否は扱っていません。</p>
+  </footer>
+</div>
+
+<script>
+/* ---- 問題データ ----
+   theme: {theme, qs:[question]}
+   question: {id, title, claim, map, end, stages}
+   map: {X, Y, others:[{id, rl, pos:"L"|"C"|"R", s}], suit, rels:[{s, a, b, t, sb}]}
+   stage: {abbr, kind, side, emo, say, aside, name, chain, yaku, note, cards}
+   card: {t, k, ok, ex} */
+const THEMES = [];
+THEMES.push({theme:"売買代金請求", qs:[
+{
+  id:"b1", title:"履行期限の抗弁", claim:"売買契約に基づく代金支払請求権",
+  map:{X:"原告・売主", Y:"被告・買主", suit:"代金30万円の支払請求",
+    rels:[{s:0,a:"X",b:"Y",t:"売買（R6.9.1）",sb:"甲時計・代金30万円"},
+          {s:1,a:"Y",b:"X",t:"支払期日の合意？",sb:"R7.3.31"}]},
+  end:"期限の到来に対して、被告がさらに主張できる事実はない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😡",
+    say:"令和6年9月1日に、Yに甲時計を30万円で売ったんです！なのに、いつまでたっても払ってくれない！",
+    name:"売買代金請求", chain:"売買契約の締結",
+    yaku:"売買契約の締結だけで代金支払請求権が発生する。", note:"冒頭規定説による",
+    cards:[
+      {t:"原告は、被告に対し、令和6年9月1日、甲時計を代金30万円で売った。",k:"売買契約の締結",ok:true,ex:"目的物と代金額の合意。これで足りる。"},
+      {t:"原告と被告は、上記売買契約の際、代金支払期日を令和6年9月30日と定めた。",k:"履行期限の合意",ex:"期限は契約の付款で、請求原因に不要。"},
+      {t:"原告は、被告に対し、同日、甲時計を引き渡した。",k:"目的物の引渡し",ex:"代金請求の要件ではない。"},
+      {t:"被告は、原告に対し、代金を支払っていない。",k:"代金の不払",ex:"支払ったことは被告が弁済の抗弁で主張する。"},
+      {t:"原告は、令和6年9月1日当時、甲時計を所有していた。",k:"売主の所有",ex:"他人の物の売買も有効（民法561条）。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"はぁぁぁ！？？もう払えって！？買ったのは間違いないけど、代金は令和7年3月31日に払う約束でしたよね！",
+    name:"履行期限の抗弁", chain:"履行期限の合意",
+    yaku:"期限の合意を主張すれば足り、まだ到来していないことまで言う必要はない。",
+    cards:[
+      {t:"原告と被告は、上記売買契約の際、代金支払期日を令和7年3月31日とするとの合意をした。",k:"履行期限の合意",ok:true,ex:"期限によって利益を受ける被告が主張する。"},
+      {t:"令和7年3月31日は、まだ到来していない。",k:"期限の未到来",ex:"不要。到来したことを原告が再抗弁で主張する。"},
+      {t:"被告は、原告に対し、代金30万円を支払った。",k:"弁済",ex:"別の抗弁で、Yの言い分にない。"},
+      {t:"被告は、甲時計の代金の工面に困っている。",k:"被告の事情",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🙄",
+    say:"3月31日って…その日なら、もうとっくに過ぎてるじゃないですか！",
+    name:"期限の到来", chain:"期限の到来",
+    yaku:"確定期限の到来は顕著な事実。",
+    cards:[
+      {t:"令和7年3月31日は到来した。",k:"期限の到来",ok:true,ex:"これで期限の抗弁は効力を失う。"},
+      {t:"原告は、被告に対し、令和7年4月1日、代金の支払を催告した。",k:"催告",ex:"確定期限なら到来だけで足りる。"},
+      {t:"原告と被告は、代金支払期日を令和6年9月30日と定めた。",k:"別の期日の合意",ex:"被告の主張する期日を争う主張（否認）で、再抗弁ではない。"},
+      {t:"被告は、令和7年3月31日を過ぎても支払わなかった。",k:"不払",ex:"不要。"}
+    ]}
+  ]
+},
+{
+  id:"b2", title:"同時履行の抗弁", claim:"売買契約に基づく代金支払請求権",
+  map:{X:"原告・売主", Y:"被告・買主", suit:"代金500万円の支払請求",
+    rels:[{s:0,a:"X",b:"Y",t:"売買（R6.4.1）",sb:"甲機械・代金500万円"},
+          {s:1,a:"Y",b:"X",t:"支払拒絶",sb:"引渡しを受けるまで"},
+          {s:2,a:"X",b:"Y",t:"引渡し（R6.4.10）",sb:"甲機械"}]},
+  end:"反対給付の履行に対して、被告がさらに主張できる事実はない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😡",
+    say:"令和6年4月1日に、Yに甲機械を500万円で売ったんです！なのに代金を全然払ってくれない！もう我慢の限界ですよ！！",
+    name:"売買代金請求", chain:"売買契約の締結",
+    yaku:"売買契約の締結だけで代金支払請求権が発生する。", note:"冒頭規定説による",
+    cards:[
+      {t:"原告は、被告に対し、令和6年4月1日、甲機械を代金500万円で売った。",k:"売買契約の締結",ok:true,ex:"これで足りる。"},
+      {t:"原告は、被告に対し、令和6年4月10日、甲機械を引き渡した。",k:"目的物の引渡し",ex:"請求原因には不要。同時履行の抗弁が出たときの再抗弁になる。"},
+      {t:"原告と被告は、甲機械の売買契約書を作成した。",k:"契約書の作成",ex:"売買は諾成契約。書面は要らない。"},
+      {t:"被告は、原告に対し、代金を支払っていない。",k:"代金の不払",ex:"支払ったことは被告が弁済の抗弁で主張する。"},
+      {t:"原告は、被告に対し、令和6年6月10日、代金の支払を催告した。",k:"催告",ex:"履行請求に事前の催告は要らない。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"はぁぁぁ！？？払えって、機械も来てないのに！？買ったのは確かです。でも、機械を引き渡してもらうまで、代金は払いませんよ！",
+    name:"同時履行の抗弁", chain:"同時履行の抗弁権の権利主張",
+    yaku:"権利抗弁なので、権利を行使する旨の主張が必要。双務契約であることは請求原因に現れている。",
+    cards:[
+      {t:"被告は、原告が甲機械を引き渡すまで、代金の支払を拒絶する。",k:"権利主張",ok:true,ex:"同時履行の抗弁権（民法533条）の行使。"},
+      {t:"原告は、被告に対し、甲機械を引き渡していない。",k:"反対給付の不履行",ex:"不要。履行したことを原告が再抗弁で主張する。"},
+      {t:"原告と被告は、引渡しと代金支払を同時に行うと合意した。",k:"同時履行の合意",ex:"不要。双務契約なら当然に同時履行の関係に立つ。"},
+      {t:"被告は、原告に対し、甲機械の引渡しを催告した。",k:"引渡しの催告",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🙄",
+    say:"はぁ！？？受け取ってない！？冗談でしょう！機械なら4月10日に、Yの工場へ納品済みです！受領書にもサインがありますよ！",
+    name:"反対給付の履行", chain:"反対給付の履行",
+    yaku:"反対給付が履行されれば、同時履行の抗弁権は消滅する。",
+    cards:[
+      {t:"原告は、被告に対し、令和6年4月10日、上記売買契約に基づき、甲機械を引き渡した。",k:"反対給付の履行",ok:true,ex:"これで同時履行の抗弁権は消滅する。"},
+      {t:"原告は、被告に対し、訴え提起前に、甲機械の引渡しの提供をした。",k:"履行の提供",ex:"提供が継続しない限り同時履行の抗弁権は失われない（判例）。主張自体失当。"},
+      {t:"原告と被告は、代金を引渡しより先に支払う旨合意した。",k:"先履行の合意",ex:"これも再抗弁になるが、Xの言い分にない。"},
+      {t:"被告の担当者は、甲機械の受領書に署名した。",k:"受領書",ex:"証拠であって要件事実ではない。"}
+    ]}
+  ]
+},
+{
+  id:"b3", title:"弁済の抗弁", claim:"売買契約に基づく代金支払請求権",
+  map:{X:"原告・売主", Y:"被告・買主", suit:"代金300万円の支払請求",
+    rels:[{s:0,a:"X",b:"Y",t:"売買（R6.3.1）",sb:"甲絵画・代金300万円"},
+          {s:1,a:"Y",b:"X",t:"支払（R6.5.10）",sb:"300万円"}]},
+  end:"この事案では、弁済に対する再抗弁は出ていない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😠",
+    say:"令和6年3月1日に、Yに甲絵画を300万円で売りました！代金300万円、払ってください！",
+    name:"売買代金請求", chain:"売買契約の締結", note:"冒頭規定説による",
+    cards:[
+      {t:"原告は、被告に対し、令和6年3月1日、甲絵画を代金300万円で売った。",k:"売買契約の締結",ok:true,ex:"これで足りる。"},
+      {t:"原告は、被告に対し、同日、甲絵画を引き渡した。",k:"目的物の引渡し",ex:"代金請求の要件ではない。"},
+      {t:"原告は、甲絵画を画廊から仕入れた。",k:"売主の取得経緯",ex:"不要。"},
+      {t:"原告と被告は、代金を分割で支払うと合意した。",k:"支払方法の合意",ex:"付款で、請求原因に不要。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"はぁぁぁ！？？二重取りする気ですか！？代金なら、5月10日に300万円全額払いましたよ！",
+    name:"弁済の抗弁", chain:"債務の履行としての給付",
+    yaku:"給付をしたことと、それがその債務の履行としてされたこと。通常は一括して摘示する。",
+    cards:[
+      {t:"被告は、原告に対し、令和6年5月10日、上記売買代金債務の履行として300万円を支払った。",k:"弁済",ok:true,ex:"給付と、債務との結びつきを一括して摘示している。"},
+      {t:"被告は、原告に対し、令和6年5月10日、300万円を交付した。",k:"金銭の交付のみ",ex:"何の支払か分からない。本件債務の履行としてされたことも必要。"},
+      {t:"原告は、被告に300万円の領収書を交付した。",k:"領収書",ex:"証拠であって要件事実ではない。"},
+      {t:"被告は、支払の資金を銀行から借り入れた。",k:"資金の出所",ex:"不要。"}
+    ]}
+  ]
+},
+{
+  id:"b4", title:"催告による解除（履行遅滞）", claim:"売買契約に基づく代金支払請求権",
+  map:{X:"原告・売主", Y:"被告・買主", suit:"代金300万円の支払請求",
+    rels:[{s:0,a:"X",b:"Y",t:"売買（R6.4.1）",sb:"甲ピアノ・代金300万円"},
+          {s:1,a:"Y",b:"X",t:"催告→解除",sb:"R6.5.1／R6.5.15"},
+          {s:2,a:"X",b:"Y",t:"引渡しの提供（R6.5.12）"}]},
+  end:"引渡しの提供に対して、被告がさらに主張できる事実は、この事案では出ていない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😡",
+    say:"令和6年4月1日に、Yに甲ピアノを300万円で売ったんです！代金を払ってもらいます！",
+    name:"売買代金請求", chain:"売買契約の締結", note:"冒頭規定説による",
+    cards:[
+      {t:"原告は、被告に対し、令和6年4月1日、甲ピアノを代金300万円で売った。",k:"売買契約の締結",ok:true,ex:"これで足りる。"},
+      {t:"原告は、令和6年4月1日当時、甲ピアノを所有していた。",k:"売主の所有",ex:"他人の物の売買も有効（民法561条）。"},
+      {t:"原告と被告は、甲ピアノの引渡日を定めなかった。",k:"引渡時期の定めなし",ex:"不要。"},
+      {t:"被告は、原告に対し、代金を支払っていない。",k:"代金の不払",ex:"支払ったことは被告が主張する。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"はぁ！？？代金を払えって！？4月25日にお金を用意して見せたのに、ピアノを届けないのはそっちでしょう！5月1日に『早く届けて』と催告しても来ないから、5月15日に契約を解除しました！",
+    name:"催告による解除（履行遅滞）", chain:"代金の弁済の提供 ＋ 催告 ＋ 相当期間の経過 ＋ 解除の意思表示",
+    yaku:"引渡債務は期限の定めがなく、催告で遅滞になる。催告は付遅滞と解除の催告を兼ねる。原告には同時履行の抗弁権があるので、催告以前の代金の提供も必要。",
+    cards:[
+      {t:"被告は、原告に対し、令和6年4月25日、上記売買代金300万円の弁済の提供をした。",k:"代金の弁済の提供",ok:true,ex:"原告の同時履行の抗弁権の存在効果を消すために必要。"},
+      {t:"被告は、原告に対し、令和6年5月1日、甲ピアノの引渡しを催告した。",k:"催告",ok:true,ex:"民法541条の催告。"},
+      {t:"令和6年5月8日は経過した。",k:"相当期間の経過",ok:true,ex:"催告から相当期間が経過したこと。"},
+      {t:"被告は、原告に対し、令和6年5月15日、上記売買契約を解除するとの意思表示をした。",k:"解除の意思表示",ok:true,ex:"解除原因を示す必要はない。"},
+      {t:"被告は、上記催告の際、1週間以内に引き渡すよう期間を定めた。",k:"期間を定めたこと",ex:"不要。相当期間が経過すれば足りる。"},
+      {t:"原告は、令和6年5月15日までに甲ピアノを引き渡さなかった。",k:"不履行",ex:"不要。履行したことは原告が主張する。"},
+      {t:"原告が引渡しをしなかったことにつき、原告に帰責事由がある。",k:"債務者の帰責事由",ex:"不要。解除に債務者の帰責事由は要らない。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"😤",
+    say:"解除される前の5月12日に、ちゃんとピアノを届けに行きました！受け取らなかったのはYですよ！",
+    name:"引渡しの提供", chain:"催告後解除前の引渡しの提供",
+    yaku:"催告後、解除の意思表示が届く前に提供すれば、遅滞の責任を免れる（民法492条）。",
+    cards:[
+      {t:"原告は、被告に対し、令和6年5月12日、甲ピアノの引渡しの提供をした。",k:"引渡しの提供",ok:true,ex:"催告後、解除前の提供。"},
+      {t:"原告は、被告に対し、令和6年5月20日、甲ピアノの引渡しの提供をした。",k:"解除後の提供",ex:"解除の後では遅い。"},
+      {t:"被告は、甲ピアノを受け取らなかった。",k:"受領拒絶",ex:"不要。提供の事実で足りる。"},
+      {t:"原告は、令和6年5月10日、配送業者を手配した。",k:"準備",ex:"提供に至らない準備行為。"},
+      {t:"引渡しが遅れたのは、被告の責めに帰すべき事由による。",k:"債権者の帰責事由",ex:"これも再抗弁になる（民法543条）が、Xの言い分にない。"}
+    ]}
+  ]
+},
+{
+  id:"b5", title:"手付解除", claim:"売買契約に基づく代金支払請求権",
+  map:{X:"原告・売主", Y:"被告・買主", suit:"代金3000万円の支払請求",
+    rels:[{s:0,a:"X",b:"Y",t:"売買（R6.5.1）",sb:"甲土地・代金3000万円"},
+          {s:1,a:"Y",b:"X",t:"手付解除（R6.7.1）",sb:"手付300万円を放棄"},
+          {s:2,a:"X",b:"Y",t:"引渡し（R6.6.20）",sb:"履行の着手"}]},
+  end:"履行の着手に対して、被告がさらに主張できる事実は、この事案では出ていない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😠",
+    say:"令和6年5月1日に、Yに甲土地を3000万円で売りました！残りの代金を払ってください！",
+    name:"売買代金請求", chain:"売買契約の締結", note:"冒頭規定説による",
+    cards:[
+      {t:"原告は、被告に対し、令和6年5月1日、甲土地を代金3000万円で売った。",k:"売買契約の締結",ok:true,ex:"これで足りる。"},
+      {t:"原告は、被告から、同日、手付として300万円を受け取った。",k:"手付の受領",ex:"請求原因には不要。手付解除の抗弁で問題になる。"},
+      {t:"甲土地について、原告名義の所有権移転登記がある。",k:"登記",ex:"不要。"},
+      {t:"原告と被告は、決済日を令和6年8月1日と定めた。",k:"履行期限の合意",ex:"付款で、請求原因に不要。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😏",
+    say:"いやいや、契約の日に手付300万円を払ってますよね？7月1日に、その手付を放棄して契約を解除しました！もう代金を払う必要はありません！",
+    name:"手付解除", chain:"手付の合意 ＋ 手付の交付 ＋ 手付返還請求権の放棄 ＋ 解除の意思表示",
+    yaku:"買主は手付を放棄して解除できる（民法557条1項）。手付契約は要物契約なので交付も必要。",
+    note:"手付返還請求権を放棄する意思表示を要するとする見解による",
+    cards:[
+      {t:"原告と被告は、上記売買契約に付随して、被告が原告に手付として300万円を交付するとの合意をした。",k:"手付の合意",ok:true,ex:"特段の合意がなければ解約手付と扱われる。"},
+      {t:"被告は、原告に対し、同日、上記手付として300万円を交付した。",k:"手付の交付",ok:true,ex:"手付契約は要物契約。"},
+      {t:"被告は、原告に対し、令和6年7月1日、契約解除のためにすることを示して、手付返還請求権を放棄するとの意思表示をした。",k:"手付返還請求権の放棄",ok:true,ex:"手付解除であることを示す。"},
+      {t:"被告は、原告に対し、同日、上記売買契約を解除するとの意思表示をした。",k:"解除の意思表示",ok:true,ex:"民法557条1項。"},
+      {t:"原告と被告は、上記手付を解約手付とすることを合意した。",k:"解約手付の合意",ex:"不要。手付は原則として解約手付と扱われる。"},
+      {t:"被告は、資金繰りが苦しくなり、甲土地の購入をやめることにした。",k:"解除の動機",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"😤",
+    say:"はぁ！？？今さら解除！？6月20日に、もう甲土地を引き渡してるじゃないですか！",
+    name:"履行の着手", chain:"相手方の履行の着手",
+    yaku:"相手方が履行に着手した後は、手付解除はできない（民法557条1項ただし書）。",
+    cards:[
+      {t:"原告は、被告の解除の意思表示に先立ち、令和6年6月20日、上記売買契約に基づき、甲土地を被告に引き渡した。",k:"相手方の履行の着手",ok:true,ex:"解除の相手方である原告の着手。"},
+      {t:"被告は、解除の意思表示に先立ち、代金の一部を支払った。",k:"解除者自身の着手",ex:"解除する側の着手では、解除は妨げられない。"},
+      {t:"原告と被告は、上記手付を違約手付とする合意をした。",k:"違約手付の約定",ex:"解除権の留保と両立するので、再抗弁にならない。"},
+      {t:"原告と被告は、手付による解除をしない旨合意した。",k:"解除権留保排除の合意",ex:"これも再抗弁になるが、Xの言い分にない。"}
+    ]}
+  ]
+}
+]});
+
+THEMES.push({theme:"売買目的物引渡請求", qs:[
+{
+  id:"h1", title:"同時履行の抗弁", claim:"売買契約に基づく目的物引渡請求権",
+  map:{X:"原告・買主", Y:"被告・売主", suit:"甲自転車の引渡請求",
+    rels:[{s:0,a:"Y",b:"X",t:"売買（R6.10.1）",sb:"甲自転車・代金20万円"},
+          {s:1,a:"Y",b:"X",t:"引渡拒絶",sb:"代金の支払まで"},
+          {s:2,a:"X",b:"Y",t:"代金支払（R6.10.5）",sb:"20万円"}]},
+  end:"代金支払に対して、被告がさらに主張できる事実はない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😡",
+    say:"令和6年10月1日に、Yから甲自転車を20万円で買ったんです！早く引き渡してください！",
+    name:"目的物引渡請求", chain:"売買契約の締結",
+    yaku:"買主も、売買契約の締結だけを主張すれば足りる。", note:"冒頭規定説による",
+    cards:[
+      {t:"原告は、被告から、令和6年10月1日、甲自転車を代金20万円で買った。",k:"売買契約の締結",ok:true,ex:"これで足りる。"},
+      {t:"被告は、甲自転車を占有している。",k:"被告の占有",ex:"契約に基づく引渡請求なので、被告の占有は要件ではない。"},
+      {t:"原告は、被告に対し、代金20万円を支払った。",k:"代金の支払",ex:"請求原因には不要。同時履行の抗弁に対する再抗弁で問題になる。"},
+      {t:"被告は、令和6年10月1日当時、甲自転車を所有していた。",k:"売主の所有",ex:"不要。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"はぁ！？？代金ももらってないのに渡せませんよ！払ってくれるまで、自転車は渡しません！",
+    name:"同時履行の抗弁", chain:"同時履行の抗弁権の権利主張",
+    yaku:"双務契約であることは請求原因に現れているので、権利主張だけでよい。",
+    cards:[
+      {t:"被告は、原告が代金20万円を支払うまで、甲自転車の引渡しを拒絶する。",k:"権利主張",ok:true,ex:"同時履行の抗弁権（民法533条）の行使。"},
+      {t:"原告は、被告に対し、代金を支払っていない。",k:"代金の不払",ex:"不要。支払ったことを原告が再抗弁で主張する。"},
+      {t:"原告と被告は、代金の支払日を定めなかった。",k:"支払時期の定めなし",ex:"不要。"},
+      {t:"被告は、原告に対し、代金の支払を催告した。",k:"催告",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🙄",
+    say:"代金なら10月5日に20万円振り込んでますよ！通帳にも記録があります！",
+    name:"反対給付の履行（代金の支払）", chain:"代金の支払",
+    yaku:"反対給付が履行されれば、同時履行の抗弁権は消滅する。",
+    cards:[
+      {t:"原告は、被告に対し、令和6年10月5日、上記売買契約に基づく代金債務の履行として20万円を支払った。",k:"代金の支払",ok:true,ex:"反対給付の履行。"},
+      {t:"原告は、代金20万円を用意して、被告に連絡した。",k:"準備",ex:"支払に至らない準備行為。"},
+      {t:"原告と被告は、甲自転車の引渡しを代金支払より先に行うと合意した。",k:"先履行の合意",ex:"これも再抗弁になるが、Xの言い分にない。"},
+      {t:"原告の通帳には、20万円の振込の記録がある。",k:"通帳の記録",ex:"証拠であって要件事実ではない。"}
+    ]}
+  ]
+}
+]});
+
+/* 貸金の請求原因（共通） */
+const KG_LOAN = (o) => ({ abbr:"Kg", kind:"請求原因", side:"原告X", emo:o.emo||"😡", say:o.say,
+  name:"貸金返還請求", chain:"金銭の返還の合意 ＋ 金銭の交付 ＋ 返還時期の合意 ＋ 返還時期の到来",
+  yaku:"消費貸借の成立（返還の合意・交付）と終了（返還時期の合意・到来）。確定期限の到来は顕著な事実。",
+  note:"貸借型の契約は終了によって返還請求権が発生するとする考え方による",
+  cards:[
+    {t:`原告と被告は、${o.d1}、被告が原告に${o.amt}を返還するとの合意をした。`,k:"金銭の返還の合意",ok:true,ex:"消費貸借の成立要件（民法587条）。"},
+    {t:`原告は、被告に対し、同日、${o.amt}を交付した。`,k:"金銭の交付",ok:true,ex:"要物契約なので交付が必要。"},
+    {t:`原告と被告は、上記合意に際し、返還時期を${o.d2}と定めた。`,k:"返還時期の合意",ok:true,ex:"契約の終了の要件。"},
+    {t:`${o.d2}は到来した。`,k:"返還時期の到来",ok:true,ex:"契約の終了の要件。"},
+    {t:"原告と被告は、利息を年5％と定めた。",k:"利息の合意",ex:"利息請求の要件。元本の返還請求には不要。"},
+    {t:`被告は、原告に対し、${o.amt}を返還していない。`,k:"不返還",ex:"返済したことは被告が弁済の抗弁で主張する。"},
+    {t:`被告は、借り入れた${o.amt}を${o.use||"事業資金"}に充てた。`,k:"使途",ex:"要件事実ではない（間接事実にはなりうる）。"},
+    ...(o.extra||[])
+  ]});
+
+THEMES.push({theme:"貸金返還請求", qs:[
+{
+  id:"k1", title:"弁済の抗弁", claim:"消費貸借契約に基づく貸金返還請求権",
+  map:{X:"原告・貸主", Y:"被告・借主", suit:"100万円の返還請求",
+    rels:[{s:0,a:"X",b:"Y",t:"貸付（R6.6.1）",sb:"100万円・返還時期R6.9.1"},
+          {s:1,a:"Y",b:"X",t:"支払（R6.9.1）",sb:"100万円"}]},
+  end:"この事案では、弁済に対する再抗弁は出ていない。",
+  stages:[
+  KG_LOAN({d1:"令和6年6月1日", d2:"令和6年9月1日", amt:"100万円",
+    say:"令和6年6月1日に、Yに100万円を貸したんです！9月1日に返す約束だったのに、返してくれません！",
+    extra:[{t:"原告は、被告に対し、令和6年9月5日、100万円の返還を催告した。",k:"催告",ex:"返還時期の合意がないときに必要になる。本問では不要。"}]}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"はぁぁぁ！？？借りたのは確かですけど、9月1日にちゃんと100万円返しましたよね！？",
+    name:"弁済の抗弁", chain:"給付 ＋ 給付が本件債務の履行としてされたこと",
+    yaku:"給付をしたことと、それがその債務の履行としてされたことの二つ。一括して摘示することもできる。",
+    cards:[
+      {t:"被告は、原告に対し、令和6年9月1日、100万円を支払った。",k:"給付",ok:true,ex:"債務者が債権者に給付をしたこと。"},
+      {t:"上記の支払は、上記消費貸借契約に基づく貸金返還債務の履行としてされた。",k:"給付と債務の結びつき",ok:true,ex:"何の支払かを明らかにする。"},
+      {t:"原告は、被告に対し、受領証を交付した。",k:"受領証",ex:"証拠であって要件事実ではない。"},
+      {t:"被告は、支払のために定期預金を解約した。",k:"資金の出所",ex:"不要。"}
+    ]}
+  ]
+},
+{
+  id:"k2", title:"消滅時効 → 承認（時効の更新）", claim:"消費貸借契約に基づく貸金返還請求権",
+  map:{X:"原告・貸主", Y:"被告・借主", suit:"100万円の返還請求",
+    rels:[{s:0,a:"X",b:"Y",t:"貸付（R2.10.1）",sb:"100万円・返還時期R3.3.31"},
+          {s:2,a:"Y",b:"X",t:"念書差入れ（R7.1.10）",sb:"債務の承認"},
+          {s:1,a:"Y",b:"X",t:"時効援用（R8.8.20）",sb:"返還時期から5年経過"}]},
+  end:"更新後さらに5年が経過したという主張は、再々抗弁ではなく別の抗弁になる。この事案ではその主張はない。",
+  stages:[
+  KG_LOAN({d1:"令和2年10月1日", d2:"令和3年3月31日", amt:"100万円",
+    say:"令和2年10月1日に、Yに100万円を貸したんです！返済期限は令和3年3月31日と決めたのに、いまだに1円も返ってきません！ありえない！！"}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😏",
+    say:"いやいやいや、今さら！？？借りたのは事実です。でも、返済期限から5年以上たっていますよね？令和8年8月20日の第1回口頭弁論期日で、時効を援用しました！",
+    name:"消滅時効（5年）", chain:"5年の経過 ＋ 時効の援用",
+    yaku:"権利行使できる状態になったことと債権者がそれを知ったことは、請求原因（確定期限の合意と到来）に現れているので、抗弁で改めて主張しなくてよい。",
+    cards:[
+      {t:"令和8年3月31日は経過した。",k:"5年の経過",ok:true,ex:"初日不算入で令和3年4月1日から計算する（民法140条）。"},
+      {t:"被告は、原告に対し、令和8年8月20日、上記時効を援用した。",k:"時効の援用",ok:true,ex:"援用によって時効の効果が確定する（民法145条）。"},
+      {t:"原告は、令和3年3月31日、上記貸金返還請求権を行使することができることを知った。",k:"起算点（債権者の認識）",ex:"請求原因に現れているので不要。"},
+      {t:"原告は、令和3年4月以降、被告に返済を求めなかった。",k:"権利の不行使",ex:"不要。権利行使したことは原告が再抗弁で主張する。"},
+      {t:"本件貸金は、商行為によって生じた。",k:"商事債権",ex:"不要。商事消滅時効は廃止された。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🤬",
+    say:"はぁぁぁ！？？時効！？？とんでもない！Yは令和7年1月10日に、『必ず返す』と書いた念書を差し入れてきたんです！",
+    name:"時効の更新（承認）", chain:"債務の承認",
+    yaku:"時効期間中の承認で時効は更新され、その時から新たに進行する（民法152条1項）。",
+    cards:[
+      {t:"被告は、原告に対し、令和7年1月10日、上記貸金返還債務を承認した。",k:"債務の承認",ok:true,ex:"争いがあれば、支払約束など承認に当たる具体的事実を主張する。"},
+      {t:"被告は、上記念書に署名押印した。",k:"念書",ex:"証拠であって要件事実ではない。"},
+      {t:"被告は、承認の際、時効期間が進行していることを知らなかった。",k:"承認者の認識",ex:"不要。"},
+      {t:"原告は、被告の承認を受けて、返済を待つことにした。",k:"原告の事情",ex:"不要。"}
+    ]}
+  ]
+},
+{
+  id:"k3", title:"消滅時効 → 催告と提訴（完成猶予）", claim:"消費貸借契約に基づく貸金返還請求権",
+  map:{X:"原告・貸主", Y:"被告・借主", suit:"200万円の返還請求",
+    rels:[{s:0,a:"X",b:"Y",t:"貸付（R2.12.1）",sb:"200万円・返還時期R3.3.31"},
+          {s:2,a:"X",b:"Y",t:"催告（R8.1.15）",sb:"内容証明郵便"},
+          {s:2,a:"X",b:"Y",t:"訴え提起（R8.6.30）",sb:""},
+          {s:1,a:"Y",b:"X",t:"時効援用（R8.9.10）",sb:""}]},
+  end:"完成猶予の期間が既に過ぎていれば再抗弁は失当になるが、この事案では期間内に提訴している。",
+  stages:[
+  KG_LOAN({d1:"令和2年12月1日", d2:"令和3年3月31日", amt:"200万円", emo:"😠",
+    say:"令和2年12月1日に、Yに200万円を貸しました！返す約束の令和3年3月31日はとっくに過ぎてます！"}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😏",
+    say:"返済期限から5年たってますよね？時効です！第1回の口頭弁論期日（令和8年9月10日）で援用しました！",
+    name:"消滅時効（5年）", chain:"5年の経過 ＋ 時効の援用",
+    yaku:"起算点に関する事実は請求原因に現れているので、5年の経過と援用だけでよい。",
+    cards:[
+      {t:"令和8年3月31日は経過した。",k:"5年の経過",ok:true,ex:"初日不算入で計算する。"},
+      {t:"被告は、原告に対し、令和8年9月10日、上記時効を援用した。",k:"時効の援用",ok:true,ex:"民法145条。"},
+      {t:"原告は、令和3年4月以降、被告に返済を求めなかった。",k:"権利の不行使",ex:"不要。"},
+      {t:"令和13年3月31日は経過した。",k:"10年の経過",ex:"10年の構成だが、まだ経過していない。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"😤",
+    say:"時効が完成する前の令和8年1月15日に、内容証明で『返して』と催告しています！そこから6か月以内の6月30日に、この訴えを起こしました！",
+    name:"時効の完成猶予（催告＋提訴）", chain:"催告 ＋ 6か月以内の訴え提起",
+    yaku:"催告から6か月は時効が完成せず（民法150条1項）、その間に訴えを起こせば、さらに完成が猶予される（民法147条1項1号）。",
+    cards:[
+      {t:"原告は、被告に対し、令和8年1月15日、上記貸金の返還を催告した。",k:"催告",ok:true,ex:"時効期間の経過前の催告。"},
+      {t:"原告は、令和8年6月30日、本件訴えを提起した。",k:"裁判上の請求",ok:true,ex:"催告から6か月以内の提訴。"},
+      {t:"原告は、令和8年5月1日、被告に再度の催告をした。",k:"再度の催告",ex:"猶予期間中の再度の催告には効力がない（民法150条2項）。"},
+      {t:"原告は、催告書を内容証明郵便で送った。",k:"送付の方法",ex:"不要。"}
+    ]}
+  ]
+},
+{
+  id:"k4", title:"消滅時効 → 時効完成後の承認", claim:"消費貸借契約に基づく貸金返還請求権",
+  map:{X:"原告・貸主", Y:"被告・借主", suit:"50万円の返還請求",
+    rels:[{s:0,a:"X",b:"Y",t:"貸付（R2.11.1）",sb:"50万円・返還時期R3.3.31"},
+          {s:2,a:"Y",b:"X",t:"分割払の約束（R8.5.10）",sb:"時効完成後"},
+          {s:1,a:"Y",b:"X",t:"時効援用（R8.9.1）",sb:""}]},
+  end:"承認の後、再び時効期間が経過すれば、改めて時効を援用できる（別の抗弁）。この事案ではその主張はない。",
+  stages:[
+  KG_LOAN({d1:"令和2年11月1日", d2:"令和3年3月31日", amt:"50万円",
+    say:"令和2年11月1日に、Yに50万円を貸したんです！令和3年3月31日に返す約束でした！"}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😏",
+    say:"もう5年過ぎてますよね？時効を援用します！（令和8年9月1日の口頭弁論期日で援用）",
+    name:"消滅時効（5年）", chain:"5年の経過 ＋ 時効の援用",
+    cards:[
+      {t:"令和8年3月31日は経過した。",k:"5年の経過",ok:true,ex:"初日不算入で計算する。"},
+      {t:"被告は、原告に対し、令和8年9月1日、上記時効を援用した。",k:"時効の援用",ok:true,ex:"民法145条。"},
+      {t:"原告は、令和3年3月31日、上記貸金返還請求権を行使することができることを知った。",k:"起算点（債権者の認識）",ex:"請求原因に現れているので不要。"},
+      {t:"被告は、原告に対し、50万円を返還していない。",k:"不返還",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🤬",
+    say:"はぁぁぁ！？？令和8年5月10日に『分割で払います』って約束しましたよね！？今さら時効なんて通りませんよ！",
+    name:"時効援用権の喪失", chain:"時効完成後の債務の承認",
+    yaku:"時効完成後に承認した債務者は、完成を知らなかったときでも、信義則上その時効を援用できない（最判昭41.4.20）。",
+    cards:[
+      {t:"被告は、原告に対し、令和8年5月10日、上記貸金を分割で支払うと約束した。",k:"時効完成後の承認",ok:true,ex:"支払約束は承認に当たる。"},
+      {t:"被告は、上記約束の際、時効が完成していることを知っていた。",k:"時効完成の認識",ex:"不要。知らなくても援用できなくなる。"},
+      {t:"被告は、約束の後、1円も支払っていない。",k:"約束後の不払",ex:"不要。"},
+      {t:"被告は、時効の利益を放棄するとの意思表示をした。",k:"時効利益の放棄",ex:"時効完成を知っていることが前提の別の主張で、Xの言い分にない。"}
+    ]}
+  ]
+},
+{
+  id:"k5", title:"相殺の抗弁", claim:"消費貸借契約に基づく貸金返還請求権",
+  map:{X:"原告・貸主", Y:"被告・借主", suit:"100万円の返還請求",
+    rels:[{s:0,a:"X",b:"Y",t:"貸付（R6.1.10）",sb:"100万円・返還時期R6.6.30"},
+          {s:1,a:"Y",b:"X",t:"売買（R6.2.1）・引渡し",sb:"甲バイク・代金100万円"},
+          {s:1,a:"Y",b:"X",t:"相殺の意思表示（R6.9.1）",sb:""}]},
+  end:"この事案では、相殺に対する再抗弁は出ていない。",
+  stages:[
+  KG_LOAN({d1:"令和6年1月10日", d2:"令和6年6月30日", amt:"100万円", emo:"😠",
+    say:"令和6年1月10日に、Yに100万円を貸しました！6月30日が期限です！返してください！"}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😏",
+    say:"ちょっと待ってください！令和6年2月1日にXさんに甲バイクを100万円で売って、その日に渡してますよね？その代金がまだなので、9月1日に相殺すると伝えました！",
+    name:"相殺の抗弁", chain:"自働債権の発生原因事実 ＋ 同時履行の抗弁権の消滅 ＋ 相殺の意思表示",
+    yaku:"自働債権が売買代金なら、同時履行の抗弁権が付いていることが現れる。引渡しも主張しないと主張自体失当になる。",
+    cards:[
+      {t:"被告は、原告に対し、令和6年2月1日、甲バイクを代金100万円で売った。",k:"自働債権の発生原因事実",ok:true,ex:"売買代金債権の発生。"},
+      {t:"被告は、原告に対し、同日、上記売買契約に基づき、甲バイクを引き渡した。",k:"同時履行の抗弁権の消滅",ok:true,ex:"抗弁権が付いた債権では相殺できないため必要。"},
+      {t:"被告は、原告に対し、令和6年9月1日、上記売買代金債権をもって、原告の本訴請求債権とその対当額で相殺するとの意思表示をした。",k:"相殺の意思表示",ok:true,ex:"民法506条1項。"},
+      {t:"上記売買代金債権の弁済期は到来している。",k:"自働債権の弁済期",ex:"売買型の契約なので不要（期限の合意は再抗弁）。"},
+      {t:"原告と被告の各債権は、いずれも金銭債権である。",k:"同種の目的",ex:"発生原因事実から明らかなので不要。"},
+      {t:"被告は、甲バイクを所有していた。",k:"売主の所有",ex:"不要。"}
+    ]}
+  ]
+},
+{
+  id:"k6", title:"諾成的消費貸借", claim:"諾成的消費貸借契約に基づく貸金返還請求権",
+  map:{X:"原告・貸主", Y:"被告・借主", suit:"300万円の返還請求",
+    rels:[{s:0,a:"X",b:"Y",t:"諾成的消費貸借（R6.4.1）",sb:"書面・300万円"},
+          {s:0,a:"X",b:"Y",t:"交付（R6.4.10）",sb:"300万円"}]},
+  end:"この事案では、抗弁は出ていない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😠",
+    say:"令和6年4月1日に、Yと『300万円を貸す』という契約書を交わして、4月10日にお金を渡しました！返す約束の9月30日は過ぎてます！",
+    name:"貸金返還請求（諾成的消費貸借）", chain:"合意 ＋ 書面 ＋ 金銭の交付 ＋ 返還時期の合意 ＋ 返還時期の到来",
+    yaku:"書面による合意で契約が成立する（民法587条の2）。返還を求めるには、合意に基づく交付と、返還時期の合意・到来も必要。",
+    cards:[
+      {t:"原告と被告は、令和6年4月1日、原告が被告に300万円を引き渡し、被告が原告に同額を返還するとの合意をした。",k:"諾成的消費貸借の合意",ok:true,ex:"引き渡すことと返還することの合意。"},
+      {t:"上記合意は、書面でされた。",k:"書面",ok:true,ex:"成立要件（民法587条の2第1項）。"},
+      {t:"原告は、被告に対し、令和6年4月10日、上記合意に基づき300万円を交付した。",k:"金銭の交付",ok:true,ex:"交付していなければ返還は求められない。"},
+      {t:"原告と被告は、上記合意に際し、返還時期を令和6年9月30日と定めた。",k:"返還時期の合意",ok:true,ex:"契約の終了の要件。"},
+      {t:"令和6年9月30日は到来した。",k:"返還時期の到来",ok:true,ex:"顕著な事実。"},
+      {t:"被告は、原告に対し、300万円の交付を求めた。",k:"借主の交付請求",ex:"不要。"},
+      {t:"原告と被告は、利息を年3％と定めた。",k:"利息の合意",ex:"利息請求の要件。元本請求には不要。"}
+    ]}
+  ]
+}
+]});
+
+/* 保証の請求原因（主たる債務は売買代金） */
+const KG_GUAR = (o) => ({ abbr:"Kg", kind:"請求原因", side:"原告X", emo:o.emo||"😡", say:o.say,
+  name:"保証債務履行請求", chain:"主たる債務の発生原因事実 ＋ 保証契約の締結 ＋ 書面",
+  yaku:"保証債務は主たる債務に付従するので、その発生原因事実も必要。保証契約は書面でしなければ効力を生じない（民法446条2項）。",
+  note:"保証人の保証の意思表示が書面によれば足りるとする見解による",
+  cards:[
+    {t:`原告は、Aに対し、${o.d}、${o.obj}を代金${o.amt}で売った。`,k:"主たる債務の発生原因事実",ok:true,ex:"主たる債務の発生原因事実。"},
+    {t:`被告は、原告との間で、同日、Aの原告に対する上記代金債務を保証するとの合意をした。`,k:"保証契約の締結",ok:true,ex:"保証人と債権者の契約。"},
+    {t:"被告の上記保証の意思表示は、書面による。",k:"書面",ok:true,ex:"民法446条2項。"},
+    {t:"原告と被告は、上記保証契約の際、被告がAと連帯して債務を負担するとの合意をした。",k:"連帯の約定",ex:"請求原因には不要。催告・検索の抗弁に対する再抗弁になる。"},
+    {t:"被告は、Aから頼まれて保証人になった。",k:"保証委託",ex:"求償の場面で問題になるだけで、不要。"},
+    {t:`Aは、原告に対し、代金${o.amt}を支払っていない。`,k:"主たる債務の不履行",ex:"不要。弁済は被告が主張する。"},
+    ...(o.extra||[])
+  ]});
+
+THEMES.push({theme:"保証債務履行請求", qs:[
+{
+  id:"g1", title:"催告の抗弁 → 連帯の約定", claim:"保証契約に基づく保証債務履行請求権",
+  map:{X:"原告・債権者", Y:"被告・保証人", suit:"500万円の支払請求",
+    others:[{id:"A",rl:"主たる債務者",pos:"C",s:0}],
+    rels:[{s:0,a:"X",b:"A",t:"売買（R6.4.1）"},
+          {s:0,a:"Y",b:"X",t:"保証（R6.4.1）",sb:"書面"},
+          {s:2,a:"Y",b:"X",t:"連帯の約定",sb:""}]},
+  end:"連帯の約定に対して、被告がさらに主張できる事実はない。",
+  stages:[
+  KG_GUAR({d:"令和6年4月1日", obj:"甲機械", amt:"500万円",
+    say:"Aに甲機械を500万円で売って、Yに保証人になってもらいました！Aが払わないので、保証人のYに払ってもらいます！"}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"はぁ！？？いきなり私に！？まずはAに請求してくださいよ！それまでは払いません！",
+    name:"催告の抗弁", chain:"権利主張",
+    yaku:"保証人は、まず主たる債務者に催告をするよう請求できる（民法452条）。権利抗弁なので権利主張が必要。",
+    cards:[
+      {t:"被告は、原告がまずAに催告をするまで、保証債務の履行を拒絶する。",k:"権利主張",ok:true,ex:"催告の抗弁権の行使。"},
+      {t:"原告は、Aに対して支払を催告していない。",k:"催告の不存在",ex:"不要。権利主張で足りる。"},
+      {t:"Aには弁済をする資力があり、かつ、執行が容易である。",k:"検索の抗弁",ex:"これも抗弁になる（民法453条）が、Yの言い分にない。"},
+      {t:"被告は、Aの古くからの友人である。",k:"被告とAの関係",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🙄",
+    say:"保証契約書をよく見てください！『Aと連帯して保証する』って書いてありますよね！",
+    name:"連帯の約定", chain:"連帯の約定",
+    yaku:"連帯保証人には催告・検索の抗弁権がない（民法454条）。", note:"連帯の約定を保証契約の特約とみる見解による",
+    cards:[
+      {t:"原告と被告は、上記保証契約の際、被告がAと連帯して債務を負担するとの合意をした。",k:"連帯の約定",ok:true,ex:"催告の抗弁権を失わせる。"},
+      {t:"Aは、破産手続開始の決定を受けた。",k:"主たる債務者の破産",ex:"これも再抗弁になる（民法452条ただし書）が、Xの言い分にない。"},
+      {t:"保証契約書には、被告の実印が押されている。",k:"契約書の押印",ex:"証拠であって要件事実ではない。"},
+      {t:"原告は、被告に対し、支払を催告した。",k:"保証人への催告",ex:"不要。"}
+    ]}
+  ]
+},
+{
+  id:"g2", title:"主たる債務の消滅時効 → 主たる債務者の承認", claim:"保証契約に基づく保証債務履行請求権",
+  map:{X:"原告・債権者", Y:"被告・保証人", suit:"200万円の支払請求",
+    others:[{id:"A",rl:"主たる債務者",pos:"C",s:0}],
+    rels:[{s:0,a:"X",b:"A",t:"売買（R3.4.1）"},
+          {s:0,a:"Y",b:"X",t:"保証（R3.4.1）",sb:"書面"},
+          {s:1,a:"Y",b:"X",t:"主債務の時効援用",sb:"R8.9.10"},
+          {s:2,a:"A",b:"X",t:"承認（R7.2.1）"}]},
+  end:"主たる債務の時効が更新された以上、この事案で被告がさらに主張できる事実はない。",
+  stages:[
+  KG_GUAR({d:"令和3年4月1日", obj:"甲車両", amt:"200万円", emo:"😠",
+    say:"令和3年4月1日に、Aに甲車両を200万円で売りました。Yが保証人です！代金を払ってもらいます！"}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😏",
+    say:"Aの代金債務は、5年たって時効ですよね？保証人の私が、時効を援用します！（令和8年9月10日に援用）",
+    name:"主たる債務の消滅時効", chain:"5年の経過 ＋ 保証人による時効の援用",
+    yaku:"保証人も主たる債務の時効を援用でき、付従性により保証債務も消滅する。",
+    cards:[
+      {t:"令和8年4月1日は経過した。",k:"5年の経過",ok:true,ex:"売買契約の日の翌日から5年。"},
+      {t:"被告は、原告に対し、令和8年9月10日、上記代金債権の消滅時効を援用した。",k:"保証人による援用",ok:true,ex:"保証人も援用権者に当たる（民法145条）。"},
+      {t:"Aは、上記時効を援用していない。",k:"主たる債務者の援用の有無",ex:"不要。保証人は自ら援用できる。"},
+      {t:"原告は、Aに対し、一度も請求しなかった。",k:"権利の不行使",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🤬",
+    say:"はぁぁぁ！？？時効！？Aは令和7年2月1日に『必ず払う』って書面をくれてますよ！",
+    name:"時効の更新（主たる債務者の承認）", chain:"主たる債務者による承認",
+    yaku:"主たる債務者に対する時効の更新は、保証人にも効力が及ぶ（民法457条1項）。",
+    cards:[
+      {t:"Aは、原告に対し、令和7年2月1日、上記代金債務を承認した。",k:"主たる債務者の承認",ok:true,ex:"主たる債務の時効が更新される。"},
+      {t:"被告は、原告に対し、令和7年2月1日、保証債務を承認した。",k:"保証人の承認",ex:"保証人の承認は、主たる債務の時効を更新しない。"},
+      {t:"Aは、時効完成後に代金の支払を約束した。",k:"主たる債務者の援用権喪失",ex:"相対的な効力しかなく、再抗弁にならない。"},
+      {t:"Aの書面には署名がある。",k:"書面の署名",ex:"証拠であって要件事実ではない。"}
+    ]}
+  ]
+},
+{
+  id:"g3", title:"代理人による保証契約", claim:"保証契約に基づく保証債務履行請求権",
+  map:{X:"原告・債権者", Y:"被告・保証人", suit:"300万円の支払請求",
+    others:[{id:"A",rl:"主たる債務者",pos:"C",s:0},{id:"B",rl:"Yの代理人",pos:"R",s:0}],
+    rels:[{s:0,a:"X",b:"A",t:"売買"},
+          {s:0,a:"Y",b:"X",t:"保証（代理人B）",sb:"書面"},
+          {s:0,a:"Y",b:"B",t:"代理権授与"}]},
+  end:"この事案では、抗弁は出ていない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😠",
+    say:"Aに甲機械を300万円で売ったとき、Yの代理人Bと保証契約を結びました！Yに払ってもらいます！",
+    name:"保証債務履行請求（有権代理）", chain:"主たる債務の発生原因事実 ＋ 代理人の保証契約締結 ＋ 書面 ＋ 顕名 ＋ 先立つ代理権授与",
+    yaku:"代理による契約では、代理人の法律行為・顕名・それに先立つ代理権の授与が必要。",
+    cards:[
+      {t:"原告は、Aに対し、令和6年7月1日、甲機械を代金300万円で売った。",k:"主たる債務の発生原因事実",ok:true,ex:"付従性から必要。"},
+      {t:"Bは、原告との間で、同日、Aの原告に対する上記代金債務を保証するとの合意をした。",k:"代理人の法律行為",ok:true,ex:"代理人Bが保証契約を締結したこと。"},
+      {t:"Bの上記保証の意思表示は、書面による。",k:"書面",ok:true,ex:"民法446条2項。"},
+      {t:"Bは、上記合意の際、被告のためにすることを示した。",k:"顕名",ok:true,ex:"民法99条1項。"},
+      {t:"被告は、Bに対し、上記合意に先立って、上記保証契約締結の代理権を授与した。",k:"先立つ代理権授与",ok:true,ex:"代理権の発生原因事実。"},
+      {t:"被告は、Bに委任状を交付した。",k:"委任状",ex:"証拠であって要件事実ではない。"},
+      {t:"Bは、被告の妻である。",k:"被告とBの関係",ex:"不要。"},
+      {t:"被告は、上記保証契約を追認した。",k:"追認",ex:"無権代理を前提とする別の構成で、本問では不要。"}
+    ]}
+  ]
+}
+]});
+
+const PLAIN_KG_OWN = (o) => ({ abbr:"Kg", kind:"請求原因", side:"原告X", emo:o.emo||"😠", say:o.say, aside:o.aside,
+  name:"所有権に基づく明渡請求", chain:o.chain||"原告の所有 ＋ 被告の現占有",
+  yaku:o.yaku||"所有と相手方の占有で足りる。占有権原は被告の抗弁になる。", note:"現占有説による",
+  cards:o.cards});
+const DUMMY_OWN = [
+  {t:"被告は、甲土地を占有する権原を有しない。",k:"占有権原の不存在",ex:"不要。占有権原を有することが被告の抗弁になる。"},
+  {t:"原告は、被告に対し、訴え提起前に甲土地の明渡しを求めた。",k:"事前の請求",ex:"不要。"}
+];
+
+THEMES.push({theme:"所有権に基づく不動産明渡請求", qs:[
+{
+  id:"s1", title:"所有権喪失の抗弁 → 通謀虚偽表示", claim:"所有権に基づく返還請求権としての土地明渡請求権",
+  map:{X:"原告・所有者", Y:"被告・占有者", suit:"甲土地の明渡請求",
+    rels:[{s:1,a:"X",b:"Y",t:"売買（R5.9.9）",sb:"甲土地・代金2000万円"},
+          {s:2,a:"X",b:"Y",t:"仮装の合意",sb:"売買は見せかけ"}]},
+  end:"この事案では、虚偽表示に対してさらに主張できる事実はない。",
+  stages:[
+  PLAIN_KG_OWN({
+    say:"甲土地は私の土地です！なのに、Yが勝手に住み着いて使っているんです！出ていってください！",
+    aside:"Yは、令和5年9月9日当時、Xが甲土地を所有していたことは認めている。",
+    chain:"原告のもと所有 ＋ 被告の現占有",
+    yaku:"被告が売買当時の原告の所有を認めているので、その時点の所有について権利自白が成立する。",
+    cards:[
+      {t:"原告は、令和5年9月9日当時、甲土地を所有していた。",k:"原告のもと所有",ok:true,ex:"権利自白が成立する時点の所有。"},
+      {t:"被告は、甲土地を占有している。",k:"被告の現占有",ok:true,ex:"口頭弁論終結時の占有。"},
+      {t:"原告は、令和元年5月1日、父から甲土地を相続した。",k:"所有権の取得原因",ex:"権利自白があるので不要。"},
+      {t:"甲土地について、原告名義の所有権移転登記がある。",k:"原告の登記",ex:"不要。"},
+      ...DUMMY_OWN
+    ]}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"はぁぁぁ！？？勝手に！？令和5年9月9日に、Xさんから甲土地を2000万円で買ったんですよ！今は私の土地です！",
+    name:"所有権喪失の抗弁（売買）", chain:"原告・被告間の売買契約の締結",
+    yaku:"特定物の売買では、契約の締結で所有権が移転する。代金の支払は要らない。",
+    cards:[
+      {t:"原告は、被告に対し、令和5年9月9日、甲土地を代金2000万円で売った。",k:"売買契約の締結",ok:true,ex:"これで原告は所有権を失う。"},
+      {t:"被告は、原告に対し、代金2000万円を支払った。",k:"代金の支払",ex:"不要。所有権移転に代金の支払は要らない。"},
+      {t:"甲土地について、被告名義の所有権移転登記がされた。",k:"被告の登記",ex:"当事者間では登記は要らない。"},
+      {t:"被告は、甲土地を自宅の敷地として使っている。",k:"使用状況",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"😳",
+    say:"それは…借金取りから土地を守るために、Yと口裏を合わせて売ったことにしただけじゃないですか！本当に売るつもりなんて、お互いになかったでしょう！",
+    name:"通謀虚偽表示", chain:"売買をする意思がないのに仮装する合意",
+    yaku:"通謀虚偽表示による売買は無効（民法94条1項）。",
+    cards:[
+      {t:"原告と被告は、上記売買契約の際、いずれも売買をする意思がないのに、その意思があるように仮装することを合意した。",k:"通謀虚偽表示",ok:true,ex:"売買は無効になり、所有権は移転しない。"},
+      {t:"原告は、債権者からの差押えを免れるため、売買を仮装した。",k:"仮装の動機",ex:"要件事実ではない（間接事実）。"},
+      {t:"被告は、原告に代金を支払っていない。",k:"代金の不払",ex:"虚偽表示を推認させる間接事実で、要件事実ではない。"},
+      {t:"原告は、甲土地の固定資産税を払い続けている。",k:"固定資産税の負担",ex:"間接事実で、要件事実ではない。"}
+    ]}
+  ]
+},
+{
+  id:"s2", title:"所有権喪失の抗弁 → 所有権留保特約 → 代金完済", claim:"所有権に基づく返還請求権としての土地明渡請求権",
+  map:{X:"原告・所有者", Y:"被告・占有者", suit:"乙土地の明渡請求",
+    rels:[{s:1,a:"X",b:"Y",t:"売買（R5.4.1）",sb:"乙土地・代金1200万円"},
+          {s:2,a:"X",b:"Y",t:"所有権留保特約",sb:"代金完済時に移転"},
+          {s:3,a:"Y",b:"X",t:"代金完済（R6.3.31）",sb:""}]},
+  end:"代金が完済されて所有権が被告に移った以上、この事案で原告がさらに主張できる事実はない。",
+  stages:[
+  PLAIN_KG_OWN({
+    say:"乙土地は私の土地です！Yが勝手に資材を置いて使っています！明け渡してください！",
+    aside:"Yは、令和5年4月1日当時、Xが乙土地を所有していたことは認めている。",
+    chain:"原告のもと所有 ＋ 被告の現占有",
+    cards:[
+      {t:"原告は、令和5年4月1日当時、乙土地を所有していた。",k:"原告のもと所有",ok:true,ex:"権利自白が成立する時点の所有。"},
+      {t:"被告は、乙土地を占有している。",k:"被告の現占有",ok:true,ex:"口頭弁論終結時の占有。"},
+      {t:"原告は、平成30年、乙土地を競売で買い受けた。",k:"所有権の取得原因",ex:"権利自白があるので不要。"},
+      {t:"被告は、乙土地を占有する権原を有しない。",k:"占有権原の不存在",ex:"不要。"}
+    ]}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"勝手にって何ですか！？令和5年4月1日に、乙土地を1200万円で買ったじゃないですか！",
+    name:"所有権喪失の抗弁（売買）", chain:"原告・被告間の売買契約の締結",
+    cards:[
+      {t:"原告は、被告に対し、令和5年4月1日、乙土地を代金1200万円で売った。",k:"売買契約の締結",ok:true,ex:"契約の締結で所有権が移転する。"},
+      {t:"原告と被告は、代金を毎月100万円ずつ分割で支払うと合意した。",k:"支払方法の合意",ex:"不要。売買契約の成立要件ではない。"},
+      {t:"被告は、原告に対し、手付金を支払った。",k:"手付金",ex:"不要。"},
+      {t:"被告は、乙土地を資材置場として使っている。",k:"使用状況",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🙄",
+    say:"契約書をよく読んでください！『代金を全部払うまで、土地の所有権はXに残る』って書いてありますよね！",
+    name:"所有権留保特約", chain:"代金完済時に所有権が移転するとの合意",
+    yaku:"所有権移転の効果を代金完済にかからせる特約。", note:"所有権留保特約を一種の停止条件とみる通説による",
+    cards:[
+      {t:"原告と被告は、上記売買契約の際、代金完済の時に乙土地の所有権が被告に移転するとの合意をした。",k:"所有権留保特約",ok:true,ex:"代金完済まで所有権は移転しない。"},
+      {t:"被告は、代金をまだ完済していない。",k:"代金の未完済",ex:"不要。完済したことは被告が再々抗弁で主張する。"},
+      {t:"乙土地の登記は、原告名義のままである。",k:"原告の登記",ex:"不要。"},
+      {t:"被告は、代金の支払を何度か遅らせた。",k:"支払の遅れ",ex:"不要。"}
+    ]},
+  { abbr:"D", kind:"再々抗弁", side:"被告Y", emo:"😤",
+    say:"はぁぁぁ！？？代金なら、令和6年3月31日に最後の分を払って、もう全額払い終わってますよ！",
+    name:"代金完済（条件成就）", chain:"代金全額の弁済",
+    yaku:"代金が完済されれば、所有権は被告に移転する。",
+    cards:[
+      {t:"被告は、原告に対し、令和6年3月31日までに、上記売買代金債務の履行として代金全額1200万円を支払った。",k:"代金完済",ok:true,ex:"停止条件の成就に当たる。"},
+      {t:"被告は、原告に対し、令和6年3月31日、100万円を支払った。",k:"最後の1回分の支払",ex:"最終回の支払だけでは、全額の弁済にならない。"},
+      {t:"原告は、被告に対し、完済証明書を交付した。",k:"完済証明書",ex:"証拠であって要件事実ではない。"},
+      {t:"被告は、原告に所有権移転登記を求めた。",k:"登記請求",ex:"不要。"}
+    ]}
+  ]
+},
+{
+  id:"s3", title:"対抗要件の抗弁 → 対抗要件の具備", claim:"所有権に基づく返還請求権としての土地明渡請求権",
+  map:{X:"原告・買主", Y:"被告・占有者", suit:"丙土地の明渡請求",
+    others:[{id:"A",rl:"もとの所有者",pos:"C",s:0}],
+    rels:[{s:0,a:"A",b:"X",t:"売買（R5.4.5）"},
+          {s:1,a:"A",b:"Y",t:"売買（R5.2.2）"},
+          {s:2,a:"X",b:"Y",t:"Xの登記（R6.1.10）",sb:""}]},
+  end:"登記を先に備えた原告が優先するので、この事案で被告がさらに主張できる事実はない。",
+  stages:[
+  PLAIN_KG_OWN({
+    say:"令和5年4月5日に、Aさんから丙土地を1800万円で買いました！なのにYが勝手に駐車場にしています！",
+    aside:"Yは、Aがもと丙土地を所有していたこと、AがXに売ったことは認めている。",
+    chain:"前主のもと所有 ＋ 前主・原告間の売買 ＋ 被告の現占有",
+    yaku:"前主Aのもと所有について権利自白が成立するので、Aからの取得原因を主張する。",
+    cards:[
+      {t:"Aは、令和5年2月2日当時、丙土地を所有していた。",k:"前主のもと所有",ok:true,ex:"早い方の売買の時点で権利自白が成立する。"},
+      {t:"Aは、原告に対し、令和5年4月5日、丙土地を代金1800万円で売った。",k:"前主・原告間の売買",ok:true,ex:"原告の所有権取得原因。"},
+      {t:"被告は、丙土地を占有している。",k:"被告の現占有",ok:true,ex:"口頭弁論終結時の占有。"},
+      {t:"原告は、丙土地について所有権移転登記を備えている。",k:"原告の登記",ex:"請求原因には不要。対抗要件の抗弁が出たときの再抗弁になる。"},
+      {t:"原告は、Aに代金1800万円を支払った。",k:"代金の支払",ex:"不要。"},
+      ...DUMMY_OWN
+    ]}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😏",
+    say:"私だって令和5年2月2日に、Aさんから丙土地を2000万円で買ってるんです！Xさんが登記をするまでは、Xさんを所有者とは認めませんよ！",
+    name:"対抗要件の抗弁", chain:"前主・被告間の売買 ＋ 権利主張",
+    yaku:"二重譲渡の譲受人として、対抗要件の有無を争う権利主張をする。", note:"権利抗弁説による",
+    cards:[
+      {t:"Aは、被告に対し、令和5年2月2日、丙土地を代金2000万円で売った。",k:"前主・被告間の売買",ok:true,ex:"被告が民法177条の第三者に当たることを示す。"},
+      {t:"原告が所有権移転登記を備えるまで、原告の所有権取得を認めない。",k:"権利主張",ok:true,ex:"対抗要件の有無を争う意思。"},
+      {t:"原告は、丙土地について登記を備えていない。",k:"原告の登記の欠缺",ex:"不要。登記を備えたことを原告が再抗弁で主張する。"},
+      {t:"被告は、Aに代金2000万円を支払った。",k:"代金の支払",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"😤",
+    say:"登記なら、令和6年1月10日にとっくに済ませてますよ！登記簿を見てください！",
+    name:"対抗要件の具備", chain:"売買に基づく所有権移転登記の具備",
+    yaku:"原告が登記を備えれば、被告は原告の所有権取得を争えない。",
+    cards:[
+      {t:"原告は、令和6年1月10日、Aとの上記売買契約に基づき、丙土地について所有権移転登記を備えた。",k:"対抗要件の具備",ok:true,ex:"民法177条の登記。"},
+      {t:"原告がAと契約したのは、被告より後である。",k:"契約の先後",ex:"優劣は登記の先後で決まる。"},
+      {t:"被告は、丙土地の登記を備えていない。",k:"被告の登記の欠缺",ex:"不要。"},
+      {t:"登記事項証明書には、原告の名義が記載されている。",k:"登記事項証明書",ex:"証拠であって要件事実ではない。"}
+    ]}
+  ]
+},
+{
+  id:"s4", title:"対抗要件具備による所有権喪失の抗弁", claim:"所有権に基づく返還請求権としての土地明渡請求権",
+  map:{X:"原告・買主", Y:"被告・占有者", suit:"丁土地の明渡請求",
+    others:[{id:"A",rl:"もとの所有者",pos:"C",s:0}],
+    rels:[{s:0,a:"A",b:"X",t:"売買（R5.6.1）"},
+          {s:1,a:"A",b:"Y",t:"売買・登記"}]},
+  end:"この事案では、再抗弁は出ていない。",
+  stages:[
+  PLAIN_KG_OWN({
+    say:"令和5年6月1日に、Aさんから丁土地を買ったんです！Yが勝手に使っているので、明け渡してほしい！",
+    aside:"Yは、Aがもと丁土地を所有していたこと、AがXに売ったことは認めている。",
+    chain:"前主のもと所有 ＋ 前主・原告間の売買 ＋ 被告の現占有",
+    cards:[
+      {t:"Aは、令和5年5月10日当時、丁土地を所有していた。",k:"前主のもと所有",ok:true,ex:"早い方の売買の時点で権利自白が成立する。"},
+      {t:"Aは、原告に対し、令和5年6月1日、丁土地を代金900万円で売った。",k:"前主・原告間の売買",ok:true,ex:"原告の所有権取得原因。"},
+      {t:"被告は、丁土地を占有している。",k:"被告の現占有",ok:true,ex:"口頭弁論終結時の占有。"},
+      {t:"Aは、丁土地を祖父から相続した。",k:"前主の取得原因",ex:"権利自白があるので不要。"},
+      ...DUMMY_OWN
+    ]}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😏",
+    say:"私は令和5年5月10日にAさんから丁土地を買って、7月1日に登記も済ませています！所有者は私です！",
+    name:"対抗要件具備による所有権喪失の抗弁", chain:"前主・被告間の売買 ＋ 売買に基づく登記の具備",
+    yaku:"二重譲渡で先に登記を備えた被告が確定的に所有権を取得し、原告は所有権を失う。",
+    cards:[
+      {t:"Aは、被告に対し、令和5年5月10日、丁土地を代金1000万円で売った。",k:"前主・被告間の売買",ok:true,ex:"被告の所有権取得原因。"},
+      {t:"被告は、令和5年7月1日、上記売買契約に基づき、丁土地について所有権移転登記を備えた。",k:"登記の具備",ok:true,ex:"対抗要件の具備。"},
+      {t:"原告は、丁土地について登記を備えていない。",k:"原告の登記の欠缺",ex:"不要。"},
+      {t:"原告が所有権移転登記を備えるまで、原告の所有権取得を認めない。",k:"権利主張",ex:"対抗要件の抗弁の要素で、この抗弁には不要。"}
+    ]}
+  ]
+},
+{
+  id:"s5", title:"占有権原（賃貸借）→ 賃料不払解除 → 弁済の提供", claim:"所有権に基づく返還請求権としての土地明渡請求権",
+  map:{X:"原告・所有者", Y:"被告・占有者", suit:"戊土地の明渡請求",
+    rels:[{s:1,a:"X",b:"Y",t:"賃貸借（R5.4.1）",sb:"月10万円・引渡し"},
+          {s:2,a:"X",b:"Y",t:"催告→解除",sb:"R6.6.5／R6.6.13"},
+          {s:3,a:"Y",b:"X",t:"賃料の提供（R6.6.10）",sb:""}]},
+  end:"弁済の提供によって解除は効力を生じないので、この事案で原告がさらに主張できる事実はない。",
+  stages:[
+  PLAIN_KG_OWN({
+    say:"戊土地は私の土地です！Yが居座っているので、明け渡してほしいんです！",
+    aside:"Yは、Xが戊土地を現在所有していることは認めている。",
+    chain:"原告の現所有 ＋ 被告の現占有",
+    yaku:"被告が現在の所有を認めているので、現所有について権利自白が成立する。",
+    cards:[
+      {t:"原告は、戊土地を所有している。",k:"原告の現所有",ok:true,ex:"現在の所有について権利自白が成立する。"},
+      {t:"被告は、戊土地を占有している。",k:"被告の現占有",ok:true,ex:"口頭弁論終結時の占有。"},
+      {t:"原告は、平成28年、戊土地を買い受けた。",k:"所有権の取得原因",ex:"権利自白があるので不要。"},
+      ...DUMMY_OWN
+    ]}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😳",
+    say:"はぁぁぁ！？？居座ってる！？令和5年4月1日に、Xさんから月10万円で借りて、その日に引渡しも受けたんですよ！",
+    name:"占有権原の抗弁（賃貸借）", chain:"賃貸借契約の締結 ＋ 契約に基づく引渡し",
+    cards:[
+      {t:"原告は、被告との間で、令和5年4月1日、戊土地を賃料月額10万円で賃貸するとの合意をした。",k:"賃貸借契約の締結",ok:true,ex:"目的物と賃料額の合意（民法601条）。"},
+      {t:"原告は、被告に対し、同日、上記賃貸借契約に基づき、戊土地を引き渡した。",k:"契約に基づく引渡し",ok:true,ex:"占有が賃貸借に基づくことを示す。"},
+      {t:"原告と被告は、戊土地を資材置場として使うことを合意した。",k:"使用目的の合意",ex:"賃貸借の成立要件ではない。"},
+      {t:"被告は、原告に敷金30万円を差し入れた。",k:"敷金",ex:"敷金契約は別の契約で、不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"😤",
+    say:"借りてる！？だったら賃料を払ってくださいよ！4月分と5月分が未払いだから、6月5日に催告して、6月13日に解除しました！",
+    name:"賃貸借の終了（賃料不払による解除）", chain:"期間の経過 ＋ 支払時期の経過 ＋ 催告 ＋ 相当期間の経過 ＋ 解除の意思表示",
+    yaku:"賃料不払による催告解除（民法541条）。特約がなければ宅地の賃料は毎月末払い（民法614条）。",
+    cards:[
+      {t:"令和6年4月及び5月は経過した。",k:"期間の経過",ok:true,ex:"賃料債務は使用期間の経過で発生する。"},
+      {t:"令和6年4月30日及び同年5月31日は経過した。",k:"支払時期の経過",ok:true,ex:"民法614条の支払時期。"},
+      {t:"原告は、被告に対し、令和6年6月5日、同年4月分及び5月分の賃料合計20万円の支払を催告した。",k:"催告",ok:true,ex:"民法541条の催告。"},
+      {t:"令和6年6月12日は経過した。",k:"相当期間の経過",ok:true,ex:"催告から相当期間が経過したこと。"},
+      {t:"原告は、被告に対し、令和6年6月13日、上記賃貸借契約を解除するとの意思表示をした。",k:"解除の意思表示",ok:true,ex:"民法540条1項。"},
+      {t:"被告は、令和6年4月分及び5月分の賃料を支払っていない。",k:"賃料の不払",ex:"不要。支払ったことは被告が主張する。"},
+      {t:"原告は、催告の際、1週間以内に支払うよう期間を定めた。",k:"期間を定めたこと",ex:"不要。"}
+    ]},
+  { abbr:"D", kind:"再々抗弁", side:"被告Y", emo:"🥹",
+    say:"6月10日に20万円を持って行ったのに、Xさんが受け取ってくれなかったんです！解除される前ですよ！",
+    name:"弁済の提供", chain:"催告後解除前の賃料の弁済の提供",
+    yaku:"催告後、解除の意思表示の前に弁済の提供をすれば、解除は効力を生じない。",
+    cards:[
+      {t:"被告は、原告に対し、令和6年6月10日、同年4月分及び5月分の賃料合計20万円の弁済の提供をした。",k:"弁済の提供",ok:true,ex:"催告後、解除前の提供。"},
+      {t:"被告は、原告に対し、令和6年6月20日、賃料20万円を持参した。",k:"解除後の提供",ex:"解除の後では遅い。"},
+      {t:"原告は、被告の持参した賃料の受領を拒んだ。",k:"受領拒絶",ex:"不要。提供の事実で足りる。"},
+      {t:"被告は、令和6年4月から5月まで入院していた。",k:"不払の事情",ex:"弁済の提供の要件ではない。"}
+    ]}
+  ]
+}
+]});
+
+const DUMMY_LEASE = [
+  {t:"原告は、甲土地を所有している。",k:"原告の所有",ex:"賃貸借終了に基づく請求では不要。"},
+  {t:"被告は、甲土地を占有している。",k:"被告の占有",ex:"賃貸借終了に基づく請求では不要。返還義務は契約から生じる。"}
+];
+
+THEMES.push({theme:"賃貸借終了に基づく明渡請求", qs:[
+{
+  id:"c1", title:"期間満了 → 建物所有目的 → 一時使用", claim:"賃貸借契約の終了に基づく目的物返還請求権としての土地明渡請求権",
+  map:{X:"原告・賃貸人", Y:"被告・賃借人", suit:"甲土地の明渡請求",
+    rels:[{s:0,a:"X",b:"Y",t:"賃貸借（R4.4.1）",sb:"期間2年・引渡し"},
+          {s:1,a:"Y",b:"X",t:"建物所有目的？",sb:"自宅の敷地"},
+          {s:2,a:"X",b:"Y",t:"一時使用の合意",sb:"区画整理まで"}]},
+  end:"一時使用の評価障害事実に対して、原告がさらに主張する段階はない。評価根拠事実と評価障害事実を総合して判断される。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😠",
+    say:"令和4年4月1日に、甲土地を月5万円、期間2年の約束でYに貸して、引き渡しました。期間はもう終わっています！返してください！",
+    name:"賃貸借終了に基づく明渡請求（期間満了）", chain:"賃貸借契約の締結 ＋ 契約に基づく引渡し ＋ 期間の合意 ＋ 期間の経過",
+    yaku:"賃貸借の締結と引渡しに加え、終了原因として期間の合意とその経過を主張する。",
+    cards:[
+      {t:"原告は、被告との間で、令和4年4月1日、甲土地を賃料月額5万円で賃貸するとの合意をした。",k:"賃貸借契約の締結",ok:true,ex:"目的物と賃料額の合意（民法601条）。"},
+      {t:"原告は、被告に対し、同日、上記賃貸借契約に基づき、甲土地を引き渡した。",k:"契約に基づく引渡し",ok:true,ex:"返還を求める前提。"},
+      {t:"原告と被告は、上記賃貸借契約の際、賃貸期間を同日から令和6年3月31日までと合意した。",k:"期間の合意",ok:true,ex:"終了原因。"},
+      {t:"令和6年3月31日は経過した。",k:"期間の経過",ok:true,ex:"顕著な事実。"},
+      {t:"原告と被告は、甲土地を資材置場として使うことを合意した。",k:"使用目的の合意",ex:"賃貸借の成立要件ではない。"},
+      ...DUMMY_LEASE
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😳",
+    say:"はぁぁぁ！？？2年で出ていけ！？甲土地は、私が自宅を建てるための土地として借りたんですよ！",
+    name:"建物所有目的の抗弁", chain:"建物所有を目的とする合意",
+    yaku:"建物所有目的なら借地借家法が適用され、存続期間は30年になる（同法3条）ので、期間は満了していない。",
+    cards:[
+      {t:"原告と被告は、上記賃貸借契約の際、甲土地を被告が建築する予定の自宅の敷地として使用することを合意した。",k:"建物所有目的の合意",ok:true,ex:"借地借家法の適用を基礎づける。"},
+      {t:"被告は、まだ甲土地に建物を建てていない。",k:"建物の未建築",ex:"不要。"},
+      {t:"借地借家法による存続期間（30年）は経過していない。",k:"期間の未経過",ex:"不要。合意の主張で足りる。"},
+      {t:"被告は、自宅の設計を建築士に依頼した。",k:"建築の準備",ex:"合意を推認させる間接事実で、要件事実ではない。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🙄",
+    say:"甲土地が2年後に区画整理の対象になることは決まっていて、Yも分かってましたよね？だから2年限りの約束で貸したんです！",
+    name:"一時使用", chain:"短期間に限る合意 ＋ 一時使用の評価根拠事実",
+    yaku:"一時使用の賃貸借なら、借地借家法の存続期間の規定は適用されない（同法25条）。", note:"短期間に限る合意に加え、客観的合理的な理由を要するとする折衷説による",
+    cards:[
+      {t:"原告と被告は、上記賃貸借契約の際、賃貸借を2年間に限って存続させるとの合意をした。",k:"短期間に限る合意",ok:true,ex:"一時使用の主観的要素。"},
+      {t:"甲土地は、上記賃貸借契約の当時、2年後に区画整理の対象となることが確定しており、原告と被告はそのことを前提に賃貸期間を定めた。",k:"一時使用の評価根拠事実",ok:true,ex:"短期間に限る客観的合理的な理由。"},
+      {t:"上記賃貸借契約は、一時使用のためのものである。",k:"一時使用（評価）",ex:"規範的評価そのもので、事実ではない。"},
+      {t:"原告は、甲土地を将来自分で使いたいと考えていた。",k:"原告の内心",ex:"不要。"}
+    ]},
+  { abbr:"D", kind:"再々抗弁", side:"被告Y", emo:"😤",
+    say:"一時使用！？契約のときに権利金を300万円も払ったし、期間が終わったら更新の話し合いをするって約束でしたよね！",
+    name:"一時使用の評価障害事実", chain:"一時使用の評価障害事実",
+    yaku:"一時使用との評価を妨げる具体的事実を被告が主張する。",
+    cards:[
+      {t:"被告は、上記賃貸借契約の際、原告に対し、権利金として300万円を支払った。",k:"多額の権利金",ok:true,ex:"一時使用と相いれない事情。"},
+      {t:"原告と被告は、上記賃貸借契約の際、期間満了後に更新の協議をすることを合意した。",k:"更新協議の約定",ok:true,ex:"短期間に限る趣旨と相いれない事情。"},
+      {t:"原告と被告は、令和5年に賃料を増額する合意をした。",k:"契約締結後の事情",ex:"契約締結後の事情は評価障害事実にならない。"},
+      {t:"上記賃貸借契約は、一時使用のためのものではない。",k:"評価",ex:"規範的評価そのもので、事実ではない。"}
+    ]}
+  ]
+},
+{
+  id:"c2", title:"借地権の期間満了 → 法定更新 → 異議と正当事由", claim:"賃貸借契約の終了に基づく目的物返還請求権としての建物収去土地明渡請求権",
+  map:{X:"原告・賃貸人", Y:"被告・借地人", suit:"乙建物収去・甲土地明渡請求",
+    rels:[{s:0,a:"X",b:"Y",t:"賃貸借（H6.4.1）",sb:"建物所有目的・30年"},
+          {s:1,a:"Y",b:"X",t:"使用継続",sb:"乙建物あり"},
+          {s:2,a:"X",b:"Y",t:"異議（R6.4.5）",sb:"正当事由"}]},
+  end:"正当事由の評価障害事実に対して、原告がさらに主張する段階はない。評価根拠事実と評価障害事実を総合して判断される。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😠",
+    say:"平成6年4月1日に、建物を建てる目的で甲土地をYに貸しました。30年たって期間は満了です！建物を取り壊して返してください！",
+    name:"借地借家法上の存続期間満了", chain:"賃貸借契約の締結 ＋ 引渡し ＋ 建物所有目的の合意 ＋ 30年の経過 ＋ 建物の附属と存在",
+    yaku:"建物収去を求めるには、引渡し後に建物が附属し、終了時に存在したことも必要。被告の建物所有は要らない。",
+    cards:[
+      {t:"原告は、被告との間で、平成6年4月1日、甲土地を賃料月額5万円で賃貸するとの合意をした。",k:"賃貸借契約の締結",ok:true,ex:"民法601条。"},
+      {t:"原告は、被告に対し、同日、上記賃貸借契約に基づき、甲土地を引き渡した。",k:"契約に基づく引渡し",ok:true,ex:"返還を求める前提。"},
+      {t:"原告と被告は、上記賃貸借契約の際、建物の所有を目的とすることを合意した。",k:"建物所有目的の合意",ok:true,ex:"借地借家法による存続期間（30年）を主張するため。"},
+      {t:"令和6年3月31日は経過した。",k:"30年の経過",ok:true,ex:"借地借家法3条の存続期間の満了。"},
+      {t:"上記引渡し後、上記賃貸借の終了までに、甲土地上に乙建物が建築され、終了時に乙建物が存在した。",k:"建物の附属と存在",ok:true,ex:"建物収去を求めるための要件。"},
+      {t:"被告は、乙建物を所有している。",k:"被告の建物所有",ex:"賃貸借終了に基づく請求では不要。"},
+      ...DUMMY_LEASE
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😳",
+    say:"期間満了って言われても、私は今も甲土地を使っていて、乙建物も建っていますよ！契約は更新されたはずです！",
+    name:"土地使用継続による法定更新", chain:"満了後の土地使用の継続 ＋ 建物の存在",
+    yaku:"借地権者が使用を継続し、建物がある場合は、契約を更新したものとみなされる（借地借家法5条2項）。",
+    cards:[
+      {t:"被告は、令和6年3月31日の経過後も、甲土地の使用を継続している。",k:"満了後の使用継続",ok:true,ex:"法定更新の要件。"},
+      {t:"期間満了後も、甲土地上に乙建物が存在する。",k:"建物の存在",ok:true,ex:"法定更新の要件。"},
+      {t:"被告は、原告に対し、契約の更新を請求した。",k:"更新の請求",ex:"請求による更新は別の構成で、この抗弁には不要。"},
+      {t:"被告は、満了後も賃料を支払い続けている。",k:"賃料の支払",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"😤",
+    say:"満了してすぐの4月5日に、使い続けるのは困るとはっきり異議を言いました！私は去年火事で自宅を失って、甲土地しか家を建てる場所がないんです！立退料500万円も払うと言っています！",
+    name:"遅滞なき異議と正当事由", chain:"遅滞なき異議 ＋ 正当事由の評価根拠事実",
+    yaku:"賃貸人が遅滞なく異議を述べ、正当事由があれば更新は擬制されない（借地借家法5条、6条）。正当事由は規範的要件。",
+    cards:[
+      {t:"原告は、被告に対し、令和6年4月5日、被告の甲土地の使用継続に異議を述べた。",k:"遅滞なき異議",ok:true,ex:"満了直後の異議。"},
+      {t:"原告は、令和5年に火災で自宅を失い、甲土地のほかに住居を建てる土地を持っていない。",k:"原告が土地を使う必要性",ok:true,ex:"正当事由の評価根拠事実（基本的な要素）。"},
+      {t:"原告は、被告に対し、明渡しと引換えに立退料500万円を支払うと申し出た。",k:"立退料の申出",ok:true,ex:"正当事由の評価根拠事実（補完的な要素）。"},
+      {t:"原告が更新を拒絶することには正当の事由がある。",k:"正当事由（評価）",ex:"規範的評価そのもので、事実ではない。"},
+      {t:"甲土地の地価は、契約当時より上がった。",k:"地価の上昇",ex:"不要。"}
+    ]},
+  { abbr:"D", kind:"再々抗弁", side:"被告Y", emo:"🥹",
+    say:"私だって30年、ここで家族と暮らしてきたんです！乙建物のほかに住む家はありません！賃料も一度も遅れたことはないですよ！",
+    name:"正当事由の評価障害事実", chain:"正当事由の評価障害事実",
+    yaku:"正当事由の評価を妨げる具体的事実を被告が主張する。",
+    cards:[
+      {t:"被告は、乙建物に家族と住んでおり、ほかに住む家を持っていない。",k:"被告が土地を使う必要性",ok:true,ex:"正当事由の評価障害事実。"},
+      {t:"被告は、30年間、賃料を一度も遅れずに支払ってきた。",k:"借地に関する従前の経過",ok:true,ex:"正当事由の評価障害事実。"},
+      {t:"原告の更新拒絶には正当の事由がない。",k:"評価",ex:"規範的評価そのもので、事実ではない。"},
+      {t:"被告は、乙建物を増築したいと考えている。",k:"被告の希望",ex:"不要。"}
+    ]}
+  ]
+},
+{
+  id:"c3", title:"賃料不払解除 → 弁済の提供", claim:"賃貸借契約の終了に基づく目的物返還請求権としての建物明渡請求権",
+  map:{X:"原告・賃貸人", Y:"被告・賃借人", suit:"甲建物の明渡請求",
+    rels:[{s:0,a:"X",b:"Y",t:"賃貸借（R5.10.1）",sb:"月8万円・引渡し"},
+          {s:0,a:"X",b:"Y",t:"催告→解除",sb:"R6.7.3／R6.7.12"},
+          {s:1,a:"Y",b:"X",t:"賃料の提供（R6.7.8）",sb:""}]},
+  end:"弁済の提供によって解除は効力を生じないので、この事案で原告がさらに主張できる事実はない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😡",
+    say:"甲建物を月8万円でYに貸しているんですが、5月分と6月分の家賃が払われないんです！7月3日に催告して、7月12日に解除しました！出ていってください！",
+    name:"賃貸借終了に基づく明渡請求（賃料不払解除）", chain:"賃貸借契約の締結 ＋ 引渡し ＋ 期間の経過 ＋ 支払時期の経過 ＋ 催告 ＋ 相当期間の経過 ＋ 解除の意思表示",
+    yaku:"賃料不払による催告解除（民法541条）。特約がなければ建物の賃料は毎月末払い（民法614条）。",
+    cards:[
+      {t:"原告は、被告との間で、令和5年10月1日、甲建物を賃料月額8万円で賃貸するとの合意をした。",k:"賃貸借契約の締結",ok:true,ex:"民法601条。"},
+      {t:"原告は、被告に対し、同日、上記賃貸借契約に基づき、甲建物を引き渡した。",k:"契約に基づく引渡し",ok:true,ex:"返還を求める前提。"},
+      {t:"令和6年5月及び6月は経過した。",k:"期間の経過",ok:true,ex:"賃料債務は使用期間の経過で発生する。"},
+      {t:"令和6年5月31日及び同年6月30日は経過した。",k:"支払時期の経過",ok:true,ex:"民法614条の支払時期。"},
+      {t:"原告は、被告に対し、令和6年7月3日、同年5月分及び6月分の賃料合計16万円の支払を催告した。",k:"催告",ok:true,ex:"民法541条の催告。"},
+      {t:"令和6年7月10日は経過した。",k:"相当期間の経過",ok:true,ex:"催告から相当期間が経過したこと。"},
+      {t:"原告は、被告に対し、令和6年7月12日、上記賃貸借契約を解除するとの意思表示をした。",k:"解除の意思表示",ok:true,ex:"民法540条1項。"},
+      {t:"被告は、令和6年5月分及び6月分の賃料を支払っていない。",k:"賃料の不払",ex:"不要。支払ったことは被告が主張する。"},
+      {t:"被告は、甲建物を占有している。",k:"被告の占有",ex:"賃貸借終了に基づく請求では不要。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"🥹",
+    say:"催告をもらってすぐ、7月8日に16万円を持って行ったんです！解除の前ですよ！なのに受け取ってもらえなくて…",
+    name:"弁済の提供", chain:"催告後解除前の弁済の提供",
+    yaku:"催告後、解除の意思表示の前に弁済の提供をすれば、解除は効力を生じない。",
+    cards:[
+      {t:"被告は、原告に対し、令和6年7月8日、同年5月分及び6月分の賃料合計16万円の弁済の提供をした。",k:"弁済の提供",ok:true,ex:"催告後、解除前の提供。"},
+      {t:"被告は、原告に対し、令和6年7月20日、賃料16万円を持参した。",k:"解除後の提供",ex:"解除の後では遅い。"},
+      {t:"原告は、被告の持参した賃料を受け取らなかった。",k:"受領拒絶",ex:"不要。提供の事実で足りる。"},
+      {t:"被告は、勤務先の倒産で収入が途絶えていた。",k:"不払の事情",ex:"弁済の提供の要件ではない。"}
+    ]}
+  ]
+},
+{
+  id:"c4", title:"増改築禁止特約違反の解除 → 信頼関係不破壊", claim:"賃貸借契約の終了に基づく目的物返還請求権としての建物収去土地明渡請求権",
+  map:{X:"原告・賃貸人", Y:"被告・借地人", suit:"乙建物収去・甲土地明渡請求",
+    rels:[{s:0,a:"X",b:"Y",t:"賃貸借（H20.4.1）",sb:"増改築禁止特約"},
+          {s:0,a:"X",b:"Y",t:"無催告解除（R6.8.1）",sb:"無断増築"}]},
+  end:"信頼関係不破壊の評価障害事実に対して、被告がさらに主張する段階はない。評価根拠事実と評価障害事実を総合して判断される。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"🤬",
+    say:"甲土地を貸すとき、『無断で増改築したら催告なしで解除する』と約束したのに、Yは勝手に乙建物を増築したんです！8月1日に解除しました！",
+    name:"増改築禁止特約違反による解除", chain:"賃貸借契約の締結 ＋ 引渡し ＋ 特約 ＋ 増改築 ＋ 解除の意思表示 ＋ 建物の附属と存在",
+    yaku:"特約違反を理由とする無催告解除。無断であること（原告の不承諾）は原告が主張しなくてよい。",
+    cards:[
+      {t:"原告は、被告との間で、平成20年4月1日、甲土地を賃料月額6万円で賃貸するとの合意をした。",k:"賃貸借契約の締結",ok:true,ex:"民法601条。"},
+      {t:"原告は、被告に対し、同日、上記賃貸借契約に基づき、甲土地を引き渡した。",k:"契約に基づく引渡し",ok:true,ex:"返還を求める前提。"},
+      {t:"原告と被告は、上記賃貸借契約の際、被告が建物の増改築をしないこと及びこれに違反したときは原告が催告なしに契約を解除できることを合意した。",k:"増改築禁止・無催告解除特約",ok:true,ex:"終了原因の前提となる特約。"},
+      {t:"被告は、令和6年5月、乙建物の増築をした。",k:"増改築",ok:true,ex:"特約違反の行為は原告が主張する。"},
+      {t:"原告は、被告に対し、令和6年8月1日、上記賃貸借契約を解除するとの意思表示をした。",k:"解除の意思表示",ok:true,ex:"無催告解除。"},
+      {t:"上記引渡し後、上記賃貸借の終了までに、甲土地上に乙建物が建築され、終了時に乙建物が存在した。",k:"建物の附属と存在",ok:true,ex:"建物収去を求めるための要件。"},
+      {t:"原告は、上記増築を承諾していない。",k:"原告の不承諾",ex:"不要。承諾したことは被告が主張する。"},
+      {t:"原告と被告の信頼関係は破壊された。",k:"信頼関係の破壊（評価）",ex:"不要。信頼関係不破壊の事情を被告が抗弁で主張する。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"🥹",
+    say:"はぁぁぁ！？？解除！？古くなったお風呂を直しただけですよ！床面積も変わってないし、土地の使い方にも何の影響もありません！",
+    name:"信頼関係不破壊", chain:"信頼関係を破壊するおそれがあると認めるに足りない事情（評価根拠事実）",
+    yaku:"増改築が土地の通常の利用上相当で、賃貸人に著しい影響を及ぼさないなら、特約に基づく解除はできない（最判昭41.4.21）。賃借人側が主張する。",
+    cards:[
+      {t:"被告がした増築は、老朽化した浴室の改修であり、乙建物の床面積は変わっていない。",k:"増築の内容",ok:true,ex:"土地の通常の利用上相当であることを示す事実。"},
+      {t:"上記増築によって、乙建物の構造や耐用年数に変化はない。",k:"賃貸人への影響がないこと",ok:true,ex:"賃貸人に著しい影響を及ぼさないことを示す事実。"},
+      {t:"原告と被告の信頼関係は破壊されていない。",k:"信頼関係不破壊（評価）",ex:"規範的評価そのもので、事実ではない。"},
+      {t:"被告は、増築に200万円をかけた。",k:"増築の費用",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🙎",
+    say:"こっちは工事に気付いて、すぐやめてくれと言いましたよね！それを無視して工事を続けたじゃないですか！",
+    name:"信頼関係不破壊の評価障害事実", chain:"評価障害事実",
+    yaku:"信頼関係不破壊の評価を妨げる具体的事実を原告が主張する。",
+    cards:[
+      {t:"被告は、原告から工事の中止を求められたのに、工事を続けた。",k:"中止要請の無視",ok:true,ex:"評価障害事実。"},
+      {t:"原告と被告の信頼関係は破壊された。",k:"評価",ex:"規範的評価そのもので、事実ではない。"},
+      {t:"原告は、増築に気付いて驚いた。",k:"原告の心情",ex:"不要。"},
+      {t:"原告は、被告に対し、令和6年8月1日、上記賃貸借契約を解除するとの意思表示をした。",k:"解除の意思表示",ex:"請求原因で主張済み。"}
+    ]}
+  ]
+}
+]});
+
+const KG_MOV = (o) => ({ abbr:"Kg", kind:"請求原因", side:"原告X", emo:o.emo||"😡", say:o.say, aside:o.aside,
+  name:"所有権に基づく動産引渡請求", chain:"原告のもと所有 ＋ 被告の現占有",
+  yaku:"不動産の明渡請求と同じく、所有と相手方の占有で足りる。", note:"現占有説による",
+  cards:[
+    {t:`原告は、${o.d}当時、${o.obj}を所有していた。`,k:"原告のもと所有",ok:true,ex:"被告が認める時点の所有（権利自白）。"},
+    {t:`被告は、${o.obj}を占有している。`,k:"被告の現占有",ok:true,ex:"口頭弁論終結時の占有。"},
+    {t:`被告は、${o.obj}を占有する権原を有しない。`,k:"占有権原の不存在",ex:"不要。占有権原は被告の抗弁。"},
+    ...(o.extra||[])
+  ]});
+
+THEMES.push({theme:"動産引渡請求", qs:[
+{
+  id:"m1", title:"即時取得 → 悪意", claim:"所有権に基づく返還請求権としての動産引渡請求権",
+  map:{X:"原告・所有者", Y:"被告・占有者", suit:"甲カメラの引渡請求",
+    others:[{id:"B",rl:"無権利の売主",pos:"R",s:1}],
+    rels:[{s:1,a:"B",b:"Y",t:"売買・引渡し"},
+          {s:2,a:"Y",b:"X",t:"Yの悪意？",sb:"Bが無権利と知っていた"}]},
+  end:"悪意に対して、被告がさらに主張する事実はない。",
+  stages:[
+  KG_MOV({d:"令和6年3月1日", obj:"甲カメラ",
+    say:"甲カメラは私のものです！友人のBに貸していたのに、いつの間にかYが持っているんです！返してください！",
+    aside:"Yは、令和6年3月1日当時、Xが甲カメラを所有していたことは認めている。",
+    extra:[{t:"原告は、Bに甲カメラを貸していた。",k:"貸していた経緯",ex:"不要。"}]}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"はぁ！？？私は令和6年3月1日に、Bから甲カメラを15万円で買って、その場で受け取ったんです！もう私のものですよ！",
+    name:"所有権喪失の抗弁（即時取得）", chain:"前主との取引行為 ＋ それに基づく引渡し",
+    yaku:"平穏・公然・善意は民法186条1項で、無過失は民法188条で推定されるので、取引行為と引渡しだけでよい。",
+    cards:[
+      {t:"Bは、被告に対し、令和6年3月1日、甲カメラを代金15万円で売った。",k:"取引行為",ok:true,ex:"即時取得の要件（民法192条）。"},
+      {t:"Bは、被告に対し、同日、上記売買契約に基づき、甲カメラを引き渡した。",k:"取引行為に基づく引渡し",ok:true,ex:"占有改定による引渡しでは即時取得できない。"},
+      {t:"被告は、Bが甲カメラの所有者であると信じていた。",k:"善意",ex:"推定されるので不要。"},
+      {t:"被告がBを所有者と信じたことに過失はなかった。",k:"無過失",ex:"推定されるので不要。"},
+      {t:"被告は、平穏かつ公然と甲カメラの占有を始めた。",k:"平穏・公然",ex:"推定されるので不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🤬",
+    say:"Yはカメラを買うとき、Bから『友達に借りてるカメラだけど売るよ』と聞いていたはずです！知ってて買ったんでしょう！",
+    name:"悪意", chain:"占有取得時の悪意",
+    yaku:"即時取得の善意は、前主が権利者だと信じていたこと。占有取得時に信じていなければ悪意。",
+    cards:[
+      {t:"被告は、上記引渡しの当時、Bが甲カメラの所有者でないことを知っていた。",k:"悪意",ok:true,ex:"占有取得時の悪意。"},
+      {t:"被告は、甲カメラを買った後に、Bが所有者でないことを知った。",k:"取得後の悪意",ex:"占有取得後の悪意では、即時取得は否定されない。"},
+      {t:"甲カメラの代金15万円は、時価よりかなり安かった。",k:"廉価での購入",ex:"悪意を推認させる間接事実で、要件事実ではない。"},
+      {t:"被告は、Bの古くからの友人である。",k:"BとYの関係",ex:"不要。"}
+    ]}
+  ]
+},
+{
+  id:"m2", title:"即時取得 → 過失 → 過失の評価障害事実", claim:"所有権に基づく返還請求権としての動産引渡請求権",
+  map:{X:"原告・所有者", Y:"被告・占有者", suit:"甲時計の引渡請求",
+    others:[{id:"B",rl:"無権利の売主",pos:"R",s:1}],
+    rels:[{s:1,a:"B",b:"Y",t:"売買・引渡し"}]},
+  end:"過失の評価障害事実に対して、原告がさらに主張する段階はない。評価根拠事実と評価障害事実を総合して判断される。",
+  stages:[
+  KG_MOV({d:"令和6年6月1日", obj:"甲時計", emo:"😠",
+    say:"甲時計は私のものです！修理に出した先のBが勝手に売ってしまって、今はYが持っています！",
+    aside:"Yは、令和6年6月1日当時、Xが甲時計を所有していたことは認めている。",
+    extra:[{t:"原告は、甲時計の修理をBに依頼していた。",k:"預けた経緯",ex:"不要。"}]}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"私は令和6年6月1日に、Bから甲時計を50万円で買って、受け取ってます！ちゃんと買ったんですよ！",
+    name:"所有権喪失の抗弁（即時取得）", chain:"前主との取引行為 ＋ それに基づく引渡し",
+    cards:[
+      {t:"Bは、被告に対し、令和6年6月1日、甲時計を代金50万円で売った。",k:"取引行為",ok:true,ex:"民法192条。"},
+      {t:"Bは、被告に対し、同日、上記売買契約に基づき、甲時計を引き渡した。",k:"取引行為に基づく引渡し",ok:true,ex:"現実の引渡し。"},
+      {t:"被告がBを所有者と信じたことに過失はなかった。",k:"無過失",ex:"推定されるので不要。"},
+      {t:"被告は、代金50万円を支払った。",k:"代金の支払",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🤬",
+    say:"甲時計の裏ぶたには、私の名前がはっきり刻んであるんです！それなのにYは、Bにどこで手に入れたのか何も聞かずに買ったんですよ！",
+    name:"過失（評価根拠事実）", chain:"過失の評価根拠事実",
+    yaku:"過失は規範的要件。過失と評価される具体的事実を原告が主張する。判断の基準時は占有取得時。",
+    cards:[
+      {t:"上記引渡しの当時、甲時計の裏ぶたには、原告の氏名が刻印されていた。",k:"疑うべき事情",ok:true,ex:"調査確認義務を生じさせる事実。"},
+      {t:"被告は、上記引渡しに際し、Bに対し、甲時計の入手経緯を何も確認しなかった。",k:"確認をしなかったこと",ok:true,ex:"調査確認義務を怠った事実。"},
+      {t:"被告には、Bを所有者と信じたことについて過失がある。",k:"過失（評価）",ex:"規範的評価そのもので、事実ではない。"},
+      {t:"被告は、買った翌月に刻印に気付いた。",k:"取得後の事情",ex:"占有取得後の事情は意味がない。"}
+    ]},
+  { abbr:"D", kind:"再々抗弁", side:"被告Y", emo:"🥹",
+    say:"Bは駅前でちゃんと店を構えている中古時計屋なんです！店頭に並んでいた時計を、保証書付きで買っただけですよ！",
+    name:"過失の評価障害事実", chain:"過失の評価障害事実",
+    yaku:"過失の評価を妨げる具体的事実を被告が主張する。",
+    cards:[
+      {t:"Bは中古時計の販売業者であり、甲時計を店頭で販売していた。",k:"取引の実情",ok:true,ex:"前主の権利を疑わなくてよい事情。"},
+      {t:"被告は、上記売買の際、Bから甲時計の保証書の交付を受けた。",k:"保証書の交付",ok:true,ex:"前主の権利を信じてよい事情。"},
+      {t:"被告に過失はなかった。",k:"無過失（評価）",ex:"規範的評価そのもので、事実ではない。"},
+      {t:"被告は、時計に詳しくない。",k:"被告の知識",ex:"過失の評価を妨げる事情とはいえない。"}
+    ]}
+  ]
+},
+{
+  id:"m3", title:"動産の対抗要件の抗弁 → 引渡し", claim:"所有権に基づく返還請求権としての動産引渡請求権",
+  map:{X:"原告・買主", Y:"被告・占有者", suit:"甲バイクの引渡請求",
+    others:[{id:"A",rl:"もとの所有者",pos:"C",s:0}],
+    rels:[{s:0,a:"A",b:"X",t:"売買（R6.5.10）"},
+          {s:1,a:"A",b:"Y",t:"売買（R6.5.20）"}]},
+  end:"原告が対抗要件を備えている以上、この事案で被告がさらに主張できる事実はない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😠",
+    say:"令和6年5月10日に、Aさんから甲バイクを30万円で買ったんです！なのに今はYが乗り回しています！",
+    aside:"Yは、Aがもと甲バイクを所有していたこと、AがXに売ったことは認めている。",
+    name:"所有権に基づく動産引渡請求", chain:"前主のもと所有 ＋ 前主・原告間の売買 ＋ 被告の現占有", note:"現占有説による",
+    cards:[
+      {t:"Aは、令和6年5月10日当時、甲バイクを所有していた。",k:"前主のもと所有",ok:true,ex:"権利自白が成立する時点の所有。"},
+      {t:"Aは、原告に対し、令和6年5月10日、甲バイクを代金30万円で売った。",k:"前主・原告間の売買",ok:true,ex:"原告の所有権取得原因。"},
+      {t:"被告は、甲バイクを占有している。",k:"被告の現占有",ok:true,ex:"口頭弁論終結時の占有。"},
+      {t:"Aは、原告に対し、甲バイクを引き渡した。",k:"原告への引渡し",ex:"請求原因には不要。対抗要件の抗弁が出たときの再抗弁になる。"},
+      {t:"原告は、Aに代金30万円を支払った。",k:"代金の支払",ex:"不要。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😏",
+    say:"私も5月20日に、Aさんから甲バイクを買ってるんです！Xさんが引渡しを受けていないなら、Xさんを所有者とは認めませんよ！",
+    name:"対抗要件の抗弁", chain:"前主・被告間の売買 ＋ 権利主張",
+    yaku:"動産の二重譲渡では、引渡しが対抗要件（民法178条）。", note:"権利抗弁説による",
+    cards:[
+      {t:"Aは、被告に対し、令和6年5月20日、甲バイクを代金35万円で売った。",k:"前主・被告間の売買",ok:true,ex:"被告が第三者に当たることを示す。"},
+      {t:"原告が対抗要件を備えるまで、原告の所有権取得を認めない。",k:"権利主張",ok:true,ex:"対抗要件の有無を争う意思。"},
+      {t:"原告は、甲バイクの引渡しを受けていない。",k:"原告の対抗要件の欠缺",ex:"不要。引渡しを受けたことを原告が再抗弁で主張する。"},
+      {t:"被告は、Aに代金35万円を支払った。",k:"代金の支払",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🙄",
+    say:"買った日に、Aさんとの間で『バイクはしばらくAさんが預かっておく』と決めて、引渡しは済ませてます！",
+    name:"対抗要件の具備（引渡し）", chain:"売買に基づく引渡し",
+    yaku:"占有改定も、動産の対抗要件としての引渡しに当たる。",
+    cards:[
+      {t:"Aは、原告に対し、令和6年5月10日、上記売買契約に基づき、占有改定の方法により甲バイクを引き渡した。",k:"対抗要件の具備（引渡し）",ok:true,ex:"民法178条の引渡し。"},
+      {t:"原告は、甲バイクに一度も乗っていない。",k:"現実の使用",ex:"不要。"},
+      {t:"原告の引渡しは、被告への引渡しより先である。",k:"引渡しの先後",ex:"対抗要件の抗弁に対しては、具備したことで足りる。"},
+      {t:"原告は、甲バイクの鍵をAに預けた。",k:"鍵の保管",ex:"不要。"}
+    ]}
+  ]
+}
+]});
+
+THEMES.push({theme:"不動産登記手続請求", qs:[
+{
+  id:"t1", title:"時効取得 → 他主占有権原", claim:"所有権に基づく妨害排除請求権としての所有権移転登記請求権",
+  map:{X:"原告・占有者", Y:"被告・登記名義人", suit:"所有権移転登記手続請求",
+    rels:[{s:0,a:"X",b:"Y",t:"20年の占有・時効援用",sb:"H16.4.1〜"},
+          {s:1,a:"Y",b:"X",t:"賃貸（H16.4.1）",sb:"他主占有権原"}]},
+  end:"この事案では、他主占有権原に対する再抗弁は出ていない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😤",
+    say:"平成16年4月1日から20年以上、甲土地に住んで使ってきました！時効で私のものです！登記を移してください！",
+    name:"時効取得による移転登記請求", chain:"ある時点の占有 ＋ 20年経過時の占有 ＋ 時効の援用 ＋ 被告名義の登記",
+    yaku:"所有の意思・平穏・公然は推定され、占有の継続は前後両時点の占有で推定される。他人の物であることは要件ではない。",
+    cards:[
+      {t:"原告は、平成16年4月1日、甲土地を占有していた。",k:"ある時点の占有",ok:true,ex:"占有の開始時点。"},
+      {t:"原告は、令和6年4月1日経過時、甲土地を占有していた。",k:"20年経過時の占有",ok:true,ex:"20年経過時点の占有。"},
+      {t:"原告は、被告に対し、令和6年6月1日、上記時効を援用するとの意思表示をした。",k:"時効の援用",ok:true,ex:"民法145条。"},
+      {t:"甲土地について、被告名義の所有権移転登記がある。",k:"被告名義の登記",ok:true,ex:"原告の所有権に対する妨害。"},
+      {t:"原告は、所有の意思をもって、平穏かつ公然と甲土地を占有した。",k:"所有の意思・平穏公然",ex:"推定される（民法186条1項）ので不要。"},
+      {t:"原告は、20年間継続して甲土地を占有した。",k:"占有の継続",ex:"前後両時点の占有で推定される（民法186条2項）。"},
+      {t:"甲土地は、被告の所有である。",k:"他人の物",ex:"取得時効の要件ではない。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😳",
+    say:"はぁぁぁ！？？時効！？平成16年4月1日に、私があなたに甲土地を月3万円で貸したんですよ！借りて使っていただけでしょう！",
+    name:"他主占有権原", chain:"性質上所有の意思のない占有取得の権原",
+    yaku:"所有の意思は外形的客観的に決まる。賃借による占有取得は、その性質上所有の意思がない（他主占有権原）。",
+    cards:[
+      {t:"被告は、原告との間で、平成16年4月1日、甲土地を賃料月額3万円で賃貸するとの合意をし、同日、これに基づいて甲土地を引き渡した。",k:"他主占有権原（賃貸借）",ok:true,ex:"賃借人としての占有には所有の意思がない。"},
+      {t:"原告は、自分が所有者だとは思っていなかった。",k:"内心の意思",ex:"所有の意思は内心ではなく外形的客観的に決まる。"},
+      {t:"原告は、甲土地の固定資産税を一度も払っていない。",k:"他主占有事情",ex:"これも抗弁になりうる（他主占有事情）が、Yの言い分にない。"},
+      {t:"原告は、所有の意思を有していなかった。",k:"所有の意思の不存在（評価）",ex:"具体的な権原か事情を主張する必要がある。"}
+    ]}
+  ]
+},
+{
+  id:"t2", title:"抵当権設定登記抹消 → 登記保持権原 → 弁済", claim:"所有権に基づく妨害排除請求権としての抵当権設定登記抹消登記請求権",
+  map:{X:"原告・所有者", Y:"被告・抵当権者", suit:"抵当権設定登記の抹消請求",
+    rels:[{s:1,a:"Y",b:"X",t:"売買（R5.4.1）",sb:"代金800万円"},
+          {s:1,a:"X",b:"Y",t:"抵当権設定",sb:"代金債権の担保"},
+          {s:2,a:"X",b:"Y",t:"代金支払（R6.3.31）",sb:"800万円"}]},
+  end:"被担保債権が消滅すれば抵当権も消滅するので、この事案で被告がさらに主張できる事実はない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😠",
+    say:"私の甲土地に、Yの抵当権の登記がついたままなんです！もう要らないはずです！抹消してください！",
+    aside:"Yは、Xが甲土地を現在所有していることは認めている。",
+    name:"抵当権設定登記抹消請求", chain:"原告の所有 ＋ 被告名義の抵当権設定登記",
+    yaku:"登記が正当な権原に基づくことは、被告が抗弁で主張する。", note:"請求原因で原告の現所有を摘示する考え方による",
+    cards:[
+      {t:"原告は、甲土地を所有している。",k:"原告の現所有",ok:true,ex:"権利自白が成立する。"},
+      {t:"甲土地について、被告名義の抵当権設定登記がある。",k:"被告名義の抵当権設定登記",ok:true,ex:"原告の所有権に対する妨害。登記の内容を具体的に示す。"},
+      {t:"上記抵当権設定登記は、実体関係を欠く無効な登記である。",k:"登記の無効",ex:"不要。登記保持権原を被告が主張する。"},
+      {t:"原告は、被告に抹消を求めたが、応じなかった。",k:"事前の請求",ex:"不要。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"何言ってるんですか！？令和5年4月1日に甲機械を800万円で売ったとき、その代金の担保として甲土地に抵当権を設定してもらったんです！登記もそれに基づくものですよ！",
+    name:"登記保持権原（抵当権）", chain:"被担保債権の発生原因事実 ＋ 抵当権設定契約 ＋ 設定当時の所有 ＋ 登記が契約に基づくこと",
+    yaku:"登記に符合する実体関係（被担保債権・設定契約・設定者の所有）と、登記がその契約に基づくことを主張する。",
+    cards:[
+      {t:"被告は、原告に対し、令和5年4月1日、甲機械を代金800万円で売った。",k:"被担保債権の発生原因事実",ok:true,ex:"登記された被担保債権と一致する実体関係。"},
+      {t:"原告は、被告との間で、同日、上記代金債権を担保するため、甲土地に抵当権を設定するとの合意をした。",k:"抵当権設定契約",ok:true,ex:"物権契約。"},
+      {t:"原告は、同日当時、甲土地を所有していた。",k:"設定当時の所有",ok:true,ex:"現所有の権利自白だけでは設定当時の所有は基礎づけられない。"},
+      {t:"上記抵当権設定登記は、上記抵当権設定契約に基づく。",k:"登記が契約に基づくこと",ok:true,ex:"登記と実体関係の結びつき。"},
+      {t:"上記抵当権設定契約は、書面でされた。",k:"書面",ex:"不要。"},
+      {t:"被告は、原告に対し、甲機械を引き渡した。",k:"甲機械の引渡し",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🙄",
+    say:"甲機械の代金800万円なら、令和6年3月31日に全額払い終わっていますよ！",
+    name:"被担保債権の弁済", chain:"被担保債権の弁済",
+    yaku:"被担保債権が消滅すれば、付従性により抵当権も消滅する。",
+    cards:[
+      {t:"原告は、被告に対し、令和6年3月31日、上記代金債務の履行として800万円を支払った。",k:"被担保債権の弁済",ok:true,ex:"弁済で被担保債権が消滅する。"},
+      {t:"原告は、支払の領収書を持っている。",k:"領収書",ex:"証拠であって要件事実ではない。"},
+      {t:"原告は、銀行から借り入れて支払った。",k:"資金の出所",ex:"不要。"},
+      {t:"被告は、抵当権を実行していない。",k:"抵当権の不実行",ex:"不要。"}
+    ]}
+  ]
+}
+]});
+
+/* 譲受債権の請求原因（A・Y間の貸金をAからXが買った） */
+const KG_ASSIGN = (o) => ({ abbr:"Kg", kind:"請求原因", side:"原告X", emo:o.emo||"😠", say:o.say,
+  name:"譲受債権請求", chain:"譲受債権の発生原因事実 ＋ 債権の取得原因事実",
+  yaku:"訴訟物はA・Y間の貸金返還請求権。原告は、その発生原因事実と、自分が債権を取得した原因（売買など）を主張する。",
+  note:"貸借型の契約は終了によって返還請求権が発生するとする考え方による",
+  cards:[
+    {t:"Aと被告は、令和6年1月10日、被告がAに100万円を返還するとの合意をした。",k:"金銭の返還の合意",ok:true,ex:"譲受債権の発生原因事実。"},
+    {t:"Aは、被告に対し、同日、100万円を交付した。",k:"金銭の交付",ok:true,ex:"譲受債権の発生原因事実。"},
+    {t:"Aと被告は、上記合意に際し、返還時期を令和6年6月30日と定めた。",k:"返還時期の合意",ok:true,ex:"譲受債権の発生原因事実。"},
+    {t:"令和6年6月30日は到来した。",k:"返還時期の到来",ok:true,ex:"譲受債権の発生原因事実。"},
+    {t:"原告は、Aとの間で、令和6年7月15日、上記貸金債権を代金90万円で買い受けるとの合意をした。",k:"債権の取得原因事実",ok:true,ex:"売買だけで足り、別に債権譲渡の合意を主張する必要はない。"},
+    {t:"Aは、被告に対し、上記債権譲渡を通知した。",k:"譲渡の通知",ex:"請求原因には不要。債務者対抗要件の抗弁が出たときの再抗弁になる。"},
+    {t:"原告は、Aに代金90万円を支払った。",k:"代金の支払",ex:"不要。"},
+    ...(o.extra||[])
+  ]});
+const MAP_ASSIGN = (o) => ({X:"原告・譲受人", Y:"被告・債務者", suit:"100万円の支払請求",
+  others:[{id:"A",rl:"譲渡人",pos:"C",s:0}, ...(o.others||[])],
+  rels:[{s:0,a:"A",b:"Y",t:"貸付（R6.1.10）"},{s:0,a:"A",b:"X",t:"債権譲渡（R6.7.15）"}, ...(o.rels||[])]});
+
+THEMES.push({theme:"譲受債権請求", qs:[
+{
+  id:"j1", title:"債務者対抗要件の抗弁 → 通知", claim:"消費貸借契約に基づく貸金返還請求権",
+  map:MAP_ASSIGN({rels:[{s:2,a:"X",b:"Y",t:"Aからの通知（R6.8.1）",sb:""}]}),
+  end:"債務者対抗要件を具備した以上、この事案で被告がさらに主張できる事実はない。",
+  stages:[
+  KG_ASSIGN({say:"Aさんから、Yに対する100万円の貸金債権を買い取りました！債権者は私です！Yさん、払ってください！"}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😳",
+    say:"はぁぁぁ！？？Aさんから何も聞いてませんよ！Aさんから通知が来るか、私が承諾するまでは、Xさんを債権者とは認めません！",
+    name:"債務者対抗要件の抗弁", chain:"権利主張",
+    yaku:"請求原因に債務者であることが現れているので、権利主張だけでよい（民法467条1項）。", note:"権利抗弁説による",
+    cards:[
+      {t:"債権譲渡につき、Aが被告に通知をし又は被告が承諾するまで、原告を債権者と認めない。",k:"権利主張",ok:true,ex:"対抗要件の有無を争う意思。"},
+      {t:"Aは、被告に対し、債権譲渡の通知をしていない。",k:"通知の欠缺",ex:"不要。通知をしたことを原告が再抗弁で主張する。"},
+      {t:"被告は、Aに返済するつもりだった。",k:"被告の意向",ex:"不要。"},
+      {t:"被告は、債権譲渡を承諾していない。",k:"承諾の欠缺",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🙄",
+    say:"Aさんは、8月1日にYさんに『債権をXに譲った』と通知を送ってますよ！",
+    name:"債務者対抗要件の具備", chain:"譲渡人による譲渡の通知",
+    yaku:"通知は譲渡の後に、譲渡人がしなければならない。承諾は譲渡の前後を問わない。",
+    cards:[
+      {t:"Aは、被告に対し、令和6年8月1日、上記債権譲渡を通知した。",k:"譲渡人による通知",ok:true,ex:"債務者対抗要件（民法467条1項）。"},
+      {t:"原告は、被告に対し、令和6年8月1日、債権を譲り受けたと通知した。",k:"譲受人による通知",ex:"通知は譲渡人がしなければならない。"},
+      {t:"Aの通知は、確定日付のある証書でされた。",k:"確定日付",ex:"債務者との関係では不要。第三者との関係で必要になる。"},
+      {t:"被告は、通知を受け取った後も支払わなかった。",k:"通知後の不払",ex:"不要。"}
+    ]}
+  ]
+},
+{
+  id:"j2", title:"譲渡制限特約の抗弁 → 承諾", claim:"消費貸借契約に基づく貸金返還請求権",
+  map:MAP_ASSIGN({rels:[{s:1,a:"Y",b:"X",t:"譲渡制限特約？",sb:"Xは知っていた"},{s:2,a:"Y",b:"X",t:"承諾（R6.9.1）"}]}),
+  end:"承諾によって特約の抗弁は放棄されたので、この事案で被告がさらに主張できる事実はない。",
+  stages:[
+  KG_ASSIGN({say:"Aさんから、Yへの100万円の貸金債権を買いました！Yさん、払ってください！"}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"Aさんとは『この債権は誰にも譲らない』って約束してたんです！Xさんだってそれを知ってて買ったでしょう！払いません！",
+    name:"譲渡制限特約による履行拒絶", chain:"譲渡制限特約 ＋ 譲受人の悪意 ＋ 権利主張",
+    yaku:"特約があっても譲渡は有効だが、悪意・重過失の譲受人には履行を拒める（民法466条2項・3項）。権利抗弁。",
+    cards:[
+      {t:"Aと被告は、上記消費貸借契約の際、上記貸金債権の譲渡を禁止するとの合意をした。",k:"譲渡制限特約",ok:true,ex:"譲渡制限の意思表示。"},
+      {t:"原告は、上記債権を譲り受けた際、上記特約を知っていた。",k:"譲受人の悪意",ok:true,ex:"悪意又は重過失が必要。"},
+      {t:"被告は、上記貸金債務の履行を拒絶する。",k:"権利主張",ok:true,ex:"履行拒絶の権利主張。"},
+      {t:"上記債権譲渡は無効である。",k:"譲渡の無効",ex:"特約があっても譲渡は有効（民法466条2項）。"},
+      {t:"Aは、上記債権譲渡を被告に通知していない。",k:"通知の欠缺",ex:"債務者対抗要件の抗弁の問題で、この抗弁には不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🙄",
+    say:"特約があったのは知ってます。でもYさん、9月1日に『Xさんに払うのでかまわない』って承諾してくれましたよね！",
+    name:"承諾", chain:"債務者の承諾",
+    yaku:"承諾は、特約に基づく抗弁を放棄する意思表示。譲渡の前後を問わない。",
+    cards:[
+      {t:"被告は、原告に対し、令和6年9月1日、上記債権譲渡を承諾した。",k:"債務者の承諾",ok:true,ex:"譲受人・譲渡人のどちらにしてもよい。"},
+      {t:"原告は、被告に対し、Aへの履行を催告した。",k:"履行の催告",ex:"催告と相当期間の経過も再抗弁になるが、Xの言い分にない。"},
+      {t:"Aは、被告に対し、債権譲渡を通知した。",k:"譲渡の通知",ex:"債務者対抗要件の問題で、特約の抗弁には効かない。"},
+      {t:"原告は、特約の内容を詳しくは知らなかった。",k:"特約の認識の程度",ex:"不要。"}
+    ]}
+  ]
+},
+{
+  id:"j3", title:"債権喪失の抗弁 → 第三者対抗要件 → 先後", claim:"消費貸借契約に基づく貸金返還請求権",
+  map:MAP_ASSIGN({others:[{id:"B",rl:"二重譲受人",pos:"R",s:1}],
+    rels:[{s:1,a:"A",b:"B",t:"二重譲渡"}]}),
+  end:"Bが先に第三者対抗要件を備えたので、この事案で原告がさらに主張できる事実はない。",
+  stages:[
+  KG_ASSIGN({say:"Aさんから、Yへの100万円の貸金債権を買いました！債権者は私です！"}),
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😏",
+    say:"その債権、AさんはBさんにも売っていて、7月22日に確定日付のある通知も来てますよ！債権者はBさんです！",
+    name:"債権喪失の抗弁", chain:"Bの債権取得原因事実 ＋ Bの第三者対抗要件の具備",
+    yaku:"二重譲渡で、Bが第三者対抗要件（確定日付のある通知・承諾）を備えると、原告は債権を失う。",
+    cards:[
+      {t:"Aは、Bとの間で、令和6年7月20日、上記貸金債権をBに売るとの合意をした。",k:"Bの債権取得原因事実",ok:true,ex:"二重譲渡。"},
+      {t:"Aは、被告に対し、令和6年7月22日、Bへの上記債権譲渡を確定日付のある証書によって通知した。",k:"Bの第三者対抗要件の具備",ok:true,ex:"民法467条2項。"},
+      {t:"Aは、被告に対し、Bへの債権譲渡を普通郵便で通知した。",k:"確定日付のない通知",ex:"第三者に対抗するには確定日付のある証書が必要。"},
+      {t:"被告は、Bに100万円を支払うつもりである。",k:"被告の意向",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"😤",
+    say:"私への譲渡だって、7月25日に確定日付のある通知がされてますよ！",
+    name:"第三者対抗要件の具備", chain:"原告への譲渡の確定日付のある通知",
+    yaku:"原告も第三者対抗要件を備えれば、債務者に請求できる（優劣は通知の到達の先後で決まる）。",
+    cards:[
+      {t:"Aは、被告に対し、令和6年7月25日、原告への上記債権譲渡を確定日付のある証書によって通知した。",k:"原告の第三者対抗要件の具備",ok:true,ex:"民法467条2項。"},
+      {t:"原告は、Aに代金を支払った。",k:"代金の支払",ex:"不要。"},
+      {t:"原告は、Bより先にAと売買契約を結んだ。",k:"譲渡契約の先後",ex:"優劣は契約の先後では決まらない。"},
+      {t:"Aは、被告に対し、原告への譲渡を電話で伝えた。",k:"口頭の通知",ex:"確定日付のある証書によらない。"}
+    ]},
+  { abbr:"D", kind:"再々抗弁", side:"被告Y", emo:"😏",
+    say:"Bさんへの通知は7月22日に届いていて、Xさんへの通知が届いたのは7月26日です！Bさんの方が先ですよ！",
+    name:"Bの第三者対抗要件の具備が先立つこと", chain:"Bへの譲渡の確定日付のある通知の到達が先であること",
+    yaku:"二重譲受人の優劣は、確定日付のある通知が債務者に到達した日時の先後で決まる（最判昭49.3.7）。",
+    cards:[
+      {t:"Bへの譲渡についての上記通知は、原告への譲渡についての上記通知より先に被告に到達した。",k:"到達の先後",ok:true,ex:"到達時説。"},
+      {t:"原告への通知の確定日付は、Bへの通知の確定日付より後である。",k:"確定日付の先後",ex:"基準は確定日付の先後ではなく、到達の先後。"},
+      {t:"Bは、Aに代金を支払った。",k:"Bの代金支払",ex:"不要。"},
+      {t:"被告は、Bに対して弁済した。",k:"Bへの弁済",ex:"別の抗弁で、Yの言い分にない。"}
+    ]}
+  ]
+}
+]});
+
+THEMES.push({theme:"債権者代位・詐害行為取消", qs:[
+{
+  id:"d1", title:"債権者代位 → 被保全債権の履行期限 → 到来", claim:"A・Y間の消費貸借契約に基づく貸金返還請求権（代位行使）",
+  map:{X:"原告・債権者", Y:"被告・Aの債務者", suit:"200万円の支払請求（代位）",
+    others:[{id:"A",rl:"債務者",pos:"C",s:0}],
+    rels:[{s:0,a:"X",b:"A",t:"売買代金債権"},{s:0,a:"A",b:"Y",t:"貸付（R5.10.1）"}]},
+  end:"期限の到来に対して、被告がさらに主張できる事実はない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😠",
+    say:"Aに甲機械を200万円で売ったのに、Aはお金がないと言って払いません。でもAはYに200万円を貸してるんです！Aの代わりに、Yから私に払ってもらいます！",
+    name:"債権者代位", chain:"被保全債権の発生原因事実 ＋ 債務者の無資力 ＋ 被代位権利の発生原因事実",
+    yaku:"訴訟物はAのYに対する貸金返還請求権。被保全債権と無資力は当事者適格（代位の原因）を基礎づける。", note:"無資力を事実概念とみる見解による",
+    cards:[
+      {t:"原告は、Aに対し、令和6年4月1日、甲機械を代金200万円で売った。",k:"被保全債権の発生原因事実",ok:true,ex:"売買型なので発生原因事実だけでよい。"},
+      {t:"Aの資力は、上記代金債権を弁済するのに十分でない。",k:"債務者の無資力",ok:true,ex:"代位行使の時点（口頭弁論終結時）の無資力。"},
+      {t:"Aと被告は、令和5年10月1日、被告がAに200万円を返還するとの合意をした。",k:"被代位権利（返還の合意）",ok:true,ex:"被代位権利の発生原因事実。"},
+      {t:"Aは、被告に対し、同日、200万円を交付した。",k:"被代位権利（交付）",ok:true,ex:"被代位権利の発生原因事実。"},
+      {t:"Aと被告は、上記合意に際し、返還時期を令和6年3月31日と定めた。",k:"被代位権利（返還時期の合意）",ok:true,ex:"被代位権利の発生原因事実。"},
+      {t:"令和6年3月31日は到来した。",k:"被代位権利（返還時期の到来）",ok:true,ex:"被代位権利の発生原因事実。"},
+      {t:"原告の代金債権は、Aの貸金債権より前に発生した。",k:"被保全債権の発生時期",ex:"代位では不要（詐害行為取消とは異なる）。"},
+      {t:"原告は、Aに甲機械を引き渡した。",k:"目的物の引渡し",ex:"被保全債権に同時履行の抗弁権が付いていても代位できるので不要。"},
+      {t:"Aは、被告に貸金の返還を求めていない。",k:"債務者の権利不行使",ex:"不要。Aが行使したことは被告が抗弁で主張する。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😏",
+    say:"XさんとAさんの売買って、代金は12月31日払いの約束でしたよね？期限が来てないのに、代わりに請求なんてできませんよ！",
+    name:"被保全債権の履行期限", chain:"被保全債権の履行期限の合意",
+    yaku:"債権者は、被保全債権の期限が到来しない間は代位行使できない（民法423条2項）。",
+    cards:[
+      {t:"原告とAは、上記売買契約の際、代金支払期日を令和6年12月31日とするとの合意をした。",k:"被保全債権の履行期限の合意",ok:true,ex:"代位の原因を妨げる抗弁。"},
+      {t:"令和6年12月31日は、まだ到来していない。",k:"期限の未到来",ex:"不要。到来は原告が再抗弁で主張する。"},
+      {t:"被告は、Aに200万円を返した。",k:"Aへの弁済",ex:"これも抗弁になりうるが、Yの言い分にない。"},
+      {t:"被告は、原告と面識がない。",k:"原告との関係",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🙄",
+    say:"12月31日なんて、とっくに過ぎてますよ！",
+    name:"期限の到来", chain:"期限の到来",
+    cards:[
+      {t:"令和6年12月31日は到来した。",k:"期限の到来",ok:true,ex:"顕著な事実。"},
+      {t:"原告は、Aに対し、令和7年1月5日、代金の支払を催告した。",k:"催告",ex:"確定期限なら到来だけで足りる。"},
+      {t:"Aは、期限を過ぎても代金を払っていない。",k:"不払",ex:"不要。"},
+      {t:"Aの資力は、その後も回復していない。",k:"無資力の継続",ex:"請求原因で主張済み。"}
+    ]}
+  ]
+},
+{
+  id:"d2", title:"詐害行為取消 → 受益者の善意", claim:"詐害行為取消権",
+  map:{X:"原告・債権者", Y:"被告・受益者", suit:"贈与の取消し・登記抹消請求",
+    others:[{id:"A",rl:"債務者",pos:"C",s:0}],
+    rels:[{s:0,a:"X",b:"A",t:"売買代金債権"},{s:0,a:"A",b:"Y",t:"甲土地の贈与"}]},
+  end:"この事案では、受益者の善意に対する再抗弁は出ていない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"🤬",
+    say:"Aは私への代金1000万円を払わないまま、唯一の財産だった甲土地をYにタダであげて、登記まで移したんです！Aも、私が困るのを分かっていてやったんです！贈与を取り消して、登記を戻してください！",
+    name:"詐害行為取消請求", chain:"被保全債権 ＋ 財産権を目的とする行為 ＋ 行為前の原因 ＋ 債権者を害すること ＋ 詐害の意思",
+    yaku:"贈与の取消しと登記の抹消を求める場合の請求原因。受益者の悪意は要件ではなく、善意が抗弁になる。",
+    cards:[
+      {t:"原告は、Aに対し、令和5年6月1日、乙建物を代金1000万円で売った。",k:"被保全債権の発生原因事実",ok:true,ex:"取消しを求める債権者の債権。"},
+      {t:"Aは、被告に対し、令和6年2月1日、甲土地を贈与した。",k:"財産権を目的とする行為",ok:true,ex:"取り消す対象の行為。"},
+      {t:"Aは、上記贈与の当時、甲土地を所有していた。",k:"贈与当時の所有",ok:true,ex:"登記の抹消を求めるために必要。"},
+      {t:"被告は、上記贈与に基づき、甲土地について所有権移転登記を備えた。",k:"贈与に基づく登記",ok:true,ex:"登記の抹消を求めるために必要。"},
+      {t:"上記売買は、上記贈与に先立つ。",k:"行為前の原因に基づく債権",ok:true,ex:"被保全債権は詐害行為の前の原因に基づくことが必要（民法424条3項）。"},
+      {t:"Aには、上記贈与の当時、甲土地のほかに見るべき資産がなかった。",k:"債権者を害すること",ok:true,ex:"無資力。"},
+      {t:"Aは、上記贈与の際、これによって債権者を害することを知っていた。",k:"詐害の意思",ok:true,ex:"債務者の悪意。"},
+      {t:"被告は、上記贈与の際、Aの債権者を害することを知っていた。",k:"受益者の悪意",ex:"不要。善意であることを被告が抗弁で主張する。"},
+      {t:"被告は、Aの弟である。",k:"Aと被告の関係",ex:"詐害の意思などを推認させる間接事実で、要件事実ではない。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"🥹",
+    say:"兄から土地をもらったとき、兄に借金があるなんて全然知らなかったんです！誰かに迷惑をかけるなんて、思いもしませんでした！",
+    name:"受益者の善意", chain:"受益者の善意",
+    yaku:"受益者が行為の時に債権者を害することを知らなかったときは、取り消せない（民法424条1項ただし書）。",
+    cards:[
+      {t:"被告は、上記贈与の際、これによってAの債権者を害することを知らなかった。",k:"受益者の善意",ok:true,ex:"受益者が主張立証する。"},
+      {t:"被告は、甲土地をもらった後、Aの借金を知った。",k:"後から知ったこと",ex:"判断の基準は行為の時。"},
+      {t:"Aは、令和6年10月、宝くじに当たり資力が回復した。",k:"資力の回復",ex:"これも抗弁になりうるが、Yの言い分にない。"},
+      {t:"被告は、甲土地に家を建てるつもりだった。",k:"被告の予定",ex:"不要。"}
+    ]}
+  ]
+}
+]});
+
+THEMES.push({theme:"請負代金請求", qs:[
+{
+  id:"u1", title:"同時履行の抗弁 → 引渡し", claim:"請負契約に基づく報酬支払請求権",
+  map:{X:"原告・請負人", Y:"被告・注文者", suit:"報酬100万円の支払請求",
+    rels:[{s:0,a:"Y",b:"X",t:"請負（R6.2.1）",sb:"看板製作・報酬100万円"},
+          {s:1,a:"Y",b:"X",t:"支払拒絶",sb:"引渡しまで"},
+          {s:2,a:"X",b:"Y",t:"引渡し（R6.3.20）"}]},
+  end:"引渡しに対して、被告がさらに主張できる事実は、この事案では出ていない。",
+  stages:[
+  { abbr:"Kg", kind:"請求原因", side:"原告X", emo:"😡",
+    say:"Yのお店の看板を100万円で作る約束をして、3月15日に完成させたんです！報酬を払ってください！",
+    name:"請負代金請求", chain:"請負契約の締結 ＋ 仕事の完成",
+    yaku:"報酬は仕事の完成によって請求できる。目的物の引渡しは請求原因に不要（同時履行の再抗弁で問題になる）。",
+    cards:[
+      {t:"原告は、被告との間で、令和6年2月1日、被告の店舗の看板を報酬100万円で製作するとの合意をした。",k:"請負契約の締結",ok:true,ex:"仕事の内容と報酬額の合意。"},
+      {t:"原告は、令和6年3月15日、上記看板を完成させた。",k:"仕事の完成",ok:true,ex:"報酬請求の要件。"},
+      {t:"原告は、被告に対し、上記看板を引き渡した。",k:"目的物の引渡し",ex:"請求原因には不要。同時履行の抗弁に対する再抗弁になる。"},
+      {t:"原告は、看板の材料を自分で調達した。",k:"材料の調達",ex:"不要。"},
+      {t:"原告と被告は、報酬の支払日を完成の翌月末と定めた。",k:"支払期日の合意",ex:"付款で、請求原因に不要。"}
+    ]},
+  { abbr:"E", kind:"抗弁", side:"被告Y", emo:"😤",
+    say:"完成したって言われても、看板はまだ届いてないんですけど！？渡してもらうまでは払いません！",
+    name:"同時履行の抗弁", chain:"権利主張",
+    yaku:"引渡しを要する請負では、報酬は引渡しと同時に支払う（民法633条）。引渡しを要することが請求原因に現れていれば、権利主張だけでよい。",
+    cards:[
+      {t:"被告は、原告が上記看板を引き渡すまで、報酬の支払を拒絶する。",k:"権利主張",ok:true,ex:"同時履行の抗弁権の行使。"},
+      {t:"原告は、被告に上記看板を引き渡していない。",k:"引渡しの不存在",ex:"不要。引き渡したことを原告が再抗弁で主張する。"},
+      {t:"上記看板には、一部塗装のむらがある。",k:"契約不適合",ex:"修補に関する別の抗弁の問題で、Yの言い分にない。"},
+      {t:"被告は、看板の設置工事を別の業者に頼んだ。",k:"被告の事情",ex:"不要。"}
+    ]},
+  { abbr:"R", kind:"再抗弁", side:"原告X", emo:"🙄",
+    say:"はぁ！？？看板なら3月20日にお店に届けて、取り付けまで済ませてますよ！",
+    name:"反対給付の履行（引渡し）", chain:"目的物の引渡し",
+    yaku:"引渡しがされれば、同時履行の抗弁権は消滅する。",
+    cards:[
+      {t:"原告は、被告に対し、令和6年3月20日、上記請負契約に基づき、上記看板を引き渡した。",k:"目的物の引渡し",ok:true,ex:"反対給付の履行。"},
+      {t:"原告は、被告に看板の完成を連絡した。",k:"完成の連絡",ex:"引渡しではない。"},
+      {t:"原告と被告は、報酬を引渡しより先に支払うと合意した。",k:"先履行の合意",ex:"これも再抗弁になるが、Xの言い分にない。"},
+      {t:"被告の従業員は、受領書に署名した。",k:"受領書",ex:"証拠であって要件事実ではない。"}
+    ]}
+  ]
+}
+]});
+
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const nReq = st => st.cards.filter(c=>c.ok).length;
+const base = st => 10 + 10*nReq(st);
+const MISS = 10;
+
+const QS = [];
+THEMES.forEach((th,ti)=>th.qs.forEach((q,k)=>QS.push({...q, theme:th.theme, ti, no:k+1})));
+
+const store = {
+  get(){ try { return JSON.parse(localStorage.getItem("ykp-cleared")||"{}"); } catch(e){ return {}; } },
+  set(id){ try { const o = store.get(); o[id] = 1; localStorage.setItem("ykp-cleared", JSON.stringify(o)); } catch(e){} }
+};
+
+let S = {score:0};
+const Q = () => QS[S.qi];
+const ST = () => Q().stages[S.s];
+
+/* ---- 目次 ---- */
+function showToc(){
+  const done = store.get();
+  $("toc").innerHTML = `<p class="lead">テーマを選び、言い分を読んで必要な事実カードを選びます。請求原因から順に、抗弁・再抗弁と攻撃防御をたどります。</p>` +
+    THEMES.map((th,ti)=>`<section class="theme"><h2>${esc(th.theme)}<span>${th.qs.length}問</span></h2><ul class="qlist">` +
+      QS.map((q,i)=>[q,i]).filter(([q])=>q.ti===ti).map(([q,i])=>`<li><button class="qbtn" type="button" data-i="${i}">
+        <span class="no">${q.no}</span><span class="tt">${esc(q.title)}</span>
+        ${done[q.id]?'<span class="ck">済</span>':''}
+        <span class="fl">${q.stages.map(s=>s.abbr).join(" → ")}</span></button></li>`).join("") +
+    `</ul></section>`).join("");
+  $("toc").querySelectorAll(".qbtn").forEach(b=>b.onclick=()=>startQuestion(+b.dataset.i));
+  $("toc").hidden = false; $("game").hidden = true; $("stats").hidden = true;
+}
+
+/* ---- 出題 ---- */
+function startQuestion(i){
+  S.qi = i; S.s = 0; S.log = [];
+  $("toc").hidden = true; $("game").hidden = false; $("stats").hidden = false;
+  startStage(); window.scrollTo({top:0});
+}
+function startStage(){
+  S.deck = shuffle(ST().cards.map((c,i)=>({...c,id:i})));
+  S.sel = new Set(); S.tries = 0; S.done = false;
+  $("result").hidden = true; $("result").innerHTML = "";
+  $("actions").hidden = false; $("btnReveal").hidden = true;
+  render();
+}
+function render(){
+  const q = Q(), st = ST();
+  $("score").textContent = S.score;
+  $("stage").textContent = st.abbr;
+  const prev = q.stages.slice(0,S.s).map(x=>`<div>${x.side} ${x.emo}「${esc(x.say)}」</div>`).join("");
+  $("odai").innerHTML = `<span class="eyebrow">${esc(q.theme)}　第${q.no}問</span><h2>${esc(q.title)}</h2>
+    <div class="claim">訴訟物：<b>${esc(q.claim)}</b></div>
+    <div class="map">${mapSVG(q.map, S.s)}</div>
+    <div class="say"><b>${st.side} ${st.emo}</b><p class="line">「${esc(st.say)}」</p>${st.aside?`<p class="aside">※${esc(st.aside)}</p>`:""}${prev?`<div class="prev">${prev}</div>`:""}</div>`;
+  $("howto").textContent = `「${st.name}」に必要なカードは？`;
+  const h = $("hand"); h.innerHTML = "";
+  S.deck.forEach((c,i)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "card"; b.disabled = S.done;
+    b.setAttribute("aria-pressed", S.sel.has(c.id));
+    b.innerHTML = `<span class="no">FACT ${i+1}</span><span class="tx">${esc(c.t)}</span>`;
+    b.onclick = ()=>{ S.sel.has(c.id) ? S.sel.delete(c.id) : S.sel.add(c.id); render(); };
+    h.appendChild(b);
+  });
+  const n = S.sel.size;
+  $("btnPlay").disabled = S.done || !n;
+  $("btnPlay").textContent = n ? `選んだ${n}枚で主張する` : "選んだカードで主張する";
+  $("meta").textContent = S.tries ? `誤答 ${S.tries}回` : "";
+  renderBD();
+}
+function renderBD(){
+  const q = Q();
+  const rows = q.stages.map((st,i)=>{
+    const L = S.log[i];
+    const body = L
+      ? `<ol>${L.ids.map(id=>st.cards[id]).map(c=>`<li><b>${esc(c.k)}</b><span>${esc(c.t)}</span></li>`).join("")}</ol><div class="st">${L.how}</div>`
+      : `<div class="empty">—</div>`;
+    return `<div class="blk"><div class="ab">${st.abbr}<small>${st.kind}</small></div><div><div class="nm">${esc(st.name)}</div>${body}</div></div>`;
+  }).join("");
+  $("bd").innerHTML = `<h3>ブロック・ダイアグラム<span>${esc(q.title)}</span></h3>${rows}`;
+}
+
+$("btnBack").onclick = showToc;
+$("btnPlay").onclick = ()=>{
+  const st = ST();
+  const req = st.cards.map((c,i)=>i).filter(i=>st.cards[i].ok);
+  const picked = [...S.sel];
+  const missing = req.filter(i=>!S.sel.has(i)).length;
+  const extra = picked.filter(i=>!st.cards[i].ok);
+  if (!missing && !extra.length){ closeStage("ok", base(st)); return; }
+  // 誤答：選んだカードだけを添削し、足りないカードは明かさない
+  S.tries++; S.score -= MISS;
+  const items = picked.map(i=>st.cards[i]).sort((a,b)=>(b.ok?1:0)-(a.ok?1:0)).map(c=>`<li>
+      <span class="tag ${c.ok?"req":"dum"}">${c.ok?"要件事実":"不要"}</span>
+      <span class="ft">【${esc(c.k)}】${c.ok?'<span class="mark good">○</span>':'<span class="mark bad">× 不要</span>'}</span>
+      <span class="ex">${c.ok?"要件事実です。":esc(c.ex)}</span></li>`).join("");
+  const msg = [missing?`要件事実があと${missing}つ不足しています。`:"", extra.length?`要件事実でない事実を${extra.length}つ選んでいます。`:""].join("");
+  $("result").innerHTML = `<div class="result">
+      <div class="verdict"><h3>${missing ? (st.abbr==="Kg" ? "主張自体失当" : "要件事実の不足") : "不要な事実の主張"}</h3><span class="delta minus">−${MISS}点</span></div>
+      <p>${msg}選び直してください。</p>
+      <ul class="review">${items}</ul></div>`;
+  $("result").hidden = false; $("btnReveal").hidden = false;
+  render();
+};
+$("btnReveal").onclick = ()=>{
+  S.sel = new Set(ST().cards.map((c,i)=>i).filter(i=>ST().cards[i].ok));
+  closeStage("reveal", 0);
+};
+function closeStage(how, delta){
+  const q = Q(), st = ST();
+  S.score += delta; S.done = true;
+  S.log[S.s] = {ids:[...S.sel], how: how==="ok" ? (S.tries ? `正解（誤答${S.tries}回）` : "正解") : "解答を表示"};
+  $("actions").hidden = true;
+  render();
+  const items = st.cards.slice().sort((a,b)=>(b.ok?1:0)-(a.ok?1:0)).map(c=>`<li>
+      <span class="tag ${c.ok?"req":"dum"}">${c.ok?"要件事実":"不要"}</span>
+      <span class="ft">【${esc(c.k)}】${esc(c.t)}</span>
+      <span class="ex">${esc(c.ex)}</span></li>`).join("");
+  const lastStage = S.s === q.stages.length-1;
+  if (lastStage) store.set(q.id);
+  const next = q.stages[S.s+1];
+  const btns = !lastStage
+    ? `<button class="btn primary" id="btnNext" type="button">次へ：${next.abbr} ${next.kind}「${esc(next.name)}」（${next.side.slice(0,2)}）</button>`
+    : (S.qi < QS.length-1 ? `<button class="btn primary" id="btnNextQ" type="button">次の問題へ</button>` : "") + `<button class="btn" id="btnToc" type="button">目次へ</button>`;
+  $("result").innerHTML = `<div class="result">
+      <div class="verdict"><h3>${how==="ok"?"正解":"解答"}：${esc(st.name)}</h3><span class="delta ${delta>0?"plus":"zero"}">+${delta}点</span></div>
+      <p class="yaku"><b>要件事実：${esc(st.chain)}</b>${st.yaku?`<br>${esc(st.yaku)}`:""}</p>
+      ${st.note?`<p class="note">※${esc(st.note)}</p>`:""}
+      ${lastStage && q.end?`<p class="yaku"><b>以後の主張</b><br>${esc(q.end)}</p>`:""}
+      <ul class="review">${items}</ul>
+      <div class="actions">${btns}</div></div>`;
+  $("result").hidden = false;
+  if ($("btnNext")) $("btnNext").onclick = ()=>{ S.s++; startStage(); window.scrollTo({top:0}); };
+  if ($("btnNextQ")) $("btnNextQ").onclick = ()=>startQuestion(S.qi+1);
+  if ($("btnToc")) $("btnToc").onclick = ()=>{ showToc(); window.scrollTo({top:0}); };
+  const f = $("btnNext") || $("btnNextQ") || $("btnToc"); f.focus({preventScroll:true});
+}
+
+/* ---- 関係図 ----
+   上段：左に原告X、右に被告Y。X・Y間は訴え（金色の太矢印）と法律関係を上から並べる。
+   下段：第三者（A・Bなど）。言い分に出てきた段階で表示する。 */
+function mapSVG(m, stage){
+  const W = 340, BW = 84, XL = 6, YL = W-6-BW, A1 = XL+BW+4, A2 = YL-4, RH = 46, mid = (A1+A2)/2;
+  const top = new Set(["X","Y"]);
+  const rels = m.rels.filter(r=>r.s <= stage);
+  const xy = rels.filter(r=>top.has(r.a) && top.has(r.b));
+  const lows = (m.others||[]).filter(o=>(o.s||0) <= stage);
+  const boxH = Math.max((xy.length+1)*RH, 64);
+  const lowY = boxH + 58, LH = 44;
+  const H = lows.length ? lowY + LH + 6 : boxH + 8;
+  const PX = {L:XL+BW/2, C:W/2, R:YL+BW/2};
+  const P = {X:{x0:XL,x1:XL+BW,y0:0,y1:boxH}, Y:{x0:YL,x1:YL+BW,y0:0,y1:boxH}};
+  lows.forEach(o=>{ const cx = PX[o.pos||"C"]; P[o.id] = {x0:cx-BW/2+4, x1:cx+BW/2-4, y0:lowY, y1:lowY+LH}; });
+  const cx = id => (P[id].x0+P[id].x1)/2;
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+  let g = `<defs>
+    <marker id="mt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="ah" d="M0,0L10,5L0,10z"/></marker>
+    <marker id="mg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path class="ah g" d="M0,0L10,5L0,10z"/></marker></defs>`;
+  const box = (p, id, rl, big) => `<g class="pty"><rect x="${p.x0}" y="${p.y0}" width="${p.x1-p.x0}" height="${p.y1-p.y0}" rx="6"/>
+    <text class="id" x="${(p.x0+p.x1)/2}" y="${(p.y0+p.y1)/2+(big?2:-1)}" text-anchor="middle"${big?"":' style="font-size:16px"'}>${id}</text>
+    <text class="rl" x="${(p.x0+p.x1)/2}" y="${(p.y0+p.y1)/2+(big?17:13)}" text-anchor="middle">${esc(rl)}</text></g>`;
+  g += box(P.X,"X",m.X,true) + box(P.Y,"Y",m.Y,true);
+  const hline = (y, dir, cls) => { const [a,b] = dir==="YX" ? [A2,A1] : [A1,A2];
+    return `<line x1="${a}" y1="${y}" x2="${b}" y2="${y}" marker-end="url(#${cls==="suit"?"mg":"mt"})"/>`; };
+  g += `<g class="suit"><text class="t" x="${mid}" y="${RH/2-6}" text-anchor="middle">${esc(m.suit)}</text>${hline(RH/2+4,"XY","suit")}</g>`;
+  xy.forEach((r,i)=>{ const y = (i+1)*RH + RH/2;
+    g += `<g class="rel"><text class="t" x="${mid}" y="${y-6}" text-anchor="middle">${esc(r.t)}</text>${hline(y, r.a==="Y"?"YX":"XY")}
+      ${r.sb?`<text class="sb" x="${mid}" y="${y+14}" text-anchor="middle">${esc(r.sb)}</text>`:""}</g>`; });
+  rels.filter(r=>!(top.has(r.a) && top.has(r.b))).forEach(r=>{
+    if (!P[r.a] || !P[r.b]) return;
+    const a = P[r.a], b = P[r.b];
+    let x1,y1,x2,y2,lx,ly,anc="middle";
+    if (a.y0 === b.y0){ // 下段どうし
+      const l = a.x0 < b.x0; x1 = l?a.x1:a.x0; x2 = l?b.x0:b.x1; y1 = y2 = a.y0+LH/2; lx=(x1+x2)/2; ly=y1-6;
+    } else {
+      const up = a.y0 > b.y0, T = up?b:a, Bt = up?a:b;
+      const tx = clamp(cx(up?r.a:r.b) , T.x0+12, T.x1-12), bx = clamp(cx(up?r.b:r.a), Bt.x0+12, Bt.x1-12);
+      const ty = T.y1+2, by = Bt.y0-2;
+      [x1,y1,x2,y2] = up ? [bx,by,tx,ty] : [tx,ty,bx,by];
+      lx = (x1+x2)/2; ly = (y1+y2)/2+4;
+      if (Math.abs(x1-x2) < 4){ const left = lx > W/2; lx += left?-6:6; anc = left?"end":"start"; }
+    }
+    g += `<g class="bot"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" marker-end="url(#mt)"/>
+      <text class="t" x="${lx}" y="${ly}" text-anchor="${anc}">${esc(r.t)}</text></g>`;
+  });
+  lows.forEach(o=>{ g += box(P[o.id], o.id, o.rl, false); });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="事案の関係図">${g}</svg>`;
+}
+
+showToc();
+</script>
+
+</body>
+</html>
