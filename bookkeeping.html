@@ -223,6 +223,9 @@
     /* 分類と仕訳の向きが逆の科目：左半分＝本当の分類、右半分＝仕訳の向き */
     .tag.split, .acct-tag.split { border: 1.5px solid transparent; }
     .tag.as-li, .acct-tag.as-li { color:#5D4037; background: linear-gradient(90deg,#FFF9C4 50%,#FCE4EC 50%) padding-box, linear-gradient(90deg,#F9C400 50%,#C2185B 50%) border-box; }
+    .tag.eq-rv, .acct-tag.eq-rv { color:#BF4A00; background: linear-gradient(90deg,#FFF3E0 50%,#E1F5FE 50%) padding-box, linear-gradient(90deg,#FB8C00 50%,#0288D1 50%) border-box; }
+    .tag.eq-ex, .acct-tag.eq-ex { color:#BF4A00; background: linear-gradient(90deg,#FFF3E0 50%,#E8F5E9 50%) padding-box, linear-gradient(90deg,#FB8C00 50%,#388E3C 50%) border-box; }
+    .tag.eq-rx, .acct-tag.eq-rx { color:#BF4A00; background: linear-gradient(90deg,#FFF3E0 50%,#E1F5FE 50%,#E1F5FE 75%,#E8F5E9 75%) padding-box, linear-gradient(90deg,#FB8C00 50%,#0288D1 50%,#0288D1 75%,#388E3C 75%) border-box; }
     .tag.eq-as, .acct-tag.eq-as { color:#BF4A00; background: linear-gradient(90deg,#FFF3E0 50%,#FFF9C4 50%) padding-box, linear-gradient(90deg,#FB8C00 50%,#F9C400 50%) border-box; }
     /* 勘定科目名の色分けタグ（表示区分クイズ等、"解答を隠す"の対象にしないため.tagとは別クラス） */
     .acct-tag { padding: 4px 11px; border-radius: 12px; font-size: 13px; font-weight: 700; text-align: center; display:inline-block; }
@@ -416,6 +419,9 @@
     .exp-q-card mark.q-equity { background:#FDC475; }
     .exp-q-card mark.q-other { background:#C6CDD3; }
     .exp-q-card mark.q-as-li { background: linear-gradient(90deg,#FCF569 50%,#FE8980 50%); -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+    .exp-q-card mark.q-eq-rv { background: linear-gradient(90deg,#FDC475 50%,#8FE0FB 50%); -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+    .exp-q-card mark.q-eq-ex { background: linear-gradient(90deg,#FDC475 50%,#95D15F 50%); -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+    .exp-q-card mark.q-eq-rx { background: linear-gradient(90deg,#FDC475 50%,#8FE0FB 50%,#8FE0FB 75%,#95D15F 75%); -webkit-box-decoration-break:clone; box-decoration-break:clone; }
     .exp-q-card mark.q-eq-as { background: linear-gradient(90deg,#FDC475 50%,#FCF569 50%); -webkit-box-decoration-break:clone; box-decoration-break:clone; }
     .q-en-trans { margin-top:8px; font-size:12px; color:var(--text-sub,#666); font-weight:400; border-top:1px solid var(--border); padding-top:6px; font-style:italic; }
     .q-paren { color:#9AA0A6; font-weight:400; }
@@ -717,10 +723,16 @@ const CONTRA_ASSET = new Set(['貸倒引当金','減価償却累計額','車両�
   'リース資産減価償却累計額','繰延内部利益']);
 // 本当の分類と仕訳の向きが逆になる科目：左半分＝本当の分類の色、右半分＝仕訳の向きの色
 // 資産のマイナス（貸方に貯まる）：資産｜負債、純資産のマイナス（借方に貯まる）：純資産｜資産
-const CONTRA_EQUITY = new Set(['事業主貸','引出金（事業主貸）','自己株式','自己株式処分差損']);
+const CONTRA_EQUITY = new Set(['事業主貸','引出金（事業主貸）','自己株式']);
+// 純資産なのに損益のように動く（P/Lを通らず純資産に直接入る）：右半分を収益／費用の色に
+// 時価の上下で向きが変わるものは右半分を収益と費用の半々（カードで借方・貸方が分からないように）
+const EQUITY_PL_BOTH = new Set(['その他有価証券評価差額金','繰延ヘッジ損益','為替換算調整勘定','退職給付に係る調整累計額']);
 function tagType(a){
   if(CONTRA_ASSET.has(a)) return 'split as-li';
   if(CONTRA_EQUITY.has(a)) return 'split eq-as';
+  if(EQUITY_PL_BOTH.has(a)) return 'split eq-rx';
+  if(a==='自己株式処分差益') return 'split eq-rv';
+  if(a==='自己株式処分差損') return 'split eq-ex';
   return T[a] || 'other';
 }
 
@@ -1538,7 +1550,7 @@ const ALL = [
     exp:'子会社が稼いだ利益は、親会社の取り分だけでなく、非支配株主（他の株主）の取り分もあります。Ｓ社の当期純利益500,000円のうち、非支配株主の持分割合20％にあたる100,000円は、連結損益計算書上「非支配株主に帰属する当期純利益」として区分し、非支配株主持分（純資産）を増やします。まるでグループ全体の利益をケーキのように切り分けて、それぞれの株主の皿に配るイメージです。「子会社の儲けのうち、親会社の分は親会社の利益剰余金へ、他の株主の分は非支配株主持分へ」と、取り分に応じて分けます。'
   },
   { id:738, level:3, cat:'連結会計', chap:'1級：連結会計',
-    q:'Ｓ社（子会社、Ｐ社持分80％）が保有する<mark class="q-equity">その他有価証券に評価益50,000円が生じた</mark>（税効果は考慮しない）。連結上、この評価差額のうち非支配株主に帰属する部分を<mark class="q-equity">非支配株主持分に振り替える</mark>仕訳を示しなさい。',
+    q:'Ｓ社（子会社、Ｐ社持分80％）が保有する<mark class="q-eq-rx">その他有価証券に評価益50,000円が生じた</mark>（税効果は考慮しない）。連結上、この評価差額のうち非支配株主に帰属する部分を<mark class="q-equity">非支配株主持分に振り替える</mark>仕訳を示しなさい。',
     en_q:'Subsidiary S (80% owned by P) recognized a ¥50,000 unrealized gain on available-for-sale securities (ignore tax effects). Record the entry allocating the non-controlling interests\' share of this valuation gain to non-controlling interests.',
     e:[{d:[['その他有価証券評価差額金',10000]], c:[['非支配株主持分',10000]]}],
     exp:'子会社が保有する有価証券の評価差額（純資産直入項目）も、当期純利益と同じように、親会社と非支配株主で取り分を分ける必要があります。評価益50,000円のうち非支配株主の持分20％にあたる10,000円は、非支配株主持分（純資産）へ振り替えます。「損益計算書を通らない純資産の変動（評価差額など）も、当期純利益と同じ考え方で持分割合に応じて按分する」というのがポイントです。'
@@ -1698,13 +1710,13 @@ const ALL = [
     exp:'オプションも先物と同様、決算日には時価評価が必要です。時価（45,000円）と帳簿価額（30,000円）との差額15,000円だけ「オプション資産」を増額し、相手科目として評価損益（オプション差損益）を計上します。値下がりしていれば逆に評価損を計上します。デリバティブは原則として決算日ごとに時価評価が強制される点が、他の資産と大きく異なります。'
   },
   { id:754, level:3, cat:'金融商品', chap:'1級：金融商品',
-    q:'Ｘ社は将来の外貨建取引（<strong>ヘッジ対象</strong>）に備えて為替予約（ヘッジ手段）を締結し、繰延ヘッジ会計を適用している。決算日において、<mark class="q-asset">為替予約の時価が30,000円上昇して資産となり</mark>、<mark class="q-equity">その評価益を繰り延べる</mark>。税効果を考慮しない場合の仕訳を示しなさい。',
+    q:'Ｘ社は将来の外貨建取引（<strong>ヘッジ対象</strong>）に備えて為替予約（ヘッジ手段）を締結し、繰延ヘッジ会計を適用している。決算日において、<mark class="q-asset">為替予約の時価が30,000円上昇して資産となり</mark>、<mark class="q-eq-rx">その評価益を繰り延べる</mark>。税効果を考慮しない場合の仕訳を示しなさい。',
     en_q:"Company X entered into a forward foreign exchange contract as a hedge for a future foreign-currency transaction and applies deferred hedge accounting. At fiscal year-end, the forward contract's fair value gain was ¥30,000. Record the entry, ignoring tax effects.",
     e:[{d:[['為替予約',30000]], c:[['繰延ヘッジ損益',30000]]}],
     exp:'「繰延ヘッジ会計」とは、ヘッジ手段（為替予約など）の評価損益を、対象となる取引（ヘッジ対象）が実際に発生するまで損益計算書に出さず、純資産の部（その他包括利益）に一旦保留しておく方法です。まるで保険金を受け取っても、実際の事故が確定するまで金庫にしまっておくようなイメージで、評価益が出ても「収益」にはせず、「繰延ヘッジ損益」という純資産の科目に振り替えます。ヘッジ対象の取引が実際に発生した時点で、初めて損益として実現させます。'
   },
   { id:755, level:3, cat:'金融商品', chap:'1級：金融商品',
-    q:'Ｘ社は上記と同様の為替予約について繰延ヘッジ会計を適用しており、<mark class="q-asset">決算日の時価評価益は30,000円であった</mark>。<mark class="q-liability">実効税率30％として税効果会計を適用した場合</mark>（<mark class="q-equity">税効果控除後の額は繰延ヘッジ損益とする</mark>）の仕訳を示しなさい。',
+    q:'Ｘ社は上記と同様の為替予約について繰延ヘッジ会計を適用しており、<mark class="q-asset">決算日の時価評価益は30,000円であった</mark>。<mark class="q-liability">実効税率30％として税効果会計を適用した場合</mark>（<mark class="q-eq-rx">税効果控除後の額は繰延ヘッジ損益とする</mark>）の仕訳を示しなさい。',
     en_q:'For the same forward contract under deferred hedge accounting, the fair value gain at fiscal year-end was ¥30,000. Record the entry applying tax-effect accounting at an effective tax rate of 30%.',
     e:[{d:[['為替予約',30000]], c:[['繰延税金負債',9000],['繰延ヘッジ損益',21000]]}],
     exp:'繰延ヘッジ損益は純資産に計上される項目ですが、この評価益は将来課税対象になる（税金を増やす）含み益なので、税効果会計を適用して「繰延税金負債」（将来支払う税金）を認識します。評価益30,000円のうち、税金相当額9,000円（30,000×30％）を繰延税金負債として差し引き、残り21,000円を税引後の金額として繰延ヘッジ損益（純資産）に計上します。'
@@ -1746,7 +1758,7 @@ const ALL = [
     exp:'先物取引を反対売買（買っていたものを売る、または売っていたものを買い戻す）することで決済すると、それまで「先物取引差金」（未収の評価益）として計上していた金額が現金として実際に受け取れます。まるでゲームの中の仮想通貨をようやく現実のお金に換金するようなイメージで、決済による最終的な差益が60,000円で、すでに先物取引差金として50,000円を計上済みだったため、差額の10,000円が追加の先物損益（収益）として計上されます。'
   },
   { id:811, level:3, cat:'金融商品', chap:'1級：金融商品',
-    q:'Ｘ社は借入金の金利変動リスク（<strong>ヘッジ対象</strong>）をヘッジするため金利スワップ契約を締結し、繰延ヘッジ会計を適用している。決算日において、<mark class="q-asset">この金利スワップの時価が25,000円上昇して資産となり</mark>、<mark class="q-equity">その評価益を繰り延べる</mark>（税効果は考慮しない）。仕訳を示しなさい。',
+    q:'Ｘ社は借入金の金利変動リスク（<strong>ヘッジ対象</strong>）をヘッジするため金利スワップ契約を締結し、繰延ヘッジ会計を適用している。決算日において、<mark class="q-asset">この金利スワップの時価が25,000円上昇して資産となり</mark>、<mark class="q-eq-rx">その評価益を繰り延べる</mark>（税効果は考慮しない）。仕訳を示しなさい。',
     en_q:'Company X entered an interest rate swap to hedge the interest rate risk on its borrowings and applies deferred hedge accounting. At fiscal year-end, the swap\'s fair value gain was ¥25,000, ignoring tax effects. Record the entry.',
     e:[{d:[['スワップ資産',25000]], c:[['繰延ヘッジ損益',25000]]}],
     exp:'金利スワップとは、「変動金利」と「固定金利」を交換する契約で、借入金の金利変動リスクをヘッジする目的でよく使われます。まるで変動金利の住宅ローンを固定金利に一時的に切り替えるような保険的な取引で、為替予約と同じように、繰延ヘッジ会計を適用すれば、評価益はその期の損益にはせず、いったん純資産の部「繰延ヘッジ損益」として繰延べます。ヘッジ対象（借入金の金利変動）の影響が実際に生じたときに、初めて損益として認識します。'
@@ -1782,7 +1794,7 @@ const ALL = [
     exp:'満期保有目的の債券は、通常は時価評価をせず取得原価（または償却原価）のまま計上しますが、発行会社の財政状態の悪化などにより時価が著しく下落し、かつ回復の見込みがないと判断される場合は、例外的に強制的な評価減（減損処理）を行います。500,000円－400,000円＝100,000円を「投資有価証券評価損」として計上し、満期保有目的債券の帳簿価額を直接切り下げます。'
   },
   { id:817, level:3, cat:'金融商品', chap:'1級：金融商品',
-    q:'Ｘ社は為替予約（<strong>ヘッジ手段</strong>）についてヘッジ会計を適用していたが、ヘッジ対象であった外貨建取引が中止になったため、ヘッジ会計の要件を満たさなくなった。<mark class="q-equity">繰延べていた繰延ヘッジ損益（貸方残高）40,000円を</mark>、ただちに<mark class="q-other">当期の損益（為替差損益）に振り替える</mark>仕訳を示しなさい。',
+    q:'Ｘ社は為替予約（<strong>ヘッジ手段</strong>）についてヘッジ会計を適用していたが、ヘッジ対象であった外貨建取引が中止になったため、ヘッジ会計の要件を満たさなくなった。<mark class="q-eq-rx">繰延べていた繰延ヘッジ損益（貸方残高）40,000円を</mark>、ただちに<mark class="q-other">当期の損益（為替差損益）に振り替える</mark>仕訳を示しなさい。',
     en_q:'Company X applied hedge accounting to a forward contract, but the hedged foreign-currency transaction was cancelled, so the hedge accounting requirements are no longer met. Record the entry immediately reclassifying the deferred hedge gain (¥40,000 credit balance) into current-period profit or loss (foreign exchange gain/loss).',
     e:[{d:[['繰延ヘッジ損益',40000]], c:[['為替差損益',40000]]}],
     exp:'ヘッジ会計は、ヘッジ対象（今回は外貨建取引）とヘッジ手段（為替予約）がセットで存在することを前提に適用されます。ヘッジ対象そのものが消滅・中止になると、もはやヘッジとしての意味がなくなるため、ヘッジ会計を続けることができません（ヘッジ会計の中止）。まるで保険をかけていた対象そのものがなくなってしまい、保険契約だけが宙に浮くようなイメージで、それまで純資産の部に繰延べていた評価損益を、その時点でただちに当期の損益に振り替えます。「ヘッジの前提が崩れたので、繰延べていた分を一気に精算する」というイメージです。'
@@ -1802,13 +1814,13 @@ const ALL = [
     exp:'在外子会社の株式を外貨で取得した場合も、通常の外貨建取引と同じく「取得時のレート（HR：Historical Rate）」で円換算します。海外通販で買い物をした日のレートで請求額が確定するのと同じ発想で、60,000ドル×100円＝6,000,000円。この金額は、その後為替レートが変動しても動かしません（株式のような非貨幣性項目は取得時のレートで固定されるのが原則です）。'
   },
   { id:762, level:3, cat:'外貨換算', chap:'1級：連結会計',
-    q:'Ｐ社は在外子会社Ｓ社の支配獲得にあたり、外貨建てのれん40,000ドル（取得時レート1ドル＝100円、円換算額4,000,000円）を連結上計上した。決算時レートが1ドル＝110円になった場合、<mark class="q-asset">連結上ののれんを決算時レートで再換算し</mark>、差額を<mark class="q-equity">「為替換算調整勘定」として計上する</mark>仕訳を示しなさい。',
+    q:'Ｐ社は在外子会社Ｓ社の支配獲得にあたり、外貨建てのれん40,000ドル（取得時レート1ドル＝100円、円換算額4,000,000円）を連結上計上した。決算時レートが1ドル＝110円になった場合、<mark class="q-asset">連結上ののれんを決算時レートで再換算し</mark>、差額を<mark class="q-eq-rx">「為替換算調整勘定」として計上する</mark>仕訳を示しなさい。',
     en_q:"Company P recognized foreign-currency-denominated goodwill of $40,000 (¥4,000,000 at the ¥100/USD transaction-date rate) on consolidation. When the closing rate became ¥110/USD, record the entry retranslating the goodwill at the closing rate, with the difference recognized as a foreign currency translation adjustment.",
     e:[{d:[['のれん',400000]], c:[['為替換算調整勘定',400000]]}],
     exp:'連結上計上した外貨建てのれんは、外貨建ての「資産」として扱われるため、決算時レート（CR）で換算替えします。40,000ドル×取得時100円＝4,000,000円（計上時）→40,000ドル×決算時110円＝4,400,000円（換算後）。まるで外貨預金の残高が円換算でどう評価されるか毎回変わるようなイメージです。差額400,000円は、のれん自体の価値が変わったわけではなく為替相場の変動によるものなので、損益（のれん償却額など）にはせず、純資産の部の「為替換算調整勘定」に計上します。'
   },
   { id:763, level:3, cat:'外貨換算', chap:'1級：連結会計',
-    q:'在外子会社Ｓ社（Ｐ社の持株比率80％）の財務諸表を換算した結果、<mark class="q-equity">連結上「為替換算調整勘定」（貸方）500,000円が生じた</mark>。このうち<mark class="q-equity">非支配株主持分相当額（20％）を按分する</mark>仕訳を示しなさい。',
+    q:'在外子会社Ｓ社（Ｐ社の持株比率80％）の財務諸表を換算した結果、<mark class="q-eq-rx">連結上「為替換算調整勘定」（貸方）500,000円が生じた</mark>。このうち<mark class="q-equity">非支配株主持分相当額（20％）を按分する</mark>仕訳を示しなさい。',
     en_q:"Translating overseas subsidiary S's (80%-owned by P) financial statements produced a credit foreign currency translation adjustment of ¥500,000 on consolidation. Record the entry allocating the non-controlling interests' 20% share.",
     e:[{d:[['為替換算調整勘定',100000]], c:[['非支配株主持分',100000]]}],
     exp:'為替換算調整勘定は「在外子会社の純資産全体」に対して生じるものなので、親会社の持分だけでなく非支配株主の持分にも按分する必要があります。500,000円×非支配株主持分比率20％＝100,000円を、親会社持分の為替換算調整勘定から非支配株主持分に付け替えます（残り400,000円が親会社に帰属する為替換算調整勘定として連結貸借対照表に残ります）。為替の影響もまた、株主同士でケーキを切り分けるように配分されるのです。'
@@ -1826,7 +1838,7 @@ const ALL = [
     exp:'損益計算書の項目（収益・費用・当期純利益）は、原則として「期中平均レート（AR）」で円換算します。50,000ドル×103円＝5,150,000円（円換算後の当期純利益）。このうち非支配株主の持分20％相当額1,030,000円を、非支配株主に帰属する当期純利益として振り替えます。決算時レートを使う貸借対照表項目とは、換算に使うレートの種類が異なる点に注意しましょう。'
   },
   { id:766, level:3, cat:'外貨換算', chap:'1級：連結会計',
-    q:'Ｐ社は保有する在外子会社Ｓ社株式をすべて売却し、<mark class="q-equity">連結上計上されていた為替換算調整勘定300,000円（貸方残高、親会社帰属分）を</mark>、<mark class="q-revenue">子会社株式売却損益に振り替える</mark>こととした。仕訳を示しなさい。',
+    q:'Ｐ社は保有する在外子会社Ｓ社株式をすべて売却し、<mark class="q-eq-rx">連結上計上されていた為替換算調整勘定300,000円（貸方残高、親会社帰属分）を</mark>、<mark class="q-revenue">子会社株式売却損益に振り替える</mark>こととした。仕訳を示しなさい。',
     en_q:"Company P sold its entire stake in overseas subsidiary S. Record the entry reclassifying the ¥300,000 credit-balance foreign currency translation adjustment (the parent's attributable portion) recognized on consolidation into gain/loss on sale of subsidiary shares.",
     e:[{d:[['為替換算調整勘定',300000]], c:[['子会社株式売却益',300000]]}],
     exp:'「その他有価証券評価差額金」は売却しても損益に振り替えられませんが、「為替換算調整勘定」は在外子会社株式を売却（連結範囲から外れる）した時点で、これとは異なり「実現」したものとしてその期の損益に振り替えられます（リサイクリング）。まるで「含み損益として眺めていただけの評価差額が、手放した瞬間にようやく確定した利益として計算に入る」ようなイメージで、これは1級試験でよく問われる重要な相違点です。'
@@ -1846,7 +1858,7 @@ const ALL = [
 
   // ===== 1級：退職給付会計 =====
   { id:769, level:3, cat:'退職給付', chap:'1級：退職給付会計',
-    q:'<mark class="q-liability">Ｘ社の年金資産の実際運用収益が期待運用収益を50,000円下回り、数理計算上の差異（不利差異）50,000円が発生した</mark>。連結財務諸表上、<mark class="q-equity">この差異を即時に「退職給付に係る調整累計額」として認識する</mark>仕訳を示しなさい（税効果は考慮しない）。',
+    q:'<mark class="q-liability">Ｘ社の年金資産の実際運用収益が期待運用収益を50,000円下回り、数理計算上の差異（不利差異）50,000円が発生した</mark>。連結財務諸表上、<mark class="q-eq-rx">この差異を即時に「退職給付に係る調整累計額」として認識する</mark>仕訳を示しなさい（税効果は考慮しない）。',
     en_q:"Company X's actual return on plan assets fell short of the expected return by ¥50,000, generating an unfavorable actuarial difference of ¥50,000. On consolidation, record the entry immediately recognizing this difference in accumulated remeasurements of defined benefit plans, ignoring tax effects.",
     e:[{d:[['退職給付に係る調整累計額',50000]], c:[['退職給付引当金',50000]]}],
     exp:'個別財務諸表では、数理計算上の差異は発生時に全額を費用にはせず、「未認識数理計算上の差異」として翌期以降に少しずつ償却していきます。しかし連結財務諸表では、この未認識部分も含めて退職給付債務と年金資産の差額全額をそのままＢ／Ｓに計上するルールになっており、まるで個人的な借金の帳簿を、家族全体の連結家計簿では隠さず全部見せるようなイメージで、未認識だった差異はその期の包括利益（純資産の部「退職給付に係る調整累計額」）として即時に認識されます。これが「個別上は将来に繰延べ、連結上は即時認識」という、1級で頻出の重要な相違点です。'
@@ -1858,7 +1870,7 @@ const ALL = [
     exp:'個別財務諸表では、数理計算上の差異は発生時に全額を費用処理せず、平均残存勤務期間などの一定の年数にわたって規則的に償却していきます。まるで大きな出費をローンで分割払いするように、50,000円÷10年＝5,000円を毎期の「退職給付費用」に追加していきます。段階的に費用化する点が、即時認識する連結上の処理と異なります。'
   },
   { id:771, level:3, cat:'退職給付', chap:'1級：退職給付会計',
-    q:'Ｘ社は退職金規程を改定し、退職給付水準を引き下げた。この結果、<mark class="q-liability">退職給付債務が400,000円減少した（過去勤務費用の発生、有利差異）</mark>。連結財務諸表上、<mark class="q-equity">この全額を即時に認識する</mark>仕訳を示しなさい（税効果は考慮しない）。',
+    q:'Ｘ社は退職金規程を改定し、退職給付水準を引き下げた。この結果、<mark class="q-liability">退職給付債務が400,000円減少した（過去勤務費用の発生、有利差異）</mark>。連結財務諸表上、<mark class="q-eq-rx">この全額を即時に認識する</mark>仕訳を示しなさい（税効果は考慮しない）。',
     en_q:"Company X amended its retirement benefit plan, reducing benefit levels. This decreased the retirement benefit obligation by ¥400,000 (a favorable past service cost). On consolidation, record the entry immediately recognizing this full amount, ignoring tax effects.",
     e:[{d:[['退職給付引当金',400000]], c:[['退職給付に係る調整累計額',400000]]}],
     exp:'退職給付水準の「引き下げ」による過去勤務費用は、退職給付債務を減らす方向（会社にとって有利）に働きます。まるで会社が将来の年金支給額を見直して、負担が軽くなったようなイメージで、連結財務諸表上は、この有利差異も即時にＢ／Ｓへ反映するため、「退職給付引当金」（負債）を減額し、相手科目として純資産の部の「退職給付に係る調整累計額」を増額します。'
@@ -1876,13 +1888,13 @@ const ALL = [
     exp:'個別財務諸表上の退職給付費用は、①勤務費用（当期労働により新たに発生した給付義務）＋②利息費用（割引計算により時の経過で増える現在価値相当額）－③期待運用収益（年金資産の運用で得られるはずの収益）＋④数理計算上の差異の費用処理額（過去に繰延べた差異のうち当期償却分）＋⑤過去勤務費用の費用処理額、の合計で計算します。まるで住宅ローンの毎月の支払額が「元本」「利息」「保険料」などいくつもの要素の合計で決まるのと似ています。120,000＋40,000－15,000＋8,000－3,000＝150,000円。過去勤務費用の償却額がマイナス（△3,000円）になっているのは、退職給付水準の引き下げ（会社に有利な改定）による過去勤務費用を償却しているためです。'
   },
   { id:774, level:3, cat:'退職給付', chap:'1級：退職給付会計',
-    q:'連結財務諸表において、<mark class="q-expense">当期に数理計算上の差異の費用処理額（組替調整額）12,000円を、退職給付費用として計上する</mark>とともに、<mark class="q-equity">その他の包括利益（退職給付に係る調整累計額）から同額を減額する</mark>。仕訳を示しなさい。',
+    q:'連結財務諸表において、<mark class="q-expense">当期に数理計算上の差異の費用処理額（組替調整額）12,000円を、退職給付費用として計上する</mark>とともに、<mark class="q-eq-rx">その他の包括利益（退職給付に係る調整累計額）から同額を減額する</mark>。仕訳を示しなさい。',
     en_q:"On consolidation, record the entry recognizing ¥12,000 of amortized actuarial differences (a reclassification adjustment) as retirement benefit expense, while reducing accumulated remeasurements of defined benefit plans by the same amount.",
     e:[{d:[['退職給付費用',12000]], c:[['退職給付に係る調整累計額',12000]]}],
     exp:'連結財務諸表では、数理計算上の差異は発生した期に全額を「退職給付に係る調整累計額」（純資産）として即時認識済みです（別問参照）。翌期以降、この差異の一部を個別財務諸表と同じように償却して「退職給付費用」として当期純利益に計上する際は、二重計上を防ぐため、まるで一度全部記録した内容を後から少しずつ本当の帳簿に移し替えるように、同額を「退職給付に係る調整累計額」から取り崩します（これを「組替調整額」と呼びます）。退職給付債務・年金資産の総額（＝退職給付引当金）自体は変動しません。'
   },
   { id:775, level:3, cat:'退職給付', chap:'1級：退職給付会計',
-    q:'<mark class="q-liability">Ｘ社の年金資産の実際運用収益が期待運用収益を100,000円下回り、数理計算上の差異（不利差異）100,000円が発生した</mark>。連結財務諸表上、<mark class="q-asset">実効税率30％として税効果を考慮した</mark>うえで、<mark class="q-equity">この差異を「退職給付に係る調整累計額」として計上する</mark>仕訳を示しなさい。',
+    q:'<mark class="q-liability">Ｘ社の年金資産の実際運用収益が期待運用収益を100,000円下回り、数理計算上の差異（不利差異）100,000円が発生した</mark>。連結財務諸表上、<mark class="q-asset">実効税率30％として税効果を考慮した</mark>うえで、<mark class="q-eq-rx">この差異を「退職給付に係る調整累計額」として計上する</mark>仕訳を示しなさい。',
     en_q:"Company X's actual return on plan assets fell short of the expected return by ¥100,000, generating an unfavorable actuarial difference of ¥100,000. On consolidation, applying tax-effect accounting at an effective tax rate of 30%, record the entry recognizing this difference in accumulated remeasurements of defined benefit plans.",
     e:[{d:[['退職給付に係る調整累計額',70000],['繰延税金資産',30000]], c:[['退職給付引当金',100000]]}],
     exp:'連結財務諸表で即時認識する退職給付に係る差異にも、税効果会計を適用します。将来の費用計上（損金算入）につながる不利差異なので、税金負担を軽減する効果（繰延税金資産）30,000円（100,000×30％）を認識し、残り70,000円を税引後の金額として純資産の部「退職給付に係る調整累計額」に計上します。退職給付引当金（負債）は税効果を挟まず全額100,000円増加させます。'
@@ -1894,13 +1906,13 @@ const ALL = [
     exp:'過去勤務費用（退職金規程の改定などにより生じる退職給付債務の変動額）も、数理計算上の差異と同様に、個別財務諸表では発生時に全額を費用処理せず、平均残存勤務期間等の一定の年数で規則的に償却します。まるで大きな制度変更のコストを何年かに分けて少しずつ吸収していくようなイメージで、240,000円÷8年＝30,000円を当期の「退職給付費用」に追加します。'
   },
   { id:819, level:3, cat:'退職給付', chap:'1級：退職給付会計',
-    q:'<mark class="q-liability">Ｘ社の年金資産の実際運用収益が期待運用収益を60,000円上回り、数理計算上の差異（有利差異）60,000円が発生した</mark>。連結財務諸表上、<mark class="q-equity">この差異を即時に「退職給付に係る調整累計額」として認識する</mark>仕訳を示しなさい（税効果は考慮しない）。',
+    q:'<mark class="q-liability">Ｘ社の年金資産の実際運用収益が期待運用収益を60,000円上回り、数理計算上の差異（有利差異）60,000円が発生した</mark>。連結財務諸表上、<mark class="q-eq-rx">この差異を即時に「退職給付に係る調整累計額」として認識する</mark>仕訳を示しなさい（税効果は考慮しない）。',
     en_q:"Company X's actual return on plan assets exceeded the expected return by ¥60,000, generating a favorable actuarial difference of ¥60,000. On consolidation, record the entry immediately recognizing this difference in accumulated remeasurements of defined benefit plans, ignoring tax effects.",
     e:[{d:[['退職給付引当金',60000]], c:[['退職給付に係る調整累計額',60000]]}],
     exp:'運用が予想以上にうまくいった場合（実際運用収益＞期待運用収益）は、有利差異として、退職給付債務と年金資産の差額（＝会社の負担）を減らす方向に働きます。まるで積立投資が予想以上に値上がりして、将来の負担が軽くなったようなイメージで、連結財務諸表上は即時に認識するため、「退職給付引当金」（負債）を減額し、相手科目として純資産の部「退職給付に係る調整累計額」を増額します。不利差異のケース（別問参照）とは、借方・貸方が逆になる点を確認しましょう。'
   },
   { id:820, level:3, cat:'退職給付', chap:'1級：退職給付会計',
-    q:'Ｘ社は退職金規程を改定し、退職給付水準を引き上げた。この結果、<mark class="q-liability">退職給付債務が350,000円増加した（過去勤務費用の発生、不利差異）</mark>。連結財務諸表上、<mark class="q-equity">この全額を即時に認識する</mark>仕訳を示しなさい（税効果は考慮しない）。',
+    q:'Ｘ社は退職金規程を改定し、退職給付水準を引き上げた。この結果、<mark class="q-liability">退職給付債務が350,000円増加した（過去勤務費用の発生、不利差異）</mark>。連結財務諸表上、<mark class="q-eq-rx">この全額を即時に認識する</mark>仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Company X amended its retirement benefit plan, raising benefit levels. This increased the retirement benefit obligation by ¥350,000 (an unfavorable past service cost). On consolidation, record the entry immediately recognizing this full amount, ignoring tax effects.',
     e:[{d:[['退職給付に係る調整累計額',350000]], c:[['退職給付引当金',350000]]}],
     exp:'退職給付水準の「引き上げ」による過去勤務費用は、退職給付債務を増やす方向（会社にとって不利）に働きます。まるで従業員への待遇改善によって将来の負担が重くなったようなイメージで、連結財務諸表上は即時にＢ／Ｓへ反映するため、「退職給付引当金」（負債）を増額し、相手科目として純資産の部の「退職給付に係る調整累計額」を減額します。水準を引き下げた場合（別問参照）とは正反対の方向に動きます。'
@@ -1936,13 +1948,13 @@ const ALL = [
     exp:'実務では、数理計算上の差異は毎期のように発生するため、複数の年度に発生した差異が同時に償却されていきます。まるで複数のローンを同時に返済しているようなイメージで、前期発生分（80,000円÷8年＝10,000円、2年目の償却）と、当期新たに発生した分（90,000円÷9年＝10,000円、1年目の償却）を合算して、当期の退職給付費用に加えます：10,000円＋10,000円＝20,000円。「発生年度の異なる複数の差異を、それぞれ独立して償却し、合算する」という実務上の処理方法を確認する問題です。'
   },
   { id:826, level:3, cat:'退職給付', chap:'1級：退職給付会計',
-    q:'連結財務諸表において、<mark class="q-expense">当期に過去勤務費用の費用処理額（組替調整額）18,000円を、退職給付費用として計上する</mark>とともに、<mark class="q-equity">その他の包括利益（退職給付に係る調整累計額）から同額を減額する</mark>。仕訳を示しなさい。',
+    q:'連結財務諸表において、<mark class="q-expense">当期に過去勤務費用の費用処理額（組替調整額）18,000円を、退職給付費用として計上する</mark>とともに、<mark class="q-eq-rx">その他の包括利益（退職給付に係る調整累計額）から同額を減額する</mark>。仕訳を示しなさい。',
     en_q:"On consolidation, record the entry recognizing ¥18,000 of amortized past service cost (a reclassification adjustment) as retirement benefit expense, while reducing accumulated remeasurements of defined benefit plans by the same amount.",
     e:[{d:[['退職給付費用',18000]], c:[['退職給付に係る調整累計額',18000]]}],
     exp:'数理計算上の差異と同じように、過去勤務費用についても、連結財務諸表では発生時に即時認識した後、個別財務諸表と同じペースで償却した分を「組替調整額」として退職給付費用に計上し、同額を「退職給付に係る調整累計額」から取り崩します。二重計上を防ぐための処理で、退職給付債務・年金資産の総額（退職給付引当金）自体はこの仕訳では変動しません。'
   },
   { id:827, level:3, cat:'退職給付', chap:'1級：退職給付会計',
-    q:'Ｘ社は退職金規程を改定し、退職給付水準を引き上げた。この結果、<mark class="q-liability">退職給付債務が200,000円増加した（過去勤務費用の発生、不利差異）</mark>。連結財務諸表上、<mark class="q-asset">実効税率30％として税効果を考慮した</mark>うえで、<mark class="q-equity">この差異を認識する</mark>仕訳を示しなさい。',
+    q:'Ｘ社は退職金規程を改定し、退職給付水準を引き上げた。この結果、<mark class="q-liability">退職給付債務が200,000円増加した（過去勤務費用の発生、不利差異）</mark>。連結財務諸表上、<mark class="q-asset">実効税率30％として税効果を考慮した</mark>うえで、<mark class="q-eq-rx">この差異を認識する</mark>仕訳を示しなさい。',
     en_q:'Company X amended its retirement benefit plan, raising benefit levels. This increased the retirement benefit obligation by ¥200,000 (an unfavorable past service cost). On consolidation, applying tax-effect accounting at an effective tax rate of 30%, record the entry recognizing this difference.',
     e:[{d:[['退職給付に係る調整累計額',140000],['繰延税金資産',60000]], c:[['退職給付引当金',200000]]}],
     exp:'過去勤務費用の即時認識にも税効果会計を適用します。将来の費用計上（損金算入）につながる不利差異なので、税金負担を軽減する効果（繰延税金資産）60,000円（200,000×30％）を認識し、残り140,000円を税引後の金額として「退職給付に係る調整累計額」に計上します。退職給付引当金（負債）は税効果を挟まず全額200,000円増加させます。'
@@ -2763,7 +2775,7 @@ const ALL = [
     exp:'時価が帳簿価額を下回った場合も同じ考え方で、まだ売っていなくても含み損を「有価証券評価損」という費用に計上します。売買目的有価証券は「いつでも市場で売買できる」という性質から、値上がりも値下がりも、その期のうちに損益として素直に反映させるのが原則です。'
   },
   { id:1078, cat:'有価証券', chap:'第5章：有価証券',
-    q:'決算にあたり、X社は、<mark class="q-asset">長期保有の目的で持っているU社の株式</mark>について、決算日の時価を確認した。この株式の<mark class="q-equity">帳簿価額は80円で、決算日の時価は88円であった</mark>。X社は、この株式の評価差額を、損益に入れず、全額を純資産に直接計上する方法（<strong>全部純資産直入法</strong>）を採用している。決算に必要な仕訳を行いなさい。',
+    q:'決算にあたり、X社は、<mark class="q-asset">長期保有の目的で持っているU社の株式</mark>について、決算日の時価を確認した。この株式の<mark class="q-eq-rx">帳簿価額は80円で、決算日の時価は88円であった</mark>。X社は、この株式の評価差額を、損益に入れず、全額を純資産に直接計上する方法（<strong>全部純資産直入法</strong>）を採用している。決算に必要な仕訳を行いなさい。',
     e:[{d:[['その他有価証券',8]],c:[['その他有価証券評価差額金',8]]}],
     exp:'「評価差額」とは、時価と帳簿価額との差額のことです。「全部純資産直入法」とは、評価差額の全額を、損益に入れず、純資産に直接計上する方法です。その他有価証券も決算時に時価評価しますが、売買目的有価証券とは違い、評価差額をすぐに利益・損失とはせず、いったん純資産の部に直接計上します。「まだ売るつもりはないので今期の利益には反映させないが、資産の値段は最新の時価に合わせる」という中間的な扱いです。'
   },
@@ -3115,12 +3127,12 @@ const ALL = [
     exp:'「自己株式」とは、会社が、自社で発行した株式を、株主から買い戻して、保有しているもののことです。自社の株式を買い戻すと、それは通常の資産の購入とは違い、株主に対する資本の一部払い戻しに近い意味を持ちます。そのため取得原価のまま、純資産の部から差し引くマイナス項目（自己株式）として計上します。'
   },
   { id:1148, cat:'自己株式', chap:'第10章：株式会社会計',
-    q:'X社は、以前に買い戻した<mark class="q-eq-as">自社の株式（帳簿価額40円）</mark>を、資金が必要になったため、市場で売却することにした。自社の株価が上がっていたので、<mark class="q-equity">売却価額は45円になり</mark>、<mark class="q-asset">代金は現金で受け取った</mark>。この日の仕訳を行いなさい。',
+    q:'X社は、以前に買い戻した<mark class="q-eq-as">自社の株式（帳簿価額40円）</mark>を、資金が必要になったため、市場で売却することにした。自社の株価が上がっていたので、<mark class="q-eq-rv">売却価額は45円になり</mark>、<mark class="q-asset">代金は現金で受け取った</mark>。この日の仕訳を行いなさい。',
     e:[{d:[['現金',45]],c:[['自己株式',40],['自己株式処分差益',5]]}],
     exp:'買い戻していた自己株式を、取得したときより高く売却できました。この差額（5円）は商品売買のような利益ではなく、株主との資本取引から生じたものなので、損益計算書ではなく「自己株式処分差益」という純資産の項目に計上します。'
   },
   { id:1149, cat:'自己株式', chap:'第10章：株式会社会計',
-    q:'X社は、以前に買い戻した<mark class="q-eq-as">自社の株式（帳簿価額40円）</mark>を、資金が必要になったため、市場で売却することにした。しかし、自社の株価が下がっていたので、<mark class="q-eq-as">売却価額は35円になり</mark>、<mark class="q-asset">代金は現金で受け取った</mark>。この日の仕訳を行いなさい。',
+    q:'X社は、以前に買い戻した<mark class="q-eq-as">自社の株式（帳簿価額40円）</mark>を、資金が必要になったため、市場で売却することにした。しかし、自社の株価が下がっていたので、<mark class="q-eq-ex">売却価額は35円になり</mark>、<mark class="q-asset">代金は現金で受け取った</mark>。この日の仕訳を行いなさい。',
     e:[{d:[['現金',35],['自己株式処分差損',5]],c:[['自己株式',40]]}],
     exp:'今回は逆に、自己株式を取得したときより安く売却してしまいました。この差額（5円）も、損益計算書の費用にはせず、「自己株式処分差損」という純資産の項目で処理します。自己株式の売買で生じた差額は、儲けや損ではなく、あくまで純資産内部の増減として扱われる点がポイントです。'
   },
@@ -3232,12 +3244,12 @@ const ALL = [
     exp:'「税務上」とは、税金の計算の上では、ということです。「損金」とは、税金の計算の上で、費用として認められる金額のことです。「将来減算一時差異」とは、会計上と税務上のズレのうち、将来、税金の計算で、費用として認められて、税金の支払いを減らすもののことです。会計上は費用として認めた金額でも、税務上はすぐに損金として認めてもらえないことがあります。将来、実際に貸し倒れが発生すれば、税務上もようやく損金として認められ、税金が安くなります。この「将来の税金が安くなる権利」を、あらかじめ「繰延税金資産」という資産として先取りで計上します（10円×30％＝3円）。'
   },
   { id:1154, cat:'税効果', chap:'税効果',
-    q:'X社は、長期保有の目的で、Y社の株式を持っている。決算にあたり、この株式の時価が、取得原価より10円高くなっていた。<mark class="q-equity">この評価差額10円は、すでに、損益に入れず、全額を純資産に直接計上する方法で、処理してある</mark>。税務上、<mark class="q-liability">この10円は、この株式を売却したときに課税される</mark>（<strong>将来加算一時差異</strong>）。実効税率は30％で、X社は税効果会計を適用している。この評価差額に対する税効果について、決算に必要な仕訳を行いなさい。',
+    q:'X社は、長期保有の目的で、Y社の株式を持っている。決算にあたり、この株式の時価が、取得原価より10円高くなっていた。<mark class="q-eq-rx">この評価差額10円は、すでに、損益に入れず、全額を純資産に直接計上する方法で、処理してある</mark>。税務上、<mark class="q-liability">この10円は、この株式を売却したときに課税される</mark>（<strong>将来加算一時差異</strong>）。実効税率は30％で、X社は税効果会計を適用している。この評価差額に対する税効果について、決算に必要な仕訳を行いなさい。',
     e:[{d:[['その他有価証券評価差額金',3]],c:[['繰延税金負債',3]]}],
     exp:'「取得原価」とは、買ったときに支払った金額のことです。「評価差額」とは、時価と取得原価との差額のことです。「将来加算一時差異」とは、会計上と税務上のズレのうち、将来、税金の計算で、利益に加えられて、税金の支払いを増やすもののことです。その他有価証券の評価差益は、純資産に直接計上されますが、将来この株式を売却すれば、その利益に対して実際に税金がかかります。そこで、将来発生するであろう税金（10円×30％＝3円）をあらかじめ「繰延税金負債」として見込んでおき、純資産に計上する評価差額金は、税金分を差し引いた残りの金額にします。'
   },
   { id:1155, cat:'税効果', chap:'税効果',
-    q:'決算にあたり、X社は、会計上と税務上のズレを、次のとおり確認した。1つ目は、<mark class="q-other">貸倒れに備えた費用のうち</mark>、<mark class="q-asset">損金として認められる限度額を超える部分が、10円ある</mark>。2つ目は、<mark class="q-other">減価償却費のうち</mark>、<mark class="q-asset">税務上の限度額を超える部分が、20円ある</mark>。この2つは、将来、税金の計算で、費用として認められる（<strong>将来減算一時差異</strong>）。3つ目は、<mark class="q-equity">その他有価証券の評価差益10円で、すでに、全額を純資産に直接計上してある</mark>。<mark class="q-liability">この10円は、将来、株式を売却したときに課税される</mark>（<strong>将来加算一時差異</strong>）。実効税率は30％で、X社は税効果会計を適用している。これらの税効果を、まとめて処理する、決算の仕訳を行いなさい。',
+    q:'決算にあたり、X社は、会計上と税務上のズレを、次のとおり確認した。1つ目は、<mark class="q-other">貸倒れに備えた費用のうち</mark>、<mark class="q-asset">損金として認められる限度額を超える部分が、10円ある</mark>。2つ目は、<mark class="q-other">減価償却費のうち</mark>、<mark class="q-asset">税務上の限度額を超える部分が、20円ある</mark>。この2つは、将来、税金の計算で、費用として認められる（<strong>将来減算一時差異</strong>）。3つ目は、<mark class="q-eq-rx">その他有価証券の評価差益10円で、すでに、全額を純資産に直接計上してある</mark>。<mark class="q-liability">この10円は、将来、株式を売却したときに課税される</mark>（<strong>将来加算一時差異</strong>）。実効税率は30％で、X社は税効果会計を適用している。これらの税効果を、まとめて処理する、決算の仕訳を行いなさい。',
     e:[{d:[['繰延税金資産',9],['その他有価証券評価差額金',3]],c:[['法人税等調整額',9],['繰延税金負債',3]]}],
     exp:'3種類の一時差異を1問でまとめて処理する、税効果会計の総まとめ問題です。①貸倒れに備えた費用の超過額（将来減算一時差異）：10円×30％＝3円の繰延税金資産。②減価償却費の超過額（同じく将来減算一時差異）：20円×30％＝6円の繰延税金資産。①と②を合わせて繰延税金資産3円。①②は損益項目（法人税等調整額）として処理します。③その他有価証券の評価益（将来売却時に課税される＝将来加算一時差異）：10円×30％＝3円を繰延税金負債に計上し、純資産（その他有価証券評価差額金）を同額減らします。損益を通る項目（①②）と、純資産に直接計上する項目（③）を、しっかり区別して処理するのがポイントです。'
   },
