@@ -514,6 +514,7 @@
       <span id="sec-tabs-toggle-label">分野を隠す</span>
     </div>
     <div class="sec-tabs" id="sec-tabs">
+      <button class="ctrl-btn grp-btn" data-sec="all" title="すべての分野" onclick="setSection('all')">すべて</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:第1章：商品売買" title="第1章：商品売買" onclick="setSection('chap:第1章：商品売買')">商品売買</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:収益認識・現金預金" title="収益認識・現金預金" onclick="setSection('chap:収益認識・現金預金')">収益認識・現金預金</button>
       <button class="ctrl-btn grp-btn" data-sec="chap:第4章：債権債務（手形・電子記録債権）" title="第4章：債権債務（手形・電子記録債権）" onclick="setSection('chap:第4章：債権債務（手形・電子記録債権）')">債権債務</button>
@@ -529,10 +530,14 @@
       <button class="ctrl-btn grp-btn" data-sec="chap:1級" title="1級（連結会計・企業結合・金融商品・退職給付・減損リース・会計方針誤謬・原価計算応用）" onclick="setSection('chap:1級')">🎓1級</button>
     </div>
   </div>
+  <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center;">
+    <span style="font-size:11px;font-weight:700;color:var(--muted);">表示方法：</span>
+    <button class="ctrl-btn active" id="btn-show-all" onclick="setCheckOnly(false)">全問</button>
+    <button class="ctrl-btn" id="btn-check-only" onclick="setCheckOnly(true)">✅ チェックのみ</button>
+  </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
     <button class="apx-btn" id="disp-quiz-btn" onclick="startDispQuiz()">📊 表示区分クイズ</button>
     <button class="apx-btn" id="comp-quiz-btn" onclick="startCompQuiz()">🧮 総合問題</button>
-    <button class="apx-btn" id="btn-check-only" onclick="toggleCheckOnly()">✅ チェックした問題だけを解く</button>
   </div>
 </div>
 <div class="controls" id="group-row" style="padding-top:6px;border-top:1px solid var(--border);display:none;"></div>
@@ -3663,6 +3668,13 @@ const ALL = [
 
 function getSectionQuestions(sec){
   if(!sec) return ALL;
+  if(sec === 'all'){
+    const order = [...document.querySelectorAll('#sec-tabs .grp-btn')].map(b=>b.dataset.sec).filter(x=>x && x!=='all');
+    const seen = new Set(), out = [];
+    order.forEach(x => getSectionQuestions(x).forEach(q => { if(!seen.has(q.id)){ seen.add(q.id); out.push(q); } }));
+    ALL.forEach(q => { if(!seen.has(q.id)) out.push(q); });
+    return out;
+  }
   if(sec.startsWith('chap:')){
     const chap = sec.slice(5);
     if(chap === '1級') return ALL.filter(q => q.chap && q.chap.startsWith('1級'));
@@ -3673,8 +3685,7 @@ function getSectionQuestions(sec){
 
 function updateGroupButtons(){
   const row = document.getElementById('group-row');
-  if(checkOnly){ renderCheckSecRow(); return; }
-  if(!sectionFilter){ row.style.display='none'; groupFilter=0; return; }
+  if(!sectionFilter || sectionFilter==='all' || checkOnly){ row.style.display='none'; groupFilter=0; return; }
   const secQs = getSectionQuestions(sectionFilter);
   const numGroups = Math.ceil(secQs.length/20);
   row.style.display='';
@@ -3693,42 +3704,13 @@ let checked   = JSON.parse(localStorage.getItem('bk_checked')   || '{}');
 let checkOnly = false;
 let groupFilter = 0;
 let sectionFilter = null;
-let checkSection = null; // チェック問題モードでの分野の絞り込み（null＝全分野）
-
-function renderCheckSecRow(){
-  const row = document.getElementById('group-row');
-  groupFilter = 0;
-  const total = ALL.filter(q=>checked[q.id]).length;
-  const btn = (sec,label,n) => `<button class="ctrl-btn chk-sec-btn${checkSection===sec?' active':''}" onclick='setCheckSection(${JSON.stringify(sec)})'>${label}（${n}）</button>`;
-  let html = '<span style="font-size:11px;font-weight:700;color:var(--muted);align-self:center;">チェックした問題の分野：</span>' + btn(null,'全分野',total);
-  document.querySelectorAll('#sec-tabs .grp-btn').forEach(b=>{
-    const sec = b.dataset.sec;
-    const n = getSectionQuestions(sec).filter(q=>checked[q.id]).length;
-    if(n || checkSection===sec) html += btn(sec, b.textContent.trim(), n);
-  });
-  row.innerHTML = html;
-  row.style.display = '';
-}
-
-function setCheckSection(sec){
-  checkSection = sec;
-  document.querySelectorAll('#sec-tabs .grp-btn').forEach(b=>b.classList.toggle('active', !!sec && b.dataset.sec===sec));
-  updateGroupButtons();
-  buildDeck();
-  idx=0;
-  syncExpFromDeck(0);
-  document.getElementById('exp-main').innerHTML='';
-  loadExpQ();
-  updateStats();
-}
-
 function saveProgress(){
   localStorage.setItem('bk_checked', JSON.stringify(checked));
 }
 
 function buildDeck(){
   if(checkOnly){
-    deck = (checkSection ? getSectionQuestions(checkSection) : ALL).filter(q=>checked[q.id]);
+    deck = getSectionQuestions(sectionFilter).filter(q=>checked[q.id]);
     return;
   }
   let base = getSectionQuestions(sectionFilter);
@@ -3799,9 +3781,9 @@ function loadExpQ(){
     document.getElementById('exp-main').innerHTML = `
       <div class="exp-fin" style="padding:30px 16px;">
         <div style="font-size:40px;">☐</div>
-        <div style="font-size:15px;font-weight:700;margin:10px 0 6px;">${checkSection?'この分野にはチェックした問題がありません':'まだチェックした問題がありません'}</div>
+        <div style="font-size:15px;font-weight:700;margin:10px 0 6px;">${(sectionFilter && sectionFilter!=='all' && Object.keys(checked).length)?'この分野にはチェックした問題がありません':'まだチェックした問題がありません'}</div>
         <div style="font-size:12px;color:var(--muted);line-height:1.8;">問題に正解・不正解した後に表示される「☐ チェックをつける」を押すと、その問題がここに集まります。</div>
-        <button class="exp-fin-btn exp-fin-btn-back" style="width:100%;margin-top:16px;" onclick="toggleCheckOnly()">通常モードに戻る</button>
+        <button class="exp-fin-btn exp-fin-btn-back" style="width:100%;margin-top:16px;" onclick="setCheckOnly(false)">全問表示に戻る</button>
       </div>`;
     return;
   }
@@ -5610,7 +5592,6 @@ function renderCompQuizFinish(){
 
 
 function setSection(sec){
-  if(checkOnly){ sectionFilter=sec; setCheckSection(sec); return; }
   sectionFilter=sec;
   groupFilter=0;
   document.querySelectorAll('.grp-btn').forEach(btn=>{
@@ -5626,13 +5607,10 @@ function setSection(sec){
   updateStats();
 }
 
-function toggleCheckOnly(){
-  checkOnly = !checkOnly;
-  checkSection = null;
-  if(checkOnly) document.querySelectorAll('#sec-tabs .grp-btn').forEach(b=>b.classList.remove('active'));
-  else document.querySelectorAll('#sec-tabs .grp-btn').forEach(b=>b.classList.toggle('active', b.dataset.sec===sectionFilter));
-  document.getElementById('btn-check-only').classList.toggle('active', checkOnly);
-  document.getElementById('btn-check-only').textContent = checkOnly ? '✅ 通常モードに戻る' : '✅ チェックした問題だけを解く';
+function setCheckOnly(on){
+  checkOnly = on;
+  document.getElementById('btn-check-only').classList.toggle('active', on);
+  document.getElementById('btn-show-all').classList.toggle('active', !on);
   updateGroupButtons();
   buildDeck();
   idx=0;
@@ -5646,7 +5624,6 @@ function toggleChecked(qId){
   if(checked[qId]){ delete checked[qId]; } else { checked[qId]=true; }
   saveProgress();
   updateStats();
-  if(checkOnly) renderCheckSecRow();
   const btn=document.getElementById('exp-check-btn');
   if(btn){ btn.textContent=checked[qId]?'☑ チェック済み':'☐ チェックをつける'; btn.classList.toggle('active',!!checked[qId]); }
 }
@@ -5654,10 +5631,9 @@ function toggleChecked(qId){
 function resetAll(){
   checked={};
   checkOnly=false;
-  checkSection=null;
   saveProgress();
-  const co=document.getElementById('btn-check-only');
-  if(co){ co.classList.remove('active'); co.textContent='✅ チェックした問題だけを解く'; }
+  document.getElementById('btn-check-only').classList.remove('active');
+  document.getElementById('btn-show-all').classList.add('active');
   setSection('chap:第1章：商品売買');
 }
 
