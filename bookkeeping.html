@@ -389,6 +389,8 @@
     .comp-row { display:flex; justify-content:space-between; gap:10px; border-bottom:1px dashed var(--border); padding:3px 0; }
     .comp-row .l { color:#333; }
     .comp-row .r { font-weight:700; color:#1A2B3C; white-space:nowrap; }
+    .calc-table .comp-row .l { flex:0 0 auto; max-width:42%; }
+    .calc-table .comp-row .r { flex:1 1 auto; white-space:normal; text-align:right; }
     .comp-note, .comp-list { font-size:12px; color:#444; line-height:1.75; margin:6px 0; }
     .comp-list div { margin-bottom:4px; }
     .comp-counter { font-size:11px; color:var(--muted); font-weight:700; margin-bottom:6px; }
@@ -5652,7 +5654,7 @@ function renderCompQuizFinish(){
 // ===== 計算問題（2級までの計算論点を網羅・一歩ずつ選ぶ形式） =====
 function calcRand(lo, hi){ return lo + Math.floor(Math.random()*(hi-lo+1)); }
 function calcTable(rows){
-  return `<div class="comp-table">${rows.map(([k,l,r])=>`<div class="comp-row" data-key="${k}"><span class="l">${l}</span><span class="r">${r}</span></div>`).join('')}</div>`;
+  return `<div class="comp-table calc-table">${rows.map(([k,l,r])=>`<div class="comp-row" data-key="${k}"><span class="l">${l}</span><span class="r">${r}</span></div>`).join('')}</div>`;
 }
 function calcStrChoices(correct, others){
   const out=[correct];
@@ -6457,37 +6459,788 @@ function genCalcJob(){
   };
 }
 
+// --- 追加分：商業簿記 ---
+function calcSign(n, plus, minus){ return `${n>=0?plus:minus} ${yen(Math.abs(n))}円`; }
+function calcSignChoices(n, plus, minus, others){
+  const c = calcSign(n, plus, minus);
+  const alts = [calcSign(-n, plus, minus), ...others.map(o=>calcSign(n>=0?Math.abs(o):-Math.abs(o), plus, minus))];
+  return calcStrChoices(c, alts);
+}
+
+function genCalcBankRecon(){
+  const adj = calcRand(30,90)*10000;
+  const t = calcRand(1,9)*10000, u = calcRand(1,9)*10000, w = calcRand(1,9)*10000, r = calcRand(1,5)*10000;
+  const S = adj - t + u, B = adj - w - r;
+  return {
+    title:'銀行勘定調整表（両者区分調整法）',
+    scenario_html: calcTable([
+      ['B','当座預金の帳簿残高',`${yen(B)}円`],
+      ['S','銀行の残高証明書の残高',`${yen(S)}円`],
+      ['t','時間外預入',`決算日の営業時間後に${yen(t)}円を預け入れた（銀行は翌日に記録）`],
+      ['u','未取付小切手',`仕入先に渡した小切手${yen(u)}円がまだ銀行で支払われていない`],
+      ['w','未渡小切手',`買掛金支払いのため作成した小切手${yen(w)}円を、まだ仕入先に渡していない`],
+      ['r','連絡未通知',`売掛金${yen(r)}円の振込入金について、当社に連絡が届いていない`],
+    ]),
+    steps:[
+      { label:'当社で修正仕訳が必要なのはどれか？', ans:'未渡小切手と連絡未通知', relKeys:['w','r'],
+        choices:['未渡小切手と連絡未通知','時間外預入と未取付小切手','4つすべて','未取付小切手だけ'],
+        exp:`当社の記録が誤っている・漏れているのは<strong>未渡小切手と連絡未通知</strong>。時間外預入と未取付小切手は銀行側のタイミングのずれなので修正不要` },
+      { label:'銀行残高を調整した後の金額はいくらか？', ans:adj, unit:'円', relKeys:['S','t','u'],
+        choices:numChoices(adj,[S+t+u, S-t+u-w, S]),
+        exp:`${yen(S)}＋時間外預入${yen(t)}－未取付小切手${yen(u)}＝<strong>${yen(adj)}円</strong>` },
+      { label:'帳簿残高に加える金額の合計はいくらか？', ans:w+r, unit:'円', relKeys:['w','r'],
+        choices:numChoices(w+r,[w, t+u, w+r+t]),
+        exp:`未渡小切手${yen(w)}＋連絡未通知${yen(r)}＝<strong>${yen(w+r)}円</strong>` },
+      { label:'修正後の当座預金の残高（B/S価額）はいくらか？', ans:adj, unit:'円', relKeys:['B'],
+        hint:compHint([['帳簿への加算額',`${yen(w+r)}円`]]),
+        choices:numChoices(adj,[B, B+w, S]),
+        exp:`${yen(B)}＋${yen(w+r)}＝<strong>${yen(adj)}円</strong>（銀行側の調整後と一致）` },
+    ]
+  };
+}
+
+function genCalcMovingAvg(){
+  const q0 = calcRand(1,4)*10, p0 = calcRand(40,80)*10;
+  const q1 = calcRand(2,6)*10;
+  const avg1 = p0 + calcRand(1,4)*10*(q1/10);
+  const p1 = (avg1*(q0+q1) - p0*q0)/q1;
+  const s1 = calcRand(1,(q0+q1)/10-1)*10;
+  const rest = q0+q1-s1;
+  const q2 = calcRand(2,6)*10;
+  const avg2 = avg1 + calcRand(1,3)*10*(q2/10);
+  const p2 = (avg2*(rest+q2) - avg1*rest)/q2;
+  const s2 = calcRand(1,(rest+q2)/10-1)*10;
+  if(!Number.isInteger(p1) || !Number.isInteger(p2)) return genCalcMovingAvg();
+  return {
+    title:'商品の払出単価（移動平均法）',
+    scenario_html: calcTable([
+      ['b','前月繰越',`${q0}個（＠${yen(p0)}円）`],
+      ['in1','5日 仕入',`${q1}個（＠${yen(p1)}円）`],
+      ['out1','10日 売上',`${s1}個`],
+      ['in2','15日 仕入',`${q2}個（＠${yen(p2)}円）`],
+      ['out2','20日 売上',`${s2}個`],
+    ]),
+    steps:[
+      { label:'5日の仕入後の平均単価はいくらか？', ans:avg1, unit:'円', relKeys:['b','in1'],
+        choices:numChoices(avg1,[Math.round((p0+p1)/2)===avg1?avg1+5:Math.round((p0+p1)/2), p1]),
+        exp:`（${q0}×${yen(p0)}＋${q1}×${yen(p1)}）÷${q0+q1}個＝<strong>${yen(avg1)}円</strong>` },
+      { label:'10日の売上原価はいくらか？', ans:s1*avg1, unit:'円', relKeys:['out1'],
+        hint:compHint([['平均単価',`${yen(avg1)}円`]]),
+        choices:numChoices(s1*avg1,[s1*p0, s1*p1]),
+        exp:`${s1}個×${yen(avg1)}＝<strong>${yen(s1*avg1)}円</strong>` },
+      { label:'15日の仕入後の平均単価はいくらか？', ans:avg2, unit:'円', relKeys:['in2'],
+        hint:compHint([['10日時点の在庫',`${rest}個×${yen(avg1)}円`]]),
+        choices:numChoices(avg2,[Math.round((avg1+p2)/2)===avg2?avg2+5:Math.round((avg1+p2)/2), p2]),
+        exp:`（${rest}×${yen(avg1)}＋${q2}×${yen(p2)}）÷${rest+q2}個＝<strong>${yen(avg2)}円</strong>` },
+      { label:'20日の売上原価はいくらか？', ans:s2*avg2, unit:'円', relKeys:['out2'],
+        hint:compHint([['平均単価',`${yen(avg2)}円`]]),
+        choices:numChoices(s2*avg2,[s2*avg1, s2*p2]),
+        exp:`${s2}個×${yen(avg2)}＝<strong>${yen(s2*avg2)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcTradeIn(){
+  const n = compPick([5,6,8]);
+  const cost = n*calcRand(2,9)*10000;
+  const used = calcRand(2,n-1);
+  const accum = cost/n*used;
+  const bv = cost-accum;
+  const diff = compPick([-3,-2,-1,1,2,3])*5000;
+  const tradeIn = bv+diff;
+  const newPrice = calcRand(Math.ceil(cost/100000)+2, 20)*100000;
+  return {
+    title:'固定資産の買換え（下取り）',
+    scenario_html: calcTable([
+      ['old','旧車両',`取得原価${yen(cost)}円・期首の減価償却累計額${yen(accum)}円（期首に買い換えたので当期の償却はなし）`],
+      ['ti','下取り価格',`${yen(tradeIn)}円`],
+      ['new','新車両の価格',`${yen(newPrice)}円（下取り価格を差し引いた残りを現金で支払う）`],
+    ]),
+    steps:[
+      { label:'旧車両の帳簿価額はいくらか？', ans:bv, unit:'円', relKeys:['old'],
+        choices:numChoices(bv,[cost, accum]),
+        exp:`${yen(cost)}－${yen(accum)}＝<strong>${yen(bv)}円</strong>` },
+      { label:'下取りで生じる損益は？', ans:calcSign(diff,'固定資産売却益','固定資産売却損'), relKeys:['ti'],
+        hint:compHint([['帳簿価額',`${yen(bv)}円`]]),
+        choices:calcSignChoices(diff,'固定資産売却益','固定資産売却損',[Math.abs(diff)*2, tradeIn]),
+        exp:`下取り価格${yen(tradeIn)}－帳簿価額${yen(bv)}＝${diff<0?'△':''}${yen(Math.abs(diff))}円 → <strong>${diff>0?'固定資産売却益':'固定資産売却損'}</strong>` },
+      { label:'現金で支払う金額はいくらか？', ans:newPrice-tradeIn, unit:'円', relKeys:['new','ti'],
+        choices:numChoices(newPrice-tradeIn,[newPrice-bv, newPrice]),
+        exp:`${yen(newPrice)}－${yen(tradeIn)}＝<strong>${yen(newPrice-tradeIn)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcCompression(){
+  const n = compPick([4,5,8,10]);
+  const net = n*calcRand(2,9)*10000;
+  const g = calcRand(1,4)*n*10000;
+  const cost = net+g;
+  return {
+    title:'圧縮記帳（直接減額方式）',
+    scenario_html: calcTable([
+      ['g','国庫補助金',`${yen(g)}円を受け取った`],
+      ['cost','機械装置の取得',`期首に${yen(cost)}円で取得し、補助金相当額を直接減額した`],
+      ['life','減価償却',`耐用年数${n}年・残存価額ゼロ・定額法`],
+    ]),
+    steps:[
+      { label:'圧縮記帳後の機械装置の帳簿価額（取得原価）はいくらか？', ans:net, unit:'円', relKeys:['g','cost'],
+        choices:numChoices(net,[cost, g]),
+        exp:`${yen(cost)}－${yen(g)}＝<strong>${yen(net)}円</strong>（固定資産圧縮損${yen(g)}円を計上）` },
+      { label:'当期の減価償却費はいくらか？', ans:net/n, unit:'円', relKeys:['life'],
+        hint:compHint([['圧縮後の取得原価',`${yen(net)}円`]]),
+        choices:numChoices(net/n,[cost/n, g/n]),
+        exp:`圧縮後の金額で計算：${yen(net)}÷${n}年＝<strong>${yen(net/n)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcCapitalExp(){
+  const total = calcRand(10,40)*10000;
+  const cap = calcRand(2,Math.floor(total/10000)-2)*10000;
+  const bv = calcRand(20,80)*100000;
+  return {
+    title:'資本的支出と収益的支出',
+    scenario_html: calcTable([
+      ['spend','建物の改修工事',`${yen(total)}円を現金で支払った`],
+      ['cap','うち耐用年数を延ばす改良部分',`${yen(cap)}円（残りは原状を保つための修繕）`],
+      ['bv','改修前の建物の帳簿価額',`${yen(bv)}円`],
+    ]),
+    steps:[
+      { label:'建物の取得原価に加える金額（資本的支出）はいくらか？', ans:cap, unit:'円', relKeys:['cap'],
+        choices:numChoices(cap,[total, total-cap]),
+        exp:`価値を高める改良部分が資本的支出：<strong>${yen(cap)}円</strong>` },
+      { label:'修繕費（収益的支出）はいくらか？', ans:total-cap, unit:'円', relKeys:['spend','cap'],
+        choices:numChoices(total-cap,[total, cap]),
+        exp:`${yen(total)}－${yen(cap)}＝<strong>${yen(total-cap)}円</strong>` },
+      { label:'改修後の建物の帳簿価額はいくらか？', ans:bv+cap, unit:'円', relKeys:['bv'],
+        choices:numChoices(bv+cap,[bv+total, bv]),
+        exp:`${yen(bv)}＋${yen(cap)}＝<strong>${yen(bv+cap)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcSoftware(){
+  const n = 5;
+  const cost = n*12*calcRand(2,9)*1000;
+  const m = calcRand(3,11);
+  const startMonth = ((3 + (12-m)) % 12) + 1;
+  const amort = cost/n*m/12;
+  return {
+    title:'ソフトウェアの償却（月割・直接法）',
+    scenario_html: calcTable([
+      ['cost','自社利用ソフトウェアの取得原価',`${yen(cost)}円`],
+      ['life','償却',`利用可能期間${n}年・残存価額ゼロ・定額法・直接法`],
+      ['date','取得日・決算日',`${startMonth}月1日に取得・決算日は3月31日`],
+    ]),
+    steps:[
+      { label:'今期のソフトウェア償却はいくらか？', ans:amort, unit:'円', relKeys:['cost','life','date'],
+        choices:numChoices(amort,[cost/n, cost/n*(12-m)/12]),
+        exp:`${yen(cost)}÷${n}年×${m}／12＝<strong>${yen(amort)}円</strong>` },
+      { label:'期末のソフトウェアの帳簿価額はいくらか？', ans:cost-amort, unit:'円', relKeys:['cost'],
+        hint:compHint([['今期の償却額',`${yen(amort)}円`]]),
+        choices:numChoices(cost-amort,[cost-cost/n, cost]),
+        exp:`直接法なので取得原価から直接減らす：${yen(cost)}－${yen(amort)}＝<strong>${yen(cost-amort)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcProvision(){
+  const sales = calcRand(20,90)*100000;
+  const rate = compPick([1,2,3]);
+  const settei = sales*rate/100;
+  const zan = calcRand(1,Math.floor(settei/10000)-1)*10000;
+  const bonus = 6*calcRand(5,20)*10000;
+  const m = compPick([2,3,4,5]);
+  const startM = ((3 - m + 12) % 12) + 1;
+  return {
+    title:'引当金の繰入額（商品保証引当金・賞与引当金）',
+    scenario_html: calcTable([
+      ['sales','当期の売上高',`${yen(sales)}円`],
+      ['hosyo','商品保証引当金',`売上高の${rate}％を設定（差額補充法）・決算整理前の残高${yen(zan)}円`],
+      ['bonus','賞与',`次の支給額${yen(bonus)}円は${startM}月〜${(startM+4)%12+1}月の6か月分の勤務に対するもの`],
+      ['close','決算日',`3月31日`],
+    ]),
+    steps:[
+      { label:'商品保証引当金の設定額はいくらか？', ans:settei, unit:'円', relKeys:['sales','hosyo'],
+        choices:numChoices(settei,[settei-zan, sales*rate/1000]),
+        exp:`${yen(sales)}×${rate}％＝<strong>${yen(settei)}円</strong>` },
+      { label:'商品保証引当金繰入はいくらか？', ans:settei-zan, unit:'円', relKeys:['hosyo'],
+        hint:compHint([['設定額',`${yen(settei)}円`]]),
+        choices:numChoices(settei-zan,[settei, zan]),
+        exp:`${yen(settei)}－${yen(zan)}＝<strong>${yen(settei-zan)}円</strong>` },
+      { label:'当期に負担する賞与（賞与引当金繰入）はいくらか？', ans:bonus*m/6, unit:'円', relKeys:['bonus','close'],
+        choices:numChoices(bonus*m/6,[bonus, bonus*(6-m)/6]),
+        exp:`${startM}月〜3月の${m}か月分：${yen(bonus)}×${m}／6＝<strong>${yen(bonus*m/6)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcFxForward(){
+  const usd = calcRand(2,9)*1000;
+  const hr = calcRand(100,140);
+  const fr = hr + compPick([-4,-3,-2,2,3,4]);
+  const diff = (fr-hr)*usd;
+  return {
+    title:'為替予約（振当処理）',
+    scenario_html: calcTable([
+      ['buy','輸入',`商品${yen(usd)}ドルを掛けで仕入れた（取引時のレート1ドル＝${hr}円）`],
+      ['fwd','為替予約',`後日、買掛金について1ドル＝${fr}円で為替予約を結んだ（振当処理）`],
+    ]),
+    steps:[
+      { label:'仕入時の買掛金はいくらか？', ans:usd*hr, unit:'円', relKeys:['buy'],
+        choices:numChoices(usd*hr,[usd*fr]),
+        exp:`${yen(usd)}×${hr}＝<strong>${yen(usd*hr)}円</strong>` },
+      { label:'予約後の買掛金はいくらか？', ans:usd*fr, unit:'円', relKeys:['fwd'],
+        choices:numChoices(usd*fr,[usd*hr]),
+        exp:`予約レートで換算し直す：${yen(usd)}×${fr}＝<strong>${yen(usd*fr)}円</strong>（以後、決算時の換算替えはしない）` },
+      { label:'予約時の為替差損益は？', ans:calcSign(-diff,'為替差益','為替差損'), relKeys:['buy','fwd'],
+        choices:calcSignChoices(-diff,'為替差益','為替差損',[Math.abs(diff)*2, usd]),
+        exp:`買掛金（負債）が${yen(Math.abs(diff))}円${diff>0?'増えた':'減った'} → <strong>${diff>0?'為替差損':'為替差益'}</strong>` },
+      { label:'取引と同時に予約していた場合の買掛金の計上額はいくらか？', ans:usd*fr, unit:'円', relKeys:['fwd'],
+        choices:numChoices(usd*fr,[usd*hr]),
+        exp:`取引時から予約レートで計上：<strong>${yen(usd*fr)}円</strong>（為替差損益は生じない）` },
+    ]
+  };
+}
+
+function genCalcAccruedInterest(){
+  const face = calcRand(1,10)*1200000;
+  const r = compPick([2,3,4,6]);
+  const price = compPick([97,98,99,100,101]);
+  const k = compPick([1,2,3,4,5]);
+  const buyMonth = (9 + k - 1) % 12 + 1;
+  const cost = face*price/100;
+  const acc = face*r/100*k/12;
+  return {
+    title:'有価証券の端数利息（売買目的の社債の購入）',
+    scenario_html: calcTable([
+      ['bond','社債',`額面${yen(face)}円・年利${r}％・利払日は3月末と9月末`],
+      ['buy','購入',`${buyMonth}月末に額面100円につき${price}円で購入（直前の利払日は9月末）`],
+    ]),
+    steps:[
+      { label:'社債の購入代価（売買目的有価証券の金額）はいくらか？', ans:cost, unit:'円', relKeys:['bond','buy'],
+        choices:numChoices(cost,[face, face*(100-price+100)/100]),
+        exp:`${yen(face)}×${price}／100＝<strong>${yen(cost)}円</strong>` },
+      { label:'端数利息（前の利払日から購入日まで）はいくらか？', ans:acc, unit:'円', relKeys:['bond','buy'],
+        choices:numChoices(acc,[face*r/100*6/12, face*r/100]),
+        exp:`10月〜${buyMonth}月の${k}か月分：${yen(face)}×${r}％×${k}／12＝<strong>${yen(acc)}円</strong>（有価証券利息の借方）` },
+      { label:'支払う総額はいくらか？', ans:cost+acc, unit:'円', relKeys:['buy'],
+        hint:compHint([['購入代価',`${yen(cost)}円`],['端数利息',`${yen(acc)}円`]]),
+        choices:numChoices(cost+acc,[cost, cost-acc]),
+        exp:`${yen(cost)}＋${yen(acc)}＝<strong>${yen(cost+acc)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcOtherSecTax(){
+  const cost = calcRand(20,80)*10000;
+  const up = compPick([-1,1])*calcRand(1,9)*10000;
+  const v = cost+up;
+  const dt = Math.abs(up)*30/100;
+  return {
+    title:'その他有価証券の税効果',
+    scenario_html: calcTable([
+      ['cost','その他有価証券の取得原価',`${yen(cost)}円`],
+      ['v','期末の時価',`${yen(v)}円（全部純資産直入法）`],
+      ['rate','法定実効税率',`30％`],
+    ]),
+    steps:[
+      { label:'評価差額はいくらか？', ans:calcSign(up,'評価差益','評価差損'), relKeys:['cost','v'],
+        choices:calcSignChoices(up,'評価差益','評価差損',[v, cost*30/100]),
+        exp:`${yen(v)}－${yen(cost)}＝${up<0?'△':''}${yen(Math.abs(up))}円` },
+      { label:`${up>0?'繰延税金負債':'繰延税金資産'}はいくらか？`, ans:dt, unit:'円', relKeys:['rate'],
+        choices:numChoices(dt,[Math.abs(up), Math.abs(up)-dt]),
+        exp:`${yen(Math.abs(up))}×30％＝<strong>${yen(dt)}円</strong>（相手は法人税等調整額ではなく評価差額金）` },
+      { label:'その他有価証券評価差額金の金額はいくらか？', ans:Math.abs(up)-dt, unit:'円', relKeys:['v'],
+        hint:compHint([['税効果',`${yen(dt)}円`]]),
+        choices:numChoices(Math.abs(up)-dt,[Math.abs(up), dt]),
+        exp:`${yen(Math.abs(up))}－${yen(dt)}＝<strong>${yen(Math.abs(up)-dt)}円</strong>（${up>0?'貸方':'借方'}）` },
+    ]
+  };
+}
+
+function genCalcMerger(){
+  const assets = calcRand(30,90)*100000;
+  const liab = calcRand(5,Math.floor(assets/100000)-10)*100000;
+  const net = assets-liab;
+  const shares = calcRand(1,9)*100;
+  const pp = Math.round((net + compPick([-3,-2,-1,1,2,3])*100000)/shares/100)*100;
+  const price = shares*pp;
+  const diff = price-net;
+  if(diff===0 || pp<=0) return genCalcMerger();
+  return {
+    title:'合併（のれん・負ののれん）',
+    scenario_html: calcTable([
+      ['a','受け入れた資産（時価）',`${yen(assets)}円`],
+      ['l','引き受けた負債（時価）',`${yen(liab)}円`],
+      ['s','交付した株式',`${shares}株（1株の時価${yen(pp)}円）・全額資本金とする`],
+    ]),
+    steps:[
+      { label:'受け入れた純資産（時価）はいくらか？', ans:net, unit:'円', relKeys:['a','l'],
+        choices:numChoices(net,[assets, assets+liab]),
+        exp:`${yen(assets)}－${yen(liab)}＝<strong>${yen(net)}円</strong>` },
+      { label:'取得原価（交付した株式の時価）はいくらか？', ans:price, unit:'円', relKeys:['s'],
+        choices:numChoices(price,[shares*pp/2, net]),
+        exp:`${shares}株×${yen(pp)}＝<strong>${yen(price)}円</strong>` },
+      { label:'差額はどう処理するか？', ans:calcSign(diff,'のれん','負ののれん発生益'), relKeys:['a','s'],
+        hint:compHint([['純資産',`${yen(net)}円`],['取得原価',`${yen(price)}円`]]),
+        choices:calcSignChoices(diff,'のれん','負ののれん発生益',[Math.abs(diff)*2, net]),
+        exp:`${yen(price)}－${yen(net)}＝${diff<0?'△':''}${yen(Math.abs(diff))}円 → ${diff>0?'取得原価が多い＝<strong>のれん</strong>（資産）':'取得原価が少ない＝<strong>負ののれん発生益</strong>（特別利益）'}` },
+    ]
+  };
+}
+
+function genCalcRevenue(){
+  const n = calcRand(10,40)*10;
+  const p = calcRand(5,20)*100;
+  const c = p - calcRand(1,4)*100;
+  const k = calcRand(1,5)*5;
+  return {
+    title:'収益認識（返品が見込まれる販売）',
+    scenario_html: calcTable([
+      ['sale','掛け販売',`商品${n}個を＠${yen(p)}円で販売（原価＠${yen(c)}円）`],
+      ['ret','返品の見込み',`このうち${k}個は返品されると見込まれる`],
+    ]),
+    steps:[
+      { label:'売上として計上する金額はいくらか？', ans:(n-k)*p, unit:'円', relKeys:['sale','ret'],
+        choices:numChoices((n-k)*p,[n*p, k*p]),
+        exp:`返品見込み分を除く：（${n}－${k}）個×${yen(p)}＝<strong>${yen((n-k)*p)}円</strong>` },
+      { label:'返金負債はいくらか？', ans:k*p, unit:'円', relKeys:['ret'],
+        choices:numChoices(k*p,[k*c, n*p]),
+        exp:`${k}個×売価${yen(p)}＝<strong>${yen(k*p)}円</strong>` },
+      { label:'返品資産（戻ってくる商品の原価）はいくらか？', ans:k*c, unit:'円', relKeys:['ret','sale'],
+        choices:numChoices(k*c,[k*p, (n-k)*c]),
+        exp:`${k}個×原価${yen(c)}＝<strong>${yen(k*c)}円</strong>` },
+      { label:'売上原価はいくらか？', ans:(n-k)*c, unit:'円', relKeys:['sale'],
+        choices:numChoices((n-k)*c,[n*c, (n-k)*p]),
+        exp:`（${n}－${k}）個×${yen(c)}＝<strong>${yen((n-k)*c)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcConsolUpstream(){
+  const share = compPick([60,70,80]);
+  const [mark, ratio] = compPick([[25,'25／125'],[20,'20／120'],[10,'10／110']]);
+  const inv = (100+mark)*calcRand(2,9)*1000;
+  const unreal = inv*mark/(100+mark);
+  const nci = unreal*(100-share)/100;
+  return {
+    title:'連結会計（未実現利益の消去・アップストリーム）',
+    scenario_html: calcTable([
+      ['share','持分',`Ｐ社はＳ社株式の${share}％を保有`],
+      ['mark','Ｓ社（子会社）のＰ社への販売',`原価に${mark}％の利益を加えて販売している`],
+      ['inv','Ｐ社の期末商品',`このうちＳ社から仕入れた商品が${yen(inv)}円`],
+    ]),
+    steps:[
+      { label:'消去する未実現利益はいくらか？', ans:unreal, unit:'円', relKeys:['mark','inv'],
+        choices:numChoices(unreal,[inv*mark/100, unreal*share/100]),
+        exp:`${yen(inv)}×${ratio}＝<strong>${yen(unreal)}円</strong>` },
+      { label:'このうち非支配株主が負担する額はいくらか？', ans:nci, unit:'円', relKeys:['share'],
+        hint:compHint([['未実現利益',`${yen(unreal)}円`]]),
+        choices:numChoices(nci,[unreal*share/100, unreal]),
+        exp:`子会社が売った利益なので持分で按分：${yen(unreal)}×${100-share}％＝<strong>${yen(nci)}円</strong>` },
+      { label:'親会社株主の負担（連結上の利益の減少）はいくらか？', ans:unreal-nci, unit:'円', relKeys:['share'],
+        choices:numChoices(unreal-nci,[unreal, nci]),
+        exp:`${yen(unreal)}－${yen(nci)}＝<strong>${yen(unreal-nci)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcConsolReceivable(){
+  const x = calcRand(10,90)*10000;
+  const r = compPick([1,2,3,5]);
+  return {
+    title:'連結会計（債権債務の相殺と貸倒引当金の調整）',
+    scenario_html: calcTable([
+      ['ar','Ｐ社の売掛金',`このうち子会社Ｓ社に対するものが${yen(x)}円（Ｓ社の買掛金と対応）`],
+      ['rate','Ｐ社の貸倒引当金',`売掛金の期末残高に${r}％を設定している`],
+    ]),
+    steps:[
+      { label:'相殺消去する売掛金・買掛金はいくらか？', ans:x, unit:'円', relKeys:['ar'],
+        choices:numChoices(x,[x*r/100, x*2]),
+        exp:`グループ内の債権債務を消す：<strong>${yen(x)}円</strong>` },
+      { label:'減らす貸倒引当金（貸倒引当金繰入の取消し）はいくらか？', ans:x*r/100, unit:'円', relKeys:['rate'],
+        choices:numChoices(x*r/100,[x, x*r/1000]),
+        exp:`消去した売掛金に対応する分：${yen(x)}×${r}％＝<strong>${yen(x*r/100)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcConsolYear2(){
+  const share = compPick([60,70,80]);
+  const cap = calcRand(3,9)*100000, re = calcRand(1,5)*100000;
+  const net = cap+re;
+  const g = calcRand(1,5)*10000;
+  const nci0 = net*(100-share)/100;
+  const ni = calcRand(5,20)*10000;
+  const div = calcRand(1,4)*10000;
+  const amort = g/10;
+  const niNci = ni*(100-share)/100;
+  const divNci = div*(100-share)/100;
+  const nciEnd = nci0 + niNci - divNci;
+  return {
+    title:'連結会計（2年目：開始仕訳と非支配株主持分の変動）',
+    scenario_html: calcTable([
+      ['start','前期末の資本連結',`Ｓ社資本金${yen(cap)}円・利益剰余金${yen(re)}円、のれん${yen(g)}円、Ｐ社持分${share}％`],
+      ['prev','前期の動き','なし（前期末に支配を獲得した）'],
+      ['ni','当期のＳ社',`当期純利益${yen(ni)}円・配当${yen(div)}円`],
+      ['amort','のれんの償却',`10年で定額法`],
+    ]),
+    steps:[
+      { label:'開始仕訳の非支配株主持分（当期首）はいくらか？', ans:nci0, unit:'円', relKeys:['start'],
+        choices:numChoices(nci0,[net*share/100, cap*(100-share)/100]),
+        exp:`前期末の資本連結と同じ：${yen(net)}×${100-share}％＝<strong>${yen(nci0)}円</strong>` },
+      { label:'当期ののれん償却額はいくらか？', ans:amort, unit:'円', relKeys:['amort'],
+        choices:numChoices(amort,[g, g/5]),
+        exp:`${yen(g)}÷10年＝<strong>${yen(amort)}円</strong>` },
+      { label:'非支配株主に帰属する当期純利益はいくらか？', ans:niNci, unit:'円', relKeys:['ni'],
+        choices:numChoices(niNci,[ni*share/100, ni]),
+        exp:`${yen(ni)}×${100-share}％＝<strong>${yen(niNci)}円</strong>` },
+      { label:'配当のうち非支配株主分（非支配株主持分の減少）はいくらか？', ans:divNci, unit:'円', relKeys:['ni'],
+        choices:numChoices(divNci,[div*share/100, div]),
+        exp:`${yen(div)}×${100-share}％＝<strong>${yen(divNci)}円</strong>` },
+      { label:'当期末の非支配株主持分はいくらか？', ans:nciEnd, unit:'円', relKeys:['start','ni'],
+        hint:compHint([['期首',`${yen(nci0)}円`],['利益',`＋${yen(niNci)}円`],['配当',`－${yen(divNci)}円`]]),
+        choices:numChoices(nciEnd,[nci0+niNci, nci0]),
+        exp:`${yen(nci0)}＋${yen(niNci)}－${yen(divNci)}＝<strong>${yen(nciEnd)}円</strong>` },
+    ]
+  };
+}
+
+// --- 追加分：工業簿記 ---
+function genCalcMatPredet(){
+  const yp = calcRand(30,80)*10;
+  const ap = yp + compPick([-3,-2,-1,1,2,3])*10;
+  const use = calcRand(20,80)*10;
+  const book = calcRand(5,20)*10, real = book - calcRand(1,5);
+  const diff = (yp-ap)*use;
+  return {
+    title:'材料の予定価格・消費価格差異・棚卸減耗',
+    scenario_html: calcTable([
+      ['yp','予定消費価格',`＠${yen(yp)}円`],
+      ['ap','実際消費価格',`＠${yen(ap)}円`],
+      ['use','当月の消費量',`${use}kg（直接材料）`],
+      ['inv','月末の材料',`帳簿${book}kg・実地${real}kg（減耗は正常な範囲）`],
+    ]),
+    steps:[
+      { label:'予定価格による材料消費額はいくらか？', ans:yp*use, unit:'円', relKeys:['yp','use'],
+        choices:numChoices(yp*use,[ap*use]),
+        exp:`${yen(yp)}×${use}kg＝<strong>${yen(yp*use)}円</strong>` },
+      { label:'材料消費価格差異は？', ans:fmtVar(diff), relKeys:['yp','ap','use'],
+        choices:varChoices(diff,[-diff, diff*2]),
+        exp:`（予定${yen(yp)}－実際${yen(ap)}）×${use}kg＝<strong>${diff<0?'△':''}${yen(Math.abs(diff))}円</strong>` },
+      { label:'材料の棚卸減耗費（製造間接費）はいくらか？', ans:(book-real)*ap, unit:'円', relKeys:['inv','ap'],
+        choices:numChoices((book-real)*ap,[(book-real)*yp, real*ap]),
+        exp:`（${book}－${real}）kg×実際価格${yen(ap)}＝<strong>${yen((book-real)*ap)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcDeptMutual(){
+  const [a,b,c] = compPick([[4,3,1],[5,3,2],[3,2,1],[6,3,1]]);
+  const [d,e,f] = compPick([[2,3,1],[3,4,1],[3,2,1],[2,2,1]]);
+  const s1=a+b+c, s2=d+e+f;
+  const P = s1*(d+e)*calcRand(1,4)*1000;
+  const R = s2*(a+b)*calcRand(1,4)*1000;
+  const p1cut = P*a/s1, p1rep = P*c/s1;
+  const r1cut = R*d/s2, r1pow = R*f/s2;
+  const p2cut = r1pow*a/(a+b);
+  const r2cut = p1rep*d/(d+e);
+  const totalCut = p1cut + r1cut + p2cut + r2cut;
+  return {
+    title:'部門別配賦（相互配賦法・簡便法）',
+    scenario_html: calcTable([
+      ['own','補助部門費',`動力部門${yen(P)}円・修繕部門${yen(R)}円`],
+      ['kw','動力の配賦基準',`切削${a}・組立${b}・修繕${c}`],
+      ['rep','修繕の配賦基準',`切削${d}・組立${e}・動力${f}`],
+      ['rule','配賦方法',`第1次配賦は補助部門にも配賦し、第2次配賦は製造部門だけに配賦`],
+    ]),
+    steps:[
+      { label:'第1次配賦：動力部門費のうち切削部門へはいくらか？', ans:p1cut, unit:'円', relKeys:['own','kw'],
+        choices:numChoices(p1cut,[P*a/(a+b), P*b/s1]),
+        exp:`${yen(P)}×${a}／${s1}＝<strong>${yen(p1cut)}円</strong>` },
+      { label:'第1次配賦：修繕部門費のうち切削部門へはいくらか？', ans:r1cut, unit:'円', relKeys:['own','rep'],
+        choices:numChoices(r1cut,[R*d/(d+e), R*e/s2]),
+        exp:`${yen(R)}×${d}／${s2}＝<strong>${yen(r1cut)}円</strong>` },
+      { label:'第2次配賦：修繕部門から動力部門へ移った分のうち、切削部門へはいくらか？', ans:p2cut, unit:'円', relKeys:['kw','rep'],
+        hint:compHint([['修繕→動力（第1次）',`${yen(r1pow)}円`]]),
+        choices:numChoices(p2cut,[r1pow, r1pow*a/s1===p2cut?p2cut+1000:Math.round(r1pow*a/s1)]),
+        exp:`${yen(r1pow)}×${a}／（${a}＋${b}）＝<strong>${yen(p2cut)}円</strong>` },
+      { label:'第2次配賦：動力部門から修繕部門へ移った分のうち、切削部門へはいくらか？', ans:r2cut, unit:'円', relKeys:['kw','rep'],
+        hint:compHint([['動力→修繕（第1次）',`${yen(p1rep)}円`]]),
+        choices:numChoices(r2cut,[p1rep, Math.round(p1rep*d/s2)===r2cut?r2cut+1000:Math.round(p1rep*d/s2)]),
+        exp:`${yen(p1rep)}×${d}／（${d}＋${e}）＝<strong>${yen(r2cut)}円</strong>` },
+      { label:'切削部門への配賦額の合計はいくらか？', ans:totalCut, unit:'円', relKeys:['own'],
+        choices:numChoices(totalCut,[p1cut+r1cut, P*a/(a+b)+R*d/(d+e)]),
+        exp:`${yen(p1cut)}＋${yen(r1cut)}＋${yen(p2cut)}＋${yen(r2cut)}＝<strong>${yen(totalCut)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcDeptPredet(){
+  const rate = calcRand(5,15)*100;
+  const h = calcRand(20,60)*10;
+  const diff = compPick([-1,1])*calcRand(1,9)*5000;
+  const actual = rate*h - diff;
+  return {
+    title:'部門別の予定配賦と部門費配賦差異',
+    scenario_html: calcTable([
+      ['rate','切削部門の予定配賦率',`直接作業時間1時間あたり${yen(rate)}円`],
+      ['h','当月の実際直接作業時間',`${h}時間`],
+      ['act','当月の切削部門費（実際・補助部門費の配賦後）',`${yen(actual)}円`],
+    ]),
+    steps:[
+      { label:'切削部門費の予定配賦額はいくらか？', ans:rate*h, unit:'円', relKeys:['rate','h'],
+        choices:numChoices(rate*h,[actual]),
+        exp:`${yen(rate)}×${h}時間＝<strong>${yen(rate*h)}円</strong>` },
+      { label:'部門費配賦差異は？', ans:fmtVar(diff), relKeys:['act'],
+        choices:varChoices(diff,[-diff, diff*2]),
+        exp:`予定${yen(rate*h)}－実際${yen(actual)}＝<strong>${diff<0?'△':''}${yen(Math.abs(diff))}円</strong>` },
+    ]
+  };
+}
+
+function genCalcSpoilage(){
+  const atEnd = Math.random()<0.5;
+  const qc = calcRand(8,15)*100, qs = calcRand(1,3)*50, q1 = calcRand(2,5)*100;
+  const p1 = compPick([0.4,0.5,0.6]);
+  const um = calcRand(3,9)*10, uk = calcRand(4,12)*10;
+  const denomM = atEnd ? qc+qs+q1 : qc+q1;
+  const denomK = atEnd ? qc+qs+q1*p1 : qc+q1*p1;
+  const M = um*denomM, K = uk*denomK;
+  const wipM = um*q1, wipK = uk*q1*p1;
+  const done = M+K-wipM-wipK;
+  return {
+    title:`仕損の処理（度外視法・${atEnd?'工程の終点で発生':'工程の始点で発生'}）`,
+    scenario_html: calcTable([
+      ['in','当月の製造費用（月初仕掛品なし）',`直接材料費${yen(M)}円（始点投入）・加工費${yen(K)}円`],
+      ['qc','完成品',`${yen(qc)}個`],
+      ['qs','正常仕損',`${qs}個（${atEnd?'工程の終点':'工程の始点'}で発生・処分価値なし）`],
+      ['q1','月末仕掛品',`${yen(q1)}個（加工進捗度${p1*100}％）`],
+    ]),
+    steps:[
+      { label:'正常仕損費を負担するのは？', ans:atEnd?'完成品のみ':'完成品と月末仕掛品の両方', relKeys:['qs','q1'],
+        choices:['完成品のみ','完成品と月末仕掛品の両方'],
+        exp: atEnd ? `仕損は終点で発生、月末仕掛品（${p1*100}％）はまだ終点を通っていないので<strong>完成品のみ</strong>が負担` : `仕損は始点で発生、月末仕掛品も始点を通っているので<strong>両方</strong>が負担（仕損の数量を無視して按分）` },
+      { label:'月末仕掛品の直接材料費はいくらか？', ans:wipM, unit:'円', relKeys:['in','q1'],
+        choices:numChoices(wipM,[Math.round(M*q1/(atEnd?qc+q1:qc+qs+q1)), um*q1*p1]),
+        exp: atEnd ? `仕損も分母に含める：${yen(M)}×${yen(q1)}／（${yen(qc)}＋${qs}＋${yen(q1)}）＝<strong>${yen(wipM)}円</strong>` : `仕損を無視して按分：${yen(M)}×${yen(q1)}／（${yen(qc)}＋${yen(q1)}）＝<strong>${yen(wipM)}円</strong>` },
+      { label:'月末仕掛品の加工費はいくらか？', ans:wipK, unit:'円', relKeys:['in','q1'],
+        choices:numChoices(wipK,[Math.round(K*q1*p1/(atEnd?qc+q1*p1:qc+qs+q1*p1)), uk*q1]),
+        exp: atEnd ? `${yen(K)}×${yen(q1*p1)}／（${yen(qc)}＋${qs}＋${yen(q1*p1)}）＝<strong>${yen(wipK)}円</strong>` : `${yen(K)}×${yen(q1*p1)}／（${yen(qc)}＋${yen(q1*p1)}）＝<strong>${yen(wipK)}円</strong>` },
+      { label:'完成品総合原価（仕損費を含む）はいくらか？', ans:done, unit:'円', relKeys:['in'],
+        hint:compHint([['月末仕掛品',`${yen(wipM+wipK)}円`]]),
+        choices:numChoices(done,[M+K, done-um*qs]),
+        exp:`${yen(M+K)}－${yen(wipM+wipK)}＝<strong>${yen(done)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcProcessSeq(){
+  const prev = calcRand(3,9)*10;
+  const uk = calcRand(4,10)*10;
+  const qc = calcRand(8,15)*100, q1 = calcRand(2,5)*100, p1 = compPick([0.4,0.5]);
+  const T1 = prev*(qc+q1);
+  const K = uk*(qc+q1*p1);
+  const wip = prev*q1 + uk*q1*p1;
+  return {
+    title:'工程別総合原価計算（累加法・第2工程）',
+    scenario_html: calcTable([
+      ['t1','第1工程の完成品原価',`${yen(T1)}円（全量を第2工程の始点に投入）`],
+      ['k','第2工程の加工費',`${yen(K)}円（月初仕掛品なし）`],
+      ['qc','第2工程の完成品',`${yen(qc)}個`],
+      ['q1','第2工程の月末仕掛品',`${yen(q1)}個（加工進捗度${p1*100}％）`],
+    ]),
+    steps:[
+      { label:'第2工程の月末仕掛品の前工程費はいくらか？', ans:prev*q1, unit:'円', relKeys:['t1','q1'],
+        choices:numChoices(prev*q1,[prev*q1*p1, T1]),
+        exp:`前工程費は始点投入の材料と同じ扱い：${yen(T1)}×${yen(q1)}／（${yen(qc)}＋${yen(q1)}）＝<strong>${yen(prev*q1)}円</strong>` },
+      { label:'第2工程の月末仕掛品の加工費はいくらか？', ans:uk*q1*p1, unit:'円', relKeys:['k','q1'],
+        choices:numChoices(uk*q1*p1,[uk*q1, Math.round(K*q1/(qc+q1))]),
+        exp:`${yen(K)}×${yen(q1*p1)}／（${yen(qc)}＋${yen(q1*p1)}）＝<strong>${yen(uk*q1*p1)}円</strong>` },
+      { label:'第2工程の完成品総合原価はいくらか？', ans:T1+K-wip, unit:'円', relKeys:['t1','k'],
+        hint:compHint([['月末仕掛品',`${yen(wip)}円`]]),
+        choices:numChoices(T1+K-wip,[T1+K, K-uk*q1*p1]),
+        exp:`${yen(T1)}＋${yen(K)}－${yen(wip)}＝<strong>${yen(T1+K-wip)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcProcessGroup(){
+  const ha = calcRand(2,8)*100, hb = calcRand(2,8)*100;
+  const rate = calcRand(2,9)*10;
+  const X = rate*(ha+hb);
+  const da = calcRand(20,60)*1000, wa = calcRand(5,15)*1000;
+  const doneA = da + rate*ha - wa;
+  return {
+    title:'組別総合原価計算（組間接費の配賦）',
+    scenario_html: calcTable([
+      ['x','組間接費',`${yen(X)}円（直接作業時間で配賦）`],
+      ['h','直接作業時間',`Ａ組${ha}時間・Ｂ組${hb}時間`],
+      ['a','Ａ組',`組直接費${yen(da)}円・月末仕掛品原価${yen(wa)}円（月初仕掛品なし）`],
+    ]),
+    steps:[
+      { label:'Ａ組への組間接費の配賦額はいくらか？', ans:rate*ha, unit:'円', relKeys:['x','h'],
+        choices:numChoices(rate*ha,[rate*hb, X/2===rate*ha?rate*ha+rate*10:X/2]),
+        exp:`${yen(X)}×${ha}／（${ha}＋${hb}）＝<strong>${yen(rate*ha)}円</strong>` },
+      { label:'Ａ組の完成品総合原価はいくらか？', ans:doneA, unit:'円', relKeys:['a'],
+        hint:compHint([['Ａ組への配賦額',`${yen(rate*ha)}円`]]),
+        choices:numChoices(doneA,[da+rate*ha, da-wa]),
+        exp:`${yen(da)}＋${yen(rate*ha)}－${yen(wa)}＝<strong>${yen(doneA)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcProcessGrade(){
+  const [k1,k2,k3] = [1, 0.8, 0.5];
+  const n1 = calcRand(2,8)*100, n2 = calcRand(2,8)*50*2, n3 = calcRand(2,8)*100;
+  const s1 = n1*k1, s2 = n2*k2, s3 = n3*k3;
+  const unit = calcRand(2,9)*10;
+  const C = unit*(s1+s2+s3);
+  return {
+    title:'等級別総合原価計算（積数の比で配分）',
+    scenario_html: calcTable([
+      ['c','完成品総合原価',`${yen(C)}円`],
+      ['k','等価係数',`1級品1.0・2級品0.8・3級品0.5`],
+      ['n','完成品数量',`1級品${n1}個・2級品${n2}個・3級品${n3}個`],
+    ]),
+    steps:[
+      { label:'2級品の積数はいくつか？', ans:s2, unit:'', relKeys:['k','n'],
+        choices:numChoices(s2,[n2, n2*k3]),
+        exp:`${n2}個×0.8＝<strong>${yen(s2)}</strong>` },
+      { label:'積数の合計はいくつか？', ans:s1+s2+s3, unit:'', relKeys:['k','n'],
+        hint:compHint([['2級品の積数',`${yen(s2)}`]]),
+        choices:numChoices(s1+s2+s3,[n1+n2+n3, s1+s2]),
+        exp:`${yen(s1)}＋${yen(s2)}＋${yen(s3)}＝<strong>${yen(s1+s2+s3)}</strong>` },
+      { label:'2級品の完成品総合原価はいくらか？', ans:unit*s2, unit:'円', relKeys:['c'],
+        hint:compHint([['積数の合計',`${yen(s1+s2+s3)}`]]),
+        choices:numChoices(unit*s2,[Math.round(C*n2/(n1+n2+n3)), unit*n2]),
+        exp:`${yen(C)}×${yen(s2)}／${yen(s1+s2+s3)}＝<strong>${yen(unit*s2)}円</strong>` },
+      { label:'2級品の単位原価はいくらか？', ans:unit*k2, unit:'円', relKeys:['n'],
+        choices:numChoices(unit*k2,[unit, unit*k3]),
+        exp:`${yen(unit*s2)}÷${n2}個＝<strong>${yen(unit*k2)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcMfgReport(){
+  const m0 = calcRand(2,6)*10000, mb = calcRand(20,50)*10000, m1 = calcRand(2,6)*10000;
+  const mat = m0+mb-m1;
+  const lab = calcRand(15,40)*10000, exp_ = calcRand(10,30)*10000;
+  const total = mat+lab+exp_;
+  const w0 = calcRand(3,8)*10000, w1 = calcRand(3,8)*10000;
+  const cogm = total+w0-w1;
+  const f0 = calcRand(3,8)*10000, f1 = calcRand(3,8)*10000;
+  const cogs = f0+cogm-f1;
+  return {
+    title:'製造原価報告書と売上原価',
+    scenario_html: calcTable([
+      ['m','材料',`月初${yen(m0)}円・当月購入${yen(mb)}円・月末${yen(m1)}円`],
+      ['l','労務費・経費',`労務費${yen(lab)}円・経費${yen(exp_)}円`],
+      ['w','仕掛品',`月初${yen(w0)}円・月末${yen(w1)}円`],
+      ['f','製品',`月初${yen(f0)}円・月末${yen(f1)}円`],
+    ]),
+    steps:[
+      { label:'当月の材料費はいくらか？', ans:mat, unit:'円', relKeys:['m'],
+        choices:numChoices(mat,[mb, m0+mb]),
+        exp:`${yen(m0)}＋${yen(mb)}－${yen(m1)}＝<strong>${yen(mat)}円</strong>` },
+      { label:'当月総製造費用はいくらか？', ans:total, unit:'円', relKeys:['l'],
+        hint:compHint([['材料費',`${yen(mat)}円`]]),
+        choices:numChoices(total,[mb+lab+exp_, lab+exp_]),
+        exp:`${yen(mat)}＋${yen(lab)}＋${yen(exp_)}＝<strong>${yen(total)}円</strong>` },
+      { label:'当月製品製造原価はいくらか？', ans:cogm, unit:'円', relKeys:['w'],
+        hint:compHint([['当月総製造費用',`${yen(total)}円`]]),
+        choices:numChoices(cogm,[total, total-w0+w1]),
+        exp:`${yen(total)}＋月初仕掛品${yen(w0)}－月末仕掛品${yen(w1)}＝<strong>${yen(cogm)}円</strong>` },
+      { label:'売上原価はいくらか？', ans:cogs, unit:'円', relKeys:['f'],
+        hint:compHint([['当月製品製造原価',`${yen(cogm)}円`]]),
+        choices:numChoices(cogs,[cogm, cogm-f0+f1]),
+        exp:`月初製品${yen(f0)}＋${yen(cogm)}－月末製品${yen(f1)}＝<strong>${yen(cogs)}円</strong>` },
+    ]
+  };
+}
+
+function genCalcStdVariance(){
+  const sp = calcRand(5,15)*10, sq = calcRand(2,5);
+  const out = calcRand(10,40)*10;
+  const ap = sp + compPick([-2,-1,1,2])*5;
+  const aq = sq*out + compPick([-3,-2,-1,1,2,3])*10;
+  const priceVar = (sp-ap)*aq;
+  const qtyVar = (sq*out-aq)*sp;
+  const sr = calcRand(8,15)*100, sh = compPick([0.5,1,2]);
+  const ar = sr + compPick([-2,-1,1,2])*50;
+  const ah = sh*out + compPick([-2,-1,1,2])*10;
+  const rateVar = (sr-ar)*ah;
+  const timeVar = (sh*out-ah)*sr;
+  return {
+    title:'標準原価計算（直接材料費・直接労務費の差異分析）',
+    scenario_html: calcTable([
+      ['std','製品1個あたりの標準',`直接材料＠${sp}円×${sq}kg・直接労務＠${yen(sr)}円×${sh}時間`],
+      ['out','当月の生産量',`${out}個（月初・月末の仕掛品なし）`],
+      ['mat','直接材料の実際',`＠${ap}円×${yen(aq)}kg`],
+      ['lab','直接労務の実際',`＠${yen(ar)}円×${yen(ah)}時間`],
+    ]),
+    steps:[
+      { label:'価格差異（直接材料）は？', ans:fmtVar(priceVar), relKeys:['std','mat'],
+        choices:varChoices(priceVar,[-priceVar, (sp-ap)*sq*out]),
+        exp:`（標準${sp}－実際${ap}）×実際${yen(aq)}kg＝<strong>${priceVar<0?'△':''}${yen(Math.abs(priceVar))}円</strong>` },
+      { label:'数量差異（直接材料）は？', ans:fmtVar(qtyVar), relKeys:['std','out','mat'],
+        choices:varChoices(qtyVar,[-qtyVar, (sq*out-aq)*ap]),
+        exp:`（標準${yen(sq*out)}kg－実際${yen(aq)}kg）×標準${sp}円＝<strong>${qtyVar<0?'△':''}${yen(Math.abs(qtyVar))}円</strong>` },
+      { label:'賃率差異（直接労務）は？', ans:fmtVar(rateVar), relKeys:['std','lab'],
+        choices:varChoices(rateVar,[-rateVar, (sr-ar)*sh*out]),
+        exp:`（標準${yen(sr)}－実際${yen(ar)}）×実際${yen(ah)}時間＝<strong>${rateVar<0?'△':''}${yen(Math.abs(rateVar))}円</strong>` },
+      { label:'時間差異（直接労務）は？', ans:fmtVar(timeVar), relKeys:['std','out','lab'],
+        choices:varChoices(timeVar,[-timeVar, (sh*out-ah)*ar]),
+        exp:`（標準${yen(sh*out)}時間－実際${yen(ah)}時間）×標準${yen(sr)}円＝<strong>${timeVar<0?'△':''}${yen(Math.abs(timeVar))}円</strong>` },
+    ]
+  };
+}
+
 const CALC_GENERATORS = {
-  dep:[genCalcDepStraight, genCalcDepDeclining, genCalcDepUnits, genCalcAssetSale],
-  inv:[genCalcInventory],
-  allow:[genCalcAllowance],
-  sec:[genCalcSecurities, genCalcBond],
+  cash:[genCalcBankRecon],
+  dep:[genCalcDepStraight, genCalcDepDeclining, genCalcDepUnits, genCalcAssetSale, genCalcTradeIn, genCalcCompression, genCalcCapitalExp, genCalcSoftware],
+  inv:[genCalcInventory, genCalcMovingAvg],
+  allow:[genCalcAllowance, genCalcProvision],
   accrual:[genCalcAccrual],
-  fx:[genCalcFx],
-  tax:[genCalcTax],
+  sec:[genCalcSecurities, genCalcBond, genCalcAccruedInterest, genCalcOtherSecTax],
+  fx:[genCalcFx, genCalcFxForward],
   lease:[genCalcLease],
+  tax:[genCalcTax],
+  rev:[genCalcRevenue],
   div:[genCalcDividend],
-  consol:[genCalcConsol, genCalcUnrealized],
-  mat:[genCalcMaterial, genCalcLabor],
-  oh:[genCalcOverhead, genCalcDept],
-  process:[genCalcProcessAvg, genCalcProcessFifo],
+  merger:[genCalcMerger],
+  consol:[genCalcConsol, genCalcUnrealized, genCalcConsolUpstream, genCalcConsolReceivable, genCalcConsolYear2],
+  mat:[genCalcMaterial, genCalcMatPredet, genCalcLabor],
+  oh:[genCalcOverhead, genCalcDept, genCalcDeptMutual, genCalcDeptPredet],
+  process:[genCalcProcessAvg, genCalcProcessFifo, genCalcSpoilage],
+  process2:[genCalcProcessSeq, genCalcProcessGroup, genCalcProcessGrade],
   job:[genCalcJob],
+  mfg:[genCalcMfgReport],
+  std:[genCalcStdVariance],
 };
 const CALC_CATS = [
-  { key:'dep', label:'減価償却・固定資産の売却', group:'商業簿記' },
-  { key:'inv', label:'売上原価・棚卸減耗・商品評価損', group:'商業簿記' },
-  { key:'allow', label:'貸倒引当金', group:'商業簿記' },
+  { key:'cash', label:'銀行勘定調整表', group:'商業簿記' },
+  { key:'dep', label:'固定資産（減価償却・売却・買換え・圧縮記帳・資本的支出・ソフトウェア）', group:'商業簿記' },
+  { key:'inv', label:'商品の払出単価・売上原価・棚卸減耗・商品評価損', group:'商業簿記' },
+  { key:'allow', label:'引当金（貸倒・商品保証・賞与）', group:'商業簿記' },
   { key:'accrual', label:'経過勘定（月割計算）', group:'商業簿記' },
-  { key:'sec', label:'有価証券（平均単価・償却原価法）', group:'商業簿記' },
-  { key:'fx', label:'外貨建取引', group:'商業簿記' },
+  { key:'sec', label:'有価証券（平均単価・償却原価法・端数利息・評価差額の税効果）', group:'商業簿記' },
+  { key:'fx', label:'外貨建取引・為替予約', group:'商業簿記' },
   { key:'lease', label:'リース取引', group:'商業簿記' },
   { key:'tax', label:'法人税等・税効果会計', group:'商業簿記' },
+  { key:'rev', label:'収益認識（返品）', group:'商業簿記' },
   { key:'div', label:'剰余金の配当・準備金', group:'商業簿記' },
-  { key:'consol', label:'連結会計（のれん・非支配株主・未実現利益）', group:'商業簿記' },
-  { key:'mat', label:'材料費・労務費', group:'工業簿記' },
-  { key:'oh', label:'製造間接費・部門別配賦', group:'工業簿記' },
-  { key:'process', label:'総合原価計算（平均法・先入先出法）', group:'工業簿記' },
+  { key:'merger', label:'合併（のれん・負ののれん）', group:'商業簿記' },
+  { key:'consol', label:'連結会計（のれん・非支配株主・未実現利益・債権債務・2年目）', group:'商業簿記' },
+  { key:'mat', label:'材料費・労務費（予定価格・差異・棚卸減耗）', group:'工業簿記' },
+  { key:'oh', label:'製造間接費・部門別配賦（直接配賦・相互配賦・予定配賦）', group:'工業簿記' },
+  { key:'process', label:'総合原価計算（平均法・先入先出法・仕損）', group:'工業簿記' },
+  { key:'process2', label:'工程別・組別・等級別総合原価計算', group:'工業簿記' },
   { key:'job', label:'個別原価計算', group:'工業簿記' },
+  { key:'mfg', label:'製造原価報告書・売上原価', group:'工業簿記' },
+  { key:'std', label:'標準原価計算（差異分析）', group:'工業簿記' },
 ];
 // ===== 総合問題ここまで =====
 
