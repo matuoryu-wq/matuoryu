@@ -420,6 +420,7 @@
     .q-en-trans { margin-top:8px; font-size:12px; color:var(--text-sub,#666); font-weight:400; border-top:1px solid var(--border); padding-top:6px; font-style:italic; }
     .q-paren { color:#9AA0A6; font-weight:400; }
     .q-paren mark { color:#1a1a1a; }
+    .q-paren strong { color:#1a1a1a; font-weight:700; }
     .disp-tabs { display:flex; gap:6px; overflow-x:auto; padding:2px 0 10px; -webkit-overflow-scrolling:touch; }
     .disp-tabs .ctrl-btn { flex:0 0 auto; white-space:nowrap; }
     .exp-swipe-wrap { position:relative; height:130px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
@@ -1659,13 +1660,13 @@ const ALL = [
     exp:'「抱合せ株式」とは、合併する前からすでに保有していた、合併される側（Ｓ社）の株式のことです。まるで結婚前からすでに交際していた相手と、正式に一緒になるようなイメージで、合併にあたっては、①まずこの抱合せ株式を合併時点の時価（250,000円）に評価替えし、帳簿価額との差額（50,000円）を「抱合せ株式評価益」として損益に計上します。②その上で、合併の取得原価は「新たに交付した株式の時価（600,000円）」＋「評価替え後の抱合せ株式（250,000円）」＝850,000円となります。これと引き継いだＳ社の時価純資産750,000円（1,800,000－1,050,000）との差額100,000円がのれんです。'
   },
   { id:808, level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
-    q:'Ｐ社はＳ社を吸収合併した。合併対価は<mark class="q-asset">現金1,000,000円</mark>。引き継いだＳ社の資産・負債の時価は、<mark class="q-asset">諸資産600,000円</mark>・<mark class="q-liability">諸負債200,000円</mark>に加え、新たに識別された<mark class="q-asset">顧客関連資産（無形資産）150,000円が認められた</mark>。合併の仕訳を示しなさい（<mark class="q-asset">取得原価が純資産の時価を上回る分はのれんとする</mark>）。',
+    q:'Ｐ社はＳ社を吸収合併した。合併対価は<mark class="q-asset">現金1,000,000円</mark>。引き継いだＳ社の資産・負債の時価は、<mark class="q-asset">諸資産600,000円</mark>・<mark class="q-liability">諸負債200,000円</mark>に加え、新たに識別された<mark class="q-asset">顧客関連資産（無形資産）150,000円が認められた</mark>（<strong>取得原価の配分</strong>）。合併の仕訳を示しなさい（<mark class="q-asset">取得原価が純資産の時価を上回る分はのれんとする</mark>）。',
     en_q:"Company P absorbed Company S for ¥1,000,000 cash. Fair values taken over were: assets ¥600,000, liabilities ¥200,000, plus a newly identified customer-related intangible asset of ¥150,000. Record the merger entry.",
     e:[{d:[['諸資産',600000],['顧客関連資産',150000],['のれん',450000]], c:[['諸負債',200000],['現金',1000000]]}],
     exp:'企業結合では、対象会社の資産・負債を時価評価して引き継ぎますが、その際、対象会社の個別財務諸表には計上されていなかった無形資産（顧客関連資産・商標権・技術関連資産など）が新たに識別されることがあります（PPA：Purchase Price Allocation、取得原価の配分）。まるで買収した会社の「見えない資産」を丁寧に棚卸しして値札をつけていくような作業です。今回は「顧客関連資産」150,000円が新たに認識されました。のれんは、対価1,000,000円から、識別可能純資産（諸資産600,000＋顧客関連資産150,000－諸負債200,000＝550,000円）を差し引いた450,000円です。識別可能な無形資産をきちんと分離して計上するほど、のれん（正体不明の超過収益力）の金額は小さくなる、という関係を理解しておきましょう。'
   },
   { id:809, level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
-    q:'Ｐ社はすでにＳ社株式60％を保有していたが、残り40％の少数株主から株式交換によりＳ社を完全子会社化した。<mark class="q-asset">交付したＰ社株式の時価は400,000円であった</mark>。会社法の規定により、増加する払込資本のうち<mark class="q-equity">半額を資本金</mark>、<mark class="q-equity">残り半額を資本準備金とする</mark>場合のＰ社個別財務諸表上の仕訳を示しなさい。',
+    q:'Ｐ社はすでにＳ社株式60％を保有していたが、残り40％の少数株主（<strong>非支配株主</strong>）から株式交換によりＳ社を完全子会社化した。<mark class="q-asset">交付したＰ社株式の時価は400,000円であった</mark>。会社法の規定により、増加する払込資本のうち<mark class="q-equity">半額を資本金</mark>、<mark class="q-equity">残り半額を資本準備金とする</mark>場合のＰ社個別財務諸表上の仕訳を示しなさい。',
     en_q:'Company P already held 60% of Company S, and acquired the remaining 40% from minority shareholders via a share exchange to make S a wholly-owned subsidiary. The fair value of P shares issued was ¥400,000. Under the Companies Act, half of the increase in paid-in capital is credited to Capital and half to Capital Surplus. Record the entry on P\'s individual financial statements.',
     e:[{d:[['S社株式',400000]], c:[['資本金',200000],['資本準備金',200000]]}],
     exp:'すでに子会社化している会社の残りの株式（非支配株主の持分）を株式交換で取得するケースです。まるでグループ会社の残り株を最後まで買い集めて完全子会社化するイメージで、個別財務諸表上は、通常の株式交換と同じく「Ｓ社株式」という投資を追加取得したものとして計上します。会社法上、新株発行の対価は全額を資本金にする必要はなく、その一部（最大半額）を「資本準備金」とすることができます。今回は半分ずつとする指示なので、400,000円を200,000円ずつ資本金と資本準備金に計上します。'
@@ -1697,7 +1698,7 @@ const ALL = [
     exp:'オプションも先物と同様、決算日には時価評価が必要です。時価（45,000円）と帳簿価額（30,000円）との差額15,000円だけ「オプション資産」を増額し、相手科目として評価損益（オプション差損益）を計上します。値下がりしていれば逆に評価損を計上します。デリバティブは原則として決算日ごとに時価評価が強制される点が、他の資産と大きく異なります。'
   },
   { id:754, level:3, cat:'金融商品', chap:'1級：金融商品',
-    q:'Ｘ社は将来の外貨建取引に備えて為替予約（ヘッジ手段）を締結し、繰延ヘッジ会計を適用している。決算日において、<mark class="q-asset">為替予約の時価が30,000円上昇して資産となり</mark>、<mark class="q-equity">その評価益を繰り延べる</mark>。税効果を考慮しない場合の仕訳を示しなさい。',
+    q:'Ｘ社は将来の外貨建取引（<strong>ヘッジ対象</strong>）に備えて為替予約（ヘッジ手段）を締結し、繰延ヘッジ会計を適用している。決算日において、<mark class="q-asset">為替予約の時価が30,000円上昇して資産となり</mark>、<mark class="q-equity">その評価益を繰り延べる</mark>。税効果を考慮しない場合の仕訳を示しなさい。',
     en_q:"Company X entered into a forward foreign exchange contract as a hedge for a future foreign-currency transaction and applies deferred hedge accounting. At fiscal year-end, the forward contract's fair value gain was ¥30,000. Record the entry, ignoring tax effects.",
     e:[{d:[['為替予約',30000]], c:[['繰延ヘッジ損益',30000]]}],
     exp:'「繰延ヘッジ会計」とは、ヘッジ手段（為替予約など）の評価損益を、対象となる取引（ヘッジ対象）が実際に発生するまで損益計算書に出さず、純資産の部（その他包括利益）に一旦保留しておく方法です。まるで保険金を受け取っても、実際の事故が確定するまで金庫にしまっておくようなイメージで、評価益が出ても「収益」にはせず、「繰延ヘッジ損益」という純資産の科目に振り替えます。ヘッジ対象の取引が実際に発生した時点で、初めて損益として実現させます。'
@@ -1709,7 +1710,7 @@ const ALL = [
     exp:'繰延ヘッジ損益は純資産に計上される項目ですが、この評価益は将来課税対象になる（税金を増やす）含み益なので、税効果会計を適用して「繰延税金負債」（将来支払う税金）を認識します。評価益30,000円のうち、税金相当額9,000円（30,000×30％）を繰延税金負債として差し引き、残り21,000円を税引後の金額として繰延ヘッジ損益（純資産）に計上します。'
   },
   { id:756, level:3, cat:'金融商品', chap:'1級：金融商品',
-    q:'Ｘ社はその他有価証券（帳簿価額200,000円）について、時価下落リスクをヘッジするためデリバティブ取引を行い、時価ヘッジ会計を適用している。決算日において、<mark class="q-asset">その他有価証券の時価が40,000円下落し</mark>（<mark class="q-expense">評価損を計上</mark>）、<mark class="q-asset">ヘッジ手段であるデリバティブの時価が40,000円上昇し</mark>、<mark class="q-revenue">評価益が生じた</mark>。①その他有価証券の評価替えと②デリバティブの評価替えの仕訳をそれぞれ示しなさい。',
+    q:'Ｘ社はその他有価証券（<strong>ヘッジ対象</strong>、帳簿価額200,000円）について、時価下落リスクをヘッジするためデリバティブ取引を行い、時価ヘッジ会計を適用している。決算日において、<mark class="q-asset">その他有価証券の時価が40,000円下落し</mark>（<mark class="q-expense">評価損を計上</mark>）、<mark class="q-asset">ヘッジ手段であるデリバティブの時価が40,000円上昇し</mark>、<mark class="q-revenue">評価益が生じた</mark>。①その他有価証券の評価替えと②デリバティブの評価替えの仕訳をそれぞれ示しなさい。',
     en_q:"Company X applies fair value hedge accounting to hedge the price-decline risk of available-for-sale securities (book value ¥200,000) using a derivative. At fiscal year-end, the securities' fair value fell by ¥40,000 while the hedging derivative recorded a ¥40,000 valuation gain. Record (1) the securities revaluation and (2) the derivative revaluation.",
     e:[{d:[['投資有価証券評価損',40000]], c:[['その他有価証券',40000]]}, {d:[['デリバティブ資産',40000]], c:[['有価証券評価益',40000]]}],
     exp:'「時価ヘッジ会計」は繰延ヘッジと違い、ヘッジ対象（その他有価証券）の評価損益も、ヘッジ手段（デリバティブ）の評価損益も、両方ともその期の損益として計上する方法です。その他有価証券の評価差額は通常「純資産直入」ですが、時価ヘッジを適用すると例外的に損益計算書を通します。まるでシーソーの両端に損益を置いて釣り合わせるように、値下がり損40,000円と、デリバティブの値上がり益40,000円が同時に計上されるため、両者が相殺され、ヘッジの効果（リスクを打ち消す）が損益計算書上でも見える化されます。'
@@ -1721,7 +1722,7 @@ const ALL = [
     exp:'満期保有目的の債券を額面より安く取得した場合、その差額（金利調整差額）は「実質的な利息」の一部とみなされ、満期までの期間にわたって毎期コツコツ償却（帳簿価額に加算）していきます（＝利息法）。クーポン利息20,000円に加えて、償却額8,500円も「有価証券利息」という収益に含めます。償却した分は現金では受け取っていないため、相手科目は現金ではなく「満期保有目的債券」（帳簿価額を増やす）になります。'
   },
   { id:758, level:3, cat:'金融商品', chap:'1級：金融商品',
-    q:'Ｘ社は取引先Ｙ社に対する貸付金1,000,000円について、Ｙ社の財政状態が著しく悪化したため、貸倒懸念先として個別に将来キャッシュ・フローを見積り、<mark class="q-expense">繰入額150,000円を費用計上し</mark>、<mark class="q-as-li">同額の貸倒引当金を設定する</mark>こととした。決算時の仕訳を示しなさい。',
+    q:'Ｘ社は取引先Ｙ社に対する貸付金1,000,000円について、Ｙ社の財政状態が著しく悪化したため、貸倒懸念先（<strong>貸倒懸念債権</strong>）として個別に将来キャッシュ・フローを見積り（<strong>キャッシュ・フロー見積法</strong>）、<mark class="q-expense">繰入額150,000円を費用計上し</mark>、<mark class="q-as-li">同額の貸倒引当金を設定する</mark>こととした。決算時の仕訳を示しなさい。',
     en_q:"Company X holds a ¥1,000,000 loan receivable from Company Y. Because Y's financial condition has significantly deteriorated, X classifies it as a doubtful claim, estimates future cash flows individually, and recognizes an allowance for doubtful accounts of ¥150,000. Record the year-end entry.",
     e:[{d:[['貸倒引当金繰入',150000]], c:[['貸倒引当金',150000]]}],
     exp:'金融商品会計基準では、金銭債権を「一般債権」「貸倒懸念債権」「破産更生債権等」の3区分に分けて評価します。貸倒懸念先（経営破綻はしていないが返済に重大な問題がある先）については、まるで危険水準に入った患者を個別に検査するように、個別に将来キャッシュ・フローを見積り、その現在価値と債権額との差額を貸倒引当金として計上します（キャッシュ・フロー見積法）。費用側は「貸倒引当金繰入」、資産のマイナスとして「貸倒引当金」を計上します。'
@@ -1745,7 +1746,7 @@ const ALL = [
     exp:'先物取引を反対売買（買っていたものを売る、または売っていたものを買い戻す）することで決済すると、それまで「先物取引差金」（未収の評価益）として計上していた金額が現金として実際に受け取れます。まるでゲームの中の仮想通貨をようやく現実のお金に換金するようなイメージで、決済による最終的な差益が60,000円で、すでに先物取引差金として50,000円を計上済みだったため、差額の10,000円が追加の先物損益（収益）として計上されます。'
   },
   { id:811, level:3, cat:'金融商品', chap:'1級：金融商品',
-    q:'Ｘ社は借入金の金利変動リスクをヘッジするため金利スワップ契約を締結し、繰延ヘッジ会計を適用している。決算日において、<mark class="q-asset">この金利スワップの時価が25,000円上昇して資産となり</mark>、<mark class="q-equity">その評価益を繰り延べる</mark>（税効果は考慮しない）。仕訳を示しなさい。',
+    q:'Ｘ社は借入金の金利変動リスク（<strong>ヘッジ対象</strong>）をヘッジするため金利スワップ契約を締結し、繰延ヘッジ会計を適用している。決算日において、<mark class="q-asset">この金利スワップの時価が25,000円上昇して資産となり</mark>、<mark class="q-equity">その評価益を繰り延べる</mark>（税効果は考慮しない）。仕訳を示しなさい。',
     en_q:'Company X entered an interest rate swap to hedge the interest rate risk on its borrowings and applies deferred hedge accounting. At fiscal year-end, the swap\'s fair value gain was ¥25,000, ignoring tax effects. Record the entry.',
     e:[{d:[['スワップ資産',25000]], c:[['繰延ヘッジ損益',25000]]}],
     exp:'金利スワップとは、「変動金利」と「固定金利」を交換する契約で、借入金の金利変動リスクをヘッジする目的でよく使われます。まるで変動金利の住宅ローンを固定金利に一時的に切り替えるような保険的な取引で、為替予約と同じように、繰延ヘッジ会計を適用すれば、評価益はその期の損益にはせず、いったん純資産の部「繰延ヘッジ損益」として繰延べます。ヘッジ対象（借入金の金利変動）の影響が実際に生じたときに、初めて損益として認識します。'
@@ -1781,7 +1782,7 @@ const ALL = [
     exp:'満期保有目的の債券は、通常は時価評価をせず取得原価（または償却原価）のまま計上しますが、発行会社の財政状態の悪化などにより時価が著しく下落し、かつ回復の見込みがないと判断される場合は、例外的に強制的な評価減（減損処理）を行います。500,000円－400,000円＝100,000円を「投資有価証券評価損」として計上し、満期保有目的債券の帳簿価額を直接切り下げます。'
   },
   { id:817, level:3, cat:'金融商品', chap:'1級：金融商品',
-    q:'Ｘ社は為替予約についてヘッジ会計を適用していたが、ヘッジ対象であった外貨建取引が中止になったため、ヘッジ会計の要件を満たさなくなった。<mark class="q-equity">繰延べていた繰延ヘッジ損益（貸方残高）40,000円を</mark>、ただちに<mark class="q-other">当期の損益（為替差損益）に振り替える</mark>仕訳を示しなさい。',
+    q:'Ｘ社は為替予約（<strong>ヘッジ手段</strong>）についてヘッジ会計を適用していたが、ヘッジ対象であった外貨建取引が中止になったため、ヘッジ会計の要件を満たさなくなった。<mark class="q-equity">繰延べていた繰延ヘッジ損益（貸方残高）40,000円を</mark>、ただちに<mark class="q-other">当期の損益（為替差損益）に振り替える</mark>仕訳を示しなさい。',
     en_q:'Company X applied hedge accounting to a forward contract, but the hedged foreign-currency transaction was cancelled, so the hedge accounting requirements are no longer met. Record the entry immediately reclassifying the deferred hedge gain (¥40,000 credit balance) into current-period profit or loss (foreign exchange gain/loss).',
     e:[{d:[['繰延ヘッジ損益',40000]], c:[['為替差損益',40000]]}],
     exp:'ヘッジ会計は、ヘッジ対象（今回は外貨建取引）とヘッジ手段（為替予約）がセットで存在することを前提に適用されます。ヘッジ対象そのものが消滅・中止になると、もはやヘッジとしての意味がなくなるため、ヘッジ会計を続けることができません（ヘッジ会計の中止）。まるで保険をかけていた対象そのものがなくなってしまい、保険契約だけが宙に浮くようなイメージで、それまで純資産の部に繰延べていた評価損益を、その時点でただちに当期の損益に振り替えます。「ヘッジの前提が崩れたので、繰延べていた分を一気に精算する」というイメージです。'
@@ -1923,7 +1924,7 @@ const ALL = [
     exp:'確定拠出年金制度（DC）は、会社が一定額の掛金を外部に拠出すれば、それ以降の運用リスクを会社が負わない制度です（確定給付制度ＤＢとは異なり、将来の給付額を会社が保証しません）。まるで積立NISAの口座に毎月入金するだけで、その後の運用成績は加入者次第、というイメージで、複雑な退職給付債務の計算は不要で、単純に「掛金を拠出した時点」で費用（退職給付費用）として処理して完了します。ＤＢ制度のように「退職給付引当金」という負債は計上しません。'
   },
   { id:824, level:3, cat:'退職給付', chap:'1級：退職給付会計',
-    q:'Ｘ社は確定給付企業年金制度（ＤＢ）の一部を確定拠出年金制度（ＤＣ）に移行した。<mark class="q-liability">移行により消滅した退職給付債務は600,000円、移換した年金資産は550,000円であった</mark>。<mark class="q-revenue">この移行にともなう損益を計上する</mark>仕訳を示しなさい。',
+    q:'Ｘ社は確定給付企業年金制度（ＤＢ）の一部を確定拠出年金制度（ＤＣ）に移行した（<strong>退職給付制度の終了</strong>）。<mark class="q-liability">移行により消滅した退職給付債務は600,000円、移換した年金資産は550,000円であった</mark>。<mark class="q-revenue">この移行にともなう損益を計上する</mark>仕訳を示しなさい。',
     en_q:'Company X converted part of its defined benefit (DB) pension plan to a defined contribution (DC) plan. The obligation extinguished was ¥600,000, and the plan assets transferred were ¥550,000. Record the entry recognizing the gain from this conversion.',
     e:[{d:[['退職給付引当金',50000]], c:[['退職給付制度終了益',50000]]}],
     exp:'ＤＢ制度からＤＣ制度へ制度の一部を移行すると、その部分についてはもはや会社が将来の運用リスクを負わなくなるため、「退職給付制度の終了」として処理します。まるで会社が抱えていた将来の重い約束の一部を、外部に肩代わりしてもらうようなイメージで、消滅する退職給付債務600,000円と、移換する年金資産550,000円の差額（＝会社の正味負担の減少額）50,000円を、退職給付引当金の取崩しと「退職給付制度終了益」（特別利益）として計上します。ＤＢの一部がＤＣに置き換わることで、会社の将来負担が軽くなったことを表しています。'
@@ -2091,7 +2092,7 @@ const ALL = [
 
   // ===== 1級：会計方針の変更・誤謬の訂正 =====
   { id:787, level:3, cat:'会計方針の変更', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は棚卸資産の評価方法を先入先出法から総平均法に変更した。この変更を過去の財務諸表に遡って適用した結果、<mark class="q-asset">過去の期首商品棚卸高が総平均法によればより低い金額であったことが判明し</mark>、<mark class="q-equity">利益剰余金期首残高を150,000円減額修正する必要が生じた</mark>（税効果は考慮しない）。遡及適用による修正仕訳を示しなさい。',
+    q:'Ｘ社は棚卸資産の評価方法を先入先出法から総平均法に変更した（<strong>会計方針の変更</strong>）。この変更を過去の財務諸表に遡って適用した結果、<mark class="q-asset">過去の期首商品棚卸高が総平均法によればより低い金額であったことが判明し</mark>、<mark class="q-equity">利益剰余金期首残高を150,000円減額修正する必要が生じた</mark>（税効果は考慮しない）。遡及適用による修正仕訳を示しなさい。',
     en_q:'Company X changed its inventory valuation method from FIFO to the weighted-average method. Applying this change retrospectively revealed that opening inventory under the new method would have been ¥150,000 lower, requiring a ¥150,000 reduction to opening retained earnings, ignoring tax effects. Record the retrospective-application adjustment entry.',
     e:[{d:[['利益剰余金期首残高',150000]], c:[['繰越商品',150000]]}],
     exp:'「会計方針の変更」（棚卸資産の評価方法など）は、原則として新たな会計方針を過去の期間にも遡って適用したかのように会計処理します（遡及適用）。まるでルールを変更した後、過去の記録もそのルールで書き直すようなイメージで、過去の損益はすでに確定しているため、当期の損益計算書を通さず、直接「利益剰余金期首残高」を修正します。変更後の方法（総平均法）で計算し直した結果、過去の商品棚卸高が150,000円少なかったことになるため、繰越商品（資産）を減額し、対応する分だけ利益剰余金期首残高を減額します。'
@@ -2103,19 +2104,19 @@ const ALL = [
     exp:'前期以前の財務諸表に誤り（誤謬）があったことが当期に判明した場合、その影響を当期の損益として計上するのではなく、「修正再表示」といって、あたかも誤りがなかったかのように過去の財務諸表を直接修正します。まるで過去のテストの採点ミスを見つけて、今年の成績ではなく過去の記録を修正するようなイメージで、当期の損益計算書を通さず、直接「利益剰余金期首残高」を修正することで、過去の誤りを訂正します。未払費用（負債）の計上漏れだったため、利益剰余金期首残高を減額し、未払費用を追加計上します。'
   },
   { id:789, level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は前期に<mark class="q-asset">売上高を120,000円過大に計上していたことが当期に判明した（実際には売上が発生していなかった）</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示の仕訳を示しなさい（税効果は考慮しない）。',
+    q:'Ｘ社は前期に<mark class="q-asset">売上高を120,000円過大に計上していたことが当期に判明した（実際には売上が発生していなかった）</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Company X discovered this period that it had overstated sales revenue by ¥120,000 last period (the sale had not actually occurred). Record the retrospective restatement entry, ignoring tax effects.',
     e:[{d:[['利益剰余金期首残高',120000]], c:[['売掛金',120000]]}],
     exp:'前期に本来計上すべきでなかった売上高（売掛金）が誤って計上されていたケースです。誤りを発見した当期の売上高を減額するのではなく、過去の誤りとして「利益剰余金期首残高」を直接減額し、過大計上されていた売掛金を取り消します。まるで昨年の帳簿の記載ミスを見つけて、今年の帳簿ではなく昨年の記録として訂正するようなイメージで、誤謬の訂正は、発生した年度ではなく発見した年度の当期純利益に影響を与えない、という点がポイントです。'
   },
   { id:790, level:3, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社が保有する機械装置（取得原価1,000,000円、これまで耐用年数10年・定額法で償却、期首時点の帳簿価額600,000円）について、今後の使用見込みを再検討した結果、残存耐用年数を当初の残り6年から3年に変更した。過去の年度は修正せず、<mark class="q-expense">変更後の残存耐用年数で当期の減価償却費を計上する</mark>（<mark class="q-as-li">間接法で減価償却累計額に記帳する</mark>）仕訳を示しなさい（残存価額ゼロ・定額法）。',
+    q:'Ｘ社が保有する機械装置（取得原価1,000,000円、これまで耐用年数10年・定額法で償却、期首時点の帳簿価額600,000円）について、今後の使用見込みを再検討した結果、残存耐用年数を当初の残り6年から3年に変更した（<strong>会計上の見積りの変更</strong>）。過去の年度は修正せず、<mark class="q-expense">変更後の残存耐用年数で当期の減価償却費を計上する</mark>（<mark class="q-as-li">間接法で減価償却累計額に記帳する</mark>）仕訳を示しなさい（残存価額ゼロ・定額法）。',
     en_q:'Company X reassessed the useful life of its machinery (acquisition cost ¥1,000,000, previously depreciated straight-line over 10 years, opening book value ¥600,000) and revised the remaining useful life from 6 years to 3 years. Without restating prior periods, record this period\'s depreciation entry using the revised remaining life (zero residual value, straight-line).',
     e:[{d:[['減価償却費',200000]], c:[['減価償却累計額',200000]]}],
     exp:'「会計上の見積りの変更」（耐用年数の変更、引当金の見積り変更など）は、「会計方針の変更」とは異なり、過去に遡って財務諸表を修正しません（遡及処理をしません）。変更があった期以後の将来に向かって、新しい見積りに基づいて会計処理を行います（プロスペクティブ処理）。まるで「これからの計画を見直しただけで、過去の記録は変えない」というイメージで、期首帳簿価額600,000円を、変更後の残存耐用年数3年で償却：600,000÷3年＝200,000円。「過去は正しかったが、これからの見積りを変えた」という整理なので、利益剰余金の修正は一切発生しない点が、会計方針の変更・誤謬の訂正との大きな違いです。'
   },
   { id:791, level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は前期に<mark class="q-liability">費用100,000円の計上漏れがあったことを当期に発見した</mark>。修正再表示（<mark class="q-equity">利益剰余金期首残高の修正</mark>）にあたり、<mark class="q-asset">実効税率30％として税効果を考慮した</mark>仕訳を示しなさい。',
+    q:'Ｘ社は前期に<mark class="q-liability">費用100,000円の計上漏れがあったことを当期に発見した</mark>。<strong>誤謬の訂正</strong>による修正再表示（<mark class="q-equity">利益剰余金期首残高の修正</mark>）にあたり、<mark class="q-asset">実効税率30％として税効果を考慮した</mark>仕訳を示しなさい。',
     en_q:'Company X discovered this period that it had failed to record ¥100,000 of expenses last period. In restating the financials, applying tax-effect accounting at an effective tax rate of 30%, record the correcting entry.',
     e:[{d:[['利益剰余金期首残高',70000],['繰延税金資産',30000]], c:[['未払費用',100000]]}],
     exp:'修正再表示にも税効果会計を適用します。過去に計上漏れだった費用100,000円は、将来（税務上の扱いが確定した時点で）税金負担を軽減する効果を持つため、繰延税金資産30,000円（100,000×30％）を認識します。残り70,000円が税引後ベースでの利益剰余金期首残高の減額分です。誤謬の訂正であっても、通常の決算整理と同じように税効果会計のルールを適用する点を押さえておきましょう。'
@@ -2127,85 +2128,85 @@ const ALL = [
     exp:'減価償却方法の変更（定率法→定額法など）は、本来は「会計方針の変更」に見えますが、日本基準では「会計上の見積りの変更と区別することが困難な会計方針の変更」として特別に扱い、過去に遡って財務諸表を修正しません（遡及適用しません）。まるで「見た目は方針変更でも、実質は見積りの見直しに近い」とみなすようなイメージで、変更した期以後、新しい方法で将来に向かって計算するだけです。期首帳簿価額600,000円÷残存耐用年数5年＝120,000円。「会計方針の変更なのに、なぜか見積りの変更と同じ扱いになる」という、1級で頻出のひっかけポイントです。'
   },
   { id:842, level:3, cat:'会計方針の変更', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は売買目的有価証券の評価方法を移動平均法から総平均法に変更した。過去の財務諸表に遡って適用した結果、<mark class="q-asset">過去の有価証券の帳簿価額が総平均法によればより高い金額であったことが判明し</mark>、<mark class="q-equity">利益剰余金期首残高を60,000円増額修正する必要が生じた</mark>（税効果は考慮しない）。遡及適用による修正仕訳を示しなさい。',
+    q:'Ｘ社は売買目的有価証券の評価方法を移動平均法から総平均法に変更した（<strong>会計方針の変更</strong>）。過去の財務諸表に遡って適用した結果、<mark class="q-asset">過去の有価証券の帳簿価額が総平均法によればより高い金額であったことが判明し</mark>、<mark class="q-equity">利益剰余金期首残高を60,000円増額修正する必要が生じた</mark>（税効果は考慮しない）。遡及適用による修正仕訳を示しなさい。',
     en_q:'Company X changed its valuation method for trading securities from the moving-average method to the weighted-average method. Applying this retrospectively revealed that the securities\' book value under the new method would have been ¥60,000 higher, requiring a ¥60,000 increase to opening retained earnings, ignoring tax effects. Record the retrospective-application entry.',
     e:[{d:[['売買目的有価証券',60000]], c:[['利益剰余金期首残高',60000]]}],
     exp:'棚卸資産の評価方法と同様に、有価証券の評価方法（移動平均法・総平均法など）の変更も「会計方針の変更」に該当し、遡及適用が必要です。今回は変更後の方法（総平均法）によれば過去の有価証券の帳簿価額がより高かったことが判明したため、有価証券（資産）を増額し、対応する分だけ利益剰余金期首残高を増額します（前に学んだ棚卸資産のケースとは逆に、利益剰余金が増える方向の修正です）。'
   },
   { id:843, level:3, cat:'会計方針の変更', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は棚卸資産の評価方法を総平均法から先入先出法に変更した。この変更を過去の財務諸表に遡って適用した結果、<mark class="q-asset">過去の期首商品棚卸高が先入先出法によればより高い金額であったことが判明し</mark>、<mark class="q-equity">利益剰余金期首残高を90,000円増額修正する必要が生じた</mark>（税効果は考慮しない）。遡及適用による修正仕訳を示しなさい。',
+    q:'Ｘ社は棚卸資産の評価方法を総平均法から先入先出法に変更した（<strong>会計方針の変更</strong>）。この変更を過去の財務諸表に遡って適用した結果、<mark class="q-asset">過去の期首商品棚卸高が先入先出法によればより高い金額であったことが判明し</mark>、<mark class="q-equity">利益剰余金期首残高を90,000円増額修正する必要が生じた</mark>（税効果は考慮しない）。遡及適用による修正仕訳を示しなさい。',
     en_q:'Company X changed its inventory valuation method from the weighted-average method to FIFO. Applying this retrospectively revealed that opening inventory under FIFO would have been ¥90,000 higher, requiring a ¥90,000 increase to opening retained earnings, ignoring tax effects. Record the retrospective-application entry.',
     e:[{d:[['繰越商品',90000]], c:[['利益剰余金期首残高',90000]]}],
     exp:'会計方針の変更による遡及適用は、必ずしも利益剰余金を減らす方向とは限りません。今回のように、変更後の方法（先入先出法）によれば過去の棚卸資産の評価額がより高かった場合は、逆に繰越商品（資産）を増額し、利益剰余金期首残高も増額修正します。まるで計算方法を変えたら過去の在庫が「実は少し多く評価されるべきだった」と判明したようなイメージで、「遡及適用は増える場合も減る場合もある」という点を、最初に学んだ問題（総平均法への変更で減額したケース）と対比して押さえておきましょう。'
   },
   { id:844, level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は前期の決算において、<mark class="q-as-li">備品の減価償却費40,000円の計上を失念していたことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示の仕訳を示しなさい（税効果は考慮しない）。',
+    q:'Ｘ社は前期の決算において、<mark class="q-as-li">備品の減価償却費40,000円の計上を失念していたことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Company X discovered this period that it had forgotten to record ¥40,000 of depreciation on equipment last period. Record the retrospective restatement entry, ignoring tax effects.',
     e:[{d:[['利益剰余金期首残高',40000]], c:[['減価償却累計額',40000]]}],
     exp:'減価償却費の計上漏れも、過去の財務諸表の誤りです（誤謬）。当期の減価償却費として今さら計上するのではなく、過去の誤りとして「利益剰余金期首残高」を直接減額し、本来計上すべきだった減価償却累計額を追加します。「見つけた時点の費用にしない、過去に遡って直接純資産を修正する」という誤謬訂正の基本パターンをもう一度確認する問題です。'
   },
   { id:845, level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は前期に、本来は修繕費として費用処理すべきであった<mark class="q-asset">支出70,000円を、誤って建物の取得原価に含めて資産計上していたことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示の仕訳を示しなさい（減価償却の影響は考慮しない、税効果は考慮しない）。',
+    q:'Ｘ社は前期に、本来は修繕費として費用処理すべきであった<mark class="q-asset">支出（<strong>収益的支出</strong>）70,000円を、誤って建物の取得原価に含めて資産計上していた（<strong>資本的支出</strong>として処理していた）ことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい（減価償却の影響は考慮しない、税効果は考慮しない）。',
     en_q:'Company X discovered this period that it had mistakenly capitalized ¥70,000 of expenditure into the cost of a building last period, when it should have been expensed as repairs. Record the retrospective restatement entry (ignore the depreciation impact and tax effects).',
     e:[{d:[['利益剰余金期首残高',70000]], c:[['建物',70000]]}],
     exp:'本来は費用にすべき支出（収益的支出）を、誤って資産（建物などの資本的支出）に計上してしまうケースも誤謬に該当します。まるで単なる補修費用を「リフォーム扱い」で資産に計上してしまったミスを直すようなイメージで、過大に計上されていた建物（資産）を減額し、対応する分だけ利益剰余金期首残高を減額して訂正します。「資産に計上しすぎていた」誤りも、収益・費用の計上誤りと同じように、利益剰余金期首残高を通じて修正する点は共通です。'
   },
   { id:846, level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は前期末の貸倒引当金の設定にあたり、計算式の入力ミスにより、<mark class="q-as-li">本来120,000円計上すべきところを80,000円しか計上していなかったことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示の仕訳を示しなさい（税効果は考慮しない）。',
+    q:'Ｘ社は前期末の貸倒引当金の設定にあたり、計算式の入力ミスにより、<mark class="q-as-li">本来120,000円計上すべきところを80,000円しか計上していなかったことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Company X discovered this period that a calculation input error had caused it to record only ¥80,000 of allowance for doubtful accounts last period, when ¥120,000 was required. Record the retrospective restatement entry, ignoring tax effects.',
     e:[{d:[['利益剰余金期首残高',40000]], c:[['貸倒引当金',40000]]}],
     exp:'単純な計算ミスによって引当金が過少に計上されていた場合も誤謬に該当します（後で判明した新しい情報に基づく「見積りの変更」とは違い、当時すでに入手できていた情報の使い方を間違えた場合は誤謬です）。まるでExcelの計算式の入力ミスを後から見つけたようなイメージで、不足していた40,000円（120,000円－80,000円）を追加計上し、利益剰余金期首残高を減額します。'
   },
   { id:847, level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は前期末の実地棚卸において、<mark class="q-asset">倉庫の一角にあった商品60,000円分を数え忘れており、期末商品棚卸高が過小に計上されていたことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示の仕訳を示しなさい（税効果は考慮しない）。',
+    q:'Ｘ社は前期末の実地棚卸において、<mark class="q-asset">倉庫の一角にあった商品60,000円分を数え忘れており、期末商品棚卸高が過小に計上されていたことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Company X discovered this period that, during last period\'s physical inventory count, ¥60,000 of goods in a corner of the warehouse were overlooked, understating ending inventory. Record the retrospective restatement entry, ignoring tax effects.',
     e:[{d:[['繰越商品',60000]], c:[['利益剰余金期首残高',60000]]}],
     exp:'実地棚卸の数え忘れのような、単純な事実誤認・集計ミスも誤謬に該当します。倉庫の隅にあった在庫を数え忘れていたケースで、過小だった繰越商品（資産）を追加計上し、対応する分だけ利益剰余金期首残高を増額修正します。誤謬の内容によって利益剰余金が増えるか減るかは変わりますが、「発見した期の損益にせず、利益剰余金期首残高を直接修正する」という処理方法自体は常に共通です。'
   },
   { id:848, level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は前期の法人税等の計算において、税率の適用誤りにより、<mark class="q-liability">本来より30,000円少なく法人税等を計上していたことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示の仕訳を示しなさい。',
+    q:'Ｘ社は前期の法人税等の計算において、税率の適用誤りにより、<mark class="q-liability">本来より30,000円少なく法人税等を計上していたことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい。',
     en_q:'Company X discovered this period that, due to an incorrect tax rate applied last period, income taxes were understated by ¥30,000. Record the retrospective restatement entry.',
     e:[{d:[['利益剰余金期首残高',30000]], c:[['未払法人税等',30000]]}],
     exp:'損益項目だけでなく、税金費用（法人税等）の計算誤りも誤謬の訂正の対象になります。まるで確定申告の税率適用ミスを後から修正するようなイメージで、過少に計上されていた未払法人税等（負債）を追加計上し、利益剰余金期首残高を減額します。「税金の計算を間違えていた」というのも、会計上は他の費用の計上漏れと同じ枠組みで訂正します。'
   },
   { id:849, level:2, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は過去の貸倒実績率の見直しにより、当期末の貸倒引当金の設定率を売掛金残高の2％から3％に変更した。<mark class="q-expense">当期末売掛金残高2,000,000円に対する引当金の追加計上額（見積りの変更に伴う当期の影響分）を計上する</mark>（<mark class="q-as-li">同額を貸倒引当金に繰り入れる</mark>）仕訳を示しなさい（差額補充法、前期末引当金残高40,000円）。',
+    q:'Ｘ社は過去の貸倒実績率の見直しにより、当期末の貸倒引当金の設定率を売掛金残高の2％から3％に変更した（<strong>会計上の見積りの変更</strong>）。<mark class="q-expense">当期末売掛金残高2,000,000円に対する引当金の追加計上額（見積りの変更に伴う当期の影響分）を計上する</mark>（<mark class="q-as-li">同額を貸倒引当金に繰り入れる</mark>）仕訳を示しなさい（差額補充法、前期末引当金残高40,000円）。',
     en_q:"Company X revised its allowance rate for doubtful accounts from 2% to 3% of receivables, based on updated historical loss experience. Given a year-end receivables balance of ¥2,000,000 and a prior allowance balance of ¥40,000, record the entry recognizing the additional allowance required (using the incremental method).",
     e:[{d:[['貸倒引当金繰入',20000]], c:[['貸倒引当金',20000]]}],
     exp:'過去の貸倒実績（実際にどれくらい貸し倒れたか）が変化したことに基づいて引当金の設定率を見直すのは、新しい情報に基づく合理的な判断であり、「会計上の見積りの変更」に該当します。まるで保険の掛け金を最新のリスクデータに基づいて見直すようなイメージで、過去に遡って修正はせず、変更した当期以降の引当金の計算に、新しい設定率（3％）をそのまま反映させます。60,000円（2,000,000×3％）－40,000円（前期末残高）＝20,000円を当期に追加計上します。'
   },
   { id:850, level:2, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社が計上している資産除去債務（帳簿価額500,000円）について、<mark class="q-liability">将来の除去費用の見積りが変更され、資産除去債務の金額を550,000円に修正する必要が生じた</mark>。<mark class="q-asset">見積りの変更による増加額を計上する</mark>仕訳を示しなさい（対応する資産の帳簿価額を増加させる）。',
+    q:'Ｘ社が計上している資産除去債務（帳簿価額500,000円）について、<mark class="q-liability">将来の除去費用の見積りが変更され（<strong>会計上の見積りの変更</strong>）、資産除去債務の金額を550,000円に修正する必要が生じた</mark>。<mark class="q-asset">見積りの変更による増加額を計上する</mark>仕訳を示しなさい（対応する資産の帳簿価額を増加させる）。',
     en_q:"Company X's recognized asset retirement obligation (book value ¥500,000) required revision to ¥550,000 due to a change in the estimated future removal cost. Record the entry recognizing the increase from this estimate change (increasing the corresponding asset's book value).",
     e:[{d:[['機械装置',50000]], c:[['資産除去債務',50000]]}],
     exp:'資産除去債務は「将来、その資産を撤去・処分するのにいくらかかるか」という見積りに基づいて計上します。物価上昇や技術動向の変化などにより、この見積り自体が変わることがあります。まるで将来の解体費用の見積りを、資材価格の上昇に合わせて見直すようなイメージで、これも「会計上の見積りの変更」に該当し、過去に遡って修正せず、変更があった時点で差額（50,000円）を資産除去債務（負債）と対応する固定資産（資産）の両方に反映させます。増加した分の固定資産は、残存耐用年数にわたって今後の減価償却を通じて費用化されます。'
   },
   { id:851, level:2, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は過去の保証実績データの見直しにより、製品保証引当金の設定率を売上高の1％から1.5％に変更した。<mark class="q-expense">当期売上高4,000,000円に対する引当金の追加計上額を計上する</mark>（<mark class="q-liability">同額を引当金に繰り入れる</mark>）仕訳を示しなさい（差額補充法、前期末引当金残高40,000円）。',
+    q:'Ｘ社は過去の保証実績データの見直しにより、製品保証引当金の設定率を売上高の1％から1.5％に変更した（<strong>会計上の見積りの変更</strong>）。<mark class="q-expense">当期売上高4,000,000円に対する引当金の追加計上額を計上する</mark>（<mark class="q-liability">同額を引当金に繰り入れる</mark>）仕訳を示しなさい（差額補充法、前期末引当金残高40,000円）。',
     en_q:"Company X revised its product warranty provision rate from 1% to 1.5% of sales, based on updated warranty claim experience. Given sales of ¥4,000,000 and a prior provision balance of ¥40,000, record the entry recognizing the additional provision required.",
     e:[{d:[['商品保証引当金繰入',20000]], c:[['商品保証引当金',20000]]}],
     exp:'製品保証引当金の設定率の見直しも、貸倒引当金と同じ「会計上の見積りの変更」です。まるで過去の故障発生率のデータをもとに、保証コストの見積りを更新するようなイメージで、過去の実績データが更新されたことに基づく合理的な判断なので、遡及適用はせず、当期の引当金計算に新しい設定率（1.5％）をそのまま反映させます。60,000円（4,000,000×1.5％）－40,000円（前期末残高）＝20,000円を追加計上します。'
   },
   { id:852, level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は前期の退職給付費用の計算において、勤務費用の集計ミスにより、<mark class="q-liability">本来より50,000円少なく退職給付費用を計上していたことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示の仕訳を示しなさい（税効果は考慮しない）。',
+    q:'Ｘ社は前期の退職給付費用の計算において、勤務費用の集計ミスにより、<mark class="q-liability">本来より50,000円少なく退職給付費用を計上していたことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい（税効果は考慮しない）。',
     en_q:"Company X discovered this period that a clerical error in tallying service cost caused last period's retirement benefit expense to be understated by ¥50,000. Record the retrospective restatement entry, ignoring tax effects.",
     e:[{d:[['利益剰余金期首残高',50000]], c:[['退職給付引当金',50000]]}],
     exp:'退職給付会計のような複雑な見積りを伴う領域でも、「入手可能だった情報に基づく計算を単純に間違えた」場合は、見積りの変更ではなく誤謬に該当します。まるで複雑な計算式の中の1つの数字を打ち間違えていたようなイメージで、不足していた退職給付引当金50,000円を追加計上し、利益剰余金期首残高を減額して訂正します。「新しい情報で見積りが変わった」のか「当時の情報の使い方を間違えた」のかを区別することが、誤謬と見積りの変更を見分けるポイントです。'
   },
   { id:853, level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は前期に<mark class="q-asset">売上高（売掛金）を90,000円過大に計上していたことを当期に発見した</mark>。修正再表示（<mark class="q-equity">利益剰余金期首残高の修正</mark>）にあたり、<mark class="q-asset">実効税率30％として税効果を考慮した</mark>仕訳を示しなさい。',
+    q:'Ｘ社は前期に<mark class="q-asset">売上高（売掛金）を90,000円過大に計上していたことを当期に発見した</mark>。<strong>誤謬の訂正</strong>による修正再表示（<mark class="q-equity">利益剰余金期首残高の修正</mark>）にあたり、<mark class="q-asset">実効税率30％として税効果を考慮した</mark>仕訳を示しなさい。',
     en_q:'Company X discovered this period that it had overstated sales revenue (accounts receivable) by ¥90,000 last period. In restating the financials, applying tax-effect accounting at an effective tax rate of 30%, record the correcting entry.',
     e:[{d:[['利益剰余金期首残高',63000],['繰延税金資産',27000]], c:[['売掛金',90000]]}],
     exp:'誤謬の訂正にも税効果会計を適用します。過大計上されていた売上高（売掛金）90,000円を取り消すと、将来的に税務上の調整を通じて税金負担が軽減される効果を持つため、繰延税金資産27,000円（90,000×30％）を認識します。残り63,000円が税引後ベースでの利益剰余金期首残高の減額分です。'
   },
   { id:854, level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は前期末の実地棚卸において、<mark class="q-asset">商品50,000円分を数え忘れており、期末商品棚卸高が過小に計上されていたことを当期に発見した</mark>。修正再表示（<mark class="q-equity">利益剰余金期首残高の修正</mark>）にあたり、<mark class="q-liability">実効税率30％として税効果を考慮した</mark>仕訳を示しなさい。',
+    q:'Ｘ社は前期末の実地棚卸において、<mark class="q-asset">商品50,000円分を数え忘れており、期末商品棚卸高が過小に計上されていたことを当期に発見した</mark>。<strong>誤謬の訂正</strong>による修正再表示（<mark class="q-equity">利益剰余金期首残高の修正</mark>）にあたり、<mark class="q-liability">実効税率30％として税効果（<strong>将来加算一時差異</strong>）を考慮した</mark>仕訳を示しなさい。',
     en_q:'Company X discovered this period that, during last period\'s physical inventory count, ¥50,000 of goods were overlooked, understating ending inventory. In restating the financials, applying tax-effect accounting at an effective tax rate of 30%, record the correcting entry.',
     e:[{d:[['繰越商品',50000]], c:[['繰延税金負債',15000],['利益剰余金期首残高',35000]]}],
     exp:'資産の過小計上（棚卸資産の数え忘れなど）を修正すると、過去の利益がその分増えていたはずだったことになるため、将来的な税金負担が増える効果（将来加算一時差異）を持ち、繰延税金負債15,000円（50,000×30％）を認識します。残り35,000円が税引後ベースでの利益剰余金期首残高の増額分です。修正再表示のたびに、その内容が「将来減算」なのか「将来加算」なのかを見極めて、繰延税金資産・負債のどちらを計上するか判断する必要があります。'
   },
   { id:855, level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
-    q:'Ｘ社は前々期および前期の2期にわたり、リース料の計上区分を誤っており、<mark class="q-liability">各期10,000円ずつ、合計20,000円の費用の計上漏れがあったことを当期に発見した</mark>。この累積影響額を<mark class="q-equity">利益剰余金期首残高で修正再表示する</mark>仕訳を示しなさい（税効果は考慮しない）。',
+    q:'Ｘ社は前々期および前期の2期にわたり、リース料の計上区分を誤っており、<mark class="q-liability">各期10,000円ずつ、合計20,000円の費用の計上漏れがあったことを当期に発見した</mark>。この累積影響額を<mark class="q-equity">利益剰余金期首残高で修正再表示する</mark>（<strong>誤謬の訂正</strong>）仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Company X discovered this period that a misclassification of lease payments over two prior periods resulted in ¥10,000 of unrecorded expense each period, totaling ¥20,000. Record the entry restating this cumulative effect, ignoring tax effects.',
     e:[{d:[['利益剰余金期首残高',20000]], c:[['未払費用',20000]]}],
     exp:'誤謬が1期だけでなく複数の過去の期間にわたって生じていた場合は、それぞれの期の影響額を合計した「累積影響額」を、当期首の利益剰余金期首残高に対する一括修正として反映させます。まるで数年分の記帳ミスを一気にまとめて精算するようなイメージで、前々期分10,000円＋前期分10,000円＝合計20,000円。何年前の誤りであっても、発見した期の損益には一切影響させず、あくまで期首の純資産を直接修正する、という誤謬訂正の原則は変わりません。'
@@ -2245,13 +2246,13 @@ const ALL = [
     exp:'活動基準原価計算（ABC）は、製造間接費を「生産量」ではなく「活動（段取り・検査・発注など）の発生回数」を基準に配賦する方法です。まるで工場の共通コストを「誰がどれだけ手間をかけさせたか」で公平に割り勘するようなイメージで、段取活動にかかる費用240,000円を、段取り回数合計80回で割ると、活動基準配賦率＠3,000円／回。製品Ａ・Ｂともに40回ずつ段取りが行われたため、それぞれ120,000円（40回×3,000円）が配賦されます。従来の「直接作業時間」などの単一基準による配賦よりも、実際に原価を発生させている活動の実態に即して配賦できる点がABCの利点です。'
   },
   { id:797, level:3, cat:'ABC', chap:'1級：原価計算（差異分析・ABC・本社工場）',
-    q:'Ｘ社は検査活動にかかる<mark class="q-expense">製造間接費150,000円を</mark>、検査時間（合計500時間）を配賦基準として活動基準配賦率＠300円で配賦している。製品Ｃに200時間の検査が行われた場合、<mark class="q-asset">製品Ｃへ配賦される製造間接費を仕掛品へ計上する</mark>仕訳を示しなさい。',
+    q:'Ｘ社は検査活動にかかる<mark class="q-expense">製造間接費150,000円を</mark>、検査時間（合計500時間）を配賦基準として活動基準配賦率＠300円で配賦している（<strong>活動基準原価計算＝ABC</strong>）。製品Ｃに200時間の検査が行われた場合、<mark class="q-asset">製品Ｃへ配賦される製造間接費を仕掛品へ計上する</mark>仕訳を示しなさい。',
     en_q:'Company X allocates ¥150,000 of overhead from the inspection activity using inspection hours (500 total) as the cost driver, at an activity rate of ¥300 per hour. Product C required 200 inspection hours. Record the entry allocating the overhead assigned to Product C to work-in-process.',
     e:[{d:[['仕掛品',60000]], c:[['製造間接費',60000]]}],
     exp:'検査活動という別のコストプールについても同様に、活動の発生量（検査時間）を基準に配賦率を計算します。150,000円÷500時間＝＠300円／時間。製品Ｃに200時間の検査が行われたため、60,000円（200時間×300円）が製品Ｃに配賦されます。ABCでは、このように活動（コストドライバー）ごとに複数の配賦基準を使い分けるのが特徴です。'
   },
   { id:798, sides:['本社側','工場側'], level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
-    q:'Ｘ社は本社会計と工場会計を独立させている（本社工場会計）。<mark class="q-asset">本社は工場のために材料500,000円を購入し</mark>、<mark class="q-asset">現金で支払い</mark>、そのまま<mark class="q-other">工場へ送付した</mark>（<mark class="q-other">工場側では本社勘定で受け入れる</mark>）。①本社側②工場側の仕訳をそれぞれ示しなさい。',
+    q:'Ｘ社は本社会計と工場会計を独立させている（本社工場会計）。<mark class="q-asset">本社は工場のために材料500,000円を購入し</mark>、<mark class="q-asset">現金で支払い（<strong>立替払い</strong>）</mark>、そのまま<mark class="q-other">工場へ送付した</mark>（<mark class="q-other">工場側では本社勘定で受け入れる</mark>）。①本社側②工場側の仕訳をそれぞれ示しなさい。',
     en_q:"Company X keeps separate head-office and factory ledgers. The head office purchased ¥500,000 of materials for the factory, paying cash, and shipped them directly to the factory. Record the entries on (1) the head office's books and (2) the factory's books.",
     e:[{d:[['工場',500000]], c:[['現金',500000]]}, {d:[['材料',500000]], c:[['本社',500000]]}],
     exp:'本社工場会計では、本社と工場がそれぞれ独立した帳簿を持ちます。まるで支店と本店がそれぞれ独自の家計簿をつけているようなイメージで、本社と工場の間の取引は、通常の外部取引と同じように仕訳しますが、相手科目には「工場」「本社」という内部取引専用の勘定（照合勘定）を使います。①本社側：材料代金を立替払いし、工場に送付したので「工場」勘定（本社から見た工場への債権のようなもの）を借方に、現金を貸方に計上。②工場側：材料を受け入れたので「材料」を借方に、本社からの送付分として「本社」勘定（工場から見た本社への債務）を貸方に計上します。この2つの帳簿を合算すると、内部取引（工場・本社勘定）は相殺されて消えます。'
@@ -2287,7 +2288,7 @@ const ALL = [
     exp:'材料副費（引取運賃、購入手数料など）も、実際発生額を都度集計するのは煩雑なため、購入代価に対する一定率で「予定配賦」することがあります。まるで送料をあらかじめ「商品代金の5％」とざっくり見積もっておき、後で実際の請求額と精算するようなイメージで、予定配賦額20,000円（400,000×5％）に対し、実際発生額は22,000円だったため、2,000円の不利差異（予定より多くかかった）が生じます。材料副費勘定を予定配賦額でいったん締め、実際発生額との差額を「材料副費差異」として区分します。'
   },
   { id:860, level:2, cat:'ABC', chap:'1級：原価計算（差異分析・ABC・本社工場）',
-    q:'Ｘ社は発注活動にかかる<mark class="q-expense">製造間接費90,000円を</mark>、発注回数（合計30回）を配賦基準として活動基準配賦率＠3,000円で配賦している。製品Ｄに12回の発注が行われた場合、<mark class="q-asset">製品Ｄへ配賦される製造間接費を仕掛品へ計上する</mark>仕訳を示しなさい。',
+    q:'Ｘ社は発注活動にかかる<mark class="q-expense">製造間接費90,000円を</mark>、発注回数（合計30回）を配賦基準として活動基準配賦率＠3,000円で配賦している（<strong>活動基準原価計算＝ABC</strong>）。製品Ｄに12回の発注が行われた場合、<mark class="q-asset">製品Ｄへ配賦される製造間接費を仕掛品へ計上する</mark>仕訳を示しなさい。',
     en_q:'Company X allocates ¥90,000 of overhead from the ordering activity using the number of purchase orders (30 total) as the cost driver, at an activity rate of ¥3,000 per order. Product D required 12 purchase orders. Record the entry allocating the overhead assigned to Product D to work-in-process.',
     e:[{d:[['仕掛品',36000]], c:[['製造間接費',36000]]}],
     exp:'発注活動（購買部門が材料や部品を発注する業務）も、ABCでは独立したコストプールとして扱われます。90,000円÷30回＝＠3,000円／回。製品Ｄに12回分の発注が発生したため、36,000円（12回×3,000円）が製品Ｄに配賦されます。段取活動・検査活動と同じように、活動の発生量に応じて配賦する考え方は共通です。'
@@ -2365,7 +2366,7 @@ const ALL = [
     exp:'交渉価格基準は、全部原価（400,000円）と市価（500,000円）の間で、事業部同士が話し合って振替価格を決める方法です。まるで社内の2つのチームが「お互い納得できる値段」を話し合って決めるようなイメージで、今回は中間の450,000円で合意しました。Ａ事業部の利益は50,000円（450,000－400,000）となり、全部原価基準（利益ゼロ）と市価基準（利益100,000円）の中間的な結果になります。「両事業部が納得できる価格を交渉で決める」という、実務でもよく使われる柔軟な方法です。'
   },
   { id:883, sides:['合算時'], level:2, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
-    q:'Ｘ社の決算時、<mark class="q-other">Ａ事業部元帳の「Ｂ事業部」勘定残高は450,000円（借方）</mark>、<mark class="q-other">Ｂ事業部元帳の「Ａ事業部」勘定残高は450,000円（貸方）</mark>であった。合算財務諸表を作成するにあたり、この内部取引を相殺消去する仕訳を示しなさい。',
+    q:'Ｘ社（<strong>事業部制</strong>）の決算時、<mark class="q-other">Ａ事業部元帳の「Ｂ事業部」勘定残高は450,000円（借方）</mark>、<mark class="q-other">Ｂ事業部元帳の「Ａ事業部」勘定残高は450,000円（貸方）</mark>であった。合算財務諸表を作成するにあたり、この内部取引を相殺消去する仕訳を示しなさい。',
     en_q:"At year-end, Division A's \"Division B\" account had a ¥450,000 debit balance, matching Division B's \"Division A\" account ¥450,000 credit balance. When preparing combined financial statements, record the entry eliminating this internal transaction.",
     e:[{d:[['A事業部',450000]], c:[['B事業部',450000]]}],
     exp:'事業部制でも、本社工場会計と同様に、事業部間の内部取引を管理するための照合勘定（「Ａ事業部」「Ｂ事業部」）を使います。決算時に合算財務諸表を作る際は、グループ内部でのお金の動きに過ぎない部分（内部取引残高）を相殺消去し、外部との取引だけが財務諸表に反映されるようにします。事業部制であっても本社工場会計であっても、「内部取引は最終的に相殺してゼロにする」という考え方は共通です。'
@@ -2469,12 +2470,12 @@ const ALL = [
     exp:'自社が発行した商品券（前問）とは違い、他店が発行した商品券を代金として受け取った場合は「他店商品券」という別の資産科目で処理します。これは発行元の他店に持ち込めば換金してもらえる「他店に対する請求権」という意味の資産です。商品を渡したので売上（収益）はしっかり計上し、代金の受け取り方が現金ではなく商品券だった、という違いだけです。'
   },
   { id:1020, cat:'商品売買', chap:'第1章：商品売買',
-    q:'Tシャツなどの衣料品を小売店に卸しているX社は、決算にあたり、倉庫の商品を実際に数えたところ（<mark class="q-asset">実地棚卸</mark>）、<mark class="q-expense">帳簿の上では10枚あるはずのTシャツが、実際には8枚</mark>しかなかった。このTシャツは1枚10円で仕入れたもので、枚数が減った原因はわからなかった。減った分について、決算に必要な仕訳を行いなさい。',
+    q:'Tシャツなどの衣料品を小売店に卸しているX社は、決算にあたり、倉庫の商品を実際に数えたところ（<mark class="q-asset">実地棚卸</mark>）、<mark class="q-expense">帳簿の上では10枚あるはずのTシャツが、実際には8枚</mark>しかなかった（<strong>棚卸減耗</strong>）。このTシャツは1枚10円で仕入れたもので、枚数が減った原因はわからなかった。減った分について、決算に必要な仕訳を行いなさい。',
     e:[{d:[['棚卸減耗損',20]],c:[['繰越商品',20]]}],
     exp:'帳簿上は10枚あるはずなのに、実際に数えたら8枚しかなかった――この「数のズレ」から生じる損失を「棚卸減耗損」と呼びます。(10枚－8枚)×10円＝20円分、本来あるべき在庫が消えてしまったことになるので、資産である繰越商品を20円減らし、その分を費用（棚卸減耗損）として計上します。原因不明の目減りを、実際の数量に合わせて帳簿を修正する処理です。'
   },
   { id:1021, cat:'商品売買', chap:'第1章：商品売買',
-    q:'X社は、決算にあたり、<mark class="q-asset">期末に倉庫に残っていた</mark>Tシャツ8枚を確認した。このTシャツは1枚10円で仕入れたものだが、流行が過ぎて値崩れしたため、<mark class="q-expense">決算の時点で売れると見込まれる金額は1枚8円に下がっていた</mark>。決算に必要な仕訳を行いなさい。',
+    q:'X社は、決算にあたり、<mark class="q-asset">期末に倉庫に残っていた</mark>Tシャツ8枚を確認した。このTシャツは1枚10円で仕入れたものだが、流行が過ぎて値崩れしたため、<mark class="q-expense">決算の時点で売れると見込まれる金額（<strong>正味売却価額</strong>）は1枚8円に下がっていた</mark>。決算に必要な仕訳を行いなさい。',
     e:[{d:[['商品評価損',16]],c:[['繰越商品',16]]}],
     exp:'「正味売却価額」とは、決算の時点で、その商品が売れると見込まれる金額のことです。「取得原価」とは、その商品を買ったときに支払った金額のことです。商品の数は合っていても、市場での値段（正味売却価額8円）が、仕入れたときの値段（取得原価10円）より下がってしまうことがあります。このまま仕入れた値段のまま資産計上していると、実態より高く見積もりすぎることになるため、下がった分（10円－8円＝2円×8枚＝16円）を商品評価損として費用計上し、繰越商品の金額を実態に合わせて引き下げます。'
   },
@@ -2490,7 +2491,7 @@ const ALL = [
   },
   // --- 収益認識・現金預金 ---
   { id:1024, cat:'収益認識', chap:'収益認識・現金預金',
-    q:'飲料水を酒店やスーパーに卸しているX社は、得意先との間で、次のような約束をしている。「1年間に一定の量以上を買ってくれた得意先には、代金の一部をあとから返す」（<strong>割戻し</strong>）。今期は、この約束の対象になりそうな得意先が、何社かある。決算にあたり、X社は、<mark class="q-revenue">今期の売上</mark>のうち、この約束によって、<mark class="q-liability">あとから返すことになると見込まれる金額を5円と見積もった</mark>。この見積額について、決算に必要な仕訳を行いなさい。',
+    q:'飲料水を酒店やスーパーに卸しているX社は、得意先との間で、次のような約束をしている。「1年間に一定の量以上を買ってくれた得意先には、代金の一部をあとから返す」（<strong>割戻し</strong>・<strong>リベート</strong>）。今期は、この約束の対象になりそうな得意先が、何社かある。決算にあたり、X社は、<mark class="q-revenue">今期の売上</mark>のうち、この約束によって、<mark class="q-liability">あとから返すことになると見込まれる金額を5円と見積もった</mark>。この見積額について、決算に必要な仕訳を行いなさい。',
     e:[{d:[['売上',5]],c:[['返金負債',5]]}],
     exp:'「割戻し」とは、一定の量以上を買ってくれた得意先に、代金の一部を、あとから返すことです（「リベート」とも呼ばれます）。収益認識の考え方では、あとで返す可能性が高い金額は「本当に確定した売上」とは言えないため、その分だけ売上（収益）を減らし、「将来、お金を返す義務」として「返金負債」という負債で処理します。「売ったつもりの金額のうち、見込みで返す分は、最初から売上に入れない」というのがポイントです。'
   },
@@ -2510,7 +2511,7 @@ const ALL = [
     exp:'商品の販売とは違い、サービス（役務）を提供して得る収益は「役務収益」という科目で処理します。ホームページが完成し、飲食店に引き渡した瞬間に、サービス提供という約束を果たしたことになるので、代金50円を役務収益（収益）として計上します。まだ代金を受け取っていないので、「あとで受け取れる権利」として売掛金（資産）を計上します。'
   },
   { id:1028, cat:'収益認識', chap:'収益認識・現金預金',
-    q:'上記のホームページについて、飲食店への<mark class="q-asset">引渡しと代金の請求が終わり、この制作の仕事は完了</mark>した。X社は、この仕事のために、これまでに25円を支払っている（デザイナーへの報酬）。この25円は、仕事が完成するまでは、<mark class="q-expense">まだ完成していない仕事にかかった費用として、別に記録してきた</mark>。仕事が完了した日に、この25円について、必要な仕訳を行いなさい。',
+    q:'上記のホームページについて、飲食店への<mark class="q-asset">引渡しと代金の請求が終わり、この制作の仕事は完了</mark>した。X社は、この仕事のために、これまでに25円を支払っている（デザイナーへの報酬）。この25円は、仕事が完成するまでは、<mark class="q-expense">まだ完成していない仕事にかかった費用として、別に記録してきた</mark>。仕事が完了した日に（<strong>費用収益対応の原則</strong>）、この25円について、必要な仕訳を行いなさい。',
     e:[{d:[['役務原価',25]],c:[['仕掛品',25]]}],
     exp:'仕事が完了し、収益（役務収益）を計上したタイミングで、それに対応する原価も費用として計上する必要があります（収益と費用を対応させる「費用収益対応の原則」）。これまで仕掛品（資産）として積み立てていた25円を、「役務原価」という費用に振り替えます。「仕事が完成して初めて、積み立てていたコストが正式な費用に変わる」というイメージです。'
   },
@@ -2606,7 +2607,7 @@ const ALL = [
     exp:'「割引」とは、手形を、支払期日の前に銀行に買い取ってもらって、現金にすることです（銀行は、期日までの利息にあたる割引料を差し引きます）。額面60円の手形でも、早く現金化する代わりに銀行へ利息相当分を払うため、実際に受け取れるのは57円になります。この差額3円は「手形売却損」という費用で処理します。'
   },
   { id:1047, cat:'債権債務', chap:'第4章：債権債務（手形・電子記録債権）',
-    q:'上記のように、X社は、<mark class="q-asset">約束手形60円を、取引銀行で割り引いていた</mark>。ところが、<mark class="q-asset">支払期日になっても、この手形の代金は、支払われなかった</mark>。銀行から、その通知がX社に届いた。この日の仕訳を行いなさい。',
+    q:'上記のように、X社は、<mark class="q-asset">約束手形60円を、取引銀行で割り引いていた</mark>。ところが、<mark class="q-asset">支払期日になっても、この手形の代金は、支払われなかった（<strong>不渡り</strong>）</mark>。銀行から、その通知がX社に届いた。この日の仕訳を行いなさい。',
     e:[{d:[['不渡手形',60]],c:[['受取手形',60]]}],
     exp:'「不渡り」とは、手形の代金が、支払期日に支払われないことです。期日に払われなかった手形は、普通の「受取手形（順調な権利）」から「不渡手形（問題を抱えた権利）」という特別な科目に振り替えて管理します。まだ全く回収できないと決まったわけではないので、資産として扱い続け、今後の回収状況を見守ります。'
   },
@@ -2646,7 +2647,7 @@ const ALL = [
     exp:'電子記録債務の支払期日が来ると、銀行のシステムが自動的に処理を行い、口座からお金が引き落とされます。「必ず払います」という約束（電子記録債務）が実際の支払いに変わることで負債が消え、同時に当座預金（資産）が同額減少します。'
   },
   { id:1055, cat:'債権債務', chap:'第4章：債権債務（手形・電子記録債権）',
-    q:'X社は、Y社と、次のような契約を結んだ。部品Aと部品Bを、あわせて売る。代金の請求は、部品Aと部品Bの両方を引き渡した後に、まとめて行う。X社は、<mark class="q-revenue">まず部品Aを引き渡した</mark>。部品Aの分の代金は、30円である。<mark class="q-asset">部品Bを引き渡すまでは、代金を請求できない</mark>。部品Aを引き渡した日の仕訳を行いなさい。',
+    q:'X社は、Y社と、次のような契約を結んだ。部品Aと部品Bを、あわせて売る。代金の請求は、部品Aと部品Bの両方を引き渡した後に、まとめて行う。X社は、<mark class="q-revenue">まず部品Aを引き渡した</mark>（部品Aの<strong>履行義務</strong>を充足した）。部品Aの分の代金は、30円である。<mark class="q-asset">部品Bを引き渡すまでは、代金を請求できない</mark>。部品Aを引き渡した日の仕訳を行いなさい。',
     e:[{d:[['契約資産',30]],c:[['売上',30]]}],
     exp:'部品Aを引き渡した時点で、その分の商品を渡すという約束（履行義務）はすでに果たしているので、売上（収益）は計上できます。しかし、契約上、部品Bも引き渡すまでは正式に代金を請求できないため、「あとで確実にお金を受け取れるが、まだ請求書を出せる状態ではない権利」として、通常の「売掛金」ではなく「契約資産」という資産で処理します。'
   },
@@ -2656,7 +2657,7 @@ const ALL = [
     exp:'部品Bも引き渡したことで、ようやく正式に代金60円を請求できるようになりました。すでに「契約資産」として計上していた部品A分の30円は、正式な請求権である「売掛金」に振り替え、新たに引き渡した部品B分の30円は、新しく売上（収益）として計上します。合計で売掛金が60円計上される結果になります。'
   },
   { id:1057, cat:'債権債務', chap:'第4章：債権債務（手形・電子記録債権）',
-    q:'X社は、得意先のY社から、<mark class="q-asset">代金40円をまだ受け取っていない</mark>。Y社は、この代金を、次の方法で支払うことにした。Y社に代金を払う義務があるW社を支払人とし、X社を受取人とする、為替手形40円を作った。<mark class="q-asset">W社は、この手形の支払いを承諾した</mark>。手形は、Y社からX社に渡された。X社の仕訳を行いなさい。',
+    q:'X社は、得意先のY社から、<mark class="q-asset">代金40円をまだ受け取っていない</mark>。Y社は、この代金を、次の方法で支払うことにした。Y社に代金を払う義務があるW社を支払人とし、X社を受取人とする、為替手形40円を作った。<mark class="q-asset">W社は、この手形の支払いを承諾した</mark>（<strong>引受け</strong>）。手形は、Y社からX社に渡された。X社の仕訳を行いなさい。',
     e:[{d:[['受取手形',40]],c:[['売掛金',40]]}],
     exp:'「為替手形」とは、振出人が、第三者（支払人）に対して、受取人に代金を支払うよう依頼する証券です（「引受け」とは、支払いを頼まれた人が、その手形の代金を支払うことを承諾することです）。受取人であるX社から見れば、これから代金を払ってくれるのがY社からW社に変わっただけで、「お金を受け取れる権利」という意味では約束手形と同じく「受取手形」として処理します。'
   },
@@ -2707,12 +2708,12 @@ const ALL = [
     exp:'「社債」とは、会社が、お金を借りるために発行する債券のことです。「額面」とは、証券に記載されている金額、「満期」とは、支払いを受ける約束の期日が来ることです。満期まで持ち続けて、額面どおりの金額を受け取るつもりで買った債券は「満期保有目的債券」という資産で処理します。短期売買目的の株式とは違い、値上がり益を狙う目的ではない点が特徴です。'
   },
   { id:1067, cat:'有価証券', chap:'第5章：有価証券',
-    q:'X社は、<mark class="q-asset">W社の議決権の過半数を持っており</mark>、W社の経営を支配している。W社の経営をさらに安定させるため、X社は、W社の株式を追加で200円分購入した。代金は、<mark class="q-asset">現金で支払った</mark>。この日の仕訳を行いなさい。',
+    q:'X社は、<mark class="q-asset">W社の議決権の過半数を持っており</mark>、W社の経営を支配している（W社はX社の<strong>子会社</strong>）。W社の経営をさらに安定させるため、X社は、W社の株式を追加で200円分購入した。代金は、<mark class="q-asset">現金で支払った</mark>。この日の仕訳を行いなさい。',
     e:[{d:[['子会社株式',200]],c:[['現金',200]]}],
     exp:'「議決権」とは、株主総会で、議案に賛成や反対の票を投じる権利のことです。議決権の過半数を持ち、相手の会社を支配している場合、その株式は「子会社株式」という資産で処理します。売買して利益を得る目的ではなく「相手の会社を支配し続けるため」に持っているので、売買目的有価証券とは性質がまったく異なります。'
   },
   { id:1068, cat:'有価証券', chap:'第5章：有価証券',
-    q:'X社は、V社の株式を150円で取得した。X社は、<mark class="q-asset">V社の議決権の一部を持ち、V社の経営方針の決定に重要な影響</mark>を与えることができる。ただし、経営を支配するほどの割合ではない。代金は、<mark class="q-asset">現金で支払った</mark>。この日の仕訳を行いなさい。',
+    q:'X社は、V社の株式を150円で取得した。X社は、<mark class="q-asset">V社の議決権の一部を持ち、V社の経営方針の決定に重要な影響</mark>を与えることができる。ただし、経営を支配するほどの割合ではない（V社はX社の<strong>関連会社</strong>）。代金は、<mark class="q-asset">現金で支払った</mark>。この日の仕訳を行いなさい。',
     e:[{d:[['関連会社株式',150]],c:[['現金',150]]}],
     exp:'相手の会社を完全に支配するほどではないものの、経営方針の決定に重要な影響を与えられる立場にある株式は「関連会社株式」という資産で処理します。子会社株式ほど強い支配力はありませんが、売買目的の株式とは違い、長期的な関係維持を目的に持つ株式という点では共通しています。'
   },
@@ -2742,7 +2743,7 @@ const ALL = [
     exp:'長期保有目的の株式を帳簿価額より安く売却してしまった場合は、その差額が「投資有価証券売却損」という費用になります。売買目的有価証券の売却損（有価証券売却損）とは科目名が異なりますが、「帳簿価額より安く売れた分だけ損をした」という考え方は同じです。'
   },
   { id:1074, cat:'有価証券', chap:'第5章：有価証券',
-    q:'X社が保有している株式のうち、ある会社が、株主に、<mark class="q-revenue">配当金を支払う</mark>ことを決めた。その会社から、X社に、配当金領収証3円が届いた。X社は、この<mark class="q-asset">配当金領収証を受け取った</mark>。この日の仕訳を行いなさい。',
+    q:'X社が保有している株式のうち、ある会社が、株主に、<mark class="q-revenue">配当金を支払う</mark>ことを決めた。その会社から、X社に、配当金領収証（<strong>通貨代用証券</strong>）3円が届いた。X社は、この<mark class="q-asset">配当金領収証を受け取った</mark>。この日の仕訳を行いなさい。',
     e:[{d:[['現金',3]],c:[['受取配当金',3]]}],
     exp:'「配当金領収証」とは、株式の配当金を、現金に換えることができる証書のことです。これは銀行や郵便局ですぐに換金できる「通貨代用証券」の一種なので、受け取った瞬間に現金（資産）の増加として扱います。株式を保有していることで得られる配当金は、保有目的に関係なく「受取配当金」という収益で処理します。'
   },
@@ -2777,12 +2778,12 @@ const ALL = [
     exp:'「クーポン利息」とは、社債に定められた利率で、定期的に支払われる利息のことです。「利息法」とは、帳簿価額に実効利子率をかけて、その期の利息の総額を計算し、受け取る利息との差額を、帳簿価額に加える方法です。「実効利子率」とは、実質的な利回りを表す利率のことです。実効利子率で計算した利息の総額5円から、すでに現金で受け取った2円を差し引いた3円が、まだ現金で受け取っていない分の利息として、満期保有目的債券の帳簿価額に上乗せされます。'
   },
   { id:1081, cat:'有価証券', chap:'第5章：有価証券',
-    q:'X社は、V社の議決権の20％を持っている。V社は、X社にとって、経営方針に重要な影響を与えることができる会社である。V社は、今期、<mark class="q-revenue">当期純利益50円を計上した</mark>。X社は<strong>持分法</strong>を採用している。決算にあたり、V社の利益のうち、<mark class="q-asset">X社の持分にあたる金額だけ、保有するV社株式の帳簿価額を増やす</mark>。必要な仕訳を行いなさい。',
+    q:'X社は、V社の議決権の20％を持っている。V社は、X社にとって、経営方針に重要な影響を与えることができる会社（<strong>関連会社</strong>）である。V社は、今期、<mark class="q-revenue">当期純利益50円を計上した</mark>。X社は<strong>持分法</strong>を採用している。決算にあたり、V社の利益のうち、<mark class="q-asset">X社の持分にあたる金額だけ、保有するV社株式の帳簿価額を増やす</mark>。必要な仕訳を行いなさい。',
     e:[{d:[['関連会社株式',10]],c:[['持分法による投資利益',10]]}],
     exp:'「持分法」とは、投資先の会社の利益や配当を、持ち株比率に応じて、自社の投資額に反映させる方法です。関連会社の利益が増えると、その会社の価値が増えたと考え、自社が持つ関連会社株式（資産）の帳簿価額も、持ち株比率に応じて増やします（50円×20％＝10円）。増えた分は「持分法による投資利益」という収益として計上します。'
   },
   { id:1082, cat:'有価証券', chap:'第5章：有価証券',
-    q:'V社は、株主に対して、配当金20円を支払うことを決めた。X社は、V社の議決権の20％を持っており、<strong>持分法</strong>を採用している。<mark class="q-asset">この配当金のうち、X社の持分にあたる金額について</mark>、必要な仕訳を行いなさい。<mark class="q-asset">配当金は、まだ受け取っていない</mark>。',
+    q:'V社は、株主に対して、配当金20円を支払うことを決めた。X社は、<strong>関連会社</strong>であるV社の議決権の20％を持っており、<strong>持分法</strong>を採用している。<mark class="q-asset">この配当金のうち、X社の持分にあたる金額について</mark>、必要な仕訳を行いなさい。<mark class="q-asset">配当金は、まだ受け取っていない</mark>。',
     e:[{d:[['未収配当金',4]],c:[['関連会社株式',4]]}],
     exp:'持分法を適用している場合、関連会社から配当を受け取る権利が生じると、関連会社株式（資産）をその分減らします。これは「すでに持分法で利益として取り込んでいた金額の一部が、投資額から配当という形で払い戻される」と考えるためです（配当を受け取っても、新たな収益としては計上しません）。まだ受け取っていない配当金20円×20％＝4円は「未収配当金」という資産で処理します。'
   },
@@ -2858,7 +2859,7 @@ const ALL = [
     exp:'積立金方式に税効果を組み合わせるケースです。積み立てる金額は、補助金の額面（50円）そのままではなく、将来の税負担分（50円×30％＝15円）を「繰延税金負債」として差し引いた、税引後の金額（35円）だけを「圧縮積立金」として積み立てます。「補助金はいずれ税金がかかるので、その分を見込んで少なめに積み立てておく」という考え方です。'
   },
   { id:1098, cat:'有形固定資産', chap:'第6章：有形固定資産',
-    q:'上記の補助金について、X社は、前の期に、<mark class="q-liability">税効果を考慮して繰延税金負債15円を計上したうえで</mark>、<mark class="q-equity">積立金35円を積み立てていた</mark>。今期、この補助金を使って取得した資産を、売却した。そのため、X社は、この積立金と繰延税金負債を、<mark class="q-equity">ともに取り崩す</mark>ことにした（<mark class="q-other">繰延税金負債の取崩しの相手勘定は法人税等調整額とする</mark>）。この日の仕訳を行いなさい。',
+    q:'上記の補助金について、X社は、前の期に、<mark class="q-liability">税効果を考慮して繰延税金負債15円を計上したうえで</mark>、<mark class="q-equity">積立金35円を積み立てていた</mark>（<strong>積立金方式</strong>）。今期、この補助金を使って取得した資産を、売却した。そのため、X社は、この積立金と繰延税金負債を、<mark class="q-equity">ともに取り崩す</mark>ことにした（<mark class="q-other">繰延税金負債の取崩しの相手勘定は法人税等調整額とする</mark>）。この日の仕訳を行いなさい。',
     e:[{d:[['圧縮積立金',35],['繰延税金負債',15]],c:[['繰越利益剰余金',35],['法人税等調整額',15]]}],
     exp:'補助金を使って取得した資産を売却すると、積立金方式で積み立てていた圧縮積立金と、対応する繰延税金負債は、その役目を終えるため取り崩します。圧縮積立金35円は繰越利益剰余金（自由に使える利益）に戻し、繰延税金負債15円は法人税等調整額を通じて精算します。これで、積立金方式で先送りにしていた課税が、資産を手放したタイミングで実際に確定することになります。'
   },
@@ -2913,7 +2914,7 @@ const ALL = [
     exp:'あらかじめ「前払利息」としてまとめて計上していたうち、今回の支払い分に対応する1円だけを、実際の費用（支払利息）に振り替えます。分割払いのたびに、前払いしていた利息を少しずつ本当の費用として認識していく処理です。'
   },
   { id:1109, cat:'有形固定資産', chap:'第6章：有形固定資産',
-    q:'家電を一般のお客さんに売っているY社は、新しい店を出すことになった。<mark class="q-asset">店の内装工事の代金として</mark>、<mark class="q-asset">200円を現金で支払った</mark>。この店は、賃貸借契約で借りている建物にあり、契約では、店を閉めるときに、<mark class="q-liability">内装を撤去して、元の状態に戻す工事をする義務</mark>がある。この将来の工事にかかる費用を、現在の価値に直した金額は、24円と見積もられた。Y社は、内装工事の代金と、この24円をあわせて、店の内装の取得にかかった金額として扱う。この日の仕訳を行いなさい。',
+    q:'家電を一般のお客さんに売っているY社は、新しい店を出すことになった。<mark class="q-asset">店の内装工事の代金として</mark>、<mark class="q-asset">200円を現金で支払った</mark>。この店は、賃貸借契約で借りている建物にあり、契約では、店を閉めるときに、<mark class="q-liability">内装を撤去して、元の状態に戻す工事をする義務</mark>がある。この将来の工事にかかる費用を、現在の価値（<strong>現在価値</strong>）に直した金額は、24円と見積もられた。Y社は、内装工事の代金と、この24円をあわせて、店の内装の取得にかかった金額として扱う。この日の仕訳を行いなさい。',
     e:[{d:[['建物付属設備',224]],c:[['現金',200],['資産除去債務',24]]}],
     exp:'「賃貸借契約」とは、建物などを、お金を払って借りる契約です。「現在価値」とは、将来払う金額を、今の時点の価値に直した金額です。借りている建物を将来原状回復する義務がある場合、その将来の撤去費用もあらかじめ見積もって「資産除去債務」という負債として計上し、同時にその見積額を内装設備の取得原価にも上乗せします。「これから使う分だけでなく、使い終えた後の片付け費用も、資産を取得する本当のコストのうち」と考える処理です。'
   },
@@ -2998,7 +2999,7 @@ const ALL = [
     exp:'「利子抜き法」とは、リース料の総額から、利息相当額を差し引いた金額（見積現金購入価額）を、リース資産とリース債務として計上する方法です。前問の利子込み法（総額55円で計上）とは違い、利息相当額5円（55円－50円）を最初から除いた50円だけを資産・負債として計上します。利息部分は、支払いのたびに少しずつ費用として認識していきます（次の問題参照）。'
   },
   { id:1125, cat:'リース取引', chap:'無形資産・リース・引当金',
-    q:'上記の冷凍設備Bのリース契約について、リース料の支払日が来た。契約では、<mark class="q-liability">リース料は、毎年同じ日に、11円ずつ支払う</mark>ことになっている。X社は、第1回のリース料11円を、<mark class="q-asset">現金で支払った</mark>。<mark class="q-expense">利息相当額5円は</mark>、リース期間の5年間にわたって、毎年同じ金額ずつ配分する（<strong>定額法</strong>）。この日の仕訳を行いなさい。',
+    q:'上記の冷凍設備Bのリース契約（<strong>利子抜き法</strong>）について、リース料の支払日が来た。契約では、<mark class="q-liability">リース料は、毎年同じ日に、11円ずつ支払う</mark>ことになっている。X社は、第1回のリース料11円を、<mark class="q-asset">現金で支払った</mark>。<mark class="q-expense">利息相当額5円は</mark>、リース期間の5年間にわたって、毎年同じ金額ずつ配分する（<strong>定額法</strong>）。この日の仕訳を行いなさい。',
     e:[{d:[['リース債務',10],['支払利息',1]],c:[['現金',11]]}],
     exp:'利子抜き法では、毎回のリース料支払いを「元本（リース債務）の返済」と「利息」の2つに分けます。利息相当額5円を5年間で均等に配分すると、5円÷5年＝1円が1年分の利息（支払利息）です。支払った11円のうち、1円は利息として費用計上し、残り10円はリース債務（負債）を返済したものとして処理します。'
   },
@@ -3023,7 +3024,7 @@ const ALL = [
     exp:'引当金とは「将来発生しそうな費用・損失を、実際に発生する前から見積もって、今期の費用として先取りしておく」仕組みです。来期に予定している機械の修繕は、今期の事業活動によって生じた摩耗などが原因と考えられるため、その費用を先取りして「修繕引当金繰入」という費用で計上し、「修繕引当金」という負債として備えておきます。'
   },
   { id:1130, cat:'引当金', chap:'無形資産・リース・引当金',
-    q:'X社の従業員に対する賞与は、年2回、6月と12月に支払われる。6月に支払う賞与は、1月から6月までの6か月間の働きに対するもので、<mark class="q-liability">支給見込み額は45円である</mark>。X社の決算日は2月末で、今期には、このうち1月と2月の2か月分が含まれる。決算にあたり、この賞与のうち、<mark class="q-expense">今期に対応する分について、必要な仕訳</mark>を行いなさい。',
+    q:'X社の従業員に対する賞与は、年2回、6月と12月に支払われる。6月に支払う賞与は、1月から6月までの6か月間の働きに対するもので、<mark class="q-liability">支給見込み額は45円である</mark>。X社の決算日は2月末で、今期には、このうち1月と2月の2か月分が含まれる（<strong>月割</strong>で計算する）。決算にあたり、この賞与のうち、<mark class="q-expense">今期に対応する分について、必要な仕訳</mark>を行いなさい。',
     e:[{d:[['賞与引当金繰入',15]],c:[['賞与引当金',15]]}],
     exp:'賞与は実際に支払うのが来期であっても、その対象となる働きはすでに今期に発生している分があります。6か月分（45円）の賞与のうち、今期に含まれる2か月分（1月・2月）を月割りで計算すると、45円×2か月／6か月＝15円です。この金額を今期のうちに「賞与引当金繰入」という費用と「賞与引当金」という負債として先取りで計上します。'
   },
@@ -3054,12 +3055,12 @@ const ALL = [
     exp:'「払込金額」とは、株式を発行するときに、株主が会社に払い込むお金のことです。「法定の資本」とは、株主が払い込んだお金のうち、会社法で、会社の資本として扱われるもののことです。株式を発行して集めたお金は、銀行から借りるお金とは違い、返済する義務のない会社自身の元手になります。払込金額の全額を法定の資本とする場合は、そのまま「資本金」という純資産に計上します。'
   },
   { id:1136, cat:'株式会社', chap:'第10章：株式会社会計',
-    q:'X社は、設立に必要な、法律で決められた手続きを行った。会社の基本となるルール（定款）を作り、設立の登記を行った。これらにかかった、<mark class="q-asset">定款の作成費用や設立登記の税金</mark>など、合計15円を、<mark class="q-asset">現金で支払った</mark>。この日の仕訳を行いなさい。',
+    q:'X社は、設立に必要な、法律で決められた手続きを行った。会社の基本となるルール（定款）を作り、設立の登記を行った。これらにかかった、<mark class="q-asset">定款の作成費用や設立登記の税金</mark>など、合計15円を、<mark class="q-asset">現金で支払った</mark>。この支出は<strong>繰延資産</strong>として処理する。この日の仕訳を行いなさい。',
     e:[{d:[['創立費',15]],c:[['現金',15]]}],
     exp:'「定款」とは、会社の目的や組織などを定めた、会社の基本となるルールのことです。会社を設立するためにかかった費用（定款作成費・登記の税金など）は「創立費」という科目で処理します。創立費は、名前に「費」とつきますが費用科目ではなく、会社の設立準備のために支出したお金をいったん資産（繰延資産）として計上し、その後数年にわたって少しずつ償却していく科目です。会社そのものがまだ存在しない設立準備の段階でかかった費用なので、次の問題で出てくる「開業費」（会社ができた後の準備費用）とは区別します。'
   },
   { id:1137, cat:'株式会社', chap:'第10章：株式会社会計',
-    q:'X社は、設立が終わったあと、パン屋の営業を始めるための準備を進めた。お店を開く前に、開店を知らせるための広告を出し、事務所の準備も行った。<mark class="q-asset">営業を始めるまでの間に、これらにかかった広告費や事務所の準備の費用</mark>として、合計8円を、<mark class="q-asset">現金で支払った</mark>。この日の仕訳を行いなさい。',
+    q:'X社は、設立が終わったあと、パン屋の営業を始めるための準備を進めた。お店を開く前に、開店を知らせるための広告を出し、事務所の準備も行った。<mark class="q-asset">営業を始めるまでの間に、これらにかかった広告費や事務所の準備の費用</mark>として、合計8円を、<mark class="q-asset">現金で支払った</mark>。この支出は<strong>繰延資産</strong>として処理する。この日の仕訳を行いなさい。',
     e:[{d:[['開業費',8]],c:[['現金',8]]}],
     exp:'「開業費」とは、会社を設立した後、実際に営業を始めるまでの準備期間にかかった費用（広告・事務所の準備など）のことです。創立費と同じく、開業費も名前に反して費用科目ではなく、支出した時点ではいったん資産（繰延資産）として計上し、その後少しずつ償却していく科目です。会社が生まれる前の費用（創立費）とは違い、会社が生まれた後、営業が始まるまでの準備費用である点が違いです。「法人ができる前か、後か」で創立費と開業費を使い分けるのがポイントです。'
   },
@@ -3074,7 +3075,7 @@ const ALL = [
     exp:'会社法では、払込金額の全額を資本金にするのが原則ですが、最低でも半額を資本金にすれば、残りは「資本準備金」という純資産にすることも認められています。「会社法が認める最低額」という指示は、払込金額の半分（200円×1／2＝100円）を資本金とし、残りの100円を資本準備金とすることを意味します。'
   },
   { id:1140, cat:'株式会社', chap:'第10章：株式会社会計',
-    q:'X社は、上記の増資のために、新しく株式を発行して、資金を集めた。<mark class="q-asset">新しい株式を発行するため</mark>には、証券会社に手続きを頼んだり、書類を印刷したりする必要がある。これらにかかった費用として、証券会社への手数料など、合計5円を、<mark class="q-asset">現金で支払った</mark>。この日の仕訳を行いなさい。',
+    q:'X社は、上記の増資のために、新しく株式を発行して、資金を集めた。<mark class="q-asset">新しい株式を発行するため</mark>には、証券会社に手続きを頼んだり、書類を印刷したりする必要がある。これらにかかった費用として、証券会社への手数料など、合計5円を、<mark class="q-asset">現金で支払った</mark>。この支出は<strong>繰延資産</strong>として処理する。この日の仕訳を行いなさい。',
     e:[{d:[['株式交付費',5]],c:[['現金',5]]}],
     exp:'新しく株式を発行するときにかかる事務費用（証券会社への手数料・印刷代など）は「株式交付費」という科目で処理します。株式交付費も、創立費や開業費と同じように、支出した時点ではすぐに費用にはせず、いったん資産（繰延資産）として計上し、その後少しずつ償却していく科目です。会社設立時の創立費や開業費とは違い、増資（会社ができた後の株式発行）にかかった費用である点がポイントです。'
   },
@@ -3226,17 +3227,17 @@ const ALL = [
   },
   // --- 税効果 ---
   { id:1153, cat:'税効果', chap:'税効果',
-    q:'文房具を小売店に卸しているX社は、決算にあたり、<mark class="q-other">得意先に対する未回収の代金について、貸倒れに備えて、費用を計上した</mark>。会計上は、10円を費用としたが、税務上は、このうち、<mark class="q-asset">費用（損金）として認められる限度額を超える部分が、10円ある</mark>。この10円は、将来、実際に貸倒れが確定したときに、税金の計算でも、費用として認められる。実効税率は30％で、X社は税効果会計を適用している。決算に必要な仕訳を行いなさい。',
+    q:'文房具を小売店に卸しているX社は、決算にあたり、<mark class="q-other">得意先に対する未回収の代金について、貸倒れに備えて、費用を計上した</mark>。会計上は、10円を費用としたが、税務上は、このうち、<mark class="q-asset">費用（損金）として認められる限度額を超える部分が、10円ある</mark>（<strong>将来減算一時差異</strong>）。この10円は、将来、実際に貸倒れが確定したときに、税金の計算でも、費用として認められる。実効税率は30％で、X社は税効果会計を適用している。決算に必要な仕訳を行いなさい。',
     e:[{d:[['繰延税金資産',3]],c:[['法人税等調整額',3]]}],
     exp:'「税務上」とは、税金の計算の上では、ということです。「損金」とは、税金の計算の上で、費用として認められる金額のことです。「将来減算一時差異」とは、会計上と税務上のズレのうち、将来、税金の計算で、費用として認められて、税金の支払いを減らすもののことです。会計上は費用として認めた金額でも、税務上はすぐに損金として認めてもらえないことがあります。将来、実際に貸し倒れが発生すれば、税務上もようやく損金として認められ、税金が安くなります。この「将来の税金が安くなる権利」を、あらかじめ「繰延税金資産」という資産として先取りで計上します（10円×30％＝3円）。'
   },
   { id:1154, cat:'税効果', chap:'税効果',
-    q:'X社は、長期保有の目的で、Y社の株式を持っている。決算にあたり、この株式の時価が、取得原価より10円高くなっていた。<mark class="q-equity">この評価差額10円は、すでに、損益に入れず、全額を純資産に直接計上する方法で、処理してある</mark>。税務上、<mark class="q-liability">この10円は、この株式を売却したときに課税される</mark>。実効税率は30％で、X社は税効果会計を適用している。この評価差額に対する税効果について、決算に必要な仕訳を行いなさい。',
+    q:'X社は、長期保有の目的で、Y社の株式を持っている。決算にあたり、この株式の時価が、取得原価より10円高くなっていた。<mark class="q-equity">この評価差額10円は、すでに、損益に入れず、全額を純資産に直接計上する方法で、処理してある</mark>。税務上、<mark class="q-liability">この10円は、この株式を売却したときに課税される</mark>（<strong>将来加算一時差異</strong>）。実効税率は30％で、X社は税効果会計を適用している。この評価差額に対する税効果について、決算に必要な仕訳を行いなさい。',
     e:[{d:[['その他有価証券評価差額金',3]],c:[['繰延税金負債',3]]}],
     exp:'「取得原価」とは、買ったときに支払った金額のことです。「評価差額」とは、時価と取得原価との差額のことです。「将来加算一時差異」とは、会計上と税務上のズレのうち、将来、税金の計算で、利益に加えられて、税金の支払いを増やすもののことです。その他有価証券の評価差益は、純資産に直接計上されますが、将来この株式を売却すれば、その利益に対して実際に税金がかかります。そこで、将来発生するであろう税金（10円×30％＝3円）をあらかじめ「繰延税金負債」として見込んでおき、純資産に計上する評価差額金は、税金分を差し引いた残りの金額にします。'
   },
   { id:1155, cat:'税効果', chap:'税効果',
-    q:'決算にあたり、X社は、会計上と税務上のズレを、次のとおり確認した。1つ目は、<mark class="q-other">貸倒れに備えた費用のうち</mark>、<mark class="q-asset">損金として認められる限度額を超える部分が、10円ある</mark>。2つ目は、<mark class="q-other">減価償却費のうち</mark>、<mark class="q-asset">税務上の限度額を超える部分が、20円ある</mark>。この2つは、将来、税金の計算で、費用として認められる。3つ目は、<mark class="q-equity">その他有価証券の評価差益10円で、すでに、全額を純資産に直接計上してある</mark>。<mark class="q-liability">この10円は、将来、株式を売却したときに課税される</mark>。実効税率は30％で、X社は税効果会計を適用している。これらの税効果を、まとめて処理する、決算の仕訳を行いなさい。',
+    q:'決算にあたり、X社は、会計上と税務上のズレを、次のとおり確認した。1つ目は、<mark class="q-other">貸倒れに備えた費用のうち</mark>、<mark class="q-asset">損金として認められる限度額を超える部分が、10円ある</mark>。2つ目は、<mark class="q-other">減価償却費のうち</mark>、<mark class="q-asset">税務上の限度額を超える部分が、20円ある</mark>。この2つは、将来、税金の計算で、費用として認められる（<strong>将来減算一時差異</strong>）。3つ目は、<mark class="q-equity">その他有価証券の評価差益10円で、すでに、全額を純資産に直接計上してある</mark>。<mark class="q-liability">この10円は、将来、株式を売却したときに課税される</mark>（<strong>将来加算一時差異</strong>）。実効税率は30％で、X社は税効果会計を適用している。これらの税効果を、まとめて処理する、決算の仕訳を行いなさい。',
     e:[{d:[['繰延税金資産',9],['その他有価証券評価差額金',3]],c:[['法人税等調整額',9],['繰延税金負債',3]]}],
     exp:'3種類の一時差異を1問でまとめて処理する、税効果会計の総まとめ問題です。①貸倒れに備えた費用の超過額（将来減算一時差異）：10円×30％＝3円の繰延税金資産。②減価償却費の超過額（同じく将来減算一時差異）：20円×30％＝6円の繰延税金資産。①と②を合わせて繰延税金資産3円。①②は損益項目（法人税等調整額）として処理します。③その他有価証券の評価益（将来売却時に課税される＝将来加算一時差異）：10円×30％＝3円を繰延税金負債に計上し、純資産（その他有価証券評価差額金）を同額減らします。損益を通る項目（①②）と、純資産に直接計上する項目（③）を、しっかり区別して処理するのがポイントです。'
   },
@@ -3247,7 +3248,7 @@ const ALL = [
     exp:'「本店・支店」とは、本店は会社の中心となる営業所、支店は本店とは別の場所にある営業所のことです（会計では、本店と支店が、それぞれ別に帳簿をつけることがあります）。本店は、支店に送った現金を「支店」という内部取引専用の勘定（照合勘定）で管理し、支店は受け取った現金の相手科目として「本店」という勘定を使います。この「本店」勘定と「支店」勘定は、いわば会社内部でのお金の貸し借りを記録する鏡のような関係で、最終的に本店・支店をまとめた財務諸表を作るときには、お互いに相殺して消えます。'
   },
   { id:1169, sides:['本店側'], cat:'本支店会計', chap:'本支店・連結・個人事業主',
-    q:'X社の<mark class="q-asset">支店</mark>は、決算日に、<mark class="q-expense">本店へ商品10円を発送</mark>した。支店は、そのことを、本店に連絡し、支店の帳簿には、すでに処理している。ところが、決算日の時点で、商品は、まだ本店に届いていない。そのため、本店の帳簿には、この商品の受入れが、記録されていない。本店が、決算日に行うべき仕訳を行いなさい。',
+    q:'X社の<mark class="q-asset">支店</mark>は、決算日に、<mark class="q-expense">本店へ商品10円を発送</mark>した。支店は、そのことを、本店に連絡し、支店の帳簿には、すでに処理している。ところが、決算日の時点で、商品は、まだ本店に届いていない（<strong>未達</strong>）。そのため、本店の帳簿には、この商品の受入れが、記録されていない。本店が、決算日に行うべき仕訳を行いなさい。',
     e:[{d:[['支店より仕入',10]],c:[['支店',10]]}],
     exp:'「未達」とは、一方の帳簿では処理済みだが、もう一方には、まだ届いていない取引や商品のことです。支店はすでに発送した記録をつけていますが、本店にはまだ商品が届いておらず、記録が漏れている状態です。決算にあたっては、本店側でもこの未達分を認識し、「支店より仕入」という費用（本店から見た支店からの仕入）を計上し、相手科目として「支店」勘定を増やします。こうすることで、本店と支店の帳簿の金額が、最終的に一致するように調整されます。'
   },
@@ -3282,27 +3283,27 @@ const ALL = [
     exp:'「償却」とは、のれんなどの価値の減少分を、毎期の費用にしていくことです。連結上計上したのれんも、個別財務諸表ののれんと同じように、一定期間にわたって少しずつ費用化していきます。10円÷10年＝1円が1年分の償却額です。'
   },
   { id:1176, cat:'連結会計', chap:'本支店・連結・個人事業主',
-    q:'Y社は、今期、<mark class="q-other">当期純利益30円を計上した</mark>。X社は、Y社の株式の80％を持ち、<mark class="q-equity">残りの20％は、非支配株主が持っている</mark>。連結上は、Y社の利益のうち、非支配株主の持分にあたる部分を、区別して表す。この連結仕訳を行いなさい。',
+    q:'Y社は、今期、<mark class="q-other">当期純利益30円を計上した</mark>。X社は、<strong>子会社</strong>であるY社の株式の80％を持ち、<mark class="q-equity">残りの20％は、非支配株主が持っている</mark>。連結上は、Y社の利益のうち、非支配株主の持分にあたる部分を、区別して表す。この連結仕訳を行いなさい。',
     e:[{d:[['非支配株主に帰属する当期純利益',6]],c:[['非支配株主持分',6]]}],
     exp:'子会社が稼いだ利益は、親会社の取り分だけでなく、非支配株主の取り分もあります。Y社の当期純利益30円のうち、非支配株主の持分割合20％にあたる6円（30円×20％）は、連結損益計算書上「非支配株主に帰属する当期純利益」として区分し、非支配株主持分（純資産）を増やします。子会社の儲けのうち、親会社の分は親会社の利益剰余金へ、他の株主の分は非支配株主持分へ、取り分に応じて分けるイメージです。'
   },
   { id:1177, cat:'連結会計', chap:'本支店・連結・個人事業主',
-    q:'Y社は、株主に、<mark class="q-equity">配当金10円を支払う</mark>ことを決めた。このうち、<mark class="q-revenue">X社（80％）に8円</mark>、<mark class="q-equity">非支配株主（20％）に2円が</mark>、支払われる。X社が受け取った配当金は、グループ内のやりとりなので、連結上、相殺消去する。この連結仕訳を行いなさい。',
+    q:'Y社（X社の<strong>子会社</strong>）は、株主に、<mark class="q-equity">配当金10円を支払う</mark>ことを決めた。このうち、<mark class="q-revenue">X社（80％）に8円</mark>、<mark class="q-equity">非支配株主（20％）に2円が</mark>、支払われる。X社が受け取った配当金は、グループ内のやりとりなので、連結上、相殺消去する。この連結仕訳を行いなさい。',
     e:[{d:[['受取配当金',8],['非支配株主持分',2]],c:[['剰余金の配当',10]]}],
     exp:'子会社が親会社に払う配当金は、グループ全体で見れば「自分の左のポケットから右のポケットにお金を移しただけ」で、外部との本当の取引ではありません。親会社が受け取った配当金（受取配当金8円）は取り消し、非支配株主への配当分（2円）は非支配株主持分（純資産）の減少として処理します。もともと子会社側で計上されていた「剰余金の配当」（純資産の減少）10円を、相殺によって取り消します。'
   },
   { id:1178, cat:'連結会計', chap:'本支店・連結・個人事業主',
-    q:'当期中に、X社は、Y社に、<mark class="q-expense">商品40円を販売</mark>した。X社は、<mark class="q-revenue">この40円を売上として</mark>、Y社は、この40円を仕入として、それぞれ記録している。この取引は、グループ内の取引なので、連結上は、なかったことにする。この内部取引の相殺消去の、連結仕訳を行いなさい。',
+    q:'当期中に、X社は、<strong>子会社</strong>であるY社に、<mark class="q-expense">商品40円を販売</mark>した。X社は、<mark class="q-revenue">この40円を売上として</mark>、Y社は、この40円を仕入として、それぞれ記録している。この取引は、グループ内の取引なので、連結上は、なかったことにする。この内部取引の相殺消去の、連結仕訳を行いなさい。',
     e:[{d:[['売上',40]],c:[['仕入',40]]}],
     exp:'連結財務諸表は「グループ全体を1つの会社」として見た財務諸表です。親会社が子会社に商品を売っても、グループの外から見れば商品が社内で移動しただけで、本当の売上・仕入ではありません。そこで、親会社の「売上」と子会社の「仕入」を、金額をぶつけ合って両方ともゼロにします。'
   },
   { id:1179, cat:'連結会計', chap:'本支店・連結・個人事業主',
-    q:'期末に、X社は、Y社に<mark class="q-asset">商品を販売した代金</mark>25円を、まだ受け取っていない。Y社から見ると、X社から<mark class="q-liability">仕入れた商品の代金</mark>25円を、まだ支払っていない。この2つは、どちらも、X社とY社のグループ内の貸し借りにあたる。グループ全体で見ると、外部との貸し借りではないため、連結上は<strong>相殺消去</strong>する。この連結仕訳を行いなさい。',
+    q:'期末に、X社は、<strong>子会社</strong>であるY社に<mark class="q-asset">商品を販売した代金</mark>25円を、まだ受け取っていない。Y社から見ると、X社から<mark class="q-liability">仕入れた商品の代金</mark>25円を、まだ支払っていない。この2つは、どちらも、X社とY社のグループ内の貸し借りにあたる。グループ全体で見ると、外部との貸し借りではないため、連結上は<strong>相殺消去</strong>する。この連結仕訳を行いなさい。',
     e:[{d:[['買掛金',25]],c:[['売掛金',25]]}],
     exp:'親会社の売掛金（グループ内の子会社に対する債権）と、子会社の買掛金（グループ内の親会社に対する債務）は、グループ全体で見れば「自分が自分に貸しているだけ」で、実質的な貸し借りはありません。そこで、親会社の「売掛金」と子会社の「買掛金」を、金額をぶつけ合って両方ともゼロにします。'
   },
   { id:1180, cat:'連結会計', chap:'本支店・連結・個人事業主',
-    q:'Y社の、<mark class="q-asset">期末の商品10円分</mark>は、X社から購入したものである。X社が、Y社に販売したときに上乗せしていた利益のうち、まだグループの外に売れていない分<mark class="q-expense">（未実現利益）が、2円ある</mark>。この未実現利益を、連結上、消去する。この連結仕訳を行いなさい。',
+    q:'Y社（X社の<strong>子会社</strong>）の、<mark class="q-asset">期末の商品10円分</mark>は、X社から購入したものである。X社が、Y社に販売したときに上乗せしていた利益のうち、まだグループの外に売れていない分<mark class="q-expense">（未実現利益）が、2円ある</mark>。この未実現利益を、連結上、消去する。この連結仕訳を行いなさい。',
     e:[{d:[['売上原価',2]],c:[['商品',2]]}],
     exp:'「未実現利益」とは、グループ内の取引で生じた利益のうち、グループの外に売れていないために、まだ実現していない利益のことです。親会社が子会社に商品を売るときに乗せた利益は、グループ外のお客さんにまだ売れていない限り、グループ全体としては「本当の儲け」とは言えません。期末の子会社在庫10円に含まれる未実現利益2円分を、「売上原価」という費用を増やし、「商品」という資産を減らすことで取り除きます。'
   },
@@ -3312,17 +3313,17 @@ const ALL = [
     exp:'「追加取得」とは、すでに支配している子会社の株式を、さらに買い増すことです。すでに支配は獲得済みなので、のれんは新たに計算しません。非支配株主（他の株主）から株を買い取るイメージなので、非支配株主持分のうち買い取った分（25円）を減らします。実際に払った金額（30円）が、この非支配株主持分の減少額（25円）より多いので、その超過分5円は、損益ではなく「その他資本剰余金」という純資産の減少として処理します。「株主間の持分の移動に、余計に払った分は、純資産の中で調整する」というイメージです。'
   },
   { id:1182, cat:'連結会計', chap:'本支店・連結・個人事業主',
-    q:'X社は、すでにY社の発行済株式の70％を持ち、Y社を支配している。X社は、さらに、Y社の株式の10％を、<mark class="q-asset">現金40円で追加取得</mark>して、持ち株比率を80％にした。<mark class="q-equity">追加取得した株式にあたる、Y社の純資産に対する持分は、32円である</mark>。<mark class="q-equity">差額は、資本剰余金</mark>として処理する。この連結仕訳を行いなさい。',
+    q:'X社は、すでにY社の発行済株式の70％を持ち、Y社を支配している。X社は、さらに、Y社の株式の10％を、<strong>非支配株主</strong>から<mark class="q-asset">現金40円で追加取得</mark>して、持ち株比率を80％にした。<mark class="q-equity">追加取得した株式にあたる、Y社の純資産に対する持分は、32円である</mark>。<mark class="q-equity">差額は、資本剰余金</mark>として処理する。この連結仕訳を行いなさい。',
     e:[{d:[['非支配株主持分',32],['その他資本剰余金',8]],c:[['現金',40]]}],
     exp:'前問と同じパターンの追加取得です。非支配株主持分の減少額32円と、実際に支払った対価40円との差額8円を「その他資本剰余金」として処理します。「グループ内の株主構成が変わっただけ」なので、損益としては扱わないのがポイントです。'
   },
   { id:1183, cat:'連結会計', chap:'本支店・連結・個人事業主',
-    q:'X社は、以前に、Y社の<mark class="q-asset">株式</mark>の20％を、25円で取得して、Y社を関連会社として持っていた。今回、さらに、Y社の株式の60％を、60円で取得して、Y社の支配を獲得した。このように、何回かに分けて株式を取得して、支配を得ることを、<strong>段階取得</strong>という。<mark class="q-revenue">支配獲得日の時価で、支配を獲得する前から持っていた20％の株式は、28円である</mark>。連結上、この20％の株式を、支配獲得日の時価に、評価しなおす。この連結仕訳を行いなさい。',
+    q:'X社は、以前に、Y社の<mark class="q-asset">株式</mark>の20％を、25円で取得して、Y社を関連会社として持っていた。今回、さらに、Y社の株式の60％を、60円で取得して、Y社の支配を獲得した（Y社はX社の<strong>子会社</strong>となった）。このように、何回かに分けて株式を取得して、支配を得ることを、<strong>段階取得</strong>という。<mark class="q-revenue">支配獲得日の時価で、支配を獲得する前から持っていた20％の株式は、28円である</mark>。連結上、この20％の株式を、支配獲得日の時価に、評価しなおす。この連結仕訳を行いなさい。',
     e:[{d:[['子会社株式',3]],c:[['段階取得に係る差益',3]]}],
     exp:'「段階取得」とは、何回かに分けて、株式を取得して、子会社の支配を得ることです。一気に支配株主になるのではなく、少しずつ株を買い増して最終的に子会社化するケースでは、「支配を獲得した瞬間」に、それまで持っていた分（20％）も含めて全部を「今の時価」で評価し直すというルールがあります。以前25円で買った20％分が、今では28円の価値になっていたので、差額3円を「段階取得に係る差益」（連結上の収益）として計上します。'
   },
   { id:1184, cat:'個人事業主', chap:'本支店・連結・個人事業主',
-    q:'個人でパン屋（山田ベーカリー）を営む山田花子さんは、住宅街で、朝から焼きたてのパンを売っている。ある日、家族の誕生日のごちそうを買うために、お店のレジの<mark class="q-asset">現金から、10円を引き出して</mark>、自宅の生活費として使った。この10円は、<mark class="q-eq-as">お店の仕事とは関係のない、私用のための支出</mark>である。会社ではないので、お店のお金と、山田さん個人のお金は、別々に記帳する。この日の、山田ベーカリーの仕訳を行いなさい。',
+    q:'個人でパン屋（山田ベーカリー）を営む<strong>個人事業主</strong>の山田花子さんは、住宅街で、朝から焼きたてのパンを売っている。ある日、家族の誕生日のごちそうを買うために、お店のレジの<mark class="q-asset">現金から、10円を引き出して</mark>、自宅の生活費として使った。この10円は、<mark class="q-eq-as">お店の仕事とは関係のない、私用のための支出</mark>である。会社ではないので、お店のお金と、山田さん個人のお金は、別々に記帳する。この日の、山田ベーカリーの仕訳を行いなさい。',
     e:[{d:[['事業主貸',10]],c:[['現金',10]]}],
     exp:'「個人事業主」とは、会社を作らずに、個人が、自分の名前で事業を営む人のことです（事業のお金と、個人のお金は、別々に記帳します）。店主がお店のお金を私用に使うと、お店から見れば「店主への一時的な貸し」のような性質を持つため、「事業主貸」という資本のマイナス項目で処理します。株式会社の配当のような、純資産を減らす処理と似た働きをします。'
   },
@@ -3484,12 +3485,12 @@ const ALL = [
     exp:'予定配賦率で各製品に配り終えた後、製造間接費という勘定には「実際にかかった金額」と「予定で配った金額」の差額が残ります。実際発生額（25円）の方が予定配賦額（23円）より多かったので、この差額2円を「製造間接費配賦差異」という差異の科目で処理し、製造間接費の勘定をゼロに締め切ります。'
   },
   { id:1221, cat:'個別原価計算', chap:'工業簿記',
-    q:'X社は、ある得意先から注文を受けた部品の製造中に、通常起こりうる程度の不良品（<strong>仕損</strong>）を出した。この不良品は、補修すれば使えるため、補修の作業を行った。<mark class="q-expense">補修にかかった費用は、補修のための指図書に集計した6円である</mark>。<mark class="q-asset">この補修の費用を、補修指図書（仕掛品）から</mark>、仕損による費用として計上する仕訳を行いなさい。',
+    q:'X社は、ある得意先から注文を受けた部品の製造中に、通常起こりうる程度の不良品（<strong>正常仕損</strong>）を出した。この不良品は、補修すれば使えるため、補修の作業を行った。<mark class="q-expense">補修にかかった費用は、補修のための指図書に集計した6円である</mark>。<mark class="q-asset">この補修の費用を、補修指図書（仕掛品）から</mark>、仕損による費用として計上する仕訳を行いなさい。',
     e:[{d:[['仕損費',6]],c:[['仕掛品',6]]}],
     exp:'「仕損」とは、製造の途中で、不良品が出ることです。「指図書」とは、製造や補修の作業の内容を指示し、その費用を集計する書類のことです。通常の製造活動の中で起こりうる程度の不良（正常仕損）は、その補修費用を「仕損費」として製品の原価の一部に含めます。'
   },
   { id:1222, cat:'個別原価計算', chap:'工業簿記',
-    q:'X社では、別の月に、工場の機械が大きく故障し、通常では考えられない量の不良品が出た（<strong>異常な仕損</strong>）。この不良品は、直すことができず、廃棄した。<mark class="q-asset">この不良品にかかっていた製造原価は、6円である</mark>。異常な仕損による損失は、製品の原価に含めず、<mark class="q-expense">製造とは関係のない損失（営業外費用）として処理する</mark>。この日の仕訳を行いなさい。',
+    q:'X社では、別の月に、工場の機械が大きく故障し、通常では考えられない量の不良品が出た（<strong>異常仕損</strong>）。この不良品は、直すことができず、廃棄した。<mark class="q-asset">この不良品にかかっていた製造原価は、6円である</mark>。異常仕損による損失は、製品の原価に含めず、<mark class="q-expense">製造とは関係のない損失（営業外費用）として処理する</mark>。この日の仕訳を行いなさい。',
     e:[{d:[['異常仕損費',6]],c:[['仕掛品',6]]}],
     exp:'「営業外費用」とは、会社の本来の営業活動とは関係なく生じた費用や損失のことです。機械の大故障のような、通常では考えられない異常な原因で生じた仕損は、正常な製造活動のコストとはみなさず、「異常仕損費」として製品原価から切り離し、特別な損失として処理します。「正常な仕損は原価に、異常な仕損は損失に」という区別がポイントです。'
   },
@@ -3584,12 +3585,12 @@ const ALL = [
     exp:'「先入先出法」とは、先に着手した月初仕掛品が先に完成するとみなして、月初仕掛品原価をそのまま完成品原価に含め、当月製造費用の中から月末仕掛品原価を計算する方法です。平均法とは異なり、月初仕掛品原価と当月製造費用を区別して計算するため、単価の変動がある場合に、より当月の実際原価に近い結果が得られます。完成品原価2,500円を「仕掛品」から「製品」に振り替えます。'
   },
   { id:1241, cat:'総合原価計算', chap:'工業簿記',
-    q:'パンを製造しているX社の工程では、通常起こりうる程度の正常仕損が発生した。仕損が発生したのは工程の終点に近い地点であったため、<strong>度外視法</strong>のもとでは、仕損の原価は完成品のみが負担する。完成品原価2,600円を、<mark class="q-asset">仕掛品</mark>から<mark class="q-asset">製品</mark>に振り替える仕訳を行いなさい。',
+    q:'パンを製造しているX社の工程では、通常起こりうる程度の正常仕損が発生した。仕損が発生したのは工程の終点に近い地点（<strong>月末仕掛品の進捗度より後</strong>）であったため、<strong>度外視法</strong>のもとでは、仕損の原価は完成品のみが負担する。完成品原価2,600円を、<mark class="q-asset">仕掛品</mark>から<mark class="q-asset">製品</mark>に振り替える仕訳を行いなさい。',
     e:[{d:[['製品',2600]],c:[['仕掛品',2600]]}],
     exp:'「度外視法」は、正常仕損の原価を個別に計算せず、完成品や月末仕掛品の原価に自動的に上乗せ（吸収）させる方法です。仕損が発生した地点（仕損点）が、月末仕掛品の進捗度よりも後ろ（工程の終点側）にある場合、月末仕掛品はまだその地点を通過していないため仕損の原価を負担せず、「完成品のみが負担する」ことになります。そのため、仕損費はそのまま完成品原価に含まれたまま、製品に振り替えられます。'
   },
   { id:1242, cat:'総合原価計算', chap:'工業簿記',
-    q:'上記と同じ工場で、別の月に正常仕損が発生した。今回は仕損が発生したのが工程の始点に近い地点であったため、度外視法のもとでは、仕損の原価は完成品と月末仕掛品の両方で負担する。完成品原価2,520円を、<mark class="q-asset">仕掛品</mark>から<mark class="q-asset">製品</mark>に振り替える仕訳を行いなさい。',
+    q:'上記と同じ工場で、別の月に正常仕損が発生した。今回は仕損が発生したのが工程の始点に近い地点（<strong>月末仕掛品の進捗度より前</strong>）であったため、度外視法のもとでは、仕損の原価は完成品と月末仕掛品の両方で負担する。完成品原価2,520円を、<mark class="q-asset">仕掛品</mark>から<mark class="q-asset">製品</mark>に振り替える仕訳を行いなさい。',
     e:[{d:[['製品',2520]],c:[['仕掛品',2520]]}],
     exp:'仕損点が、月末仕掛品の進捗度よりも前（工程の始点側）にある場合は、月末仕掛品もすでにその地点を通過しているため、完成品だけでなく月末仕掛品も仕損の原価を一部負担します（両者負担）。この場合、仕損費は完成品と月末仕掛品の両方に、完成品換算量の比で自動的に配分されます。完成品が負担した分を含む完成品原価2,520円を、製品に振り替えます。'
   },
@@ -3599,12 +3600,12 @@ const ALL = [
     exp:'仕損品であっても、スクラップなどとして売却できる価値（処分価額）が見込める場合は、その分を仕損の原価から差し引き、「仕損品」という資産として計上します。「失敗した分でも、売れる部分は資産として別に取っておく」というイメージです。これにより、完成品や月末仕掛品が負担する仕損の原価は、処分価額を差し引いた残りの金額に抑えられます。'
   },
   { id:1244, cat:'総合原価計算', chap:'工業簿記',
-    q:'化学薬品を製造しているX社の工程では、蒸発によって原材料の一部が失われる正常減損が生じる。減損が発生したのは工程の終点に近い地点であったため、度外視法のもとでは、減損の原価は完成品のみが負担する。完成品原価2,450円を、<mark class="q-asset">仕掛品</mark>から<mark class="q-asset">製品</mark>に振り替える仕訳を行いなさい。',
+    q:'化学薬品を製造しているX社の工程では、蒸発によって原材料の一部が失われる正常減損が生じる。減損が発生したのは工程の終点に近い地点（<strong>月末仕掛品の進捗度より後</strong>）であったため、度外視法のもとでは、減損の原価は完成品のみが負担する。完成品原価2,450円を、<mark class="q-asset">仕掛品</mark>から<mark class="q-asset">製品</mark>に振り替える仕訳を行いなさい。',
     e:[{d:[['製品',2450]],c:[['仕掛品',2450]]}],
     exp:'「減損」とは、蒸発・ガス化・粉散などによって、原材料そのものが工程の途中で消えてしまう現象のことです。不良品として形が残る「仕損」とは異なりますが、会計上の処理方法（度外視法での完成品・月末仕掛品への負担の考え方）は仕損とまったく同じです。今回は減損点が月末仕掛品の進捗度よりも後ろにあるため、完成品のみが減損の原価を負担します。'
   },
   { id:1245, cat:'総合原価計算', chap:'工業簿記',
-    q:'塗料を製造しているX社は、工程別総合原価計算（累加法）を採用し、第1工程・第2工程の2つの工程を経て製品を完成させる。当月、<mark class="q-asset">第1工程で完成した半製品の原価1,200円を</mark>、そのまま<mark class="q-asset">第2工程の仕掛品に投入する</mark>仕訳を行いなさい。',
+    q:'塗料を製造しているX社は、工程別総合原価計算（累加法）を採用し、第1工程・第2工程の2つの工程を経て製品を完成させる。当月、<mark class="q-asset">第1工程で完成した半製品の原価（<strong>前工程費</strong>）1,200円を</mark>、そのまま<mark class="q-asset">第2工程の仕掛品に投入する</mark>仕訳を行いなさい。',
     e:[{d:[['第2工程仕掛品',1200]],c:[['第1工程仕掛品',1200]]}],
     exp:'「工程別総合原価計算」とは、複数の工程を順番に経て製品を完成させる場合に、工程ごとに原価を計算する方法です。「累加法」では、前の工程で完成した分の原価を、そのまま次の工程の仕掛品原価に加えます（これを「前工程費」と呼びます）。前工程費は、次工程の開始時点ですでに100％投入済みとして扱われる点が特徴です。'
   },
@@ -3639,7 +3640,7 @@ const ALL = [
     exp:'「等級別総合原価計算」は、同じ工程で、サイズや品質が異なる等級品（1級品・2級品など）を生産する場合の原価計算方法です。組別とは異なり、仕掛品の勘定はひとつにまとめたまま製造し、完成した時点で、等価係数（品質やサイズに応じた重み）に生産量を掛けた「積数」の比で、完成品総合原価を各等級に配分します。'
   },
   { id:1252, cat:'総合原価計算', chap:'工業簿記',
-    q:'上記と同様の方法で、X社が1級品・2級品・3級品の3等級を生産する場合、当月の<mark class="q-asset">完成品総合原価4,500円（仕掛品）</mark>を積数の比で配分したところ、<mark class="q-asset">1級品2,000円</mark>・<mark class="q-asset">2級品1,500円</mark>・<mark class="q-asset">3級品1,000円</mark>となった。この仕訳を行いなさい。',
+    q:'上記と同様の方法で、X社が1級品・2級品・3級品の3等級を生産する場合、当月の<mark class="q-asset">完成品総合原価4,500円（仕掛品）</mark>を積数（<strong>等価係数×生産量</strong>）の比で配分したところ、<mark class="q-asset">1級品2,000円</mark>・<mark class="q-asset">2級品1,500円</mark>・<mark class="q-asset">3級品1,000円</mark>となった。この仕訳を行いなさい。',
     e:[{d:[['製品（1級品）',2000],['製品（2級品）',1500],['製品（3級品）',1000]],c:[['仕掛品',4500]]}],
     exp:'等級が2つでも3つでも、考え方は同じです。各等級の積数（等価係数×生産量）の比で、完成品総合原価全体を配分します。等級が増えても、「仕掛品」という1つの勘定から、それぞれの等級の「製品」勘定へ、積数の比に応じて金額を振り分けるだけなので、処理の手間はさほど変わりません。'
   },
