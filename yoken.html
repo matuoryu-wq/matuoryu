@@ -129,6 +129,13 @@ footer{font-size:.74rem;color:var(--muted);border-top:1px solid var(--line);padd
 .theme h2 span{font-family:var(--sans);font-size:.75rem;color:var(--muted);font-weight:400}
 .qlist{list-style:none;margin:0;padding:0}
 .qlist li+li{border-top:1px solid var(--line)}
+.qlist li{display:flex;align-items:stretch}
+.pick{display:flex;align-items:center;padding:0 0 0 14px;cursor:pointer}
+.pick input{width:18px;height:18px;margin:0;accent-color:var(--gold);cursor:pointer}
+.qlist .qbtn{flex:1;min-width:0}
+.clr{all:unset;cursor:pointer;font-size:.8rem;color:var(--gold);font-weight:700;margin-left:4px}
+.clr:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.pickmsg{margin:0;font-size:.88rem;color:var(--muted)}
 .qbtn{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:2.2em minmax(0,1fr) auto;gap:4px 10px;align-items:baseline;padding:10px 14px}
 .qbtn:hover{background:rgba(212,173,92,.08)}
 .qbtn:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
@@ -2929,7 +2936,12 @@ const pref = {
   set(v){ try { localStorage.setItem("ykp-filter", v); } catch(e){} }
 };
 let FILTER = pref.get();
-const shown = q => FILTER==="ALL" || (FILTER==="A" ? q.rk==="A" : q.rk!=="C");
+const picks = {
+  get(){ try { return JSON.parse(localStorage.getItem("ykp-picked")||"{}"); } catch(e){ return {}; } },
+  put(o){ try { localStorage.setItem("ykp-picked", JSON.stringify(o)); } catch(e){} }
+};
+let PICK = picks.get();
+const shown = q => FILTER==="PICK" ? !!PICK[q.id] : FILTER==="ALL" || (FILTER==="A" ? q.rk==="A" : q.rk!=="C");
 const store = {
   get(){ try { return JSON.parse(localStorage.getItem("ykp-cleared")||"{}"); } catch(e){ return {}; } },
   set(id){ try { const o = store.get(); o[id] = 1; localStorage.setItem("ykp-cleared", JSON.stringify(o)); } catch(e){} }
@@ -2942,18 +2954,23 @@ const ST = () => Q().stages[S.s];
 /* ---- 目次 ---- */
 function showToc(){
   const done = store.get();
-  const fl = [["ALL","すべて"],["AB","A・B"],["A","Aのみ"]];
+  const np = QS.filter(q=>PICK[q.id]).length;
+  const fl = [["ALL","すべて"],["AB","A・B"],["A","Aのみ"],["PICK",`チェックした問題（${np}）`]];
   $("toc").innerHTML = `<p class="lead">テーマを選び、言い分を読んで必要な事実カードを選びます。請求原因から順に、抗弁・再抗弁と攻撃防御をたどります。</p>
-    <div class="filters"><span>重要度</span>${fl.map(([v,l])=>`<button class="fbtn" type="button" data-f="${v}" aria-pressed="${FILTER===v}">${l}</button>`).join("")}</div>
+    <div class="filters"><span>重要度</span>${fl.map(([v,l])=>`<button class="fbtn" type="button" data-f="${v}" aria-pressed="${FILTER===v}">${l}</button>`).join("")}${np?'<button class="clr" type="button" id="btnClr">チェックを外す</button>':''}</div>
     <p class="legend"><span class="rk A">A</span>予備試験受験生も解くべき問題　<span class="rk B">B</span>標準　<span class="rk C">C</span>発展</p>` +
+    (FILTER==="PICK" && !np ? `<p class="pickmsg">まだチェックした問題がありません。「すべて」などで一覧を開き、問題の左のチェックボックスで選んでください。</p>` : "") +
     THEMES.map((th,ti)=>{ const list = QS.map((q,i)=>[q,i]).filter(([q])=>q.ti===ti && shown(q)); if (!list.length) return "";
       return `<section class="theme"><h2>${esc(th.theme)}<span>${list.length}問</span></h2><ul class="qlist">` +
-      list.map(([q,i])=>`<li><button class="qbtn" type="button" data-i="${i}">
+      list.map(([q,i])=>`<li><label class="pick"><input type="checkbox" data-id="${q.id}" ${PICK[q.id]?"checked":""} aria-label="${esc(q.title)}を選ぶ"></label><button class="qbtn" type="button" data-i="${i}">
         <span class="no">${q.no}</span><span class="tt"><span class="rk ${q.rk}">${q.rk}</span>${esc(q.title)}</span>
         ${done[q.id]?'<span class="ck">済</span>':''}
         <span class="fl">${q.stages.map(s=>s.abbr).join(" → ")}</span></button></li>`).join("") +
     `</ul></section>`; }).join("");
   $("toc").querySelectorAll(".qbtn").forEach(b=>b.onclick=()=>startQuestion(+b.dataset.i));
+  $("toc").querySelectorAll(".pick input").forEach(c=>c.onchange=()=>{ if (c.checked) PICK[c.dataset.id]=1; else delete PICK[c.dataset.id]; picks.put(PICK);
+    if (FILTER==="PICK" && !c.checked) showToc(); else { const n = QS.filter(q=>PICK[q.id]).length; const b = $("toc").querySelector('.fbtn[data-f="PICK"]'); b.textContent = `チェックした問題（${n}）`; } });
+  if ($("btnClr")) $("btnClr").onclick = ()=>{ PICK = {}; picks.put(PICK); showToc(); };
   $("toc").querySelectorAll(".fbtn").forEach(b=>b.onclick=()=>{ FILTER = b.dataset.f; pref.set(FILTER); showToc(); });
   $("toc").hidden = false; $("game").hidden = true; $("stats").hidden = true;
 }
