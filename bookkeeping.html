@@ -5466,10 +5466,14 @@ function renderCompCatSelect(){
       <div style="font-size:14px;font-weight:700;">2級までの計算論点を、設問ごとに一歩ずつ選んで解きます</div>
       <div style="font-size:11px;color:var(--muted);margin-top:4px;">数字は毎回ランダムに変わります。前の設問の答えは、次の設問のヒントに表示されます</div>
     </div>
-    ${groups.map(g=>`<div class="comp-sect-hd">${g}</div>
+    <div class="comp-sect-hd">重要度</div>
+    <div class="sec-tabs">
+      ${CALC_LEVELS.map(([l,name])=>{ const n=CALC_CATS.reduce((s,c)=>s+(l===0?CALC_GENERATORS[c.key].length:CALC_GENERATORS[c.key].filter(fn=>calcLevelOf(fn)===l).length),0); return `<button class="ctrl-btn${calcLevel===l?' active':''}" onclick="setCalcLevel(${l})">${name}（${n}問）</button>`; }).join('')}
+    </div>
+    ${groups.map(g=>{ const cats=CALC_CATS.filter(c=>c.group===g && calcGensFor(c.key).length); return cats.length?`<div class="comp-sect-hd">${g}</div>
     <div class="exp-step-choices wide">
-      ${CALC_CATS.filter(c=>c.group===g).map(c=>`<button class="exp-step-choice-btn" onclick="launchCompCat('${c.key}')">${c.label}（${CALC_GENERATORS[c.key].length}問）</button>`).join('')}
-    </div>`).join('')}`;
+      ${cats.map(c=>`<button class="exp-step-choice-btn" onclick="launchCompCat('${c.key}')">${c.label}（${calcGensFor(c.key).length}問）</button>`).join('')}
+    </div>`:''; }).join('')}`;
     return;
   }
   main.innerHTML = `
@@ -5492,7 +5496,7 @@ function renderCompCatSelect(){
 
 function launchCompCat(key){
   compQuizLastCat = key;
-  compQuizDeck = compGens()[key].map(fn => fn());
+  compQuizDeck = (compMode==='calc' ? calcGensFor(key) : compGens()[key]).map(fn => fn());
   compQuizIdx = 0;
   compQuizStepIdx = 0;
   compQuizCorrectFirstTry = 0;
@@ -7242,6 +7246,16 @@ const CALC_CATS = [
   { key:'mfg', label:'製造原価報告書・売上原価', group:'工業簿記' },
   { key:'std', label:'標準原価計算（差異分析）', group:'工業簿記' },
 ];
+const CALC_IMPORTANCE = {
+  1:['genCalcDepStraight','genCalcDepDeclining','genCalcAssetSale','genCalcInventory','genCalcAllowance','genCalcAccrual','genCalcSecurities','genCalcBond','genCalcOtherSecTax','genCalcTax','genCalcConsol','genCalcUnrealized','genCalcConsolUpstream','genCalcConsolReceivable','genCalcConsolYear2','genCalcStdVariance','genCalcProcessAvg','genCalcProcessFifo','genCalcSpoilage','genCalcOverhead','genCalcDept','genCalcDeptPredet'],
+  2:['genCalcBankRecon','genCalcFx','genCalcFxForward','genCalcLease','genCalcDividend','genCalcProvision','genCalcMaterial','genCalcMatPredet','genCalcLabor','genCalcJob','genCalcMfgReport','genCalcProcessSeq'],
+  3:['genCalcTradeIn','genCalcCompression','genCalcCapitalExp','genCalcSoftware','genCalcDepUnits','genCalcAccruedInterest','genCalcMerger','genCalcProcessGroup','genCalcProcessGrade','genCalcDeptMutual','genCalcMovingAvg'],
+};
+const CALC_LEVELS = [[1,'最重要'],[2,'重要'],[3,'頻度低め'],[0,'すべて']];
+let calcLevel = 1;
+function calcLevelOf(fn){ for(const k of [1,2,3]) if(CALC_IMPORTANCE[k].includes(fn.name)) return k; return 0; }
+function calcGensFor(key){ return CALC_GENERATORS[key].filter(fn=>calcLevel===0 || calcLevelOf(fn)===calcLevel); }
+function setCalcLevel(l){ calcLevel=l; renderCompCatSelect(); }
 // ===== 総合問題ここまで =====
 
 
