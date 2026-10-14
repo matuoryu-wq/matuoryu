@@ -1,0 +1,79 @@
+{
+  "_note": "模擬事件セット。実在の事件・人物ではない。わざと雑な入力(矛盾・言い直し・固有名詞の言い間違い・表記ゆれ)を含む。",
+  "cases": [
+    {
+      "title": "髙橋 対 ㈱サンプル商事 売買代金請求",
+      "field": "民事", "status": "係属", "accepted_on": "2026-05-10",
+      "court": "東京地方裁判所 民事第〇部", "case_number": "令和8年(ワ)第1234号",
+      "fee_terms": "着手金30万円、報酬金 経済的利益の10%(税別)…と言っていたが、面談2回目で8%に変更の話あり(未確定)",
+      "memo": "受任日は5/1と聞いたが、委任契約書の日付は5月10日。契約書優先。相手方担当者は「佐藤」と名乗ったり「佐東」と書かれていたりする。",
+      "parties": [
+        {"role": "依頼者", "name": "髙橋 一郎", "kana": "タカハシ イチロウ", "phone": "090-0000-0001"},
+        {"role": "相手方", "name": "株式会社サンプル商事", "kana": "サンプルショウジ"},
+        {"role": "関係者", "name": "佐東 健", "kana": "サトウ ケン", "note": "相手方担当者。名刺は「佐藤」? 要確認"}
+      ],
+      "activities": [
+        {"date": "2026-05-10", "kind": "面談", "content": "初回面談。売買代金300万円…いや、請求書を見ると320万円。納品は3月だったか4月だったか本人も曖昧。", "minutes": 90},
+        {"date": "2026-06-02", "kind": "書面提出", "content": "訴状提出(請求額320万円)", "minutes": 30}
+      ],
+      "deadlines": [
+        {"kind": "期日", "title": "第1回口頭弁論期日", "due_date": "2026-11-05", "due_time": "10:30", "place": "東京地裁 6xx号法廷"}
+      ],
+      "todos": [
+        {"title": "相手方の答弁書の検討", "status": "待ち", "waiting_for": "相手方答弁書の提出待ち"}
+      ]
+    },
+    {
+      "title": "斎藤家 遺産分割(被相続人 斎藤 正)",
+      "field": "相続", "status": "受任", "accepted_on": "2026-08-20",
+      "memo": "依頼者は長女。被相続人の死亡は8/3と聞いたが、戸籍では8月4日。依頼者が死亡を知ったのは8/5(病院から連絡)。弟の名前は『斉藤 誠』と書いたり『齋藤 誠』と書いたりしている。",
+      "parties": [
+        {"role": "依頼者", "name": "斎藤 美咲", "kana": "サイトウ ミサキ"},
+        {"role": "相手方", "name": "齋藤 誠", "kana": "さいとう まこと", "note": "依頼者の弟。手書きメモでは「斉藤」"},
+        {"role": "関係者", "name": "斎藤 正", "kana": "サイトウ タダシ", "note": "被相続人"}
+      ],
+      "activities": [
+        {"date": "2026-08-20", "kind": "面談", "content": "遺産は自宅不動産と預金。預金は約1,000万…依頼者は800万と言い直した。", "minutes": 60}
+      ],
+      "todos": [
+        {"title": "戸籍の収集", "status": "未着手"},
+        {"title": "相手方への通知書", "status": "待ち", "waiting_for": "依頼者の最終確認待ち"}
+      ]
+    },
+    {
+      "title": "渡邊 労働事件(解雇無効)",
+      "field": "労働", "status": "相談",
+      "memo": "相談者は「わたなべ」。会社名は「ABC株式会社」とも「(株)エービーシー」とも言う。解雇日は9/30? 10/1? 解雇通知書で確認要。",
+      "parties": [
+        {"role": "相談者", "name": "渡邊 健太", "kana": "ワタナベ ケンタ"},
+        {"role": "相手方", "name": "ABC株式会社", "kana": "エービーシー"}
+      ],
+      "activities": [
+        {"date": "2026-10-02", "kind": "電話", "content": "初回電話相談。解雇理由証明書は未請求。", "minutes": 20}
+      ]
+    },
+    {
+      "title": "刑事 窃盗被告事件(被告人 山﨑)",
+      "field": "刑事", "status": "終結", "accepted_on": "2025-02-01", "closed_on": "2025-06-30",
+      "sensitive": true,
+      "memo": "判決宣告 2025-06-16 執行猶予。控訴せず確定。",
+      "parties": [
+        {"role": "依頼者", "name": "山﨑 太郎", "kana": "ヤマザキ タロウ"},
+        {"role": "関係者", "name": "鈴木 花子", "kana": "スズキ ハナコ", "note": "被害者"}
+      ]
+    }
+  ],
+  "conflict_queries": [
+    {"name": "高橋一郎", "kana": "", "expect_cases": ["髙橋 対 ㈱サンプル商事 売買代金請求"], "expect_adverse": false},
+    {"name": "サンプル商事株式会社", "kana": "", "expect_cases": ["髙橋 対 ㈱サンプル商事 売買代金請求"], "expect_adverse": true},
+    {"name": "(株)サンプル商事", "kana": "", "expect_cases": ["髙橋 対 ㈱サンプル商事 売買代金請求"], "expect_adverse": true},
+    {"name": "斉藤 誠", "kana": "", "expect_cases": ["斎藤家 遺産分割(被相続人 斎藤 正)"], "expect_adverse": true},
+    {"name": "斉藤マコト", "kana": "サイトウマコト", "expect_cases": ["斎藤家 遺産分割(被相続人 斎藤 正)"], "expect_adverse": true},
+    {"name": "渡辺 健太", "kana": "", "expect_cases": ["渡邊 労働事件(解雇無効)"], "expect_adverse": false},
+    {"name": "ＡＢＣ㈱", "kana": "", "expect_cases": ["渡邊 労働事件(解雇無効)"], "expect_adverse": true},
+    {"name": "山崎 太郎", "kana": "", "expect_cases": ["刑事 窃盗被告事件(被告人 山﨑)"], "expect_adverse": false},
+    {"name": "佐藤 健", "kana": "サトウケン", "expect_cases": ["髙橋 対 ㈱サンプル商事 売買代金請求"], "expect_adverse": false},
+    {"name": "田中 一郎", "kana": "タナカイチロウ", "expect_cases": [], "expect_adverse": false},
+    {"name": "株式会社まるで無関係", "kana": "", "expect_cases": [], "expect_adverse": false}
+  ]
+}

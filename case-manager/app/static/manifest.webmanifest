@@ -1,0 +1,14 @@
+{
+  "name": "案件管理",
+  "short_name": "案件管理",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f5f7",
+  "theme_color": "#2f4a6d",
+  "icons": [
+    {"src": "/static/icon.svg", "sizes": "any", "type": "image/svg+xml"},
+    {"src": "/static/icon-180.png", "sizes": "180x180", "type": "image/png"},
+    {"src": "/static/icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}
