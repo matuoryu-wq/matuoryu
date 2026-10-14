@@ -5466,9 +5466,9 @@ function renderCompCatSelect(){
       <div style="font-size:14px;font-weight:700;">2級までの計算論点を、設問ごとに一歩ずつ選んで解きます</div>
       <div style="font-size:11px;color:var(--muted);margin-top:4px;">数字は毎回ランダムに変わります。前の設問の答えは、次の設問のヒントに表示されます</div>
     </div>
-    <div class="comp-sect-hd">重要度</div>
+    <div class="comp-sect-hd">重要度（タップで表示を切り替え・複数選択可）　表示中：${CALC_LEVELS.filter(([l])=>calcLevels.has(l)).map(([,a])=>a).join('')}（${CALC_CATS.reduce((s,c)=>s+calcGensFor(c.key).length,0)}問）</div>
     <div class="sec-tabs">
-      ${CALC_LEVELS.map(([l,name])=>{ const n=CALC_CATS.reduce((s,c)=>s+(l===0?CALC_GENERATORS[c.key].length:CALC_GENERATORS[c.key].filter(fn=>calcLevelOf(fn)===l).length),0); return `<button class="ctrl-btn${calcLevel===l?' active':''}" onclick="setCalcLevel(${l})">${name}（${n}問）</button>`; }).join('')}
+      ${CALC_LEVELS.map(([l,a,name])=>{ const n=Object.values(CALC_GENERATORS).flat().filter(fn=>calcLevelOf(fn)===l).length; return `<button class="ctrl-btn${calcLevels.has(l)?' active':''}" onclick="toggleCalcLevel(${l})">${calcLevels.has(l)?'☑':'☐'} ${a}：${name}（${n}問）</button>`; }).join('')}
     </div>
     ${groups.map(g=>{ const cats=CALC_CATS.filter(c=>c.group===g && calcGensFor(c.key).length); return cats.length?`<div class="comp-sect-hd">${g}</div>
     <div class="exp-step-choices wide">
@@ -7251,11 +7251,15 @@ const CALC_IMPORTANCE = {
   2:['genCalcBankRecon','genCalcFx','genCalcFxForward','genCalcLease','genCalcDividend','genCalcProvision','genCalcMaterial','genCalcMatPredet','genCalcLabor','genCalcJob','genCalcMfgReport','genCalcProcessSeq'],
   3:['genCalcTradeIn','genCalcCompression','genCalcCapitalExp','genCalcSoftware','genCalcDepUnits','genCalcAccruedInterest','genCalcMerger','genCalcProcessGroup','genCalcProcessGrade','genCalcDeptMutual','genCalcMovingAvg'],
 };
-const CALC_LEVELS = [[1,'最重要'],[2,'重要'],[3,'頻度低め'],[0,'すべて']];
-let calcLevel = 1;
+const CALC_LEVELS = [[1,'A','最重要'],[2,'B','重要'],[3,'C','頻度低め']];
+let calcLevels = new Set([1]);
 function calcLevelOf(fn){ for(const k of [1,2,3]) if(CALC_IMPORTANCE[k].includes(fn.name)) return k; return 0; }
-function calcGensFor(key){ return CALC_GENERATORS[key].filter(fn=>calcLevel===0 || calcLevelOf(fn)===calcLevel); }
-function setCalcLevel(l){ calcLevel=l; renderCompCatSelect(); }
+// A・B・Cすべて選んだときだけ、ランク外（2級の範囲外）の問題も含める
+function calcGensFor(key){ return CALC_GENERATORS[key].filter(fn=>{ const l=calcLevelOf(fn); return l ? calcLevels.has(l) : calcLevels.size===3; }); }
+function toggleCalcLevel(l){
+  if(calcLevels.has(l)){ if(calcLevels.size===1) return; calcLevels.delete(l); } else calcLevels.add(l);
+  renderCompCatSelect();
+}
 // ===== 総合問題ここまで =====
 
 
