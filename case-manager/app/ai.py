@@ -17,7 +17,7 @@ from .anonymize import Anonymizer, build_for_case, nfkc
 PROMPT_DIR = Path(__file__).parent / "prompts"
 DEFAULT_MEMO_SECTIONS = ["事実関係", "争点", "依頼者の希望", "未確認事項", "次の対応"]
 SOURCE_BUDGET_CHARS = 120_000
-KINDS = ("ask", "memo", "timeline")
+KINDS = ("ask", "memo", "timeline", "status", "report")
 
 
 # ---------------------------------------------------------------- プロンプト
@@ -63,6 +63,28 @@ SCHEMAS = {
             "caveats": {"type": "array", "items": {"type": "string"}},
         },
         "required": ["sections", "caveats"],
+        "additionalProperties": False,
+    },
+    "status": {
+        "type": "object",
+        "properties": {
+            "headline": {"type": "string"},
+            "current_status": {"type": "array", "items": _ITEM},
+            "next_steps": {"type": "array", "items": _ITEM},
+            "risks": {"type": "array", "items": _ITEM},
+            "open_questions": {"type": "array", "items": {"type": "string"}},
+        },
+        "required": ["headline", "current_status", "next_steps", "risks", "open_questions"],
+        "additionalProperties": False,
+    },
+    "report": {
+        "type": "object",
+        "properties": {
+            "subject": {"type": "string"},
+            "paragraphs": {"type": "array", "items": _ITEM},
+            "points_to_confirm": {"type": "array", "items": {"type": "string"}},
+        },
+        "required": ["subject", "paragraphs", "points_to_confirm"],
         "additionalProperties": False,
     },
     "timeline": {
@@ -126,6 +148,17 @@ def collect_sources(conn, case_id: int, query: str = "", include_files: bool = T
         who = f"{r['prole']} {r['pname']}" if r["pname"] else ""
         srcs.append({"type": "communication", "label": f"連絡履歴 {r['date']} {r['channel']}({r['direction']}) {who}",
                      "comm_id": r["id"], "text": nfkc(r["summary"]), "priority": 2})
+    dl = conn.execute("SELECT * FROM deadlines WHERE case_id=? AND done=0 ORDER BY due_date, due_time",
+                      (case_id,)).fetchall()
+    if dl:
+        srcs.append({"type": "deadline", "label": "期限・期日(未了)", "priority": 0, "text": "\n".join(
+            f"{d['due_date']} {d['due_time'] or ''} {d['kind']} {d['title']} {d['place'] or ''}"
+            f"{'' if d['confirmed'] else '(自動計算・未確定)'}" for d in dl)})
+    todos = conn.execute("SELECT * FROM todos WHERE case_id=? AND status!='完了' ORDER BY id", (case_id,)).fetchall()
+    if todos:
+        srcs.append({"type": "todo", "label": "TODO・待ち状態", "priority": 0, "text": "\n".join(
+            f"[{t['status']}] {t['title']}{'(待ち: ' + t['waiting_for'] + ')' if t['waiting_for'] else ''}"
+            f"{' 期限 ' + t['due_date'] if t['due_date'] else ''}" for t in todos)})
     c = conn.execute("SELECT memo FROM cases WHERE id=?", (case_id,)).fetchone()
     if c and c["memo"]:
         srcs.append({"type": "case_memo", "label": "案件メモ", "text": nfkc(c["memo"]), "priority": 1})
@@ -246,28 +279,22 @@ def finalize(kind: str, data: dict, sources: list[dict], an: Anonymizer) -> dict
             out.append(entry)
         return out
 
-    def walk_items(items: list[dict], text_key: str = "text") -> list[dict]:
-        res = []
-        for it in items or []:
-            it = dict(it)
-            it["citations"] = fix_citations(it.get("citations", []))
-            if not it["citations"]:
-                stats["uncited_items"] += 1
-            for k, v in list(it.items()):
-                if k != "citations":
-                    it[k] = an.restore_obj(v)
-            res.append(it)
-        return res
+    def walk(obj):
+        if isinstance(obj, dict):
+            if "citations" in obj:
+                out = {k: walk(v) for k, v in obj.items() if k != "citations"}
+                out["citations"] = fix_citations(obj.get("citations", []))
+                if not out["citations"]:
+                    stats["uncited_items"] += 1
+                return out
+            return {k: walk(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [walk(x) for x in obj]
+        if isinstance(obj, str):
+            return an.restore(obj)
+        return obj
 
-    if kind == "ask":
-        result = {"answer": walk_items(data.get("answer", [])), "not_found": an.restore_obj(data.get("not_found", []))}
-    elif kind == "memo":
-        result = {"sections": [{"heading": an.restore(s.get("heading", "")), "items": walk_items(s.get("items", []))}
-                               for s in data.get("sections", [])],
-                  "caveats": an.restore_obj(data.get("caveats", []))}
-    else:
-        result = {"timeline": walk_items(data.get("timeline", [])), "issues": walk_items(data.get("issues", [])),
-                  "contradictions": walk_items(data.get("contradictions", []))}
+    result = walk(data)
     result["citation_stats"] = stats
     return result
 

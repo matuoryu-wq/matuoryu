@@ -43,6 +43,16 @@ class FakeLLM:
                 {"text": f"{h}: {people[0] if people else ''}に関する事項({srcs[i % len(srcs)][0]})",
                  "citations": cite(i % len(srcs))}] if srcs else []} for i, h in enumerate(heads)],
                 "caveats": ["初稿です"]}
+        elif "headline" in props:
+            data = {"headline": f"{srcs[0][0]}を中心に進行中" if srcs else "資料なし",
+                    "current_status": [{"text": first_quote(t, 30), "citations": cite(i)} for i, (_, _, t) in enumerate(srcs[:2])],
+                    "next_steps": [{"text": "期限の確認", "citations": cite(0)}],
+                    "risks": [{"text": "期限徒過に注意", "citations": cite(0)}], "open_questions": ["納品日"]}
+        elif "paragraphs" in props:
+            data = {"subject": "ご依頼の件の経過について",
+                    "paragraphs": [{"text": "【依頼者1】様のご依頼の件について、現在の状況をご報告します。", "citations": cite(0)},
+                                   {"text": f"{first_quote(srcs[-1][2], 30)}。" if srcs else "", "citations": cite(len(srcs) - 1)}],
+                    "points_to_confirm": ["相手方の主張の詳細を伝えるか"]}
         else:
             tl = []
             for i, (sid, label, text) in enumerate(srcs):

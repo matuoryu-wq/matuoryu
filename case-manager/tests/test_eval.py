@@ -12,7 +12,8 @@ from fake_llm import FakeLLM  # noqa: E402
 
 def test_eval_runs_with_fake_llm(tmp_path):
     res = eval_ai.run_eval(lambda _id: FakeLLM(), record_dir=tmp_path / "rec")
-    assert set(res["items"]) == {"takahashi_memo", "takahashi_timeline", "takahashi_ask", "saito_memo"}
+    assert set(res["items"]) == {"takahashi_memo", "takahashi_timeline", "takahashi_ask", "saito_memo",
+                                 "takahashi_status", "takahashi_report"}
     for item_id, v in res["items"].items():
         m = v["metrics"]
         assert m["leaks"] == 0, (item_id, m["leaked_terms"])     # 送信内容に匿名化対象の語なし
@@ -20,7 +21,7 @@ def test_eval_runs_with_fake_llm(tmp_path):
     tl = res["items"]["takahashi_timeline"]["metrics"]
     assert tl["dates"] >= 0.6                                       # PDF・請求書・メールの日付
     assert res["items"]["takahashi_memo"]["metrics"]["names"] == 1.0  # 復元された氏名
-    assert len(list((tmp_path / "rec").glob("*.json"))) == 4
+    assert len(list((tmp_path / "rec").glob("*.json"))) == 6
 
     # 保存した応答で再採点すると同じ結果
     res2 = eval_ai.run_eval(lambda item_id: eval_ai.ReplayLLM(tmp_path / "rec", item_id))
@@ -61,4 +62,4 @@ def test_eval_set_is_well_formed():
     mock = json.loads((eval_ai.FIX / "mock_cases.json").read_text(encoding="utf-8"))
     titles = {c["title"] for c in mock["cases"]}
     for it in data["items"]:
-        assert it["case"] in titles and it["kind"] in ("ask", "memo", "timeline") and it["expect"]
+        assert it["case"] in titles and it["kind"] in ("ask", "memo", "timeline", "status", "report") and it["expect"]

@@ -256,11 +256,25 @@ CREATE TABLE IF NOT EXISTS finance_entries (
     created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_finance_case ON finance_entries(case_id, date);
+
+-- ---------------------------------------------------------------- v3
+CREATE TABLE IF NOT EXISTS doc_templates (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    filename TEXT NOT NULL,          -- data/templates 内のファイル名
+    note TEXT DEFAULT '',
+    created_at TEXT NOT NULL
+);
 """
 
 # 既存DBへの列追加(CREATE TABLE IF NOT EXISTS では反映されないもの)
 MIGRATIONS = [
     ("activities", "transcript_id", "INTEGER"),
+    # v3
+    ("cases", "referral_source", "TEXT DEFAULT ''"),   # 受任経路
+    ("cases", "retention_until", "TEXT"),             # 保管期限(個別指定。空なら終結日+既定年数)
+    ("cases", "disposed_on", "TEXT"),                 # 記録の廃棄日
+    ("cases", "disposal_note", "TEXT DEFAULT ''"),    # 廃棄方法等
 ]
 
 

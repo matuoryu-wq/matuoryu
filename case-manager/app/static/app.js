@@ -206,6 +206,10 @@ const routes = [
   [/^#\/audit$/, viewAudit, "more"],
   [/^#\/profit$/, viewProfit, "more"],
   [/^#\/ailog$/, viewAILog, "more"],
+  [/^#\/handover$/, viewHandover, "more"],
+  [/^#\/retention$/, viewRetention, "more"],
+  [/^#\/analysis$/, viewAnalysis, "more"],
+  [/^#\/templates$/, viewTemplates, "more"],
 ];
 
 let routeSeq = 0;
@@ -233,6 +237,7 @@ window.addEventListener("hashchange", () => { closeModal(); route(); window.scro
 
 async function loadMeta() {
   META = await api("GET", "/meta");
+  Object.assign(META, await api("GET", "/meta/v3"));
 }
 
 // ------------------------------------------------------------ ダッシュボード
@@ -331,6 +336,8 @@ function caseFields(c = {}) {
     { name: "case_number", label: "事件番号", value: c.case_number, placeholder: "例: 令和8年(ワ)第123号" },
     { name: "fee_terms", label: "報酬条件", type: "textarea", value: c.fee_terms },
     { name: "memo", label: "メモ", type: "textarea", value: c.memo },
+    { name: "referral_source", label: "受任経路", type: "select",
+      options: [["", "(未設定)"], ...(META.referral_sources || [])], value: c.referral_source || "" },
     { name: "folder_path", label: "案件フォルダ(PC上の絶対パス)", value: c.folder_path, placeholder: "C:\\Users\\...\\事件\\山田" },
     { name: "stale_days", label: "放置アラートまでの日数(空欄=既定値)", type: "number", value: c.stale_days, min: 1 },
     { name: "sensitive", label: "機微案件(閲覧時に再認証を求める)", type: "checkbox", value: c.sensitive },
@@ -358,9 +365,9 @@ async function viewCaseNew() {
 
 // ------------------------------------------------------------ 案件詳細
 
-const CASE_TABS = [["", "概要"], ["parties", "当事者"], ["deadlines", "期限"], ["checklist", "チェック"],
+const CASE_TABS = [["", "概要"], ["summary", "要約"], ["parties", "当事者"], ["deadlines", "期限"], ["checklist", "チェック"],
   ["activities", "活動"], ["comms", "連絡"], ["todos", "TODO"], ["files", "資料"], ["recordings", "録音"],
-  ["ai", "AI"], ["money", "会計"]];
+  ["ai", "AI"], ["docs", "書面"], ["money", "会計"]];
 
 async function viewCase(id, tab = "") {
   const c = await api("GET", `/cases/${id}`);
@@ -373,7 +380,7 @@ async function viewCase(id, tab = "") {
   }).join("");
   const body = { "": caseOverview, parties: caseParties, deadlines: caseDeadlines, checklist: caseChecklist,
     activities: caseActivities, comms: caseComms, todos: caseTodos, files: caseFiles, recordings: caseRecordings,
-    ai: caseAI, money: caseMoney }[tab || ""];
+    ai: caseAI, money: caseMoney, summary: caseSummary, docs: caseDocs }[tab || ""];
   view.innerHTML = `<div class="row between"><h1 class="grow">${c.sensitive ? "🔒 " : ""}${h(c.title)}</h1>${statusTag(c.status)}</div>
     <div class="muted small">${h(c.field)} ${h(c.court || "")} ${h(c.case_number || "")}</div>
     <nav class="tabs">${tabs}</nav><div id="case-body"></div>`;
@@ -531,7 +538,8 @@ function deadlineDialog(c, d) {
   if (d) fields.push({ name: "done", label: "完了", type: "checkbox", value: d.done });
   formDialog({
     title: d ? "期限・期日の編集" : "期限・期日の追加", fields,
-    extraHtml: d?.calc ? `<h3>自動計算の記録</h3>${calcHtml(d.calc)}` : "",
+    extraHtml: (d ? `<p><a class="btn small" href="/api/deadlines/${d.id}/ics">📅 iPhoneのカレンダーに追加(.ics)</a></p>` : "")
+      + (d?.calc ? `<h3>自動計算の記録</h3>${calcHtml(d.calc)}` : ""),
     onSubmit: (v) => d ? api("PUT", `/deadlines/${d.id}`, v) : api("POST", `/cases/${c.id}/deadlines`, v),
     danger: d ? { label: "削除", onClick: () => api("DELETE", `/deadlines/${d.id}`) } : null,
   });
@@ -900,6 +908,10 @@ function viewMore() {
     <li class="link" data-href="#/cases?status=終結">📦 終結案件</li>
     <li class="link" data-href="#/settings">⚙️ 設定・休日・バックアップ</li>
     <li class="link" data-href="#/profit">💴 稼働・採算</li>
+    <li class="link" data-href="#/analysis">📊 受任経路・分野別の分析</li>
+    <li class="link" data-href="#/handover">📤 引継ぎ書の出力</li>
+    <li class="link" data-href="#/retention">🗄 記録の保管期限</li>
+    <li class="link" data-href="#/templates">📝 書面ひな形・事務所情報</li>
     <li class="link" data-href="#/ailog">🤖 AI送信ログ</li>
     <li class="link" data-href="#/audit">📜 操作ログ・監査ログ</li>
     <li class="link" id="logout">🚪 ログアウト</li></ul>`;
@@ -938,6 +950,8 @@ async function viewSettings() {
     <h3>相談メモの見出し(事務所様式)</h3>
     <form id="memo-form" class="card"><textarea name="sections">${h(mt.sections.join("\n"))}</textarea>
       <div class="muted small">1行に1見出し。既定: ${h(mt.default.join(" / "))}</div><button>保存</button></form>
+    <h2>iPhone カレンダー連携</h2>
+    <div class="card small" id="cal-box"></div>
     <h2>休日(${year}年)</h2>
     <div class="card small">${hol.national.map((x) => `${jdate(x.date)} ${h(x.name)}`).join("<br>")}</div>
     <h3>追加の休日(庁舎閉庁日等)</h3>
@@ -951,6 +965,7 @@ async function viewSettings() {
       stale_days: Number(e.target.stale_days.value), notify_days: Number(e.target.notify_days.value) }));
     if (ok) toast("保存しました");
   };
+  renderCalendarBox();
   $("#memo-form").onsubmit = async (e) => {
     e.preventDefault();
     const sections = e.target.sections.value.split("\n").map((x) => x.trim()).filter(Boolean);
@@ -1029,7 +1044,7 @@ function itemHtml(caseId, it, body) {
 
 // ------------------------------------------------------------ AI タブ
 
-const KIND_LABEL = { ask: "質問", memo: "相談メモ", timeline: "時系列・争点整理表" };
+const KIND_LABEL = { ask: "質問", memo: "相談メモ", timeline: "時系列・争点整理表", status: "現状要約", report: "依頼者への報告文" };
 
 async function caseAI(c, params) {
   const box = $("#case-body");
@@ -1044,7 +1059,9 @@ async function caseAI(c, params) {
         <textarea name="q" placeholder="例: この事件の経緯は? / 納品日について資料間に食い違いはあるか"></textarea></label>
         <button class="primary" ${st.ai_configured ? "" : "disabled"}>確認して送信</button></form>
       <div class="row"><button id="mk-memo" ${st.ai_configured ? "" : "disabled"}>相談メモを作成</button>
-        <button id="mk-tl" ${st.ai_configured ? "" : "disabled"}>時系列・争点整理表を作成</button></div>
+        <button id="mk-tl" ${st.ai_configured ? "" : "disabled"}>時系列・争点整理表を作成</button>
+        <button id="mk-status" ${st.ai_configured ? "" : "disabled"}>現状要約</button>
+        <button id="mk-report" ${st.ai_configured ? "" : "disabled"}>依頼者への報告文(下書き)</button></div>
       <p class="muted small">対象: 録音の文字起こし・索引化した資料・活動記録・連絡履歴・案件メモ</p>
     </div>
     <div id="ai-result"></div>
@@ -1069,6 +1086,8 @@ async function caseAI(c, params) {
   };
   $("#mk-memo").onclick = () => previewAndRun(c, "memo", "");
   $("#mk-tl").onclick = () => previewAndRun(c, "timeline", "");
+  $("#mk-status").onclick = () => previewAndRun(c, "status", "");
+  $("#mk-report").onclick = () => previewAndRun(c, "report", "");
   box.querySelectorAll("[data-run]").forEach((li) => li.addEventListener("click", () => showRun(c, Number(li.dataset.run))));
   box.querySelectorAll("[data-del-term]").forEach((b) => b.addEventListener("click", async () => {
     await guard(() => api("DELETE", `/anon-terms/${b.dataset.delTerm}`));
@@ -1124,6 +1143,15 @@ async function showRun(c, runId) {
     body = res.sections.map((s) => `<h3>■ ${h(s.heading)}</h3>
       <ul class="list ai">${s.items.map((it) => itemHtml(c.id, it)).join("") || `<li class="muted">なし</li>`}</ul>`).join("")
       + (res.caveats.length ? `<h3>注意</h3><ul>${res.caveats.map((x) => `<li>${h(x)}</li>`).join("")}</ul>` : "");
+  } else if (r.kind === "status") {
+    const sec = (title, arr) => `<h3>■ ${title}</h3><ul class="list ai">${arr.map((it) => itemHtml(c.id, it)).join("") || `<li class="muted">なし</li>`}</ul>`;
+    body = `<p class="title">${h(res.headline)}</p>${sec("現状", res.current_status)}${sec("次にすべきこと", res.next_steps)}${sec("注意点", res.risks)}
+      ${res.open_questions.length ? `<h3>確認が必要な点</h3><ul>${res.open_questions.map((x) => `<li>${h(x)}</li>`).join("")}</ul>` : ""}`;
+  } else if (r.kind === "report") {
+    body = `<div class="alert warning small">下書きです。内容を確認・修正してから、ご自身で送付してください(このアプリからは送信しません)。</div>
+      <p><b>件名: ${h(res.subject)}</b></p><ul class="list ai">${res.paragraphs.map((it) => itemHtml(c.id, it)).join("")}</ul>
+      ${res.points_to_confirm.length ? `<h3>送付前に確認すること</h3><ul>${res.points_to_confirm.map((x) => `<li>${h(x)}</li>`).join("")}</ul>` : ""}
+      <button id="copy-report">本文をコピー</button>`;
   } else {
     body = `<h3>時系列</h3><ul class="list ai">${res.timeline.map((t) => itemHtml(c.id, t,
       `<div><b>${h(t.date || "日付不明")}</b> <span class="tag ${t.certainty === "確実" ? "ok" : "warning"}">${h(t.certainty)}</span></div>
@@ -1141,7 +1169,13 @@ async function showRun(c, runId) {
       <span class="tag danger">不一致 ${st.unverified || 0}</span> <span class="tag danger">出典なし ${(st.missing_source || 0) + (st.uncited_items || 0)}</span></div>
     ${res.omitted_sources ? `<div class="alert warning small">資料 ${res.omitted_sources} 件は送信対象外でした。</div>` : ""}
     ${body}
-    <div class="row"><button id="save-act">活動記録に保存</button><button id="show-sent">送信した内容</button></div></div>`;
+    <div class="row"><button id="save-act">活動記録に保存</button><a class="btn" href="/api/ai/runs/${r.id}/docx">Wordで出力</a>
+      <button id="show-sent">送信した内容</button></div></div>`;
+  const cp = $("#copy-report");
+  if (cp) cp.onclick = async () => {
+    const text = `${res.subject}\n\n${res.paragraphs.map((p) => p.text).join("\n\n")}`;
+    try { await navigator.clipboard.writeText(text); toast("コピーしました"); } catch { toast("コピーできませんでした", true); }
+  };
   $("#save-act").onclick = async () => {
     const ok = await guard(() => api("POST", `/ai/runs/${r.id}/save-activity`));
     if (ok) toast("活動記録に保存しました");
@@ -1310,6 +1344,232 @@ async function viewAILog() {
     ${items.map((r) => `<tr class="link" data-href="#/cases/${r.case_id}/ai?run=${r.id}"><td>${h(r.created_at.replace("T", " "))}</td>
       <td>#${r.case_id} ${h(KIND_LABEL[r.kind] || r.kind)}<div class="muted">${h(r.model)} 版${h(r.prompt_version)}</div></td>
       <td>${h(r.status)} ${h(r.error || "")}</td><td>${(r.sent_chars || 0).toLocaleString()}</td></tr>`).join("")}</tbody></table></div>`;
+}
+
+// ------------------------------------------------------------ v3: 1ページ現状要約
+
+async function caseSummary(c) {
+  const s = await api("GET", `/cases/${c.id}/summary`);
+  const fs = s.finance;
+  const li = (arr, f) => arr.length ? `<ul>${arr.map((x) => `<li>${f(x)}</li>`).join("")}</ul>` : `<p class="muted">なし</p>`;
+  $("#case-body").innerHTML = `<div class="summary-page">
+    <div class="row between no-print"><span class="muted small">この画面は印刷・PDF保存できます(共有 → プリント)</span>
+      <button class="small" id="print-sum">印刷</button></div>
+    <h2 class="print-only">${h(s.title)}</h2>
+    ${s.stale ? `<div class="alert warning">${s.idle_days}日間動きがありません</div>` : ""}
+    ${s.ai_status ? `<div class="card"><b>AI要約(${h(s.ai_status.created_at.slice(0, 10))}・初稿)</b><p>${h(s.ai_status.headline)}</p>
+      <a class="small no-print" href="#/cases/${c.id}/ai?run=${s.ai_status.run_id}">詳細・出典</a></div>` : ""}
+    <div class="card"><dl class="kv">
+      <dt>状態</dt><dd>${statusTag(s.status)} ${h(s.field)}</dd>
+      <dt>事件番号</dt><dd>${h(s.court)} ${h(s.case_number) || "—"}</dd>
+      <dt>当事者</dt><dd>${s.parties.map((p) => `${h(p.role)}: ${h(p.name)}`).join("<br>") || "—"}</dd>
+      <dt>最終動き</dt><dd>${jdate(s.last_activity)}(${s.idle_days}日前)</dd>
+      <dt>会計</dt><dd class="small">未収 ${yen(fs.fees.receivable)} / 立替残 ${yen(fs.expenses.outstanding)} / 預り金残 ${yen(fs.deposit.balance)}<br>稼働 ${hours(s.worktime_minutes)}</dd>
+    </dl></div>
+    <h3>未了の期限・期日</h3>${li(s.deadlines, (d) => `${jdate(d.due_date)} ${h(d.due_time || "")} ${h(d.kind)} ${h(d.title)} ${dueTag(d.due_date)}${d.confirmed ? "" : ' <span class="tag warning">未確定</span>'}`)}
+    <h3>対応中(TODO・待ち)</h3>${li(s.todos, (t) => `[${h(t.status)}] ${h(t.title)}${t.waiting_for ? ` ⏳${h(t.waiting_for)}` : ""}`)}
+    <h3>最近の経過</h3>${li(s.activities, (a) => `${jdate(a.date)} [${h(a.kind)}] ${h((a.content || "").split("\n")[0].slice(0, 80))}`)}
+    <h3>最近の連絡</h3>${li(s.communications, (m) => `${jdate(m.date)} ${h(m.channel)}(${h(m.direction)}) ${h(m.party_name || "")}: ${h(m.summary.slice(0, 60))}`)}
+    ${s.checklist_open.length ? `<h3>受任時チェックの未了</h3>${li(s.checklist_open, h)}` : ""}
+    ${s.memo ? `<h3>メモ</h3><div class="pre">${h(s.memo)}</div>` : ""}</div>`;
+  $("#print-sum").onclick = () => window.print();
+}
+
+// ------------------------------------------------------------ v3: 書面(ひな形への差し込み)
+
+async function caseDocs(c) {
+  const tpls = await api("GET", "/doc-templates");
+  $("#case-body").innerHTML = `
+    <p class="muted small">当事者・事件番号・裁判所・次回期日・事務所情報を自動で差し込んだ Word を作成します。
+      空欄になる項目は〔項目名〕と表示されます。ひな形の追加は「その他 → 書面ひな形・事務所情報」。</p>
+    <ul class="list">${tpls.map((t) => `<li class="row between"><span>📝 ${h(t.name)} ${t.builtin ? '<span class="tag gray">標準</span>' : ""}</span>
+      <button class="small primary" data-tpl="${h(t.id)}">作成</button></li>`).join("")}</ul>`;
+  $("#case-body").querySelectorAll("[data-tpl]").forEach((b) => b.addEventListener("click", async () => {
+    const chk = await guard(() => api("GET", `/cases/${c.id}/documents/check?template=${encodeURIComponent(b.dataset.tpl)}`));
+    if (!chk) return;
+    const url = `/api/cases/${c.id}/documents/render?template=${encodeURIComponent(b.dataset.tpl)}`;
+    openModal(`<h1>${h(chk.name)}</h1>
+      ${chk.missing.length ? `<div class="alert warning">未入力のため空欄になる項目: ${chk.missing.map(h).join("、")}</div>` : `<div class="alert ok">すべての項目が差し込まれます。</div>`}
+      <div class="actions"><button id="dc-close">閉じる</button><a class="btn primary" id="dc-dl" href="${url}">Wordをダウンロード</a></div>`);
+    $("#dc-close").onclick = closeModal;
+    $("#dc-dl").onclick = () => setTimeout(closeModal, 300);
+  }));
+}
+
+// ------------------------------------------------------------ v3: ひな形管理・事務所情報
+
+async function viewTemplates() {
+  const [tpls, office] = await Promise.all([api("GET", "/doc-templates"), api("GET", "/settings/office")]);
+  view.innerHTML = `<h1>書面ひな形・事務所情報</h1>
+    <h2>事務所情報(差し込み用)</h2>
+    <form id="office-form" class="card">${Object.entries(office).map(([k, v]) =>
+      `<label class="field"><span>${h(k)}</span><input name="${h(k)}" value="${h(v)}"></label>`).join("")}<button class="primary">保存</button></form>
+    <h2>ひな形</h2>
+    <ul class="list">${tpls.map((t) => `<li class="row between"><span>📝 ${h(t.name)} ${t.builtin ? '<span class="tag gray">標準</span>' : ""}</span>
+      ${t.builtin ? "" : `<button class="small danger" data-del-tpl="${h(t.id)}">削除</button>`}</li>`).join("")}</ul>
+    <form id="tpl-form" class="card"><label class="field"><span>Word ひな形(.docx)を追加</span><input type="file" name="file" accept=".docx" required></label>
+      <label class="field"><span>名前</span><input name="name" placeholder="例: 準備書面(表紙)"></label><button>アップロード</button></form>
+    <div class="card small"><b>使える差し込み項目</b>(Word の本文に {{項目名}} と書く)<br>${META.merge_fields.map((f) => `{{${h(f)}}}`).join(" ")}</div>`;
+  $("#office-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const ok = await guard(() => api("PUT", "/settings/office", Object.fromEntries(new FormData(e.target))));
+    if (ok) toast("保存しました");
+  };
+  $("#tpl-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const r = await fetch("/api/doc-templates", { method: "POST", body: new FormData(e.target), headers: { "x-cm": "1" }, credentials: "same-origin" });
+    const d = await r.json();
+    if (!r.ok) return toast(d.detail || "失敗しました", true);
+    toast(d.unknown_fields.length ? `登録しました(不明な項目: ${d.unknown_fields.join("、")})` : "登録しました", d.unknown_fields.length > 0);
+    route();
+  };
+  view.querySelectorAll("[data-del-tpl]").forEach((b) => b.addEventListener("click", async () => {
+    if (!confirm("このひな形を削除しますか?")) return;
+    await guard(() => api("DELETE", `/doc-templates/${b.dataset.delTpl}`));
+    route();
+  }));
+}
+
+// ------------------------------------------------------------ v3: 引継ぎ書
+
+async function viewHandover() {
+  const cases = await api("GET", "/cases?status=相談,受任,係属,終結");
+  view.innerHTML = `<h1>引継ぎ書の出力</h1>
+    <div class="alert warning small">第三者の弁護士に渡す資料です。依頼者の秘密が含まれます。出力には再認証が必要で、監査ログに記録されます。</div>
+    <form id="ho-form" class="card">
+      <label class="field"><span>対象</span><select name="mode"><option value="active">受任・係属中のすべて</option>
+        <option value="select">選択した案件</option></select></label>
+      <div id="ho-list" class="hidden">${cases.map((c) => `<label class="check"><input type="checkbox" name="ids" value="${c.id}">
+        ${c.sensitive ? "🔒 " : ""}${h(c.title)} ${statusTag(c.status)}</label>`).join("")}</div>
+      <label class="check"><input type="checkbox" name="include_sensitive"> 機微案件も含める</label>
+      <label class="field"><span>添え書き(後任者・引継ぎ日など)</span><textarea name="note"></textarea></label>
+      <div class="row"><button class="primary" data-fmt="docx">Word で出力</button><button data-fmt="csv">CSV(一覧)で出力</button></div>
+    </form>`;
+  const f = $("#ho-form");
+  f.mode.onchange = () => $("#ho-list").classList.toggle("hidden", f.mode.value !== "select");
+  f.querySelectorAll("[data-fmt]").forEach((b) => b.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const body = { format: b.dataset.fmt, include_sensitive: f.include_sensitive.checked, note: f.note.value };
+    if (f.mode.value === "select") {
+      body.case_ids = [...f.querySelectorAll("input[name=ids]:checked")].map((x) => Number(x.value));
+      if (!body.case_ids.length) return toast("案件を選択してください", true);
+    }
+    await downloadPost("/export/handover", body);
+  }));
+}
+
+// POST の結果をファイルとして保存(再認証が必要なら求める)
+async function downloadPost(path, body, retried = false) {
+  const res = await fetch("/api" + path, { method: "POST", headers: { "x-cm": "1", "content-type": "application/json" },
+    body: JSON.stringify(body), credentials: "same-origin" });
+  if (res.status === 403 && !retried) {
+    const d = await res.json().catch(() => ({}));
+    if (d.detail?.code === "reauth_required" && await reauthDialog()) return downloadPost(path, body, true);
+  }
+  if (!res.ok) {
+    const d = await res.json().catch(() => ({}));
+    return toast(typeof d.detail === "string" ? d.detail : "出力できませんでした", true);
+  }
+  const cd = res.headers.get("content-disposition") || "";
+  const m = cd.match(/filename\*=UTF-8''([^;]+)/);
+  const name = m ? decodeURIComponent(m[1]) : "download";
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+  toast(`出力しました: ${name}`);
+}
+
+// ------------------------------------------------------------ v3: 保管期限
+
+async function viewRetention() {
+  const r = await api("GET", "/retention");
+  const cls = { 保管中: "gray", 保管期限経過: "danger", 廃棄済み: "ok", 終結日未入力: "warning" };
+  view.innerHTML = `<h1>記録の保管期限</h1>
+    <form id="ret-form" class="row card"><label class="grow">終結後の保管年数(既定) <input type="number" name="years" min="1" value="${r.years}"></label><button>保存</button></form>
+    <p class="muted small">年数は事務所の規程に合わせて設定してください(依頼者の本人確認記録等、法令・会規で保存期間が定められた記録に注意)。
+      このアプリは記録を自動で削除しません。紙・電子の記録を廃棄したら「廃棄を記録」してください。</p>
+    ${r.due.length ? `<div class="alert warning">保管期限を過ぎた案件が ${r.due.length} 件あります。</div>` : ""}
+    <ul class="list">${r.cases.map((c) => `<li>
+      <div class="row between"><a href="#/cases/${c.id}">${h(c.title)}</a><span class="tag ${cls[c.state]}">${h(c.state)}</span></div>
+      <div class="small muted">終結 ${jdate(c.closed_on) || "—"} ・ 保管期限 ${jdate(c.retention_until) || "—"}
+        ${c.disposed_on ? ` ・ 廃棄 ${jdate(c.disposed_on)} ${h(c.disposal_note || "")}` : ""}</div>
+      <div class="row"><button class="small" data-ret="${c.id}">期限を変更</button>${c.disposed_on ? "" : `<button class="small" data-disp="${c.id}">廃棄を記録</button>`}</div>
+    </li>`).join("") || `<li class="muted">終結した案件はありません</li>`}</ul>`;
+  $("#ret-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const ok = await guard(() => api("PUT", "/settings/retention", { years: Number(e.target.years.value) }));
+    if (ok) route();
+  };
+  view.querySelectorAll("[data-ret]").forEach((b) => b.addEventListener("click", () => formDialog({
+    title: "保管期限の変更", fields: [{ name: "retention_until", label: "保管期限", type: "date", required: true }],
+    onSubmit: (v) => api("PUT", `/cases/${b.dataset.ret}/retention`, v),
+  })));
+  view.querySelectorAll("[data-disp]").forEach((b) => b.addEventListener("click", () => formDialog({
+    title: "廃棄の記録", fields: [
+      { name: "disposed_on", label: "廃棄日", type: "date", required: true, value: today() },
+      { name: "disposal_note", label: "方法・備考", placeholder: "例: 溶解処理(証明書あり)・電子データ削除" }],
+    onSubmit: (v) => api("PUT", `/cases/${b.dataset.disp}/retention`, v),
+  })));
+}
+
+// ------------------------------------------------------------ v3: 受任経路・分野別の分析
+
+async function viewAnalysis(params) {
+  const from = params.get("from") || "", to = params.get("to") || "";
+  const qs = new URLSearchParams();
+  if (from) qs.set("date_from", from);
+  if (to) qs.set("date_to", to);
+  const a = await api("GET", `/reports/analysis?${qs}`);
+  const table = (rows) => `<div class="card"><table class="tbl"><thead><tr><th></th><th>件数</th><th>報酬入金</th><th>稼働</th><th>時給</th></tr></thead><tbody>
+    ${rows.map((g) => `<tr><td>${h(g.key)}<div class="muted">相談${g.consultations} 進行${g.active} 終結${g.closed}</div></td><td>${g.cases}</td>
+      <td>${yen(g.fees_received)}<div class="muted">平均 ${yen(g.avg_fee)}</div></td><td>${hours(g.minutes)}</td><td>${g.hourly ? yen(g.hourly) : "—"}</td></tr>`).join("")}
+    </tbody></table></div>`;
+  view.innerHTML = `<h1>受任経路・分野別の分析</h1>
+    <form id="an-form" class="row"><input type="date" name="from" value="${h(from)}" class="grow"><span>〜</span>
+      <input type="date" name="to" value="${h(to)}" class="grow"><button>集計</button></form>
+    <p class="muted small">受任日(なければ登録日)が期間内の案件 ${a.total_cases}件。報酬は入金ベース(実費・預り金を除く)。受任経路は案件の編集画面で設定します。</p>
+    <h2>受任経路別</h2>${table(a.by_source)}<h2>分野別</h2>${table(a.by_field)}`;
+  $("#an-form").onsubmit = (e) => {
+    e.preventDefault();
+    location.hash = `#/analysis?from=${e.target.from.value}&to=${e.target.to.value}`;
+  };
+}
+
+async function renderCalendarBox(newPath) {
+  const cs = await api("GET", "/calendar/settings");
+  const box = $("#cal-box");
+  if (!box) return;
+  const url = newPath ? `${location.origin}${newPath}` : "";
+  box.innerHTML = `<p>期限・期日を iPhone の「カレンダー」に表示します(前日・2日前に通知)。Tailscale 接続中の端末からのみ取得できます。</p>
+    ${url ? `<div class="alert warning">この URL は今だけ表示されます。iPhone の 設定 → カレンダー → アカウント → アカウントを追加 → その他 →
+      「照会するカレンダーを追加」に貼り付け、保存先は「iPhone内」を選んでください(iCloud を選ぶと取得できません)。</div>
+      <input readonly value="${h(url)}" id="cal-url"><button class="small" id="cal-copy">コピー</button>` : ""}
+    <p>状態: ${cs.enabled ? `<span class="tag ok">有効</span> 最終取得 ${h((cs.last_access || "—").replace("T", " "))}` : `<span class="tag gray">停止中</span>`}</p>
+    <form id="cal-form"><label class="field"><span>予定の件名</span><select name="title_mode">
+      <option value="full" ${cs.title_mode === "full" ? "selected" : ""}>事件名を含める(機微案件は伏せる)</option>
+      <option value="masked" ${cs.title_mode === "masked" ? "selected" : ""}>案件番号のみ(事件名を出さない)</option></select></label>
+      <label class="check"><input type="checkbox" name="include_todos" ${cs.include_todos ? "checked" : ""}> 期限つき TODO も表示</label>
+      <button>保存</button></form>
+    <div class="row"><button id="cal-new">${cs.enabled ? "URL を再発行(古い URL は無効)" : "購読 URL を発行"}</button>
+      ${cs.enabled ? `<button class="danger" id="cal-stop">停止</button>` : ""}</div>`;
+  $("#cal-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const ok = await guard(() => api("PUT", "/calendar/settings", { title_mode: e.target.title_mode.value, include_todos: e.target.include_todos.checked }));
+    if (ok) toast("保存しました");
+  };
+  $("#cal-new").onclick = async () => {
+    const r = await guard(() => api("POST", "/calendar/token"));
+    if (r) renderCalendarBox(r.path);
+  };
+  if ($("#cal-stop")) $("#cal-stop").onclick = async () => { await guard(() => api("DELETE", "/calendar/token")); renderCalendarBox(); };
+  if ($("#cal-copy")) $("#cal-copy").onclick = async () => {
+    try { await navigator.clipboard.writeText(url); toast("コピーしました"); } catch { $("#cal-url").select(); }
+  };
 }
 
 // ------------------------------------------------------------ 通知

@@ -117,3 +117,12 @@ audio { width: 100%; margin: 8px 0; }
 .alert.ok { background: var(--ok-weak); color: var(--ok); }
 tr.link { cursor: pointer; }
 details { margin: 6px 0; }
+/* v3 */
+.print-only { display: none; }
+@media print {
+  .topbar, .tabbar, .tabs, .no-print, .fab, button, .toast { display: none !important; }
+  .print-only { display: block; }
+  body, .card { background: #fff !important; color: #000 !important; }
+  .view { padding: 0; max-width: none; }
+  .summary-page h3 { margin-top: 8px; }
+}

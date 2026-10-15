@@ -212,6 +212,7 @@ class CaseIn(BaseModel):
     sensitive: bool = False
     folder_path: str = ""
     stale_days: Optional[int] = Field(default=None, ge=1, le=3650)
+    referral_source: str = ""
 
 
 class CaseCreate(CaseIn):
@@ -231,6 +232,7 @@ class CasePatch(BaseModel):
     sensitive: Optional[bool] = None
     folder_path: Optional[str] = None
     stale_days: Optional[int] = Field(default=None, ge=1, le=3650)
+    referral_source: Optional[str] = None
 
 
 LAST_ACTIVITY_SQL = """
@@ -882,6 +884,12 @@ def _notifications(conn, sess: SessionInfo) -> list[dict]:
     for s in stale_cases(conn, sess):
         out.append({"level": "info", "type": "stale", "case_id": s["id"],
                     "text": f"{s['idle_days']}日間動きなし: {s['title']}"})
+    years = settings_int(conn, "retention_years", 5)
+    due = conn.execute(
+        "SELECT COUNT(*) FROM cases WHERE status='終結' AND disposed_on IS NULL AND "
+        "COALESCE(retention_until, date(closed_on, ?)) < ?", (f"+{years} years", today.isoformat())).fetchone()[0]
+    if due:
+        out.append({"level": "info", "type": "retention", "text": f"保管期限を過ぎた終結案件が {due} 件あります"})
     last = db.get_setting(conn, "last_backup_at")
     if not last or (dt.datetime.now() - dt.datetime.fromisoformat(last)) > dt.timedelta(hours=48):
         out.append({"level": "warning", "type": "backup", "text": "48時間以上バックアップされていません"})

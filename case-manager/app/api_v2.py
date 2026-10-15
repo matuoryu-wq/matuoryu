@@ -94,7 +94,7 @@ def del_anon_term(term_id: int, request: Request, conn=Depends(get_conn)):
 # ---------------------------------------------------------------- AI
 
 class AIIn(BaseModel):
-    kind: Literal["ask", "memo", "timeline"]
+    kind: Literal["ask", "memo", "timeline", "status", "report"]
     question: str = Field(default="", max_length=2000)
 
 
@@ -211,6 +211,15 @@ def render_text(kind: str, result: dict, question: str = "") -> str:
         lines = [f"【AIへの質問(初稿・要確認)】{question}"]
         lines += [f"{it['text']} {cite(it)}" for it in result["answer"]]
         return "\n".join(lines)
+    if kind == "status":
+        lines = ["【現状要約(AI初稿・要確認)】", result["headline"]]
+        for key, head in (("current_status", "現状"), ("next_steps", "次にすべきこと"), ("risks", "注意点")):
+            lines.append(f"■ {head}")
+            lines += [f"・{it['text']} {cite(it)}" for it in result[key]] or ["・なし"]
+        return "\n".join(lines)
+    if kind == "report":
+        return "\n".join(["【依頼者への報告文(下書き・未送信)】", f"件名: {result['subject']}",
+                          *[it["text"] for it in result["paragraphs"]]])
     lines = ["【時系列(AI初稿・要確認)】"]
     lines += [f"{t['date'] or '日付不明'} {t['event']}({t['certainty']}) {cite(t)}" for t in result["timeline"]]
     lines.append("【争点】")

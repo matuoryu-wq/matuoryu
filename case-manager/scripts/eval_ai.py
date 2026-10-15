@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tests"))
 
-from app.ai import load_prompt  # noqa: E402
+from app.ai import KINDS, load_prompt  # noqa: E402
 from app.conflicts import normalize_name  # noqa: E402
 
 FIX = ROOT / "tests" / "fixtures"
@@ -91,7 +91,7 @@ def score_item(item: dict, result: dict, payloads: list[str], forbidden: list[st
     if "contradictions" in exp:
         m["contradictions"] = _ratio(exp["contradictions"], "\n".join(_texts(result.get("contradictions", []))))
     if "keywords" in exp:
-        m["keywords"] = _ratio(exp["keywords"], "\n".join(_texts(result.get("answer", []))))
+        m["keywords"] = _ratio(exp["keywords"], all_text)
     st = result.get("citation_stats", {})
     total = st.get("citations", 0)
     m["citation_valid"] = round((st.get("verified", 0) + st.get("partial", 0)) / total, 3) if total else 0.0
@@ -106,7 +106,7 @@ def score_item(item: dict, result: dict, payloads: list[str], forbidden: list[st
 
 
 def _iter_items(result: dict):
-    for key in ("answer", "timeline", "issues", "contradictions"):
+    for key in ("answer", "timeline", "issues", "contradictions", "current_status", "next_steps", "risks", "paragraphs"):
         yield from result.get(key, [])
     for s in result.get("sections", []):
         yield from s.get("items", [])
@@ -201,7 +201,7 @@ def run_item(item: dict, make_llm, workdir: Path) -> tuple[dict, list[str], list
 def run_eval(make_inner, record_dir: Path | None = None, only: list[str] | None = None) -> dict:
     items = json.loads(EVAL_SET.read_text(encoding="utf-8"))["items"]
     out = {"created_at": dt.datetime.now().isoformat(timespec="seconds"),
-           "prompt_versions": {k: load_prompt(k)[1] for k in ("ask", "memo", "timeline")}, "items": {}}
+           "prompt_versions": {k: load_prompt(k)[1] for k in KINDS}, "items": {}}
     with tempfile.TemporaryDirectory() as tmp:
         for item in items:
             if only and item["id"] not in only:
