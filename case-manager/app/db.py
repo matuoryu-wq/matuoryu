@@ -149,7 +149,119 @@ CREATE TABLE IF NOT EXISTS audit_log (
     detail TEXT DEFAULT ''
 );
 CREATE INDEX IF NOT EXISTS idx_audit_ts ON audit_log(ts);
+
+-- ---------------------------------------------------------------- v2
+CREATE TABLE IF NOT EXISTS anon_terms (
+    id INTEGER PRIMARY KEY,
+    case_id INTEGER NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
+    term TEXT NOT NULL,
+    category TEXT NOT NULL DEFAULT '固有名',
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS doc_files (
+    id INTEGER PRIMARY KEY,
+    case_id INTEGER NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
+    rel_path TEXT NOT NULL,
+    mtime REAL,
+    size INTEGER,
+    status TEXT NOT NULL,          -- ok / empty / error / skipped
+    method TEXT DEFAULT '',        -- text / ocr / mixed
+    pages INTEGER DEFAULT 0,
+    message TEXT DEFAULT '',
+    indexed_at TEXT NOT NULL,
+    UNIQUE(case_id, rel_path)
+);
+
+CREATE TABLE IF NOT EXISTS doc_chunks (
+    id INTEGER PRIMARY KEY,
+    case_id INTEGER NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
+    source_type TEXT NOT NULL,     -- file / audio
+    file_id INTEGER REFERENCES doc_files(id) ON DELETE CASCADE,
+    transcript_id INTEGER REFERENCES transcripts(id) ON DELETE CASCADE,
+    rel_path TEXT NOT NULL,
+    page INTEGER,
+    t_start REAL,
+    t_end REAL,
+    loc TEXT NOT NULL,             -- 表示用の位置(p.3 / 段落5〜9 / 00:01:23〜)
+    text TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_chunks_case ON doc_chunks(case_id);
+
+CREATE VIRTUAL TABLE IF NOT EXISTS doc_fts USING fts5(
+    text, content='doc_chunks', content_rowid='id', tokenize='trigram'
+);
+CREATE TRIGGER IF NOT EXISTS doc_chunks_ai AFTER INSERT ON doc_chunks BEGIN
+    INSERT INTO doc_fts(rowid, text) VALUES (new.id, new.text);
+END;
+CREATE TRIGGER IF NOT EXISTS doc_chunks_ad AFTER DELETE ON doc_chunks BEGIN
+    INSERT INTO doc_fts(doc_fts, rowid, text) VALUES ('delete', old.id, old.text);
+END;
+
+CREATE TABLE IF NOT EXISTS transcripts (
+    id INTEGER PRIMARY KEY,
+    case_id INTEGER NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
+    filename TEXT NOT NULL,
+    stored_path TEXT NOT NULL,
+    recorded_on TEXT,
+    duration REAL,
+    status TEXT NOT NULL DEFAULT '待機',   -- 待機 / 処理中 / 完了 / 失敗
+    message TEXT DEFAULT '',
+    engine TEXT DEFAULT '',
+    segments_json TEXT,
+    speakers_json TEXT,
+    activity_id INTEGER,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ai_runs (
+    id INTEGER PRIMARY KEY,
+    case_id INTEGER REFERENCES cases(id) ON DELETE CASCADE,
+    kind TEXT NOT NULL,             -- ask / memo / timeline
+    question TEXT DEFAULT '',
+    status TEXT NOT NULL,           -- 送信前停止 / 完了 / 失敗
+    model TEXT DEFAULT '',
+    prompt_version TEXT DEFAULT '',
+    sent_text TEXT DEFAULT '',      -- 実際に送信した内容(匿名化済み)
+    response_text TEXT DEFAULT '',  -- 受信した内容(匿名化済み)
+    mapping_json TEXT DEFAULT '',   -- 置換表(PC内のみ。送信しない)
+    sources_json TEXT DEFAULT '',
+    result_json TEXT DEFAULT '',    -- 復元・出典照合済みの結果
+    input_tokens INTEGER,
+    output_tokens INTEGER,
+    error TEXT DEFAULT '',
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS jobs (
+    id INTEGER PRIMARY KEY,
+    kind TEXT NOT NULL,
+    case_id INTEGER,
+    status TEXT NOT NULL,           -- 待機 / 処理中 / 完了 / 失敗
+    progress TEXT DEFAULT '',
+    result_id INTEGER,
+    error TEXT DEFAULT '',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS finance_entries (
+    id INTEGER PRIMARY KEY,
+    case_id INTEGER NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
+    date TEXT NOT NULL,
+    kind TEXT NOT NULL CHECK (kind IN ('請求','入金','実費支出','預り金受入','預り金支出','預り金返還')),
+    category TEXT NOT NULL DEFAULT 'その他',
+    amount INTEGER NOT NULL CHECK (amount >= 0),
+    note TEXT DEFAULT '',
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_finance_case ON finance_entries(case_id, date);
 """
+
+# 既存DBへの列追加(CREATE TABLE IF NOT EXISTS では反映されないもの)
+MIGRATIONS = [
+    ("activities", "transcript_id", "INTEGER"),
+]
 
 
 def now() -> str:
@@ -172,6 +284,10 @@ def connect(path: Path) -> sqlite3.Connection:
 
 def init_db(conn: sqlite3.Connection) -> None:
     conn.executescript(SCHEMA)
+    for table, col, typ in MIGRATIONS:
+        cols = {r["name"] for r in conn.execute(f"PRAGMA table_info({table})")}
+        if col not in cols:
+            conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {typ}")
 
 
 def rows(cur) -> list[dict]:

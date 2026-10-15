@@ -4,6 +4,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
+import unicodedata
 from pathlib import Path
 from typing import Literal, Optional
 
@@ -829,6 +830,18 @@ def search(request: Request, q: str = Query(min_length=1, max_length=100), conn=
         add(kind, db.rows(conn.execute(
             f"SELECT x.*, c.title AS case_title, c.sensitive FROM {table} x JOIN cases c ON c.id=x.case_id "
             f"WHERE {w} ORDER BY x.id DESC LIMIT 50", a)), text)
+
+    # 資料・録音の本文(索引化済みのもの)
+    long_terms = [t for t in terms if len(t) >= 3]
+    if long_terms and len(long_terms) == len(terms):
+        rows = db.rows(conn.execute(
+            """SELECT x.id, x.case_id, x.rel_path || ' ' || x.loc AS label, x.text, c.title AS case_title, c.sensitive
+               FROM doc_fts f JOIN doc_chunks x ON x.id=f.rowid JOIN cases c ON c.id=x.case_id
+               WHERE doc_fts MATCH ? LIMIT 50""",
+            (" AND ".join('"' + unicodedata.normalize("NFKC", t).replace('"', '""') + '"' for t in long_terms),)))
+        for r in rows:
+            r["text"] = r["label"] + ": " + r["text"]
+        add("資料・録音", rows, "text")
 
     w, a = like_all(["x.note", "x.rel_path"])
     add("資料メモ", db.rows(conn.execute(

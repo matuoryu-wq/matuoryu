@@ -126,6 +126,7 @@ def create_app(settings: Settings | None = None, start_background: bool = False)
             response.headers["Cache-Control"] = "no-store"
         return response
 
+    from . import api_v2  # noqa: F401  v2 のルートを router に登録
     from .api import router
     app.include_router(router)
 

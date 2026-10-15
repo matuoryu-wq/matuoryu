@@ -4,3 +4,5 @@ data/
 __pycache__/
 .pytest_cache/
 .venv/
+eval-results/
+eval-runs/

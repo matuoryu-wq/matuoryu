@@ -10,17 +10,30 @@ sys.path.insert(0, str(ROOT))
 
 from app.config import Settings  # noqa: E402
 from app.main import create_app  # noqa: E402
+from fake_llm import FakeLLM, FakeTranscriber  # noqa: E402
 
 TOKEN = "test-token-abcdefghijklmnop"
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
 @pytest.fixture
-def settings(tmp_path):
+def fake_llm():
+    return FakeLLM()
+
+
+@pytest.fixture
+def recording():
+    return json.loads((FIXTURES / "recording_takahashi.json").read_text(encoding="utf-8"))
+
+
+@pytest.fixture
+def settings(tmp_path, fake_llm, recording):
     docs = tmp_path / "docs"
     docs.mkdir()
     return Settings(app_token=TOKEN, data_dir=tmp_path / "data", backup_dir=tmp_path / "backup",
-                    backup_keep=3, allowed_folder_roots=[docs], reauth_minutes=10)
+                    backup_keep=3, allowed_folder_roots=[docs], reauth_minutes=10,
+                    llm_factory=lambda: fake_llm, transcriber_factory=lambda: FakeTranscriber(recording),
+                    jobs_sync=True)
 
 
 @pytest.fixture

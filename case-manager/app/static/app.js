@@ -204,9 +204,14 @@ const routes = [
   [/^#\/more$/, viewMore, "more"],
   [/^#\/settings$/, viewSettings, "more"],
   [/^#\/audit$/, viewAudit, "more"],
+  [/^#\/profit$/, viewProfit, "more"],
+  [/^#\/ailog$/, viewAILog, "more"],
 ];
 
+let routeSeq = 0;
+
 async function route() {
+  const seq = ++routeSeq;   // 画面の描画が重なったときは古い方のエラーを無視する
   const hash = location.hash || "#/";
   const [path, qs] = hash.split("?");
   for (const [re, fn, nav] of routes) {
@@ -216,7 +221,7 @@ async function route() {
       try {
         await fn(...m.slice(1), new URLSearchParams(qs || ""));
       } catch (e) {
-        if (e.status === 401) return;
+        if (e.status === 401 || seq !== routeSeq) return;
         view.innerHTML = `<div class="alert danger">${h(e.message)}</div><p><a href="#/">ホームへ</a></p>`;
       }
       return;
@@ -354,7 +359,8 @@ async function viewCaseNew() {
 // ------------------------------------------------------------ 案件詳細
 
 const CASE_TABS = [["", "概要"], ["parties", "当事者"], ["deadlines", "期限"], ["checklist", "チェック"],
-  ["activities", "活動"], ["comms", "連絡"], ["todos", "TODO"], ["files", "資料"]];
+  ["activities", "活動"], ["comms", "連絡"], ["todos", "TODO"], ["files", "資料"], ["recordings", "録音"],
+  ["ai", "AI"], ["money", "会計"]];
 
 async function viewCase(id, tab = "") {
   const c = await api("GET", `/cases/${id}`);
@@ -366,7 +372,8 @@ async function viewCase(id, tab = "") {
     return `<a href="#/cases/${id}${k ? "/" + k : ""}" class="${k === (tab || "") ? "on" : ""}">${l}${n}</a>`;
   }).join("");
   const body = { "": caseOverview, parties: caseParties, deadlines: caseDeadlines, checklist: caseChecklist,
-    activities: caseActivities, comms: caseComms, todos: caseTodos, files: caseFiles }[tab || ""];
+    activities: caseActivities, comms: caseComms, todos: caseTodos, files: caseFiles, recordings: caseRecordings,
+    ai: caseAI, money: caseMoney }[tab || ""];
   view.innerHTML = `<div class="row between"><h1 class="grow">${c.sensitive ? "🔒 " : ""}${h(c.title)}</h1>${statusTag(c.status)}</div>
     <div class="muted small">${h(c.field)} ${h(c.court || "")} ${h(c.case_number || "")}</div>
     <nav class="tabs">${tabs}</nav><div id="case-body"></div>`;
@@ -678,7 +685,17 @@ async function caseFiles(c) {
     box.innerHTML = `<div class="alert warning">${h(e.message)}</div>`;
     return;
   }
-  box.innerHTML = `<div class="muted small">${h(r.folder)}(${r.files.length}件${r.truncated ? "・上限で打切り" : ""})</div>
+  const idx = await api("GET", `/cases/${c.id}/index`);
+  const nOk = idx.files.filter((f) => f.status === "ok").length;
+  const problems = idx.files.filter((f) => f.status !== "ok");
+  box.innerHTML = `<div class="card"><div class="row between"><b>本文検索(この案件のみ)</b>
+      <button class="small" id="run-index">${idx.files.length ? "索引を更新" : "本文を索引化"}</button></div>
+    <div class="muted small">索引済み ${nOk}件${idx.last_job ? ` ・ 最終 ${h((idx.last_job.updated_at || "").replace("T", " "))} ${h(idx.last_job.status)} ${h(idx.last_job.progress || "")}` : ""}</div>
+    ${problems.length ? `<details class="small"><summary>本文を取り出せなかったファイル ${problems.length}件</summary>
+      ${problems.map((f) => `<div>${h(f.rel_path)}: ${h(f.message || f.status)}</div>`).join("")}</details>` : ""}
+    <form id="doc-q" class="row"><input name="q" class="grow" placeholder="PDF・Word・メール・録音の本文を検索" enterkeyhint="search"><button>検索</button></form>
+    <div id="doc-hits"></div></div>
+    <div class="muted small">${h(r.folder)}(${r.files.length}件${r.truncated ? "・上限で打切り" : ""})</div>
     <input id="file-filter" placeholder="ファイル名・メモで絞り込み">
     <ul class="list" id="file-list">${r.files.map((f, i) => `
       <li data-i="${i}" data-text="${h((f.path + " " + f.note).toLowerCase())}">
@@ -688,6 +705,25 @@ async function caseFiles(c) {
         <div class="muted small">${fmtSize(f.size)} ・ ${h(f.mtime.replace("T", " "))}</div>
         ${f.note ? `<div class="small pre">📝 ${h(f.note)}</div>` : ""}
       </li>`).join("")}</ul>`;
+  $("#run-index").onclick = async () => {
+    const r2 = await guard(() => api("POST", `/cases/${c.id}/index`));
+    if (!r2) return;
+    toast("索引化を開始しました");
+    const j = await waitJob(r2.job_id, (p) => { $("#run-index").textContent = p || "処理中…"; });
+    if (j) toast(j.status === "完了" ? j.progress : `失敗: ${j.error}`, j.status !== "完了");
+    route();
+  };
+  $("#doc-q").onsubmit = async (e) => {
+    e.preventDefault();
+    const q = e.target.q.value.trim();
+    if (!q) return;
+    const hits = await guard(() => api("GET", `/cases/${c.id}/docsearch?q=${encodeURIComponent(q)}`));
+    if (!hits) return;
+    $("#doc-hits").innerHTML = hits.length ? `<ul class="list">${hits.map((x) => `<li>
+      <a ${sourceLink(c.id, x.source_type === "audio" ? { type: "audio", transcript_id: x.transcript_id, t_start: x.t_start }
+        : { type: "file", rel_path: x.rel_path, page: x.page })}>${x.source_type === "audio" ? "🎙" : "📄"} ${h(x.rel_path)} ${h(x.loc)}</a>
+      <div class="small">${h(x.snippet)}</div></li>`).join("")}</ul>` : `<p class="muted small">該当なし</p>`;
+  };
   $("#file-filter").oninput = (e) => {
     const q = e.target.value.toLowerCase();
     box.querySelectorAll("#file-list > li").forEach((li) => li.classList.toggle("hidden", q && !li.dataset.text.includes(q)));
@@ -863,6 +899,8 @@ function viewMore() {
     <li class="link" data-href="#/calc">🧮 期限の自動計算</li>
     <li class="link" data-href="#/cases?status=終結">📦 終結案件</li>
     <li class="link" data-href="#/settings">⚙️ 設定・休日・バックアップ</li>
+    <li class="link" data-href="#/profit">💴 稼働・採算</li>
+    <li class="link" data-href="#/ailog">🤖 AI送信ログ</li>
     <li class="link" data-href="#/audit">📜 操作ログ・監査ログ</li>
     <li class="link" id="logout">🚪 ログアウト</li></ul>`;
   $("#logout").onclick = async () => {
@@ -875,6 +913,7 @@ async function viewSettings() {
   const s = await api("GET", "/settings");
   const year = new Date().getFullYear();
   const hol = await api("GET", `/holidays?year=${year}`);
+  const [ais, mt] = await Promise.all([api("GET", "/ai/status"), api("GET", "/settings/memo-template")]);
   view.innerHTML = `<h1>設定</h1>
     <form id="set-form" class="card">
       <label class="field"><span>放置アラートの既定日数</span><input type="number" name="stale_days" min="1" value="${s.stale_days}"></label>
@@ -890,6 +929,15 @@ async function viewSettings() {
     <div class="card small"><dl class="kv"><dt>再認証の有効時間</dt><dd>${s.reauth_minutes}分</dd>
       <dt>フォルダ制限</dt><dd>${s.allowed_folder_roots.map(h).join("<br>") || "なし"}</dd></dl>
       <p class="muted">トークン・APIキーは PC の .env で管理します(画面には表示しません)。</p></div>
+    <h2>AI・文字起こし</h2>
+    <div class="card small"><dl class="kv">
+      <dt>AI</dt><dd>${ais.ai_configured ? `<span class="tag ok">利用可</span> ${h(ais.model)}(${h(ais.effort)})` : `<span class="tag danger">未設定</span> .env の ANTHROPIC_API_KEY`}</dd>
+      <dt>文字起こし</dt><dd>${ais.transcriber_installed ? `<span class="tag ok">利用可</span> faster-whisper ${h(ais.whisper_model)}` : `<span class="tag danger">未インストール</span>`}</dd>
+      <dt>話者分離</dt><dd>${h(ais.diarization)}</dd>
+      <dt>OCR</dt><dd>${ais.ocr_available ? `<span class="tag ok">利用可</span>` : `<span class="tag gray">未設定</span>(Tesseract)`}</dd></dl></div>
+    <h3>相談メモの見出し(事務所様式)</h3>
+    <form id="memo-form" class="card"><textarea name="sections">${h(mt.sections.join("\n"))}</textarea>
+      <div class="muted small">1行に1見出し。既定: ${h(mt.default.join(" / "))}</div><button>保存</button></form>
     <h2>休日(${year}年)</h2>
     <div class="card small">${hol.national.map((x) => `${jdate(x.date)} ${h(x.name)}`).join("<br>")}</div>
     <h3>追加の休日(庁舎閉庁日等)</h3>
@@ -901,6 +949,12 @@ async function viewSettings() {
     e.preventDefault();
     const ok = await guard(() => api("PUT", "/settings", {
       stale_days: Number(e.target.stale_days.value), notify_days: Number(e.target.notify_days.value) }));
+    if (ok) toast("保存しました");
+  };
+  $("#memo-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const sections = e.target.sections.value.split("\n").map((x) => x.trim()).filter(Boolean);
+    const ok = await guard(() => api("PUT", "/settings/memo-template", { sections }));
     if (ok) toast("保存しました");
   };
   $("#run-backup").onclick = async () => {
@@ -924,6 +978,338 @@ async function viewAudit() {
     <div class="card"><table class="tbl"><thead><tr><th>日時</th><th>操作</th><th>詳細</th></tr></thead><tbody>
     ${items.map((a) => `<tr><td>${h(a.ts.replace("T", " "))}</td><td>${h(a.action)}${a.case_id ? ` <a href="#/cases/${a.case_id}">#${a.case_id}</a>` : ""}</td>
       <td class="muted">${h(a.detail)} ${h(a.ip)}</td></tr>`).join("")}</tbody></table></div>`;
+}
+
+// ------------------------------------------------------------ v2 共通
+
+async function waitJob(jobId, onProgress) {
+  for (;;) {
+    let j;
+    try { j = await api("GET", `/jobs/${jobId}`); } catch (e) { toast(e.message, true); return null; }
+    if (j.status === "完了" || j.status === "失敗") return j;
+    if (onProgress) onProgress(j.progress || j.status);
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+}
+
+function fmtSec(sec) {
+  sec = Math.floor(sec || 0);
+  const hh = Math.floor(sec / 3600), mm = Math.floor((sec % 3600) / 60), ss = sec % 60;
+  return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
+}
+function yen(n) { return (n ?? 0).toLocaleString("ja-JP") + "円"; }
+function hours(min) { return `${(min / 60).toFixed(1)}時間`; }
+
+// 出典から原典を開くリンク属性
+function sourceLink(caseId, c) {
+  if (c.type === "file") {
+    const page = c.page ? `#page=${c.page}` : "";
+    return `href="/api/cases/${caseId}/files/open?path=${encodeURIComponent(c.rel_path)}${page}" target="_blank" rel="noopener"`;
+  }
+  if (c.type === "audio") return `href="#/cases/${caseId}/recordings?t=${c.transcript_id}&at=${Math.floor(c.t_start || 0)}"`;
+  if (c.type === "activity") return `href="#/cases/${caseId}/activities"`;
+  if (c.type === "communication") return `href="#/cases/${caseId}/comms"`;
+  return `href="#/cases/${caseId}"`;
+}
+
+const MATCH_CLS = { 一致: "ok", 部分一致: "warning", 不一致: "danger", 出典なし: "danger", 引用なし: "warning" };
+
+function citeChips(caseId, cits) {
+  if (!cits || !cits.length) return `<span class="tag danger">出典なし</span>`;
+  return cits.map((c) => `<span class="cite"><a ${sourceLink(caseId, c)}>${c.type === "audio" ? "🎙" : c.type === "file" ? "📄" : "📝"}
+    ${h(c.label || c.source_id)}</a> <span class="tag ${MATCH_CLS[c.match] || ""}" title="引用: ${h(c.quote)}">${h(c.match)}</span>
+    ${c.quote ? `<span class="quote">「${h(c.quote)}」</span>` : ""}</span>`).join("");
+}
+
+function itemHtml(caseId, it, body) {
+  const bad = !it.citations?.length || it.citations.some((c) => c.match === "不一致" || c.match === "出典なし");
+  return `<li class="${bad ? "flag" : ""}">${body ?? `<div class="pre">${h(it.text)}</div>`}
+    <div class="cites">${citeChips(caseId, it.citations)}</div></li>`;
+}
+
+// ------------------------------------------------------------ AI タブ
+
+const KIND_LABEL = { ask: "質問", memo: "相談メモ", timeline: "時系列・争点整理表" };
+
+async function caseAI(c, params) {
+  const box = $("#case-body");
+  const [st, runs, terms] = await Promise.all([api("GET", "/ai/status"), api("GET", `/cases/${c.id}/ai/runs`),
+    api("GET", `/cases/${c.id}/anon-terms`)]);
+  const runId = new URLSearchParams(location.hash.split("?")[1] || "").get("run");
+  box.innerHTML = `
+    ${st.ai_configured ? "" : `<div class="alert warning">AI が未設定です。PC の .env に ANTHROPIC_API_KEY を設定してください。</div>`}
+    <div class="alert info small">送信前に氏名・会社名・住所・連絡先を記号に置き換え、置換漏れがあれば送信しません。送信内容は確認でき、AI送信ログに記録されます。出力は初稿です。</div>
+    <div class="card">
+      <form id="ask-form"><label class="field"><span>この事件について質問(出典つきで回答)</span>
+        <textarea name="q" placeholder="例: この事件の経緯は? / 納品日について資料間に食い違いはあるか"></textarea></label>
+        <button class="primary" ${st.ai_configured ? "" : "disabled"}>確認して送信</button></form>
+      <div class="row"><button id="mk-memo" ${st.ai_configured ? "" : "disabled"}>相談メモを作成</button>
+        <button id="mk-tl" ${st.ai_configured ? "" : "disabled"}>時系列・争点整理表を作成</button></div>
+      <p class="muted small">対象: 録音の文字起こし・索引化した資料・活動記録・連絡履歴・案件メモ</p>
+    </div>
+    <div id="ai-result"></div>
+    <h2>実行履歴</h2>
+    <ul class="list">${runs.map((r) => `<li class="link" data-run="${r.id}"><div class="row between">
+      <span><span class="tag">${h(KIND_LABEL[r.kind] || r.kind)}</span> ${h(r.question || "")}</span>
+      <span class="tag ${r.status === "完了" ? "ok" : "danger"}">${h(r.status)}</span></div>
+      <div class="muted small">${h(r.created_at.replace("T", " "))} ${h(r.model || "")} ${h(r.error || "")}</div></li>`).join("")
+      || `<li class="muted">まだありません</li>`}</ul>
+    <h2>追加の匿名化語</h2>
+    <p class="muted small">当事者として登録していない人名・地名・建物名・あだ名・言い間違いなどを登録すると、送信時に置換されます。</p>
+    <ul class="list">${terms.map((t) => `<li class="row between"><span>${h(t.term)} <span class="tag gray">${h(t.category)}</span></span>
+      <button class="small" data-del-term="${t.id}">削除</button></li>`).join("")}</ul>
+    <form id="term-form" class="row"><input name="term" class="grow" placeholder="語句" required>
+      <select name="category" class="grow"><option>人物</option><option>会社</option><option>地名</option><option>固有名</option></select>
+      <button>追加</button></form>`;
+  $("#ask-form").onsubmit = (e) => {
+    e.preventDefault();
+    const q = e.target.q.value.trim();
+    if (!q) return toast("質問を入力してください", true);
+    previewAndRun(c, "ask", q);
+  };
+  $("#mk-memo").onclick = () => previewAndRun(c, "memo", "");
+  $("#mk-tl").onclick = () => previewAndRun(c, "timeline", "");
+  box.querySelectorAll("[data-run]").forEach((li) => li.addEventListener("click", () => showRun(c, Number(li.dataset.run))));
+  box.querySelectorAll("[data-del-term]").forEach((b) => b.addEventListener("click", async () => {
+    await guard(() => api("DELETE", `/anon-terms/${b.dataset.delTerm}`));
+    route();
+  }));
+  $("#term-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const ok = await guard(() => api("POST", `/cases/${c.id}/anon-terms`, { term: e.target.term.value, category: e.target.category.value }));
+    if (ok) route();
+  };
+  if (runId) showRun(c, Number(runId));
+}
+
+async function previewAndRun(c, kind, question) {
+  const pv = await guard(() => api("POST", `/cases/${c.id}/ai/preview`, { kind, question }));
+  if (!pv) return;
+  const blocked = pv.leaks.length > 0;
+  openModal(`<h1>送信内容の確認(${h(KIND_LABEL[kind])})</h1>
+    ${blocked ? `<div class="alert danger">置換漏れの可能性がある語があるため送信できません: ${pv.leaks.map(h).join("、")}<br>
+      「追加の匿名化語」に登録するか、当事者の表記を確認してください。</div>` : `<div class="alert ok">置換漏れは検出されませんでした。</div>`}
+    ${pv.omitted_sources ? `<div class="alert warning">資料が多いため ${pv.omitted_sources} 件を送信対象から外しています。</div>` : ""}
+    <p class="small">資料 ${pv.sources}件 ・ ${pv.chars.toLocaleString()}文字 ・ プロンプト版 ${h(pv.prompt_version)}</p>
+    <details><summary>置換一覧(${pv.replacements.length}件・この PC 内でのみ表示)</summary>
+      <table class="tbl"><tbody>${pv.replacements.map((r) => `<tr><td>${h(r.label)}</td><td>${h(r.original)}</td><td class="muted">${h(r.category)}</td></tr>`).join("")}</tbody></table></details>
+    <details><summary>実際に送信する本文</summary><pre class="pre sent">${h(pv.sent_text)}</pre></details>
+    <div class="actions"><button id="pv-cancel">キャンセル</button>
+      <button class="primary" id="pv-send" ${blocked ? "disabled" : ""}>送信する</button></div>`);
+  $("#pv-cancel").onclick = closeModal;
+  $("#pv-send").onclick = async () => {
+    $("#pv-send").disabled = true;
+    const r = await guard(() => api("POST", `/cases/${c.id}/ai/run`, { kind, question }));
+    if (!r) { $("#pv-send").disabled = false; return; }
+    closeModal();
+    $("#ai-result").innerHTML = `<div class="card"><p>AI が作成中です… <span id="ai-prog"></span></p><p class="muted small">1〜3分かかることがあります。画面を離れても処理は続きます。</p></div>`;
+    const j = await waitJob(r.job_id, (p) => { const el = $("#ai-prog"); if (el) el.textContent = p; });
+    if (!j) return;
+    if (j.status !== "完了") { $("#ai-result").innerHTML = `<div class="alert danger">${h(j.error)}</div>`; return; }
+    location.hash = `#/cases/${c.id}/ai?run=${j.result_id}`;
+  };
+}
+
+async function showRun(c, runId) {
+  const r = await guard(() => api("GET", `/ai/runs/${runId}`));
+  if (!r) return;
+  const box = $("#ai-result");
+  if (!r.result) { box.innerHTML = `<div class="alert danger">${h(r.status)}: ${h(r.error)}</div>`; return; }
+  const res = r.result, st = res.citation_stats || {};
+  let body = "";
+  if (r.kind === "ask") {
+    body = `<h3>Q. ${h(r.question)}</h3><ul class="list ai">${res.answer.map((it) => itemHtml(c.id, it)).join("")}</ul>
+      ${res.not_found.length ? `<h3>資料から分からない点</h3><ul>${res.not_found.map((x) => `<li>${h(x)}</li>`).join("")}</ul>` : ""}`;
+  } else if (r.kind === "memo") {
+    body = res.sections.map((s) => `<h3>■ ${h(s.heading)}</h3>
+      <ul class="list ai">${s.items.map((it) => itemHtml(c.id, it)).join("") || `<li class="muted">なし</li>`}</ul>`).join("")
+      + (res.caveats.length ? `<h3>注意</h3><ul>${res.caveats.map((x) => `<li>${h(x)}</li>`).join("")}</ul>` : "");
+  } else {
+    body = `<h3>時系列</h3><ul class="list ai">${res.timeline.map((t) => itemHtml(c.id, t,
+      `<div><b>${h(t.date || "日付不明")}</b> <span class="tag ${t.certainty === "確実" ? "ok" : "warning"}">${h(t.certainty)}</span></div>
+       <div class="pre">${h(t.event)}</div>${t.note ? `<div class="muted small">${h(t.note)}</div>` : ""}`)).join("")}</ul>
+      <h3>争点整理表</h3><ul class="list ai">${res.issues.map((i) => itemHtml(c.id, i,
+      `<div class="title">${h(i.issue)} <span class="tag ${i.status === "争いあり" ? "danger" : "gray"}">${h(i.status)}</span></div>
+       <dl class="kv small"><dt>当方</dt><dd>${h(i.our_position)}</dd><dt>相手方</dt><dd>${h(i.their_position)}</dd>
+       ${i.open_questions.length ? `<dt>未確認</dt><dd>${i.open_questions.map(h).join("<br>")}</dd>` : ""}</dl>`)).join("")}</ul>
+      ${res.contradictions.length ? `<h3>資料間・発言の食い違い</h3><ul class="list ai">${res.contradictions.map((it) => itemHtml(c.id, it)).join("")}</ul>` : ""}
+      <p><a class="btn small" href="/api/ai/runs/${r.id}/csv">CSV(Excel)で出力</a></p>`;
+  }
+  box.innerHTML = `<div class="card">
+    <div class="row between"><b>${h(KIND_LABEL[r.kind])}(AI初稿・要確認)</b><span class="muted small">${h(r.created_at.replace("T", " "))}</span></div>
+    <div class="small">出典照合: <span class="tag ok">一致 ${st.verified || 0}</span> <span class="tag warning">部分一致 ${st.partial || 0}</span>
+      <span class="tag danger">不一致 ${st.unverified || 0}</span> <span class="tag danger">出典なし ${(st.missing_source || 0) + (st.uncited_items || 0)}</span></div>
+    ${res.omitted_sources ? `<div class="alert warning small">資料 ${res.omitted_sources} 件は送信対象外でした。</div>` : ""}
+    ${body}
+    <div class="row"><button id="save-act">活動記録に保存</button><button id="show-sent">送信した内容</button></div></div>`;
+  $("#save-act").onclick = async () => {
+    const ok = await guard(() => api("POST", `/ai/runs/${r.id}/save-activity`));
+    if (ok) toast("活動記録に保存しました");
+  };
+  $("#show-sent").onclick = () => {
+    openModal(`<h1>送信した内容(匿名化済み)</h1><p class="small">モデル ${h(r.model)} ・ 入力 ${r.input_tokens ?? "-"} / 出力 ${r.output_tokens ?? "-"} トークン ・ プロンプト版 ${h(r.prompt_version)}</p>
+      <pre class="pre sent">${h(r.sent_text)}</pre><div class="actions"><button id="sent-close">閉じる</button></div>`);
+    $("#sent-close").onclick = closeModal;
+  };
+  box.scrollIntoView({ behavior: "smooth" });
+}
+
+// ------------------------------------------------------------ 録音タブ
+
+async function caseRecordings(c) {
+  const box = $("#case-body");
+  const params = new URLSearchParams(location.hash.split("?")[1] || "");
+  const [st, recs] = await Promise.all([api("GET", "/ai/status"), api("GET", `/cases/${c.id}/recordings`)]);
+  box.innerHTML = `
+    <div class="card"><form id="rec-form">
+      <label class="field"><span>録音ファイル(iPhone のボイスメモ → 共有 →「ファイルに保存」したもの等)</span>
+        <input type="file" name="file" accept="audio/*,.m4a,.mp3,.wav" required></label>
+      <label class="field"><span>録音日</span><input type="date" name="recorded_on" value="${today()}"></label>
+      <button class="primary">取り込んで文字起こし</button></form>
+      <p class="muted small">文字起こしはこの PC 内で行います(音声は外部に送信しません)。${st.transcriber_installed ? `エンジン: faster-whisper(${h(st.whisper_model)})、話者分離: ${h(st.diarization)}` : `<span class="tag danger">faster-whisper が未インストール</span>`}</p>
+      <div id="rec-prog"></div></div>
+    <ul class="list">${recs.map((r) => `<li class="link" data-rec="${r.id}"><div class="row between">
+      <span>🎙 ${h(r.filename)}</span><span class="tag ${r.status === "完了" ? "ok" : r.status === "失敗" ? "danger" : "warning"}">${h(r.status)}</span></div>
+      <div class="muted small">${jdate(r.recorded_on)} ${r.duration ? fmtSec(r.duration) : ""} ${h(r.message || "")}</div></li>`).join("")
+      || `<li class="muted">録音はありません</li>`}</ul>
+    <div id="transcript"></div>`;
+  $("#rec-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const btn = e.target.querySelector("button");
+    btn.disabled = true;
+    $("#rec-prog").textContent = "アップロード中…";
+    let res;
+    try {
+      const r = await fetch(`/api/cases/${c.id}/recordings`, { method: "POST", body: fd, headers: { "x-cm": "1" }, credentials: "same-origin" });
+      res = await r.json();
+      if (!r.ok) throw new Error(res.detail?.message || res.detail || r.statusText);
+    } catch (err) { toast(err.message, true); btn.disabled = false; $("#rec-prog").textContent = ""; return; }
+    const j = await waitJob(res.job_id, (p) => { $("#rec-prog").textContent = `文字起こし中… ${p}`; });
+    btn.disabled = false;
+    if (j?.status === "完了") { toast("文字起こしが完了し、活動記録に保存しました"); location.hash = `#/cases/${c.id}/recordings?t=${res.transcript_id}`; }
+    else if (j) toast(`失敗: ${j.error}`, true);
+  };
+  box.querySelectorAll("[data-rec]").forEach((li) => li.addEventListener("click", () => {
+    location.hash = `#/cases/${c.id}/recordings?t=${li.dataset.rec}`;
+  }));
+  if (params.get("t")) showTranscript(c, Number(params.get("t")), Number(params.get("at") || 0));
+}
+
+async function showTranscript(c, tid, at) {
+  const t = await guard(() => api("GET", `/transcripts/${tid}`));
+  if (!t) return;
+  const box = $("#transcript");
+  if (t.status !== "完了") { box.innerHTML = `<div class="alert warning">${h(t.status)} ${h(t.message || "")}</div>`; return; }
+  const spk = [...new Set(t.segments.map((s) => s.speaker || ""))];
+  const name = (s) => t.speakers[s || ""] || s || "話者不明";
+  box.innerHTML = `<div class="card"><div class="row between"><b>🎙 ${h(t.filename)}</b><span class="muted small">${fmtSec(t.duration)} ${h(t.engine)}</span></div>
+    <audio id="player" controls preload="metadata" src="/api/transcripts/${t.id}/audio"></audio>
+    <h3>話者名</h3><div id="spk">${spk.map((s) => `<label class="field"><span>${h(s || "話者不明")}</span>
+      <input data-spk="${h(s)}" value="${h(t.speakers[s] || "")}" placeholder="例: 依頼者 / 弁護士"></label>`).join("")}</div>
+    <h3>本文(時刻をタップで再生・本文をタップで修正)</h3>
+    <ul class="list segs">${t.segments.map((s, i) => `<li data-seg="${i}" class="${at && s.start <= at && at < s.end + 1 ? "flag" : ""}">
+      <button class="small" data-play="${s.start}">${fmtSec(s.start)}</button> <b>${h(name(s.speaker))}</b>
+      <div class="pre seg-text">${h(s.text)}</div></li>`).join("")}</ul>
+    <div class="row"><button class="primary" id="save-tr">修正を保存</button><button class="danger" id="del-tr">録音を削除</button></div></div>`;
+  const player = $("#player");
+  if (at) player.addEventListener("loadedmetadata", () => { player.currentTime = at; }, { once: true });
+  box.querySelectorAll("[data-play]").forEach((b) => b.addEventListener("click", () => {
+    player.currentTime = Number(b.dataset.play);
+    player.play().catch(() => {});
+  }));
+  box.querySelectorAll(".seg-text").forEach((el) => el.addEventListener("click", () => {
+    const i = Number(el.closest("[data-seg]").dataset.seg);
+    const v = prompt("文字起こしの修正", t.segments[i].text);
+    if (v !== null) { t.segments[i].text = v; el.textContent = v; }
+  }));
+  $("#save-tr").onclick = async () => {
+    const speakers = {};
+    box.querySelectorAll("[data-spk]").forEach((i) => { if (i.value.trim()) speakers[i.dataset.spk] = i.value.trim(); });
+    const ok = await guard(() => api("PUT", `/transcripts/${t.id}`, { speakers, segments: t.segments }));
+    if (ok) { toast("保存しました(活動記録にも反映)"); showTranscript(c, tid, 0); }
+  };
+  $("#del-tr").onclick = async () => {
+    if (!confirm("録音と文字起こし(活動記録を含む)を削除します。よろしいですか?")) return;
+    const ok = await guard(() => api("DELETE", `/transcripts/${t.id}`));
+    if (ok) { toast("削除しました"); location.hash = `#/cases/${c.id}/recordings`; }
+  };
+  if (at) box.querySelector(".flag")?.scrollIntoView({ block: "center" });
+}
+
+// ------------------------------------------------------------ 会計タブ(報酬・入金・預り金・稼働)
+
+const FIN_KINDS = ["請求", "入金", "実費支出", "預り金受入", "預り金支出", "預り金返還"];
+
+async function caseMoney(c) {
+  const f = await api("GET", `/cases/${c.id}/finance`);
+  const s = f.summary, w = f.worktime;
+  const hourly = w.minutes ? Math.round(s.fees.received / (w.minutes / 60)) : null;
+  $("#case-body").innerHTML = `
+    ${s.warnings.map((x) => `<div class="alert danger">${h(x)}</div>`).join("")}
+    <h2>報酬</h2><div class="stats three">
+      <div class="stat"><b>${yen(s.fees.billed)}</b><span>請求</span></div>
+      <div class="stat"><b>${yen(s.fees.received)}</b><span>入金</span></div>
+      <div class="stat"><b>${yen(s.fees.receivable)}</b><span>未収</span></div></div>
+    ${s.fees.advance ? `<div class="small">請求前の入金(前受): ${yen(s.fees.advance)}</div>` : ""}
+    <div class="small muted">${Object.entries(s.fees.by_category).map(([k, v]) => `${h(k)}: 請求 ${yen(v.billed)} / 入金 ${yen(v.received)}`).join("<br>")}</div>
+    <h2>実費(立替)</h2><div class="stats three">
+      <div class="stat"><b>${yen(s.expenses.spent)}</b><span>支出</span></div>
+      <div class="stat"><b>${yen(s.expenses.recovered)}</b><span>回収</span></div>
+      <div class="stat"><b>${yen(s.expenses.outstanding)}</b><span>立替残</span></div></div>
+    <h2>預り金(報酬と分けて管理)</h2><div class="card deposit"><div class="stats three">
+      <div class="stat"><b>${yen(s.deposit.received)}</b><span>受入</span></div>
+      <div class="stat"><b>${yen(s.deposit.paid + s.deposit.returned)}</b><span>支出・返還</span></div>
+      <div class="stat"><b>${yen(s.deposit.balance)}</b><span>残高</span></div></div></div>
+    <h2>稼働</h2><div class="card"><dl class="kv">
+      <dt>稼働時間</dt><dd>${hours(w.minutes)}(${w.records}件)</dd>
+      <dt>時給換算</dt><dd>${hourly !== null ? yen(hourly) + "(入金ベース)" : "—"}</dd>
+      <dt>種類別</dt><dd class="small">${Object.entries(w.by_kind).map(([k, v]) => `${h(k)} ${hours(v)}`).join(" / ") || "—"}</dd>
+      <dt>月別</dt><dd class="small">${Object.entries(w.by_month).map(([k, v]) => `${h(k)} ${hours(v)}`).join(" / ") || "—"}</dd></dl>
+      ${w.records_without_minutes ? `<div class="muted small">所要時間が未入力の活動記録が ${w.records_without_minutes} 件あります(集計対象外)。</div>` : ""}</div>
+    <h2>入出金の記録<button class="small primary" id="add-fin">追加</button></h2>
+    <table class="tbl"><thead><tr><th>日付</th><th>種別</th><th>区分</th><th>金額</th><th>備考</th></tr></thead><tbody>
+    ${f.entries.map((e) => `<tr class="link" data-fin="${e.id}"><td>${h(e.date)}</td><td>${h(e.kind)}</td><td>${h(e.category)}</td>
+      <td>${yen(e.amount)}</td><td>${h(e.note)}</td></tr>`).join("")}</tbody></table>`;
+  const dialog = (e) => formDialog({
+    title: e ? "入出金の編集" : "入出金の追加",
+    fields: [
+      { name: "date", label: "日付", type: "date", required: true, value: e?.date || today() },
+      { name: "kind", label: "種別", type: "select", options: FIN_KINDS, value: e?.kind || "入金" },
+      { name: "category", label: "区分(請求・入金は報酬の種類か「実費」)", type: "select",
+        options: [...f.fee_categories, "実費", ...f.expense_categories, "預り金"], value: e?.category || "着手金" },
+      { name: "amount", label: "金額(円・税込)", type: "number", required: true, value: e?.amount },
+      { name: "note", label: "備考", value: e?.note },
+    ],
+    onSubmit: (v) => e ? api("PUT", `/finance/${e.id}`, v) : api("POST", `/cases/${c.id}/finance`, v),
+    danger: e ? { label: "削除", onClick: () => api("DELETE", `/finance/${e.id}`) } : null,
+  });
+  $("#add-fin").onclick = () => dialog();
+  $("#case-body").querySelectorAll("[data-fin]").forEach((tr) => tr.addEventListener("click", () =>
+    dialog(f.entries.find((x) => x.id === Number(tr.dataset.fin)))));
+}
+
+async function viewProfit() {
+  const p = await api("GET", "/reports/profitability");
+  view.innerHTML = `<h1>稼働・採算</h1>
+    <p class="muted small">報酬は入金ベース(実費・預り金を除く)。稼働時間は活動記録の所要時間の合計です。</p>
+    <div class="stats three"><div class="stat"><b>${hours(p.total.minutes)}</b><span>稼働</span></div>
+      <div class="stat"><b>${yen(p.total.fees_received)}</b><span>報酬入金</span></div>
+      <div class="stat"><b>${p.total.hourly_received ? yen(p.total.hourly_received) : "—"}</b><span>平均時給</span></div></div>
+    <div class="card"><table class="tbl"><thead><tr><th>案件</th><th>稼働</th><th>入金</th><th>時給</th></tr></thead><tbody>
+    ${p.cases.map((r) => `<tr class="link" data-href="#/cases/${r.case_id}/money"><td>${h(r.title)} <span class="muted">${h(r.status)}</span>
+      ${r.records_without_minutes ? `<div class="muted">時間未入力 ${r.records_without_minutes}件</div>` : ""}</td>
+      <td>${hours(r.minutes)}</td><td>${yen(r.fees_received)}</td><td>${r.hourly_received ? yen(r.hourly_received) : "—"}</td></tr>`).join("")}
+    </tbody></table></div>`;
+}
+
+async function viewAILog() {
+  const items = await api("GET", "/ai/log");
+  view.innerHTML = `<h1>AI送信ログ</h1><p class="muted small">外部 AI に送信した記録です。送信本文は匿名化済みのもので、各実行の「送信した内容」から確認できます。</p>
+    <div class="card"><table class="tbl"><thead><tr><th>日時</th><th>案件・種類</th><th>状態</th><th>文字数</th></tr></thead><tbody>
+    ${items.map((r) => `<tr class="link" data-href="#/cases/${r.case_id}/ai?run=${r.id}"><td>${h(r.created_at.replace("T", " "))}</td>
+      <td>#${r.case_id} ${h(KIND_LABEL[r.kind] || r.kind)}<div class="muted">${h(r.model)} 版${h(r.prompt_version)}</div></td>
+      <td>${h(r.status)} ${h(r.error || "")}</td><td>${(r.sent_chars || 0).toLocaleString()}</td></tr>`).join("")}</tbody></table></div>`;
 }
 
 // ------------------------------------------------------------ 通知

@@ -1,0 +1,9 @@
+# 録音の文字起こし(PC内で処理)
+faster-whisper>=1.0
+# 話者分離(任意。Hugging Face で利用条件への同意とトークン、またはローカルモデルが必要)
+# pyannote.audio>=3.1
+# スキャンPDFのOCR(任意。別途 Tesseract 本体と日本語データ jpn のインストールが必要)
+pytesseract>=0.3.10
+pillow>=10
+# Outlook の .msg メール(任意)
+extract-msg>=0.48

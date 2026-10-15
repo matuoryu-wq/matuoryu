@@ -105,3 +105,15 @@ table.tbl th, table.tbl td { text-align: left; padding: 4px 6px; border-bottom: 
   width: 54px; height: 54px; border-radius: 50%; font-size: 28px; line-height: 1; padding: 0;
   background: var(--primary); color: #fff; border: 0; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
 @media (prefers-color-scheme: dark) { .fab { color: #10161d; } }
+/* v2 */
+.stats.three { grid-template-columns: repeat(3, 1fr); }
+.stat b { font-size: 16px; word-break: break-all; }
+.deposit { border-left: 4px solid var(--warning); }
+.list.ai > li.flag, .segs > li.flag { border-color: var(--danger); background: var(--danger-weak); }
+.cites { margin-top: 4px; display: flex; flex-direction: column; gap: 2px; font-size: 12.5px; }
+.cite .quote { color: var(--muted); }
+pre.sent { max-height: 50vh; overflow: auto; font-size: 12px; background: var(--card); border: 1px solid var(--line); padding: 8px; border-radius: 8px; }
+audio { width: 100%; margin: 8px 0; }
+.alert.ok { background: var(--ok-weak); color: var(--ok); }
+tr.link { cursor: pointer; }
+details { margin: 6px 0; }

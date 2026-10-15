@@ -1,0 +1,55 @@
+{
+  "_note": "AI出力の評価セット。模擬事件のみ。採点は機械判定できる項目(日付・当事者名・争点・出典の実在)を優先する。",
+  "items": [
+    {
+      "id": "takahashi_memo",
+      "kind": "memo",
+      "case": "髙橋 対 ㈱サンプル商事 売買代金請求",
+      "folder": true,
+      "recording": "recording_takahashi.json",
+      "expect": {
+        "names": ["髙橋 一郎"],
+        "sections": {
+          "争点": ["検収|不具合|寸法|品質"],
+          "未確認事項": ["納品|3月|4月", "佐藤|佐東|担当"],
+          "次の対応": ["契約書|請求書|メール|納品書|資料"]
+        }
+      }
+    },
+    {
+      "id": "takahashi_timeline",
+      "kind": "timeline",
+      "case": "髙橋 対 ㈱サンプル商事 売買代金請求",
+      "folder": true,
+      "recording": "recording_takahashi.json",
+      "expect": {
+        "dates": ["2026-02-01", "2026-04-15", "2026-04-20", "2026-04-30", "2026-05-31"],
+        "issues": ["検収|不具合|寸法|品質", "代金|支払"],
+        "contradictions": ["納品|3月|4月"]
+      }
+    },
+    {
+      "id": "takahashi_ask",
+      "kind": "ask",
+      "case": "髙橋 対 ㈱サンプル商事 売買代金請求",
+      "folder": true,
+      "recording": "recording_takahashi.json",
+      "question": "納品日はいつか。資料の間で食い違いはあるか。",
+      "expect": {"keywords": ["4月15日|2026-04-15", "3月"]}
+    },
+    {
+      "id": "saito_memo",
+      "kind": "memo",
+      "case": "斎藤家 遺産分割(被相続人 斎藤 正)",
+      "folder": false,
+      "recording": "recording_saito.json",
+      "expect": {
+        "names": ["斎藤 美咲"],
+        "sections": {
+          "未確認事項": ["8月3日|8月4日|死亡", "預金|1000万|800万|1,000万", "遺言|借金|債務|保証"],
+          "次の対応": ["熟慮|相続放棄|915|3か月|3箇月|三か月"]
+        }
+      }
+    }
+  ]
+}
