@@ -551,7 +551,7 @@
     <button class="ctrl-btn" id="btn-check-only" onclick="setCheckOnly(true)">✅ チェックのみ</button>
   </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-    <button class="apx-btn" id="disp-quiz-btn" onclick="startDispQuiz()">📊 表示区分クイズ</button>
+    <button class="apx-btn" id="disp-quiz-btn" onclick="startDispQuiz()">📖 勘定科目クイズ</button>
     <button class="apx-btn" id="comp-quiz-btn" onclick="startCompQuiz()">🧮 総合問題</button>
     <button class="apx-btn" id="calc-quiz-btn" onclick="startCalcQuiz()">🔢 計算問題（〜2級）</button>
   </div>
@@ -4064,20 +4064,17 @@ function expNextEntry(){
 
 // ===== スクロールモードここまで =====
 
-// ===== 表示区分クイズ（選択式・仕訳とは別枠） =====
-// 英語の勘定科目名 → ①日本語の科目名を選ぶ → ②表示区分を選ぶ。タブは仕訳問題と同じ分野ごと。
+// ===== 勘定科目クイズ（旧・表示区分クイズを吸収） =====
+// 英語名＋説明＋表示区分 → 日本語の科目名を選ぶ。逆向き（科目名 → 英語・説明・表示区分）も選べる。タブは仕訳問題と同じ分野ごと。
 const DISP_FIELDS = ['商品売買','収益認識・現金預金','債権債務','有価証券','有形固定資産','無形・リース・引当金','株式会社会計','外貨建・伝票','税金関連','決算整理','本支店・連結等','工業簿記','1級'];
 // 英語名だけでは区別しにくい近い科目同士は、日本語の選択肢で同時に出さない
 const DISP_SYNONYMS = [['雑損','雑損失'],['支払保険料','保険料'],['繰越利益剰余金','利益剰余金'],['法人税等','法人税、住民税及び事業税'],['有価証券','売買目的有価証券'],['関係会社株式','子会社株式','関連会社株式'],['利益剰余金当期首残高','利益剰余金期首残高']];
 let dispQuizDeck = [];
 let dispQuizIdx = 0;
 let dispQuizScore = 0;
-let dispQuizJaScore = 0;
-let dispQuizClsScore = 0;
 let dispQuizWrong = [];
 let dispQuizTab = DISP_FIELDS[0];
 let dispQuizKind = 'account'; // 'account' | 'concept'
-let dispJaOk = false;
 
 function shuffleArr(arr){
   for(let i=arr.length-1;i>0;i--){
@@ -4130,8 +4127,6 @@ function launchDispQuiz(tab){
   dispQuizDeck = shuffleArr(dispTabPool(tab).slice());
   dispQuizIdx = 0;
   dispQuizScore = 0;
-  dispQuizJaScore = 0;
-  dispQuizClsScore = 0;
   dispQuizWrong = [];
   renderDispQuiz();
 }
@@ -4166,15 +4161,48 @@ function dispPickJaChoices(item){
   return shuffleArr([item.name, ...picked]);
 }
 
-function dispPickClsChoices(item){
-  const correct = dispAnsText(item);
-  const seen = new Set([correct]);
-  const pool = [];
-  shuffleArr(DISPLAY_DATA.slice()).forEach(d => {
-    const t = dispAnsText(d);
-    if(!seen.has(t)){ seen.add(t); pool.push(t); }
-  });
-  return shuffleArr([correct, ...pool.slice(0,3)]);
+// 問題文の説明に科目名そのものが出てしまうものは、名前を出さない説明に差し替える
+const ACCT_QDEF_OVERRIDE = {
+  '仕入':'販売するための商品を購入したときの原価を記録する費用科目（三分法）。',
+  '売上原価':'売れた商品の原価を、販売のつど直接計上する費用科目。三分法では決算でまとめて計算する。',
+  '商品':'分記法や売上原価対立法で使う、販売目的で保有する在庫を表す資産科目。',
+  '小口現金':'文房具代や交通費など日々の少額の支払いのために、各部署の担当者にあらかじめ渡しておく現金。',
+  '賞与引当金':'次のボーナス支給額のうち、当期が負担する分を見積り計上した負債の科目。',
+  '資本金':'株主が会社の設立や増資のときに出資したお金のうち、会社法の規定にもとづいて計上する純資産の科目（原則は払込額の全額）。',
+  '保険料':'火災保険や自動車保険など、会社が加入している各種保険の掛け金を支払ったときの費用科目。',
+  '支店':'本店の帳簿に設けられる、出先の営業拠点に対する投資のような相手勘定。',
+  '本店':'支店の帳簿に設けられる、本部に対する出資のような相手勘定。',
+  '本社':'工場会計で、工場の帳簿に設けられる、本部に対する相手勘定。',
+  '工場':'本社の帳簿に設けられる、独立した帳簿をもつ製造拠点に対する相手勘定。',
+  '利益剰余金':'利益準備金・任意積立金など、会社が稼いだ利益を元手とする純資産をまとめて表す区分名。',
+  '資本剰余金':'資本準備金など、株主からの払込みのうち資本金にしなかった部分をまとめて表す区分名。',
+  '原価差異':'標準原価計算で生じた価格差異や数量差異などを、決算で売上原価に加減するためにまとめる勘定。',
+  '未着品':'代金は支払い済み（または貨物代表証券を受け取った）だが、まだ手元に届いていない商品を表す資産科目。',
+};
+function acctQDef(item){
+  let d = ACCT_QDEF_OVERRIDE[item.name] || item.def.replace(/^<strong>[^<]*<\/strong>とは、/, '');
+  d = d.replace(/<\/?strong>/g,'');
+  return item.name.length>=2 ? d.split(item.name).join('◯◯') : d;
+}
+// 表示区分の文に科目名が含まれるとき（売上・売上原価など）も伏せる。本支店・工場会計の相手勘定は「本支店会計」等の語が崩れるので伏せない
+function acctQAns(item){
+  const a = dispAnsText(item);
+  return (item.name.length>=2 && !['支店','本店','本社','工場'].includes(item.name)) ? a.split(item.name).join('◯◯') : a;
+}
+function acctQText(item){
+  return `${acctQDef(item)}<span style="display:inline-block;margin-left:4px;font-weight:700;color:#1A2B3C;">${acctQAns(item)}</span>`;
+}
+// 逆向き（科目名 → 説明）の選択肢：英語名＋説明＋表示区分
+function acctDescHtml(item){
+  return `<span class="acct-tag ${dispTagClass(item)}" style="margin-right:4px;">${item.en}</span>${acctQText(item)}`;
+}
+let acctQuizReverse = false;
+function setAcctQuizReverse(on){ acctQuizReverse = on; launchDispQuiz(dispQuizTab); }
+function acctModeHtml(){
+  return `<div class="sec-tabs" style="margin:6px 0 8px;">
+    <button class="ctrl-btn${!acctQuizReverse?' active':''}" onclick="setAcctQuizReverse(false)">英語・説明 → 科目名</button>
+    <button class="ctrl-btn${acctQuizReverse?' active':''}" onclick="setAcctQuizReverse(true)">科目名 → 英語・説明</button>
+  </div>`;
 }
 
 function renderDispQuiz(){
@@ -4203,19 +4231,23 @@ function renderDispQuiz(){
     scrollDispTabIntoView();
     return;
   }
-  const jaChoices = dispPickJaChoices(item);
-  window._dispJaChoices = jaChoices;
+  // 選択肢は科目（DISPLAY_DATAの要素）で持ち、表示だけ向きで切り替える
+  const names = dispPickJaChoices(item);
+  const choiceItems = names.map(n => DISPLAY_DATA.find(d=>d.name===n));
+  window._acctChoices = choiceItems;
+  const qHtml = acctQuizReverse
+    ? `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この勘定科目の英語・説明・表示区分は？</div>
+       <span class="acct-tag acct-tag-lg ${dispTagClass(item)}" style="font-size:18px;">${item.name}</span>`
+    : `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この勘定科目は？</div>
+       <div style="text-align:left;font-size:14px;line-height:1.8;"><span class="acct-tag acct-tag-lg ${dispTagClass(item)}" style="font-size:16px;margin-right:4px;">${item.en}</span>${acctQText(item)}</div>`;
   main.innerHTML = `
     ${dispQuizNavBar()}
     ${dispTabsHtml()}
-    <div class="exp-q-card" style="text-align:center;">
-      <div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">① この英語の勘定科目を、日本語で選んでください</div>
-      <span class="acct-tag acct-tag-lg ${dispTagClass(item)}" style="font-size:18px;">${item.en}</span>
-    </div>
+    ${acctModeHtml()}
+    <div class="exp-q-card" style="text-align:center;">${qHtml}</div>
     <div class="exp-step-choices wide" id="disp-ja-choices">
-      ${jaChoices.map((c,i)=>`<button class="exp-step-choice-btn" onclick="selectDispJa(this,${i})">${c}</button>`).join('')}
+      ${choiceItems.map((c,i)=>`<button class="exp-step-choice-btn"${acctQuizReverse?' style="text-align:left;font-weight:500;line-height:1.6;"':''} onclick="selectAcctChoice(this,${i})">${acctQuizReverse?acctDescHtml(c):c.name}</button>`).join('')}
     </div>
-    <div id="disp-step2"></div>
     <div class="exp-result" id="disp-res"></div>`;
   scrollDispTabIntoView();
 }
@@ -4228,48 +4260,26 @@ function markDispChoices(containerId, correctIdx, chosenIdx){
   });
 }
 
-function selectDispJa(btn, i){
+function selectAcctChoice(btn, i){
   const item = dispQuizDeck[dispQuizIdx];
-  const choices = window._dispJaChoices;
-  dispJaOk = choices[i] === item.name;
-  if(dispJaOk) dispQuizJaScore++;
-  markDispChoices('disp-ja-choices', choices.indexOf(item.name), i);
-  const clsChoices = dispPickClsChoices(item);
-  window._dispClsChoices = clsChoices;
-  const step2 = document.getElementById('disp-step2');
-  step2.innerHTML = `
-    <div class="exp-q-card" style="text-align:center;margin-top:12px;">
-      <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:${dispJaOk?'#2E7D32':'#C62828'};">${dispJaOk?'⭕ 正解':'❌ 不正解'}：<span class="acct-tag acct-tag-lg ${dispTagClass(item)}">${item.name}${item.disp?'　※':''}</span></div>
-      ${item.disp?`<div style="font-size:11px;color:var(--muted);margin-bottom:6px;">※表示科目名が勘定科目名と異なります（詳細は解答で確認）</div>`:''}
-      <div style="font-size:12px;color:var(--muted);font-weight:700;">② この勘定科目は、財務諸表のどこに表示される？</div>
-    </div>
-    <div class="exp-step-choices wide" id="disp-cls-choices">
-      ${clsChoices.map((c,j)=>`<button class="exp-step-choice-btn" onclick="selectDispCls(this,${j})">${c}</button>`).join('')}
-    </div>`;
-  step2.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-
-function selectDispCls(btn, i){
-  const item = dispQuizDeck[dispQuizIdx];
-  const choices = window._dispClsChoices;
-  const correct = dispAnsText(item);
-  const clsOk = choices[i] === correct;
-  if(clsOk) dispQuizClsScore++;
-  markDispChoices('disp-cls-choices', choices.indexOf(correct), i);
-  const ok = dispJaOk && clsOk;
+  const choices = window._acctChoices;
+  const ok = choices[i] === item;
+  markDispChoices('disp-ja-choices', choices.indexOf(item), i);
   if(ok) dispQuizScore++;
   else dispQuizWrong.push(item.no);
   const isLast = dispQuizIdx>=dispQuizDeck.length-1;
   const res = document.getElementById('disp-res');
   res.className = `exp-result ${ok?'ok':'ng'}`;
   res.style.display = 'block';
-  const dispLine = item.disp ? `<div style="font-size:12px;color:var(--muted);margin-bottom:6px;">※表示科目：${item.disp}</div>` : '';
   res.innerHTML = `
     <div class="exp-res-hd">${ok?'⭕ 正解！':'❌ 不正解'}</div>
-    <div style="font-size:12px;margin:4px 0 2px;">① 日本語：${dispJaOk?'⭕':'❌'}　② 表示区分：${clsOk?'⭕':'❌'}</div>
     <button class="exp-nav-btn exp-nav-next" style="width:100%;margin:10px 0;" onclick="dispQuizNext()">${isLast?'結果を見る →':'次の問題 →'}</button>
-    ${dispLine}
-    <div class="exp-res-exp"><div>${item.def}</div><div style="margin-top:6px;padding-top:6px;border-top:1px dashed var(--border);">${item.cls}</div></div>`;
+    <div class="exp-res-exp">
+      <div style="margin-bottom:6px;"><span class="acct-tag ${dispTagClass(item)}">${item.name}${item.disp?'　※':''}</span>　<span class="acct-tag ${dispTagClass(item)}">${item.en}</span></div>
+      <div>${item.def}</div>
+      <div style="margin-top:6px;padding-top:6px;border-top:1px dashed var(--border);"><strong>表示区分：</strong>${dispAnsText(item)}</div>
+      ${item.disp?`<div style="font-size:12px;color:var(--muted);margin-top:4px;">※表示科目：${item.disp}</div>`:''}
+    </div>`;
   res.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
@@ -4311,7 +4321,7 @@ function renderDispQuizFinish(){
   const wrongHtml = wrongItems.length
     ? `<div style="text-align:left;font-size:12px;color:var(--muted);margin-top:14px;padding:10px 12px;background:rgba(0,0,0,0.04);border-radius:8px;">${wrongLabel}${wrongBody}</div>`
     : '';
-  const breakdown = isConcept ? '' : `<div style="font-size:12px;color:var(--muted);margin-top:4px;">① 日本語 ${dispQuizJaScore} / ${total}　② 表示区分 ${dispQuizClsScore} / ${total}</div>`;
+  const breakdown = '';
   const main=document.getElementById('exp-main');
   main.innerHTML = `
     <div class="exp-nav-row">
@@ -4332,7 +4342,7 @@ function renderDispQuizFinish(){
     </div>`;
   scrollDispTabIntoView();
 }
-// ===== 表示区分クイズここまで =====
+// ===== 勘定科目クイズここまで =====
 
 // ===== 総合問題（財務諸表作成・本支店会計・株主資本等変動・標準原価計算・CVP分析）=====
 // ===== shared helpers =====
