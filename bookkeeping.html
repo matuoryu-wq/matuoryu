@@ -4223,11 +4223,11 @@ function acctQAns(item){
   return (item.name.length>=2 && !['支店','本店','本社','工場'].includes(item.name)) ? a.split(item.name).join('◯◯') : a;
 }
 function acctQText(item){
-  return `${acctQDef(item)}<span style="display:inline-block;margin-left:4px;font-weight:700;color:#1A2B3C;">${acctQAns(item)}</span>`;
+  return `<div>${acctQDef(item)}</div><div style="margin-top:4px;font-weight:700;color:#1A2B3C;">${acctQAns(item)}</div>`;
 }
 // 逆向き（科目名 → 説明）の選択肢：英語名＋説明＋表示区分
 function acctDescHtml(item){
-  return `<span class="acct-tag" style="margin-right:4px;background:#fff;border-color:#90A4AE;color:#37474F;">${item.en}</span>${acctQText(item)}`;
+  return `<div style="margin-bottom:4px;"><span class="acct-tag" style="background:#fff;border-color:#90A4AE;color:#37474F;">${item.en}</span></div>${acctQText(item)}`;
 }
 let acctQuizReverse = false;
 function setAcctQuizReverse(on){ acctQuizReverse = on; launchDispQuiz(dispQuizTab); }
@@ -4282,7 +4282,7 @@ function renderDispQuiz(){
     ? `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この勘定科目の英語・説明・表示区分は？</div>
        <span class="acct-tag acct-tag-lg" style="font-size:18px;background:#fff;border-color:#90A4AE;color:#37474F;">${item.name}</span>`
     : `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この勘定科目は？</div>
-       <div style="text-align:left;font-size:14px;line-height:1.8;"><span class="acct-tag acct-tag-lg ${dispTagClass(item)}" style="font-size:16px;margin-right:4px;">${item.en}</span>${acctQText(item)}</div>`;
+       <div style="text-align:left;font-size:14px;line-height:1.8;"><div style="margin-bottom:6px;"><span class="acct-tag acct-tag-lg ${dispTagClass(item)}" style="font-size:16px;">${item.en}</span></div>${acctQText(item)}</div>`;
   main.innerHTML = `
     ${dispQuizNavBar()}
     ${dispTabsHtml()}
