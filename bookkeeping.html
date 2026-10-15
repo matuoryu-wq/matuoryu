@@ -4092,20 +4092,50 @@ function dispTagClass(item){
   return T[item.name] ? tagType(item.name) : item.cat;
 }
 
-function dispTabPool(tab){
+// チェック機能（仕訳問題のチェックとは別に保存）
+let acctChecked = {};
+try{ acctChecked = JSON.parse(localStorage.getItem('bk_acct_checked') || '{}') || {}; }catch(e){ acctChecked = {}; }
+let acctCheckOnly = false;
+function acctKeyOf(item){ return (item.en === undefined ? 'c' : 'a') + item.no; }
+function toggleAcctChecked(){
+  const item = dispQuizDeck[dispQuizIdx];
+  if(!item) return;
+  const k = acctKeyOf(item);
+  if(acctChecked[k]) delete acctChecked[k]; else acctChecked[k] = true;
+  try{ localStorage.setItem('bk_acct_checked', JSON.stringify(acctChecked)); }catch(e){}
+  const btn = document.getElementById('acct-check-btn');
+  if(btn){ btn.textContent = acctChecked[k] ? '☑ チェック済み' : '☐ チェックをつける'; btn.classList.toggle('active', !!acctChecked[k]); }
+}
+function acctCheckBtnHtml(item){
+  const on = !!acctChecked[acctKeyOf(item)];
+  return `<button id="acct-check-btn" class="exp-check-btn${on?' active':''}" onclick="toggleAcctChecked()">${on?'☑ チェック済み':'☐ チェックをつける'}</button>`;
+}
+function setAcctCheckOnly(on){ acctCheckOnly = on; launchDispQuiz(dispQuizTab); }
+
+function dispTabPoolAll(tab){
   if(tab === 'concept') return CONCEPT_DATA;
   if(tab === 'all') return DISPLAY_DATA;
   return DISPLAY_DATA.filter(d => d.bucket === tab);
 }
+function dispTabPool(tab){
+  const pool = dispTabPoolAll(tab);
+  return acctCheckOnly ? pool.filter(d => acctChecked[acctKeyOf(d)]) : pool;
+}
 
 function dispTabsHtml(){
   const tabs = [
-    { key:'concept', label:`表示区分の意味（${CONCEPT_DATA.length}）` },
+    { key:'concept', label:`表示区分の意味（${dispTabPool('concept').length}）` },
     ...DISP_FIELDS.map(f => ({ key:f, label:`${f}（${dispTabPool(f).length}）` })),
-    { key:'all', label:`全分野（${DISPLAY_DATA.length}）` },
+    { key:'all', label:`全分野（${dispTabPool('all').length}）` },
   ];
+  const nChecked = Object.keys(acctChecked).length;
   return `<div class="disp-tabs" id="disp-tabs">${tabs.map(t =>
-    `<button class="ctrl-btn${t.key===dispQuizTab?' active':''}" onclick='launchDispQuiz(${JSON.stringify(t.key)})'>${t.label}</button>`).join('')}</div>`;
+    `<button class="ctrl-btn${t.key===dispQuizTab?' active':''}" onclick='launchDispQuiz(${JSON.stringify(t.key)})'>${t.label}</button>`).join('')}</div>
+  <div class="sec-tabs" style="margin:6px 0 4px;align-items:center;">
+    <span style="font-size:12px;font-weight:700;color:var(--muted);">表示方法：</span>
+    <button class="ctrl-btn${!acctCheckOnly?' active':''}" onclick="setAcctCheckOnly(false)">全問</button>
+    <button class="ctrl-btn${acctCheckOnly?' active':''}" onclick="setAcctCheckOnly(true)">チェックのみ（全${nChecked}問）</button>
+  </div>`;
 }
 
 function scrollDispTabIntoView(){
@@ -4142,7 +4172,7 @@ function dispQuizNavBar(){
   const total=dispQuizDeck.length, i=dispQuizIdx;
   return `<div class="exp-nav-row">
     <button class="exp-nav-btn" onclick="exitDispQuiz()">✕ 終了</button>
-    <span class="exp-nav-info">問${i+1} / ${total}（正解 ${dispQuizScore}）</span>
+    <span class="exp-nav-info">${total?`問${i+1} / ${total}（正解 ${dispQuizScore}）`:'0問'}</span>
     <span style="width:64px;"></span>
   </div>`;
 }
@@ -4155,9 +4185,12 @@ function dispSynonymsOf(name){
 
 function dispPickJaChoices(item){
   const ng = dispSynonymsOf(item.name);
-  const same = shuffleArr(DISPLAY_DATA.filter(d => d.bucket===item.bucket && !ng.has(d.name)));
-  const others = shuffleArr(DISPLAY_DATA.filter(d => d.bucket!==item.bucket && !ng.has(d.name)));
-  const picked = [...same, ...others].slice(0,3).map(d => d.name);
+  const cand = DISPLAY_DATA.filter(d => !ng.has(d.name));
+  // 逆向きでは、資産・負債などの種類が同じ科目を優先して選択肢にする（種類で消去法できないように）
+  const tiers = acctQuizReverse
+    ? [d => d.cat===item.cat && d.bucket===item.bucket, d => d.cat===item.cat && d.bucket!==item.bucket, d => d.cat!==item.cat && d.bucket===item.bucket, d => d.cat!==item.cat && d.bucket!==item.bucket]
+    : [d => d.bucket===item.bucket, d => d.bucket!==item.bucket];
+  const picked = tiers.flatMap(f => shuffleArr(cand.filter(f))).slice(0,3).map(d => d.name);
   return shuffleArr([item.name, ...picked]);
 }
 
@@ -4194,7 +4227,7 @@ function acctQText(item){
 }
 // 逆向き（科目名 → 説明）の選択肢：英語名＋説明＋表示区分
 function acctDescHtml(item){
-  return `<span class="acct-tag ${dispTagClass(item)}" style="margin-right:4px;">${item.en}</span>${acctQText(item)}`;
+  return `<span class="acct-tag" style="margin-right:4px;background:#fff;border-color:#90A4AE;color:#37474F;">${item.en}</span>${acctQText(item)}`;
 }
 let acctQuizReverse = false;
 function setAcctQuizReverse(on){ acctQuizReverse = on; launchDispQuiz(dispQuizTab); }
@@ -4206,6 +4239,15 @@ function acctModeHtml(){
 }
 
 function renderDispQuiz(){
+  if(!dispQuizDeck.length){
+    document.getElementById('exp-main').innerHTML = `
+      ${dispQuizNavBar()}
+      ${dispTabsHtml()}
+      ${dispQuizKind==='account'?acctModeHtml():''}
+      <div class="exp-q-card" style="text-align:center;color:var(--muted);font-size:13px;">この分野にはチェックした問題がありません。<br>問題の下の「☐ チェックをつける」でチェックできます。</div>`;
+    scrollDispTabIntoView();
+    return;
+  }
   if(dispQuizIdx >= dispQuizDeck.length){ renderDispQuizFinish(); return; }
   const item = dispQuizDeck[dispQuizIdx];
   const main = document.getElementById('exp-main');
@@ -4227,6 +4269,7 @@ function renderDispQuiz(){
       <div class="exp-step-choices wide" id="disp-choices">
         ${choices.map((c,i)=>`<button class="exp-step-choice-btn" onclick="selectDispConcept(this,${i})">${c}</button>`).join('')}
       </div>
+      ${acctCheckBtnHtml(item)}
       <div class="exp-result" id="disp-res"></div>`;
     scrollDispTabIntoView();
     return;
@@ -4237,7 +4280,7 @@ function renderDispQuiz(){
   window._acctChoices = choiceItems;
   const qHtml = acctQuizReverse
     ? `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この勘定科目の英語・説明・表示区分は？</div>
-       <span class="acct-tag acct-tag-lg ${dispTagClass(item)}" style="font-size:18px;">${item.name}</span>`
+       <span class="acct-tag acct-tag-lg" style="font-size:18px;background:#fff;border-color:#90A4AE;color:#37474F;">${item.name}</span>`
     : `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この勘定科目は？</div>
        <div style="text-align:left;font-size:14px;line-height:1.8;"><span class="acct-tag acct-tag-lg ${dispTagClass(item)}" style="font-size:16px;margin-right:4px;">${item.en}</span>${acctQText(item)}</div>`;
   main.innerHTML = `
@@ -4248,6 +4291,7 @@ function renderDispQuiz(){
     <div class="exp-step-choices wide" id="disp-ja-choices">
       ${choiceItems.map((c,i)=>`<button class="exp-step-choice-btn"${acctQuizReverse?' style="text-align:left;font-weight:500;line-height:1.6;"':''} onclick="selectAcctChoice(this,${i})">${acctQuizReverse?acctDescHtml(c):c.name}</button>`).join('')}
     </div>
+    ${acctCheckBtnHtml(item)}
     <div class="exp-result" id="disp-res"></div>`;
   scrollDispTabIntoView();
 }
