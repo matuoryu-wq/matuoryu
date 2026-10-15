@@ -485,6 +485,12 @@
     /* exp-readonly-ans は上の .exp-fill-exp-area ブロックで再定義 */
     /* ===== チェック機能 ===== */
     .check-bar { background:white; border-bottom:1px solid var(--border); padding:8px 16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .flow-wrap { margin-top:10px; border-top:1px dashed var(--border); padding-top:6px; }
+    .flow-bar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .flow-btn { border:1px solid #B0BEC5; background:#fff; border-radius:14px; padding:2px 10px; font-size:11px; font-weight:700; color:#546E7A; cursor:pointer; }
+    .flow-legend { display:flex; gap:8px; font-size:10px; font-weight:700; }
+    .flow-fig { margin-top:4px; }
+    .flow-note { font-size:11px; line-height:1.5; color:#546E7A; margin:2px 2px 0; }
     .exp-check-btn { width:100%; padding:9px 12px; border:1.5px solid var(--border); border-radius:10px; background:#fff; font-size:13px; font-weight:700; cursor:pointer; color:var(--text); margin-top:8px; text-align:center; transition:all 0.15s; }
     .exp-check-btn.active { background:#FFF3E0; border-color:#FB8C00; color:#E65100; }
 
@@ -3835,13 +3841,13 @@ function loadExpQ(){
   if(!q.e){
     main.innerHTML=`
       ${expNavBar()}
-      <div class="exp-q-card">${fmtQ(q)}</div>
+      <div class="exp-q-card">${fmtQ(q)}${flowFigHtml(q)}</div>
       <button class="exp-reveal-btn" onclick="expRevealAns(this)">答えを見る ▼</button>
       <div class="exp-readonly-ans" id="exp-ro-ans">${q.ans_html||''}</div>`;
   } else {
     main.innerHTML=`
       ${expNavBar()}
-      <div class="exp-q-card">${fmtQ(q)}</div>
+      <div class="exp-q-card">${fmtQ(q)}${flowFigHtml(q)}</div>
       <div class="exp-result" id="exp-res"></div>
       <div id="exp-entry-area"></div>`;
     loadExpEntry();
@@ -3878,7 +3884,7 @@ function loadExpSteps(){
   const main=document.getElementById('exp-main');
   main.innerHTML=`
     ${expNavBar()}
-    <div class="exp-q-card">${fmtQ(q)}</div>
+    <div class="exp-q-card">${fmtQ(q)}${flowFigHtml(q)}</div>
     <div id="exp-step-area" class="exp-step-area"></div>`;
   renderExpStep();
 }
@@ -4069,6 +4075,149 @@ function expNextEntry(){
 }
 
 // ===== スクロールモードここまで =====
+
+// ===== 取引の流れ図（仕訳問題の問題文の下に表示） =====
+// 色は勘定科目の5色（黄・ピンク・緑・青・オレンジ）と重ならないものだけを使う
+const FLOW_KIND = {
+  goods:  {color:'#212121', dash:'',    label:'モノ'},
+  money:  {color:'#6A1B9A', dash:'',    label:'お金'},
+  promise:{color:'#757575', dash:'5 4', label:'約束・権利'},
+};
+let flowFigOpen = true;
+try{ flowFigOpen = localStorage.getItem('bk_fig_open') !== '0'; }catch(e){}
+function toggleFlowFig(btn){
+  flowFigOpen = !flowFigOpen;
+  try{ localStorage.setItem('bk_fig_open', flowFigOpen?'1':'0'); }catch(e){}
+  const box = btn.closest('.flow-wrap').querySelector('.flow-fig');
+  box.style.display = flowFigOpen ? '' : 'none';
+  btn.textContent = flowFigOpen ? '▲ 図' : '▼ 図';
+}
+function flowFigHtml(q){
+  const fig = FLOW_FIGS[q.id];
+  if(!fig) return '';
+  const legend = `<span class="flow-legend">${Object.values(FLOW_KIND).map(k=>`<span style="color:${k.color}">${k.dash?'┅':'━'} ${k.label}</span>`).join('')}</span>`;
+  return `<div class="flow-wrap"><div class="flow-bar"><button class="flow-btn" onclick="toggleFlowFig(this)">${flowFigOpen?'▲ 図':'▼ 図'}</button>${legend}</div>
+    <div class="flow-fig"${flowFigOpen?'':' style="display:none"'}>${renderFlow(fig)}</div></div>`;
+}
+function renderFlow(fig){
+  const W=340, n=fig.nodes.length;
+  const nodeH = fig.nodes.some(nd=>nd.sub) ? 36 : 28;
+  // 箱の幅は文字数に合わせる
+  const ws = fig.nodes.map(nd=>Math.max(66, nd.label.length*13+14, (nd.sub||'').length*9.5+12));
+  const x0 = 8+ws[0]/2, xn = W-8-ws[n-1]/2;
+  const xs = fig.nodes.map((_,i)=> n===1 ? W/2 : x0 + i*(xn-x0)/(n-1));
+  const pos = Object.fromEntries(fig.nodes.map((nd,i)=>[nd.id, xs[i]]));
+  const used = {}, arcs = [], lh = 13;
+  fig.flows.forEach(f=>{
+    const x1=pos[f.from], x2=pos[f.to], ltr = x2>x1;
+    const up = f.side ? f.side==='up' : ltr;
+    const key = (up?'u':'d')+Math.min(x1,x2)+'-'+Math.max(x1,x2);
+    const k = used[key]=(used[key]||0)+1;
+    const lines = f.label.split('\n');
+    arcs.push({f,x1,x2,up,apex:16+(k-1)*(lines.length*lh+6),lines});
+  });
+  const ext = a => a.apex + a.lines.length*lh + 2;
+  const upMax = Math.max(0,...arcs.filter(a=>a.up).map(ext));
+  const dnMax = Math.max(0,...arcs.filter(a=>!a.up).map(ext));
+  const top = upMax + 2, H = top + nodeH + dnMax + 2;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:inherit;">
+  <defs>${Object.entries(FLOW_KIND).map(([k,v])=>`<marker id="far-${k}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${v.color}"/></marker>`).join('')}</defs>`;
+  let labels='';
+  arcs.forEach(({f,x1,x2,up,apex,lines})=>{
+    const kd = FLOW_KIND[f.kind];
+    const dir = x2>x1?1:-1;
+    const sx = x1 + dir*14, ex = x2 - dir*14;
+    const y0 = up ? top : top+nodeH;
+    const ay = up ? y0-apex : y0+apex;
+    svg += `<path data-flow="1" d="M${sx},${y0} Q${(sx+ex)/2},${2*ay-y0} ${ex},${y0}" fill="none" stroke="${kd.color}" stroke-width="1.8" ${kd.dash?`stroke-dasharray="${kd.dash}"`:''} marker-end="url(#far-${f.kind})"${f.past?' opacity="0.35"':''}/>`;
+    const lx=(sx+ex)/2;
+    lines.forEach((l,i)=>{
+      const ty = up ? ay - 4 - (lines.length-1-i)*lh : ay + 12 + i*lh;
+      labels += `<text x="${lx}" y="${ty}" text-anchor="middle" font-size="11" font-weight="700" fill="${kd.color}" stroke="#fff" stroke-width="3" paint-order="stroke"${f.past?' opacity="0.5"':''}>${l}</text>`;
+    });
+  });
+  fig.nodes.forEach((nd,i)=>{
+    const x=pos[nd.id], me = nd.me, nodeW = ws[i];
+    svg += `<rect x="${x-nodeW/2}" y="${top}" width="${nodeW}" height="${nodeH}" rx="8" fill="${me?'#ECEFF1':'#fff'}" stroke="${me?'#263238':'#B0BEC5'}" stroke-width="${me?2.2:1.2}"/>`;
+    svg += `<text x="${x}" y="${top+(nd.sub?16:18.5)}" text-anchor="middle" font-size="12.5" font-weight="800" fill="#263238">${nd.label}</text>`;
+    if(nd.sub) svg += `<text x="${x}" y="${top+29}" text-anchor="middle" font-size="9" fill="#607D8B">${nd.sub}</text>`;
+  });
+  svg += labels + `</svg>`;
+  return `${svg}${fig.note?`<div class="flow-note">💡 ${fig.note}</div>`:''}${fig.flows.some(f=>f.past)?'<div class="flow-note" style="opacity:.7">※薄い矢印は、以前に起きていた取引</div>':''}`;
+}
+const FLOW_FIGS = {
+  // --- 商品売買 ---
+  1001:{nodes:[{id:'Y',label:'Y社',sub:'仕入先'},{id:'X',label:'X社',sub:'自社',me:true}],
+    flows:[{from:'Y',to:'X',kind:'goods',label:'商品100円'},{from:'X',to:'Y',kind:'promise',label:'月末に100円払う約束'}],
+    note:'商品は受け取ったが、お金はまだ払っていない。'},
+  1002:{nodes:[{id:'X',label:'X社',sub:'自社',me:true},{id:'Z',label:'Z社',sub:'得意先'}],
+    flows:[{from:'X',to:'Z',kind:'goods',label:'商品150円'},{from:'Z',to:'X',kind:'promise',label:'翌月末に150円払ってもらう約束'}],
+    note:'商品は渡したが、お金はまだもらっていない。'},
+  1003:{nodes:[{id:'Y',label:'Y社',sub:'仕入先'},{id:'X',label:'X社',sub:'自社',me:true}],
+    flows:[{from:'Y',to:'X',kind:'goods',label:'掛けで買った商品',past:true},{from:'X',to:'Y',kind:'goods',label:'違う柔軟剤10円を送り返す'}],
+    note:'返した10円分だけ、Y社に払う代金が減る。'},
+  1004:{nodes:[{id:'X',label:'X社',sub:'自社',me:true},{id:'Z',label:'Z社',sub:'得意先'}],
+    flows:[{from:'X',to:'Z',kind:'goods',label:'掛けで納品した商品（不良品が混じる）',past:true},{from:'Z',to:'X',kind:'promise',label:'払ってもらう代金を15円引き下げ'}],
+    note:'商品はZ社に残ったまま。もらえる代金だけが15円減る。'},
+  1005:{nodes:[{id:'X',label:'X社',sub:'自社',me:true},{id:'Y',label:'Y社',sub:'仕入先'}],
+    flows:[{from:'X',to:'Y',kind:'money',label:'現金20円（内金）'},{from:'Y',to:'X',kind:'promise',label:'後で商品を届けてもらう'}],
+    note:'お金を先に払い、商品を受け取る権利ができた。'},
+  1006:{nodes:[{id:'Z',label:'Z社',sub:'得意先'},{id:'X',label:'X社',sub:'自社',me:true}],
+    flows:[{from:'Z',to:'X',kind:'money',label:'現金20円（内金）'},{from:'X',to:'Z',kind:'promise',label:'後で商品を渡す義務'}],
+    note:'先にお金をもらい、商品を渡す義務ができた。'},
+  1007:{nodes:[{id:'Y',label:'Y社',sub:'仕入先'},{id:'X',label:'X社',sub:'自社',me:true}],
+    flows:[{from:'Y',to:'X',kind:'goods',label:'掛けで買った商品',past:true},{from:'X',to:'Y',kind:'money',label:'現金100円'}],
+    note:'「月末に払う約束」を果たした。払う義務が消える。'},
+  1008:{nodes:[{id:'X',label:'X社',sub:'自社',me:true},{id:'Z',label:'Z社',sub:'得意先'}],
+    flows:[{from:'X',to:'Z',kind:'goods',label:'納品済みの商品',past:true},{from:'Z',to:'X',kind:'money',label:'現金150円'}],
+    note:'「後でもらう権利」が現金に変わった。'},
+  1009:{nodes:[{id:'Y',label:'Y社',sub:'仕入先'},{id:'X',label:'X社',sub:'自社',me:true},{id:'T',label:'運送会社'}],
+    flows:[{from:'Y',to:'X',kind:'goods',label:'商品100円'},{from:'X',to:'Y',kind:'promise',label:'100円払う約束'},{from:'X',to:'T',kind:'money',label:'運賃5円'}],
+    note:'商品を手に入れるためにかかった運賃は、商品の代金に含めて考える。'},
+  1010:{nodes:[{id:'Z',label:'Z社',sub:'得意先'},{id:'X',label:'X社',sub:'自社',me:true},{id:'T',label:'配送業者'}],
+    flows:[{from:'X',to:'Z',kind:'goods',label:'商品100円'},{from:'Z',to:'X',kind:'promise',label:'100円払って\nもらう約束'},{from:'X',to:'T',kind:'money',label:'発送費5円'}],
+    note:'送料はX社が負担する（X社の費用）。'},
+  1011:{nodes:[{id:'Z',label:'Z社',sub:'得意先'},{id:'X',label:'X社',sub:'自社',me:true},{id:'T',label:'配送業者'}],
+    flows:[{from:'X',to:'Z',kind:'goods',label:'商品100円'},{from:'Z',to:'X',kind:'promise',label:'105円払って\nもらう約束'},{from:'X',to:'T',kind:'money',label:'発送費5円'}],
+    note:'送料5円はZ社の負担。商品の代金とあわせてZ社に請求する。'},
+  1012:{nodes:[{id:'Z',label:'Z社',sub:'得意先'},{id:'X',label:'X社',sub:'自社',me:true},{id:'T',label:'配送業者'}],
+    flows:[{from:'Z',to:'X',kind:'promise',label:'後で5円\n返してもらう'},{from:'X',to:'T',kind:'money',label:'配送料5円\n（Z社の分）'}],
+    note:'Z社が払うべきお金を立て替えた。商品の代金とは別に請求する。'},
+  1013:{nodes:[{id:'Y',label:'Y社',sub:'仕入先'},{id:'X',label:'X社',sub:'自社',me:true}],
+    flows:[{from:'Y',to:'X',kind:'goods',label:'掛けで買った商品（100円）',past:true},{from:'X',to:'Y',kind:'money',label:'現金97円'}],
+    note:'期日より早く払ったので3円まけてもらった。100円払う義務が97円で消える。'},
+  1014:{nodes:[{id:'Y',label:'Y社',sub:'仕入先'},{id:'X',label:'X社',sub:'自社',me:true}],
+    flows:[{from:'Y',to:'X',kind:'goods',label:'商品100円'},{from:'X',to:'Y',kind:'money',label:'現金100円'}],
+    note:'売上原価対立法では、仕入れた商品を「手元の在庫」として記録する。'},
+  1015:{nodes:[{id:'X',label:'X社',sub:'自社',me:true},{id:'Z',label:'Z社',sub:'得意先'}],
+    flows:[{from:'X',to:'Z',kind:'goods',label:'商品（原価60円）'},{from:'Z',to:'X',kind:'money',label:'現金100円'}],
+    note:'売上原価対立法では、売るたびに、渡した商品の原価60円も記録する。'},
+  1016:{nodes:[{id:'N',label:'今期',sub:'決算日',me:true},{id:'F',label:'次期'}],
+    flows:[{from:'N',to:'F',kind:'goods',label:'売れ残りの商品30円'}],
+    note:'今期に仕入れたうち30円分は売れていない。今期の費用から外して、次期へ持ち越す。'},
+  1017:{nodes:[{id:'P',label:'前期'},{id:'N',label:'今期',sub:'決算日',me:true},{id:'F',label:'次期'}],
+    flows:[{from:'P',to:'N',kind:'goods',label:'期首の在庫\n30円'},{from:'N',to:'F',kind:'goods',label:'期末の在庫\n40円'}],
+    note:'期首の在庫30円は今期に売れたものとして扱い、期末の在庫40円は次期へ持ち越す。'},
+  1018:{nodes:[{id:'X',label:'X社',sub:'自社',me:true},{id:'C',label:'お客さん'}],
+    flows:[{from:'X',to:'C',kind:'promise',label:'自社の商品券50円（後で商品と交換）'},{from:'C',to:'X',kind:'money',label:'現金50円'}],
+    note:'商品券を渡しただけで、商品はまだ渡していない。'},
+  1019:{nodes:[{id:'C',label:'お客さん'},{id:'X',label:'X社',sub:'自社',me:true},{id:'S',label:'別の店',sub:'発行元'}],
+    flows:[{from:'X',to:'C',kind:'goods',label:'商品30円'},{from:'C',to:'X',kind:'promise',label:'別の店の\n商品券30円'},{from:'X',to:'S',kind:'promise',label:'後でお金に\n換えてもらう'}],
+    note:'受け取ったのは他の店の商品券。後で発行元からお金を受け取れる。'},
+  1020:{nodes:[{id:'W',label:'倉庫',sub:'帳簿10枚',me:true},{id:'L',label:'行方不明',sub:'原因不明'}],
+    flows:[{from:'W',to:'L',kind:'goods',label:'Tシャツ2枚×10円＝20円'}],
+    note:'帳簿では10枚、実際は8枚。なくなった2枚分を在庫から減らす。'},
+  1021:{nodes:[{id:'A',label:'Tシャツ8枚',sub:'仕入値＠10円',me:true},{id:'B',label:'Tシャツ8枚',sub:'売れる見込み＠8円'}],
+    flows:[{from:'A',to:'B',kind:'goods',label:'価値が2円×8枚＝16円下がる'}],
+    note:'数は減っていない。1枚あたりの価値が下がった分だけ在庫の金額を引き下げる。'},
+  1022:{nodes:[{id:'P',label:'前期末',sub:'16円引き下げ'},{id:'N',label:'今期首',sub:'元の金額に戻す',me:true}],
+    flows:[{from:'P',to:'N',kind:'goods',label:'引き下げた16円を戻す'}],
+    note:'洗替法では、前期に引き下げた分を期首にいったん取り消す。'},
+  1023:{nodes:[{id:'C',label:'お客さん'},{id:'X',label:'X社',sub:'自社',me:true},{id:'K',label:'カード会社'}],
+    flows:[{from:'X',to:'C',kind:'goods',label:'書籍100円'},{from:'C',to:'X',kind:'promise',label:'カードで\n支払い'},{from:'K',to:'X',kind:'promise',label:'後で98円\n払ってもらう'},{from:'X',to:'K',kind:'money',label:'手数料2円\n（差し引き）'}],
+    note:'代金はカード会社から受け取る。手数料2円は売った時点でX社の費用にする。'},
+};
+// ===== 取引の流れ図ここまで =====
 
 // ===== 勘定科目クイズ（旧・表示区分クイズを吸収） =====
 // 英語名＋説明＋表示区分 → 日本語の科目名を選ぶ。逆向き（科目名 → 英語・説明・表示区分）も選べる。タブは仕訳問題と同じ分野ごと。
