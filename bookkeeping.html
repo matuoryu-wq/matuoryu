@@ -4637,7 +4637,7 @@ function acctAnswerHtml(item){
     <div>${ACCT_EXPL[item.name]||item.def}</div>
     <div class="acct-ai"><span class="acct-al ds">表示</span>${dispAnsText(item)}${item.disp?`<span style="color:var(--muted);">（表示科目：${item.disp}）</span>`:''}</div>
     ${lines}
-    ${gi?`<div style="margin-top:8px;padding-top:6px;border-top:1px dashed var(--border);font-size:12px;line-height:1.7;"><strong>${gi.g.no} ${gi.g.name}</strong>${gi.s.label?`　›　<strong>${gi.s.label}</strong>`:''}<br><span style="color:var(--muted);">使い方：${gi.g.use}</span>${gi.s.reason?`<br><span style="color:var(--muted);">${gi.s.reason}</span>`:''}</div>`:''}`;
+    ${gi?`<div style="margin-top:8px;padding-top:6px;border-top:1px dashed var(--border);font-size:12px;line-height:1.7;"><strong>${gi.g.no} ${gi.g.name}</strong><div style="margin-top:3px;"><span class="acct-al ds">使い方</span>${gi.g.use}</div><div style="margin-top:3px;"><span class="acct-al ds">理由</span>${gi.g.why}</div>${gi.s.label?`<div style="margin-top:3px;"><span class="acct-al ds">小分け</span><strong>${gi.s.label}</strong>：${gi.s.reason}</div>`:''}</div>`:''}`;
 }
 
 function selectAcctChoice(btn, i){
