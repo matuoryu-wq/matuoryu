@@ -4526,7 +4526,9 @@ function dispPickJaChoices(item){
   // 選択肢は、同じ小分け → 同じグループ → 同じタイプ（資産・負債など）の順に選ぶ（似た科目と区別できるかを問う）
   const me = ACCT_GROUP_OF[item.name] || {};
   const gs = d => ACCT_GROUP_OF[d.name] || {};
-  const tiers = [d => gs(d).s && gs(d).s===me.s, d => gs(d).g && gs(d).g===me.g && gs(d).s!==me.s, d => gs(d).g!==me.g && d.cat===item.cat, d => gs(d).g!==me.g && d.cat!==item.cat];
+  const base = [d => gs(d).s && gs(d).s===me.s, d => gs(d).g && gs(d).g===me.g && gs(d).s!==me.s, d => gs(d).g!==me.g && d.cat===item.cat, d => gs(d).g!==me.g && d.cat!==item.cat];
+  // 逆向きでは表示区分などから種類で消去法できないよう、同じタイプの科目を先に使う
+  const tiers = acctQuizReverse ? [...base.map(f=>d=>f(d)&&d.cat===item.cat), ...base.map(f=>d=>f(d)&&d.cat!==item.cat)] : base;
   const picked = tiers.flatMap(f => shuffleArr(cand.filter(f))).slice(0,3).map(d => d.name);
   return shuffleArr([item.name, ...picked]);
 }
