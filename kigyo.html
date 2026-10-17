@@ -87,7 +87,7 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 <body>
 <div class="header gut">
   <h1>企業法務 一問一答</h1>
-  <p>四択で答えて、選択肢ごとの解説と根拠を確認しよう</p>
+  <p>四択で答えて、解説と根拠を確認しよう</p>
 </div>
 
 <div class="controls gut">
@@ -117,16 +117,22 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
     <button class="nav-btn primary" id="nextBtn" type="button">次の問題 →</button>
   </div>
   <div class="card" id="card"></div>
-  <div class="note">問題・解説は2026年10月時点の法令に基づく学習用の要約です。条文は e-Gov 法令検索等で原文と最新の改正状況を確認してください。チェックや正答の記録はこの端末のブラウザ内にのみ保存されます。キーボード：1〜4＝選択肢　←→＝前後の問題　C＝チェック</div>
 </div>
 
 <script>
 // 問題データは kigyo-data/*.js が QB.add() で登録する。
-// 行の形式: [小分野ID, 1=正しい記述 / 0=誤った記述, 記述, 解説, 根拠]
-// 記述IDは「分野.小分野.小分野内の通し番号」なので、記述は各小分野の末尾に追加すること（途中に挿入すると記録がずれる）。
+// 行の形式: [小分野ID, 問題文, 正解の選択肢, 誤りの選択肢1, 誤りの選択肢2, 誤りの選択肢3, 解説, 根拠]
+// 選択肢の並びは問題IDから決まる（毎回同じ）。問題IDは「分野.小分野.小分野内の通し番号」なので、
+// 問題は各小分野の末尾に追加すること（途中に挿入するとチェックの記録がずれる）。
+function rng(str){let h=2166136261;for(const ch of str){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return()=>{h+=0x6D2B79F5;let t=h;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
 const QB={cats:[],add(id,name,subs,rows){
   const n={};
-  const qs=rows.map(r=>{n[r[0]]=(n[r[0]]||0)+1;return{id:`${id}.${r[0]}.${n[r[0]]}`,c:id,s:r[0],a:!!r[1],q:r[2],e:r[3],r:r[4]};});
+  const qs=rows.map(r=>{
+    n[r[0]]=(n[r[0]]||0)+1;
+    const qid=`${id}.${r[0]}.${n[r[0]]}`,rand=rng(qid),opts=[r[2],r[3],r[4],r[5]];
+    for(let i=3;i>0;i--){const j=Math.floor(rand()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
+    return{id:qid,c:id,s:r[0],q:r[1],opts,ans:opts.indexOf(r[2]),e:r[6],r:r[7]};
+  });
   this.cats.push({id,name,subs:subs.map(([sid,sname])=>({id:sid,name:sname})),qs});
 }};
 </script>
@@ -137,29 +143,14 @@ const QB={cats:[],add(id,name,subs,rows){
 <script src="kigyo-data/kojin.js"></script>
 <script src="kigyo-data/ma.js"></script>
 <script src="kigyo-data/kaishu.js"></script>
+<script src="kigyo-data/kansa.js"></script>
+<script src="kigyo-data/zei.js"></script>
 <script>
 const CATS=QB.cats,KEY='kigyo-quiz-v3';
 const catOf=id=>CATS.find(c=>c.id===id);
 const subName=(c,s)=>catOf(c).subs.find(x=>x.id===s).name;
 
-// ---- 四択問題の生成 ----
-// 各記述を1問の「正解肢」とし、同じ小分野（足りなければ同じ分野）の記述から残り3肢を選ぶ。
-//  正しい記述が正解肢 →「正しいものはどれか」（他の3肢は誤った記述）
-//  誤った記述が正解肢 →「誤っているものはどれか」（他の3肢は正しい記述）
-// 乱数は記述IDから作るので、毎回同じ問題になる（チェックや記録が問題に結び付く）。
-function rng(str){let h=2166136261;for(const ch of str){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return()=>{h+=0x6D2B79F5;let t=h;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
-function pick(arr,k,r){const a=arr.slice(),out=[];while(out.length<k&&a.length)out.push(a.splice(Math.floor(r()*a.length),1)[0]);return out;}
-const MC=[];
-for(const c of CATS){
-  for(const s of c.qs){
-    const r=rng(s.id),want=!s.a;
-    let pool=c.qs.filter(x=>x.s===s.s&&x.a===want&&x!==s);
-    let d=pick(pool,3,r);
-    if(d.length<3)d=d.concat(pick(c.qs.filter(x=>x.s!==s.s&&x.a===want),3-d.length,r));
-    const opts=pick([s,...d],4,r);
-    MC.push({id:'m.'+s.id,c:c.id,s:s.s,mc:true,type:s.a?'right':'wrong',opts,ans:opts.indexOf(s),mixed:opts.some(o=>o.s!==s.s)});
-  }
-}
+const MC=CATS.flatMap(c=>c.qs);
 
 let ST={},CHK={};   // ST: {問題ID:{c,w,l}} 正答記録 / CHK: {問題ID:1|2} チェック・ダブルチェック
 let P={cat:'all',sub:'all',view:'all',idx:0,hide:false};
@@ -225,8 +216,8 @@ function renderQ(){
   $('prevBtn').disabled=P.idx===0;$('nextBtn').disabled=P.idx>=qs.length-1;
   const top=`<div class="q-top"><span class="tag">${esc(label(q))}</span><button type="button" class="chk c${ck}" id="chkBtn">${chkText(ck)}</button></div>`;
   {
-    $('card').innerHTML=top+`<div class="q-text">${esc(q.mixed?catOf(q.c).name:subName(q.c,q.s))}に関する次の記述のうち、<b class="${q.type==='right'?'kw-r':'kw-w'}">${q.type==='right'?'正しいもの':'誤っているもの'}</b>はどれか。</div>
-      <div class="opts">${q.opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}"><span class="num">${NUM[i]}</span><span class="otext">${esc(o.q)}</span></button>`).join('')}</div>
+    $('card').innerHTML=top+`<div class="q-text">${esc(q.q)}</div>
+      <div class="opts">${q.opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}"><span class="num">${NUM[i]}</span><span class="otext">${esc(o)}</span></button>`).join('')}</div>
       <div id="verdict"></div>`;
     document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(+b.dataset.i));
   }
@@ -243,7 +234,7 @@ function answer(v){
   let body;
   {
     document.querySelectorAll('.opt').forEach((b,i)=>{b.disabled=true;if(i===q.ans)b.classList.add('is-ans');else if(i===v)b.classList.add('is-ng');});
-    body=`<h3>${ok?'正解':'不正解'}　正答：${NUM[q.ans]}</h3>`+q.opts.map((o,i)=>`<div class="exp${i===q.ans?' exp-ans':''}"><div class="exp-h"><span class="num">${NUM[i]}</span><span class="mark ${o.a?'m-o':'m-x'}">${o.a?'○ 正しい':'× 誤り'}</span></div><p>${esc(o.e)}</p><div class="ref"><b>根拠</b>　${esc(o.r)}</div></div>`).join('');
+    body=`<h3>${ok?'正解':'不正解'}　正答：${NUM[q.ans]}　${esc(q.opts[q.ans])}</h3><p>${esc(q.e)}</p><div class="ref"><b>根拠</b>　${esc(q.r)}</div>`;
   }
   const last=P.idx>=qs.length-1;
   $('verdict').innerHTML=`<div class="verdict ${ok?'ok':'ng'}">${body}</div>`+
@@ -276,7 +267,7 @@ $('catToggle').onclick=()=>{P.hide=!P.hide;save();renderControls();};
 $('prevBtn').onclick=()=>go(-1);
 $('nextBtn').onclick=()=>go(1);
 $('copyBtn').onclick=()=>{
-  const txt=scope().filter(q=>CHK[q.id]===2).map(q=>`【${label(q)}】次の記述のうち、${q.type==='right'?'正しいもの':'誤っているもの'}はどれか。\n`+q.opts.map((o,i)=>`${NUM[i]}. ${o.q}`).join('\n')+`\n（正答：${NUM[q.ans]}）`).join('\n\n');
+  const txt=scope().filter(q=>CHK[q.id]===2).map(q=>`【${label(q)}】${q.q}\n`+q.opts.map((o,i)=>`${NUM[i]}. ${o}`).join('\n')+`\n（正答：${NUM[q.ans]}）`).join('\n\n');
   const btn=$('copyBtn'),done=m=>{btn.textContent=m;setTimeout(()=>btn.textContent='📋 ダブルの問題をコピー',1500);};
   if(!txt){done('ダブルの問題はありません');return;}
   try{navigator.clipboard.writeText(txt).then(()=>done('コピーしました'),()=>done('コピーできませんでした'));}catch(e){done('コピーできませんでした');}
