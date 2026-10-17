@@ -574,6 +574,7 @@
   <span style="font-size:12px;font-weight:700;color:var(--muted);">問題数：<strong id="s-total" style="color:var(--primary);">0</strong>問</span>
   <span style="font-size:12px;font-weight:700;color:var(--muted);">チェック：<strong id="s-check" style="color:#E65100;">0</strong>問</span>
   <span style="font-size:12px;font-weight:700;color:var(--muted);">ダブル：<strong id="s-double" style="color:#C62828;">0</strong>問</span>
+  <button class="ctrl-btn" style="font-size:11px;padding:3px 8px;" onclick="copyDoubledIds()">📋 ダブルの番号をコピー</button>
 </div>
 
 <div class="exp-panel" id="exp-panel"><div id="exp-main"></div></div>
@@ -7698,6 +7699,16 @@ function toggleChecked(qId){
   saveProgress();
   updateStats();
   refreshCheckBtns(qId);
+}
+// ダブルチェックした問題の番号を、チャットに貼れる形でコピーする
+function copyDoubledIds(){
+  const ids = Object.keys(doubled).map(Number).sort((a,b)=>a-b);
+  if(!ids.length){ alert('ダブルチェックした問題はまだありません'); return; }
+  const text = `ダブルチェック（${ids.length}問）: ${ids.map(i=>'#'+i).join(', ')}`;
+  const fallback = () => { window.prompt('次の文字をコピーしてください', text); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>alert(`${ids.length}問の番号をコピーしました。チャットに貼り付けてください。`)).catch(fallback);
+  } else fallback();
 }
 function toggleDoubled(qId){
   if(doubled[qId]){ delete doubled[qId]; } else { doubled[qId]=true; checked[qId]=true; }
