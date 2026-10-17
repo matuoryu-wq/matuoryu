@@ -220,13 +220,6 @@
     /* その他（評価勘定・損益等）：白 */
     .tag.other     { background: #fff; color: #333; border: 1.5px solid #9E9E9E; }
     /* 資産のマイナス（減価償却累計額・貸倒引当金等）：白地に資産の黄枠 */
-    /* 分類と仕訳の向きが逆の科目：左半分＝本当の分類、右半分＝仕訳の向き */
-    .tag.split, .acct-tag.split { border: 1.5px solid transparent; }
-    .tag.as-li, .acct-tag.as-li { color:#5D4037; background: linear-gradient(90deg,#FFF9C4 50%,#FCE4EC 50%) padding-box, linear-gradient(90deg,#F9C400 50%,#C2185B 50%) border-box; }
-    .tag.eq-rv, .acct-tag.eq-rv { color:#BF4A00; background: linear-gradient(90deg,#FFF3E0 50%,#E1F5FE 50%) padding-box, linear-gradient(90deg,#FB8C00 50%,#0288D1 50%) border-box; }
-    .tag.eq-ex, .acct-tag.eq-ex { color:#BF4A00; background: linear-gradient(90deg,#FFF3E0 50%,#E8F5E9 50%) padding-box, linear-gradient(90deg,#FB8C00 50%,#388E3C 50%) border-box; }
-    .tag.eq-rx, .acct-tag.eq-rx { color:#BF4A00; background: linear-gradient(90deg,#FFF3E0 50%,#E1F5FE 50%,#E1F5FE 75%,#E8F5E9 75%) padding-box, linear-gradient(90deg,#FB8C00 50%,#0288D1 50%,#0288D1 75%,#388E3C 75%) border-box; }
-    .tag.eq-as, .acct-tag.eq-as { color:#BF4A00; background: linear-gradient(90deg,#FFF3E0 50%,#FFF9C4 50%) padding-box, linear-gradient(90deg,#FB8C00 50%,#F9C400 50%) border-box; }
     /* 勘定科目名の色分けタグ（表示区分クイズ等、"解答を隠す"の対象にしないため.tagとは別クラス） */
     .acct-tag { padding: 4px 11px; border-radius: 12px; font-size: 13px; font-weight: 700; text-align: center; display:inline-block; }
     .acct-tag.asset     { background: #FFF9C4; color: #5D4037; border: 1.5px solid #F9C400; }
@@ -420,11 +413,11 @@
     .exp-q-card mark.q-expense { background:#95D15F; }
     .exp-q-card mark.q-equity { background:#FDC475; }
     .exp-q-card mark.q-other { background:#C6CDD3; }
-    .exp-q-card mark.q-as-li { background: linear-gradient(90deg,#FCF569 50%,#FE8980 50%); -webkit-box-decoration-break:clone; box-decoration-break:clone; }
-    .exp-q-card mark.q-eq-rv { background: linear-gradient(90deg,#FDC475 50%,#8FE0FB 50%); -webkit-box-decoration-break:clone; box-decoration-break:clone; }
-    .exp-q-card mark.q-eq-ex { background: linear-gradient(90deg,#FDC475 50%,#95D15F 50%); -webkit-box-decoration-break:clone; box-decoration-break:clone; }
-    .exp-q-card mark.q-eq-rx { background: linear-gradient(90deg,#FDC475 50%,#8FE0FB 50%,#8FE0FB 75%,#95D15F 75%); -webkit-box-decoration-break:clone; box-decoration-break:clone; }
-    .exp-q-card mark.q-eq-as { background: linear-gradient(90deg,#FDC475 50%,#FCF569 50%); -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+    .exp-q-card mark.q-as-li { background:#FCF569; }
+    .exp-q-card mark.q-eq-rv { background:#FDC475; }
+    .exp-q-card mark.q-eq-ex { background:#FDC475; }
+    .exp-q-card mark.q-eq-rx { background:#FDC475; }
+    .exp-q-card mark.q-eq-as { background:#FDC475; }
     .q-en-trans { margin-top:8px; font-size:12px; color:var(--text-sub,#666); font-weight:400; border-top:1px solid var(--border); padding-top:6px; font-style:italic; }
     .q-paren { color:#9AA0A6; font-weight:400; }
     .q-paren mark { color:#1a1a1a; }
@@ -752,18 +745,11 @@ const T = {
 const CONTRA_ASSET = new Set(['貸倒引当金','減価償却累計額','車両運搬具減価償却累計額','建物減価償却累計額',
   '備品減価償却累計額','機械装置減価償却累計額','構築物減価償却累計額','工具器具備品減価償却累計額',
   'リース資産減価償却累計額','繰延内部利益']);
-// 本当の分類と仕訳の向きが逆になる科目：左半分＝本当の分類の色、右半分＝仕訳の向きの色
-// 資産のマイナス（貸方に貯まる）：資産｜負債、純資産のマイナス（借方に貯まる）：純資産｜資産
+// 資産のマイナス・純資産のマイナスも、本当の分類の1色で表示する
 const CONTRA_EQUITY = new Set(['事業主貸','引出金（事業主貸）','自己株式']);
-// 純資産なのに損益のように動く（P/Lを通らず純資産に直接入る）：右半分を収益／費用の色に
-// 時価の上下で向きが変わるものは右半分を収益と費用の半々（カードで借方・貸方が分からないように）
-const EQUITY_PL_BOTH = new Set(['その他有価証券評価差額金','繰延ヘッジ損益','為替換算調整勘定','退職給付に係る調整累計額']);
 function tagType(a){
-  if(CONTRA_ASSET.has(a)) return 'split as-li';
-  if(CONTRA_EQUITY.has(a)) return 'split eq-as';
-  if(EQUITY_PL_BOTH.has(a)) return 'split eq-rx';
-  if(a==='自己株式処分差益') return 'split eq-rv';
-  if(a==='自己株式処分差損') return 'split eq-ex';
+  if(CONTRA_ASSET.has(a)) return 'asset';
+  if(CONTRA_EQUITY.has(a)) return 'equity';
   return T[a] || 'other';
 }
 
