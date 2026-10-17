@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>企業法務 一問一答</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: bookkeeping.html と同じ1画面構成。分野ピル → 小分野ピル → 表示方法・範囲 → 前へ/次へ → 問題カード */
+:root{--primary:#1E4D7B;--primary-light:#E8F0FA;--bg:#F2F5F9;--card:#FFFFFF;--text:#1A2B3C;--muted:#6B7B8D;--border:#DDE3EC;--act-bg:#FFF3E0;--act-bd:#FB8C00;--act-fg:#E65100;--ok:#2E7D32;--ok-bg:#F1FBF4;--ok-bd:#A5D6A7;--ng:#C62828;--ng-bg:#FFF3F3;--ng-bd:#EF9A9A;--warn-bg:#FFF7E6;--warn-bd:#E4B96A;--warn-fg:#7A5416;--head-a:#0D2B45;--head-b:#1E4D7B;--on-primary:#FFFFFF;--radius:14px;--shadow:0 2px 16px rgba(30,77,123,.10)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--primary:#8FB3E0;--primary-light:#1C2A3D;--bg:#0F151E;--card:#18212D;--text:#E4EAF2;--muted:#93A2B6;--border:#2C3746;--act-bg:#3A2A14;--act-bd:#C77A1E;--act-fg:#FFB866;--ok:#6FCB9F;--ok-bg:#15302A;--ok-bd:#2F6B53;--ng:#F08A82;--ng-bg:#3A1D1C;--ng-bd:#7A3631;--warn-bg:#2E2614;--warn-bd:#6B5422;--warn-fg:#E8C98A;--head-a:#0A1220;--head-b:#1A2E4A;--on-primary:#0F151E;--shadow:none;color-scheme:dark}}
+:root[data-theme="dark"]{--primary:#8FB3E0;--primary-light:#1C2A3D;--bg:#0F151E;--card:#18212D;--text:#E4EAF2;--muted:#93A2B6;--border:#2C3746;--act-bg:#3A2A14;--act-bd:#C77A1E;--act-fg:#FFB866;--ok:#6FCB9F;--ok-bg:#15302A;--ok-bd:#2F6B53;--ng:#F08A82;--ng-bg:#3A1D1C;--ng-bd:#7A3631;--warn-bg:#2E2614;--warn-bd:#6B5422;--warn-fg:#E8C98A;--head-a:#0A1220;--head-b:#1A2E4A;--on-primary:#0F151E;--shadow:none;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;touch-action:manipulation;padding-bottom:40px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.header{background:linear-gradient(135deg,var(--head-a),var(--head-b));color:#fff;padding-block:18px 14px;text-align:center}
+.header h1{font-size:20px;font-weight:700;letter-spacing:.05em}
+.header p{font-size:12px;opacity:.75;margin-top:3px}
+.controls{background:var(--card);border-bottom:1px solid var(--border);padding-block:10px;display:flex;flex-direction:column;gap:8px}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lbl{font-size:11px;font-weight:700;color:var(--muted)}
+.toggle{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-size:12px;color:var(--muted);font-weight:600;background:none;border:none;font-family:inherit;padding:0}
+.toggle .arr{font-size:10px;transition:transform .2s}
+.collapsed .toggle .arr{transform:rotate(-90deg)}
+.collapsed .pills{display:none}
+.ctrl-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:none;cursor:pointer;font-size:13px;color:var(--text);font-weight:600;font-family:inherit;transition:all .15s}
+.ctrl-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+.ctrl-btn.active{background:var(--act-bg);border-color:var(--act-bd);color:var(--act-fg)}
+.ctrl-btn small{font-weight:500;opacity:.7;margin-left:3px;font-variant-numeric:tabular-nums}
+.sub-row{border-top:1px solid var(--border);padding-top:8px}
+.hint{font-size:12px;color:var(--muted)}
+.check-bar{background:var(--card);border-bottom:1px solid var(--border);padding-block:8px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:12px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.check-bar strong{font-size:14px}
+.main{max-width:760px;margin:0 auto;padding-block:16px;display:flex;flex-direction:column;gap:14px}
+.nav-row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.nav-btn{padding:11px 18px;background:var(--card);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:var(--text);font-family:inherit}
+.nav-btn:hover:not(:disabled){background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+.nav-btn:disabled{opacity:.35;cursor:not-allowed}
+.nav-btn.primary{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.nav-btn.primary:hover:not(:disabled){background:var(--primary);color:var(--on-primary);opacity:.9}
+.nav-pos{font-size:15px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:18px 18px 16px;min-width:0}
+.q-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+.tag{font-size:11px;font-weight:700;color:var(--primary);background:var(--primary-light);border-radius:999px;padding:2px 10px}
+.chk{font-family:inherit;font-size:13px;font-weight:700;border:1.5px solid var(--border);background:var(--card);color:var(--muted);border-radius:20px;padding:4px 12px;cursor:pointer;white-space:nowrap}
+.chk.c1{border-color:var(--act-bd);color:var(--act-fg);background:var(--act-bg)}
+.chk.c2{border-color:var(--ng-bd);color:var(--ng);background:var(--ng-bg)}
+.q-text{font-size:17px;line-height:1.85;margin-bottom:18px}
+.ox{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ox button{font-family:inherit;font-size:30px;font-weight:700;padding:14px 0;border-radius:12px;border:2px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;line-height:1}
+.ox button small{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-top:4px}
+.ox button:hover:not(:disabled){border-color:var(--primary)}
+.ox button:disabled{cursor:default}
+.ox button.pick-ok{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.ox button.pick-ng{border-color:var(--ng);background:var(--ng-bg);color:var(--ng)}
+.ox button.is-answer{border-color:var(--ok)}
+.verdict{margin-top:14px;border-radius:10px;padding:12px 14px;border:1px solid}
+.verdict.ok{background:var(--ok-bg);border-color:var(--ok-bd)}
+.verdict.ng{background:var(--ng-bg);border-color:var(--ng-bd)}
+.verdict h3{font-size:15px;margin-bottom:6px}
+.verdict.ok h3{color:var(--ok)}.verdict.ng h3{color:var(--ng)}
+.verdict p{font-size:14px;line-height:1.8}
+.ref{margin-top:8px;font-size:12.5px;color:var(--muted)}
+.ref b{color:var(--text)}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{font-family:inherit;font-size:15px;line-height:1.75;text-align:left;display:flex;gap:10px;align-items:flex-start;width:100%;padding:12px 14px;border-radius:12px;border:2px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--primary);background:var(--primary-light)}
+.opt:disabled{cursor:default}
+.opt.is-ans{border-color:var(--ok);background:var(--ok-bg)}
+.opt.is-ng{border-color:var(--ng);background:var(--ng-bg)}
+.num{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--primary-light);color:var(--primary);font-weight:700;font-size:13px;margin-top:2px}
+.otext{flex:1;min-width:0}
+.kw-r{color:var(--ok)}.kw-w{color:var(--ng)}
+.exp{border-top:1px solid var(--border);padding-top:10px;margin-top:10px}
+.exp-h{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.mark{font-size:13px;font-weight:700}
+.m-o{color:var(--ok)}.m-x{color:var(--ng)}
+.verdict .exp p{font-size:13.5px}
+.hint{font-size:12px;color:var(--muted)}
+.after{display:flex;justify-content:flex-end;margin-top:12px}
+.empty{text-align:center;color:var(--muted);padding:40px 10px;font-size:14px}
+.note{font-size:11px;color:var(--warn-fg);background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:10px;padding:8px 12px;line-height:1.6}
+button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="header gut">
+  <h1>企業法務 一問一答</h1>
+  <p>穴埋めと正誤で答えて、解説と根拠を確認しよう</p>
+</div>
+
+<div class="controls gut">
+  <div id="catWrap">
+    <button class="toggle" id="catToggle" type="button"><span class="arr">▼</span><span id="catToggleLbl">分野を隠す</span></button>
+    <div class="pills row" id="cats" style="margin-top:4px"></div>
+  </div>
+  <div class="row sub-row" id="subs"></div>
+  <div class="row"><span class="lbl">表示方法：</span>
+    <button class="ctrl-btn" data-view="all" type="button">全問</button>
+    <button class="ctrl-btn" data-view="check" type="button">✅ チェックのみ</button>
+    <button class="ctrl-btn" data-view="double" type="button">✅✅ ダブルチェックのみ</button>
+  </div>
+</div>
+
+<div class="check-bar gut">
+  <span>問題数：<strong id="sTotal" style="color:var(--primary)">0</strong>問</span>
+  <span>チェック：<strong id="sCheck" style="color:var(--act-fg)">0</strong>問</span>
+  <span>ダブル：<strong id="sDouble" style="color:var(--ng)">0</strong>問</span>
+  <button class="ctrl-btn" id="copyBtn" type="button" style="font-size:11px;padding:3px 8px">📋 ダブルの問題をコピー</button>
+</div>
+
+<div class="main gut">
+  <div class="nav-row">
+    <button class="nav-btn" id="prevBtn" type="button">← 前へ</button>
+    <span class="nav-pos" id="pos"></span>
+    <button class="nav-btn primary" id="nextBtn" type="button">次の問題 →</button>
+  </div>
+  <div class="card" id="card"></div>
+</div>
+
+<script>
+// 問題データは kigyo-data/*.js が QB.add() で登録する。
+// 行の形式（穴埋め）: [小分野ID, 問題文（(○○)を含む）, 正解の選択肢, 誤りの選択肢1, 誤りの選択肢2, 誤りの選択肢3, 解説, 根拠]
+// 行の形式（正誤）  : [小分野ID, 記述, 1=正しい / 0=誤り, 解説, 根拠]
+// 選択肢の並びは問題IDから決まる（毎回同じ）。問題IDは「分野.小分野.小分野内の通し番号」なので、
+// 問題は各小分野の末尾に追加すること（途中に挿入するとチェックの記録がずれる）。
+function rng(str){let h=2166136261;for(const ch of str){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return()=>{h+=0x6D2B79F5;let t=h;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
+const QB={cats:[],add(id,name,subs,rows){
+  const n={};
+  const qs=rows.map(r=>{
+    n[r[0]]=(n[r[0]]||0)+1;
+    const qid=`${id}.${r[0]}.${n[r[0]]}`;
+    if(r.length===5)return{id:qid,c:id,s:r[0],q:r[1],opts:['○（正しい）','×（誤り）'],ans:r[2]?0:1,e:r[3],r:r[4]};
+    const rand=rng(qid),opts=[r[2],r[3],r[4],r[5]];
+    for(let i=3;i>0;i--){const j=Math.floor(rand()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
+    return{id:qid,c:id,s:r[0],q:r[1],opts,ans:opts.indexOf(r[2]),e:r[6],r:r[7]};
+  });
+  this.cats.push({id,name,subs:subs.map(([sid,sname])=>({id:sid,name:sname})),qs});
+}};
+</script>
+<script src="kigyo-data/rodo.js"></script>
+<script src="kigyo-data/keiyaku.js"></script>
+<script src="kigyo-data/kaisha.js"></script>
+<script src="kigyo-data/torihiki.js"></script>
+<script src="kigyo-data/kojin.js"></script>
+<script src="kigyo-data/ma.js"></script>
+<script src="kigyo-data/kaishu.js"></script>
+<script src="kigyo-data/kansa.js"></script>
+<script src="kigyo-data/zei.js"></script>
+<script>
+const CATS=QB.cats,KEY='kigyo-quiz-v3';
+const catOf=id=>CATS.find(c=>c.id===id);
+const subName=(c,s)=>catOf(c).subs.find(x=>x.id===s).name;
+
+const MC=CATS.flatMap(c=>c.qs);
+
+let ST={},CHK={};   // ST: {問題ID:{c,w,l}} 正答記録 / CHK: {問題ID:1|2} チェック・ダブルチェック
+let P={cat:'all',sub:'all',view:'all',idx:0,hide:false};
+function load(){
+  try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){ST=d.st||{};CHK=d.chk||{};Object.assign(P,d.p||{});}}catch(e){}
+  if(P.cat!=='all'&&!catOf(P.cat))P.cat='all';
+  if(!['all','check','double'].includes(P.view))P.view='all';
+  delete P.mode;
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({st:ST,chk:CHK,p:P}));}catch(e){}}
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+const label=q=>`${catOf(q.c).name} › ${subName(q.c,q.s)}`;
+const NUM=['1','2','3','4'];
+
+// 分野・細かい分野で絞った範囲（表示方法の絞り込み前）
+function scope(){
+  let qs=MC;
+  if(P.cat!=='all')qs=qs.filter(q=>q.c===P.cat);
+  if(P.cat!=='all'&&P.sub!=='all')qs=qs.filter(q=>q.s===P.sub);
+  return qs;
+}
+function list(){
+  let qs=scope();
+  if(P.view==='check')qs=qs.filter(q=>CHK[q.id]);
+  if(P.view==='double')qs=qs.filter(q=>CHK[q.id]===2);
+  return qs;
+}
+
+function renderControls(){
+  $('catWrap').classList.toggle('collapsed',P.hide);
+  $('catToggleLbl').textContent=P.hide?'分野を表示':'分野を隠す';
+  const all=MC;
+  const cats=[{id:'all',name:'すべて',n:all.length},...CATS.map(c=>({id:c.id,name:c.name,n:c.qs.length}))];
+  $('cats').innerHTML=cats.map(c=>`<button type="button" class="ctrl-btn${P.cat===c.id?' active':''}" data-cat="${c.id}">${esc(c.name)}<small>${c.n}</small></button>`).join('');
+  if(P.cat==='all'){$('subs').innerHTML='<span class="lbl">細かい分野：</span><span class="hint">上の分野（労働・会社法など）を選ぶと、ここで細かい分野を選べます</span>';}
+  else{
+    const c=catOf(P.cat);
+    $('subs').innerHTML=`<span class="lbl">${esc(c.name)}の細かい分野：</span><button type="button" class="ctrl-btn${P.sub==='all'?' active':''}" data-sub="all">すべて</button>`+
+      c.subs.map(s=>`<button type="button" class="ctrl-btn${P.sub===s.id?' active':''}" data-sub="${s.id}">${esc(s.name)}<small>${c.qs.filter(q=>q.s===s.id).length}</small></button>`).join('');
+  }
+  document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===P.view));
+  const sc=scope();
+  $('sTotal').textContent=list().length;
+  $('sCheck').textContent=sc.filter(q=>CHK[q.id]).length;
+  $('sDouble').textContent=sc.filter(q=>CHK[q.id]===2).length;
+}
+
+let answered=false;
+const chkText=v=>v===2?'✅✅ ダブル':v===1?'✅ チェック':'☐ チェック';
+function renderQ(){
+  const qs=list();
+  answered=false;
+  if(!qs.length){
+    $('pos').textContent='問 0 / 0';$('prevBtn').disabled=true;$('nextBtn').disabled=true;
+    $('card').innerHTML=`<div class="empty">${P.view==='check'?'チェックした問題はありません。':P.view==='double'?'ダブルチェックした問題はありません。':'問題がありません。'}</div>`;
+    save();return;
+  }
+  P.idx=Math.min(Math.max(P.idx,0),qs.length-1);
+  const q=qs[P.idx],ck=CHK[q.id]||0;
+  $('pos').textContent=`問${P.idx+1} / ${qs.length}`;
+  $('prevBtn').disabled=P.idx===0;$('nextBtn').disabled=P.idx>=qs.length-1;
+  const top=`<div class="q-top"><span class="tag">${esc(label(q))}</span><button type="button" class="chk c${ck}" id="chkBtn">${chkText(ck)}</button></div>`;
+  {
+    $('card').innerHTML=top+`<div class="q-text">${esc(q.q)}</div>
+      <div class="opts">${q.opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}"><span class="num">${NUM[i]}</span><span class="otext">${esc(o)}</span></button>`).join('')}</div>
+      <div id="verdict"></div>`;
+    document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(+b.dataset.i));
+  }
+  $('chkBtn').onclick=toggleCheck;
+  save();
+}
+function answer(v){
+  if(answered)return;
+  const qs=list(),q=qs[P.idx];if(!q)return;
+  if(typeof v!=='number')return;
+  answered=true;
+  const ok=v===q.ans,s=ST[q.id]||{c:0,w:0,l:0};
+  ok?s.c++:s.w++;s.l=ok?1:0;ST[q.id]=s;save();
+  let body;
+  {
+    document.querySelectorAll('.opt').forEach((b,i)=>{b.disabled=true;if(i===q.ans)b.classList.add('is-ans');else if(i===v)b.classList.add('is-ng');});
+    body=`<h3>${ok?'正解':'不正解'}　正答：${NUM[q.ans]}　${esc(q.opts[q.ans])}</h3><p>${esc(q.e)}</p><div class="ref"><b>根拠</b>　${esc(q.r)}</div>`;
+  }
+  const last=P.idx>=qs.length-1;
+  $('verdict').innerHTML=`<div class="verdict ${ok?'ok':'ng'}">${body}</div>`+
+    (last?'':`<div class="after"><button type="button" class="nav-btn primary" id="next2">次の問題 →</button></div>`);
+  if(!last)$('next2').onclick=()=>go(1);
+}
+function toggleCheck(){
+  const q=list()[P.idx];if(!q)return;
+  const v=((CHK[q.id]||0)+1)%3;if(v)CHK[q.id]=v;else delete CHK[q.id];save();
+  const b=$('chkBtn');b.className=`chk c${v}`;b.textContent=chkText(v);
+  const sc=scope();
+  $('sCheck').textContent=sc.filter(x=>CHK[x.id]).length;
+  $('sDouble').textContent=sc.filter(x=>CHK[x.id]===2).length;
+}
+function go(d){
+  // 絞り込み中に解答・チェックした結果を反映してから移動する
+  const cur=list()[P.idx];
+  renderControls();
+  const now=list(),i=cur?now.indexOf(cur):-1;
+  P.idx=(i>=0?i:P.idx-(d>0?1:0))+d;
+  renderQ();
+  window.scrollTo({top:$('pos').getBoundingClientRect().top+window.scrollY-12});
+}
+function reset(){P.idx=0;renderControls();renderQ();}
+
+$('cats').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(!b)return;P.cat=b.dataset.cat;P.sub='all';reset();});
+$('subs').addEventListener('click',e=>{const b=e.target.closest('[data-sub]');if(!b)return;P.sub=b.dataset.sub;reset();});
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{P.view=b.dataset.view;reset();});
+$('catToggle').onclick=()=>{P.hide=!P.hide;save();renderControls();};
+$('prevBtn').onclick=()=>go(-1);
+$('nextBtn').onclick=()=>go(1);
+$('copyBtn').onclick=()=>{
+  const txt=scope().filter(q=>CHK[q.id]===2).map(q=>`【${label(q)}】${q.q}\n`+q.opts.map((o,i)=>`${NUM[i]}. ${o}`).join('\n')+`\n（正答：${NUM[q.ans]}）`).join('\n\n');
+  const btn=$('copyBtn'),done=m=>{btn.textContent=m;setTimeout(()=>btn.textContent='📋 ダブルの問題をコピー',1500);};
+  if(!txt){done('ダブルの問題はありません');return;}
+  try{navigator.clipboard.writeText(txt).then(()=>done('コピーしました'),()=>done('コピーできませんでした'));}catch(e){done('コピーできませんでした');}
+};
+document.addEventListener('keydown',e=>{
+  if(e.metaKey||e.ctrlKey||e.altKey)return;
+  const k=e.key.toLowerCase();
+  if(['1','2','3','4'].includes(k)){const q=list()[P.idx];if(q&&+k<=q.opts.length)answer(+k-1);}
+  else if(k==='arrowright'||(k==='enter'&&answered)){if(!$('nextBtn').disabled){e.preventDefault();go(1);}}
+  else if(k==='arrowleft'){if(!$('prevBtn').disabled)go(-1);}
+  else if(k==='c')toggleCheck();
+});
+
+load();renderControls();renderQ();
+</script>
+</body>
+</html>
