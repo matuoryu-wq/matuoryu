@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>企業法務 一問一答</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: single centered column; home (分野選択) → quiz card → result, switched in place */
+:root{--primary:#1F3A5F;--primary-hover:#16283F;--primary-light:#EAF0F7;--primary-border:#B9CBE0;--success:#2F7D5B;--success-light:#EAF6F0;--success-border:#8FCBAF;--danger:#B0362E;--danger-light:#FDECEA;--danger-border:#E79892;--warn-bg:#FFF7E6;--warn-border:#E4B96A;--warn-text:#7A5416;--border:#D8DEE6;--bg:#F1F4F8;--card:#FFFFFF;--text:#1A2433;--text-muted:#5B6B80;--track:#E3E8EF;--head-a:#101E33;--head-b:#1F3A5F;--on-primary:#FFFFFF;--radius:10px;--shadow:0 1px 4px rgba(20,40,70,.10)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--primary:#8FB3E0;--primary-hover:#A9C6EA;--primary-light:#1C2A3D;--primary-border:#34507A;--success:#6FCB9F;--success-light:#15302A;--success-border:#2F6B53;--danger:#F08A82;--danger-light:#3A1D1C;--danger-border:#7A3631;--warn-bg:#2E2614;--warn-border:#6B5422;--warn-text:#E8C98A;--border:#2C3746;--bg:#0F151E;--card:#18212D;--text:#E4EAF2;--text-muted:#93A2B6;--track:#263140;--head-a:#0A1220;--head-b:#1A2E4A;--on-primary:#0F151E;--shadow:none;color-scheme:dark}}
+:root[data-theme="dark"]{--primary:#8FB3E0;--primary-hover:#A9C6EA;--primary-light:#1C2A3D;--primary-border:#34507A;--success:#6FCB9F;--success-light:#15302A;--success-border:#2F6B53;--danger:#F08A82;--danger-light:#3A1D1C;--danger-border:#7A3631;--warn-bg:#2E2614;--warn-border:#6B5422;--warn-text:#E8C98A;--border:#2C3746;--bg:#0F151E;--card:#18212D;--text:#E4EAF2;--text-muted:#93A2B6;--track:#263140;--head-a:#0A1220;--head-b:#1A2E4A;--on-primary:#0F151E;--shadow:none;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh;padding-bottom:40px}
+.header{background:linear-gradient(135deg,var(--head-a),var(--head-b));color:#fff;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));text-align:center}
+.header h1{font-size:19px;font-weight:700;text-wrap:balance}.header p{font-size:11.5px;opacity:.82;margin-top:3px}
+.disclaimer{background:var(--warn-bg);border-bottom:1px solid var(--warn-border);color:var(--warn-text);font-size:11.5px;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));text-align:center}
+.container{max-width:760px;margin:0 auto;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:16px;box-shadow:var(--shadow);min-width:0}
+.card-title{font-size:14.5px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.muted{color:var(--text-muted);font-size:12px}
+.btn{font:inherit;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:8px;padding:9px 14px;cursor:pointer;font-weight:600;font-size:13px}
+.btn:hover{border-color:var(--primary)}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-small{padding:5px 10px;font-size:12px}
+.btn-danger{color:var(--danger);border-color:var(--danger-border)}
+button:focus-visible,label:focus-within{outline:2px solid var(--primary);outline-offset:2px}
+.cat-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:520px){.cat-list{grid-template-columns:1fr}}
+.cat{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;min-width:0}
+.cat.on{border-color:var(--primary);background:var(--primary-light)}
+.cat input{margin-top:3px;accent-color:var(--primary)}
+.cat-body{flex:1;min-width:0}
+.cat-name{font-weight:700;font-size:13.5px}
+.cat-meta{font-size:11.5px;color:var(--text-muted);font-variant-numeric:tabular-nums}
+.bar{height:5px;background:var(--track);border-radius:3px;margin-top:6px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.bar .ok{background:var(--success)}.bar .ng{background:var(--danger)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.seg button{font:inherit;font-size:12.5px;font-weight:600;border:none;background:var(--card);color:var(--text-muted);padding:7px 12px;cursor:pointer;border-right:1px solid var(--border)}
+.seg button:last-child{border-right:none}
+.seg button.on{background:var(--primary-light);color:var(--primary)}
+.opt-label{font-size:12px;color:var(--text-muted);font-weight:600;min-width:64px}
+.start-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.summary{display:flex;gap:18px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.summary b{font-size:20px;display:block;line-height:1.2}
+.summary span{font-size:11.5px;color:var(--text-muted)}
+.q-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:var(--text-muted);font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font-size:11px;font-weight:700;color:var(--primary);background:var(--primary-light);border:1px solid var(--primary-border);border-radius:999px;padding:1px 9px}
+.progress{height:4px;background:var(--track);border-radius:2px;overflow:hidden;margin-bottom:14px}
+.progress i{display:block;height:100%;background:var(--primary);transition:width .2s}
+.q-text{font-size:16px;line-height:1.75;font-weight:500;margin-bottom:16px}
+.ox{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ox button{font:inherit;font-size:30px;font-weight:700;padding:14px 0;border-radius:10px;border:2px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;line-height:1}
+.ox button:hover:not(:disabled){border-color:var(--primary)}
+.ox button small{display:block;font-size:11px;font-weight:600;color:var(--text-muted);margin-top:4px}
+.ox button.pick-ok{border-color:var(--success);background:var(--success-light);color:var(--success)}
+.ox button.pick-ng{border-color:var(--danger);background:var(--danger-light);color:var(--danger)}
+.ox button.is-answer{border-color:var(--success)}
+.ox button:disabled{cursor:default}
+.verdict{margin-top:14px;border-radius:8px;padding:12px 14px;border:1px solid}
+.verdict.ok{background:var(--success-light);border-color:var(--success-border)}
+.verdict.ng{background:var(--danger-light);border-color:var(--danger-border)}
+.verdict h3{font-size:14px;margin-bottom:6px}
+.verdict.ok h3{color:var(--success)}.verdict.ng h3{color:var(--danger)}
+.verdict p{font-size:13.5px;line-height:1.75}
+.ref{margin-top:8px;font-size:12px;color:var(--text-muted)}
+.ref b{color:var(--text);font-weight:600}
+.q-actions{display:flex;justify-content:space-between;gap:8px;margin-top:14px;flex-wrap:wrap}
+.kbd{font-size:11px;color:var(--text-muted)}
+.miss{border-top:1px solid var(--border);padding-block:12px}
+.miss:first-child{border-top:none;padding-top:0}
+.miss .q{font-size:13.5px;font-weight:600;margin:4px 0}
+.miss .a{font-size:12.5px;color:var(--text-muted)}
+.big-score{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--primary);line-height:1.1}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>企業法務 一問一答</h1>
+  <p>中小・中規模の企業法務事務所で日常的に出る論点を○×で確認</p>
+</div>
+<div class="disclaimer">問題・解説は2026年10月時点の法令に基づく学習用の要約です。条文は必ず e-Gov 法令検索等で原文と最新の改正状況を確認してください。学習記録はこの端末のブラウザ内（localStorage）にのみ保存されます。</div>
+
+<div class="container">
+  <!-- Home -->
+  <section id="home" style="display:contents">
+    <div class="card">
+      <div class="card-title">学習状況</div>
+      <div class="summary" id="summary"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>分野</span><span class="row"><button class="btn btn-small" id="selAll" type="button">全選択</button><button class="btn btn-small" id="selNone" type="button">全解除</button></span></div>
+      <div class="cat-list" id="catList"></div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+        <div class="row"><span class="opt-label">出題範囲</span>
+          <div class="seg" id="modeSeg">
+            <button type="button" data-v="all">すべて</button>
+            <button type="button" data-v="new">未回答</button>
+            <button type="button" data-v="wrong">前回間違えた問題</button>
+          </div>
+        </div>
+        <div class="row"><span class="opt-label">順番</span>
+          <div class="seg" id="orderSeg">
+            <button type="button" data-v="rand">ランダム</button>
+            <button type="button" data-v="seq">分野順</button>
+          </div>
+        </div>
+      </div>
+      <div class="start-row">
+        <span class="muted" id="poolInfo"></span>
+        <button class="btn btn-primary" id="startBtn" type="button">開始</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">記録のリセット</div>
+      <div id="resetArea"></div>
+    </div>
+  </section>
+
+  <!-- Quiz -->
+  <section id="quiz" hidden>
+    <div class="card">
+      <div class="q-top"><span class="tag" id="qCat"></span><span id="qCount"></span></div>
+      <div class="progress"><i id="qProg"></i></div>
+      <div class="q-text" id="qText"></div>
+      <div class="ox">
+        <button type="button" id="btnO">○<small>正しい（O）</small></button>
+        <button type="button" id="btnX">×<small>誤り（X）</small></button>
+      </div>
+      <div id="qVerdict"></div>
+      <div class="q-actions">
+        <button class="btn" id="quitBtn" type="button">中断して結果へ</button>
+        <button class="btn btn-primary" id="nextBtn" type="button" hidden>次へ</button>
+      </div>
+      <div class="kbd" style="margin-top:8px">キーボード：O＝○　X＝×　Enter＝次へ</div>
+    </div>
+  </section>
+
+  <!-- Result -->
+  <section id="result" hidden>
+    <div class="card">
+      <div class="card-title">結果</div>
+      <div class="big-score" id="rScore"></div>
+      <div class="muted" id="rSub" style="margin-top:4px"></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn btn-primary" id="retryWrongBtn" type="button">間違えた問題をもう一度</button>
+        <button class="btn" id="homeBtn" type="button">分野選択に戻る</button>
+      </div>
+    </div>
+    <div class="card" id="missCard">
+      <div class="card-title">間違えた問題</div>
+      <div id="missList"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const CATS=[
+  {id:'rodo',name:'労働'},
+  {id:'keiyaku',name:'契約書・民法'},
+  {id:'kaisha',name:'会社法'},
+  {id:'shitauke',name:'取適法・フリーランス法'},
+  {id:'kojin',name:'個人情報保護法'},
+  {id:'ma',name:'M&A'},
+  {id:'kaishu',name:'債権回収・倒産'}
+];
+// a: true=○, false=×
+const Q=[
+// ---- 労働 ----
+{id:'r1',c:'rodo',a:false,q:'使用者が労働者を解雇しようとする場合、少なくとも14日前に予告すれば、解雇予告手当を支払う必要はない。',e:'予告期間は少なくとも30日前です。予告しない場合は30日分以上の平均賃金（解雇予告手当）が必要で、予告日数は平均賃金を支払った日数分だけ短縮できます。なお「14日」は、試用期間中の者に予告規定が適用されなくなる期間です（労基法21条4号）。',r:'労基法20条、21条'},
+{id:'r2',c:'rodo',a:true,q:'解雇は、客観的に合理的な理由を欠き、社会通念上相当であると認められない場合は、権利を濫用したものとして無効となる。',e:'解雇権濫用法理を明文化した規定です。解雇事件では「合理的理由」と「社会通念上の相当性」の2段階で主張立証を組み立てます。',r:'労契法16条'},
+{id:'r3',c:'rodo',a:false,q:'有期労働契約が通算5年を超えて反復更新された場合、労働者からの申込みがなくても自動的に期間の定めのない労働契約に転換される。',e:'無期転換には労働者の「申込み」が必要です。申込みがあると、使用者は承諾したものとみなされます。2024年4月以降は、更新上限の有無や無期転換申込機会の明示も義務になっています。',r:'労契法18条、労基則5条'},
+{id:'r4',c:'rodo',a:true,q:'特別条項付きの36協定を締結した場合でも、時間外労働は年720時間以内、時間外・休日労働の合計は単月100時間未満、かつ2〜6か月平均で80時間以内でなければならない。',e:'時間外労働の上限規制です。これに加え、月45時間を超えられるのは年6回までです。違反には罰則があります。',r:'労基法36条5項・6項'},
+{id:'r5',c:'rodo',a:false,q:'労基法上の管理監督者に該当する労働者には、深夜割増賃金も支払う必要がない。',e:'管理監督者の適用除外は労働時間・休憩・休日の規定に限られ、深夜割増賃金は支払う必要があります。「名ばかり管理職」の残業代請求では、管理監督者性そのものが否定されることも多い論点です。',r:'労基法41条2号、ことぶき事件（最判平21.12.18）'},
+{id:'r6',c:'rodo',a:true,q:'就業規則の変更によって労働条件を不利益に変更する場合でも、変更後の就業規則を労働者に周知させ、かつ変更が合理的なものであれば、個々の労働者の同意がなくても労働契約の内容となる。',e:'合理性は、労働者の受ける不利益の程度、変更の必要性、変更後の内容の相当性、労働組合等との交渉の状況などを総合考慮して判断されます。',r:'労契法10条'},
+{id:'r7',c:'rodo',a:false,q:'常時5人以上の労働者を使用する使用者は、就業規則を作成し、所轄労働基準監督署長に届け出なければならない。',e:'作成・届出義務があるのは常時10人以上です。「10人」は事業場単位で、パート等も含めて数えます。作成・変更の際は、過半数組合（ない場合は過半数代表者）の意見を聴く必要があります（労基法90条）。',r:'労基法89条'},
+{id:'r8',c:'rodo',a:true,q:'賃金請求権の消滅時効期間は法律上5年と定められているが、当分の間は3年とされている。',e:'2020年4月施行の改正で2年から延長されました。未払残業代請求で遡れる期間に直結します。退職手当の時効は5年です。',r:'労基法115条、143条3項'},
+{id:'r9',c:'rodo',a:false,q:'月60時間を超える時間外労働に対する割増率50%以上の規定は、中小企業については現在も適用が猶予されている。',e:'中小企業への猶予は2023年3月31日で終了し、同年4月1日から中小企業にも適用されています。',r:'労基法37条1項ただし書'},
+{id:'r10',c:'rodo',a:false,q:'年10日以上の年次有給休暇が付与される労働者について、使用者は、そのうち年3日を時季を指定して取得させなければならない。',e:'時季指定義務の対象は年5日です。労働者が自ら取得した日数や計画的付与の日数は5日から差し引けます。年次有給休暇管理簿の作成・保存も必要です。',r:'労基法39条7項・8項、労基則24条の7'},
+{id:'r11',c:'rodo',a:true,q:'固定残業代（定額残業代）が有効とされるためには、通常の労働時間の賃金に当たる部分と割増賃金に当たる部分とを判別できることが必要である。',e:'判別要件に加え、その手当が時間外労働の対価として支払われているか（対価性）も問われます。就業規則・雇用契約書のレビューで頻出です。',r:'高知県観光事件（最判平6.6.13）、日本ケミカル事件（最判平30.7.19）、国際自動車事件（最判令2.3.30）'},
+{id:'r12',c:'rodo',a:false,q:'期間の定めのない雇用契約では、労働者が解約を申し入れても、申入れの日から1か月を経過しなければ契約は終了しない。',e:'民法上は、申入れの日から2週間で終了します。就業規則で「退職は1か月前までに申し出ること」と定めていても、民法の2週間が優先するとの見解が一般的です。退職代行対応でよく出る論点です。',r:'民法627条1項'},
+{id:'r13',c:'rodo',a:true,q:'使用者が労働者を懲戒するには、あらかじめ就業規則に懲戒の種別と事由を定め、その内容を労働者に周知させておく必要がある。',e:'周知されていない就業規則に基づく懲戒は認められません。懲戒が客観的に合理的な理由を欠き、社会通念上相当でない場合は、懲戒権の濫用として無効になります（労契法15条）。',r:'フジ興産事件（最判平15.10.10）、労契法15条'},
+{id:'r14',c:'rodo',a:true,q:'職場におけるパワーハラスメント防止のための雇用管理上の措置義務は、中小企業にも課されている。',e:'大企業は2020年6月、中小企業は2022年4月から義務化されています。相談窓口の設置、事後の迅速・適切な対応などが求められます。',r:'労働施策総合推進法30条の2'},
+// ---- 契約書・民法 ----
+{id:'k1',c:'keiyaku',a:true,q:'2020年4月施行の改正民法では、売主の「瑕疵担保責任」に代わって「契約不適合責任」が定められ、買主は追完請求、代金減額請求、損害賠償請求、解除をすることができる。',e:'改正前の契約書の「瑕疵」という文言をそのまま使っている例は今も多く、レビューで修正を提案するポイントです。',r:'民法562条〜564条'},
+{id:'k2',c:'keiyaku',a:false,q:'種類または品質に関する契約不適合の場合、買主は引渡しを受けた時から1年以内に訴えを提起するなどして権利を行使しなければ、権利を失う。',e:'起算点は不適合を「知った時」で、1年以内にすべきことは不適合の「通知」で足ります。売主が引渡し時に不適合を知り、または重過失で知らなかった場合は、この期間制限は適用されません。',r:'民法566条'},
+{id:'k3',c:'keiyaku',a:true,q:'商人間の売買では、買主は目的物を受領したら遅滞なく検査し、不適合を発見したら直ちに通知しなければ権利を失う。直ちに発見できない不適合でも、受領後6か月以内に発見して直ちに通知しなければならない。',e:'民法566条の特則です。取引基本契約では、検収期間や不適合の通知期間をこの規定とは別に定めることが多くあります。',r:'商法526条'},
+{id:'k4',c:'keiyaku',a:true,q:'改正民法では、損害賠償額の予定について「裁判所はその額を増減することができない」とする文言が削除された。',e:'改正前の文言があっても、実務では公序良俗違反などを理由に過大な違約金が減額されていました。改正はこの扱いを反映したものです。',r:'民法420条1項'},
+{id:'k5',c:'keiyaku',a:true,q:'定型約款の条項のうち、相手方の権利を制限しまたは義務を加重する条項で、信義則に反して相手方の利益を一方的に害すると認められるものは、合意をしなかったものとみなされる。',e:'不当条項規制です。利用規約のレビューでは、定型約款に該当するか（548条の2第1項）とあわせて検討します。',r:'民法548条の2第2項'},
+{id:'k6',c:'keiyaku',a:false,q:'法定利率は年5%の固定制であり、商行為によって生じた債務については年6%の商事法定利率が適用される。',e:'改正民法で法定利率は年3%となり、3年ごとに見直される変動制になりました。商事法定利率（年6%）は廃止されています。',r:'民法404条'},
+{id:'k7',c:'keiyaku',a:false,q:'継続的取引契約に「期間満了の3か月前までに申出がない限り自動更新する」と定めておけば、期間満了時の更新拒絶はいかなる場合も自由にできる。',e:'長期間継続した取引では、継続的契約の法理により、更新拒絶にやむを得ない事由や相当の予告期間が求められた裁判例があります。代理店契約などで争いになりやすい論点です。',r:'継続的契約に関する裁判例'},
+{id:'k8',c:'keiyaku',a:true,q:'改正民法では、準委任契約について、事務処理の成果に対して報酬を支払う「成果完成型」の規定が設けられた。',e:'履行割合型との区別は、業務委託契約で報酬条項を作るときの基本です。成果完成型は、請負の規定（634条）が準用されます。',r:'民法648条の2'},
+{id:'k9',c:'keiyaku',a:true,q:'請負で仕事が完成しなかった場合でも、可分な部分の給付によって注文者が利益を受けるときは、請負人はその利益の割合に応じて報酬を請求できる。',e:'改正で明文化されました。システム開発の途中解約などで出来高請求の根拠になります。',r:'民法634条'},
+{id:'k10',c:'keiyaku',a:false,q:'譲渡制限特約が付された債権を譲渡した場合、その譲渡は無効である。',e:'改正民法では、譲渡制限特約に反する譲渡も有効です。ただし、特約について悪意または重過失の譲受人に対しては、債務者は履行を拒むことができます。預貯金債権は例外的に扱われます（466条の5）。',r:'民法466条2項・3項'},
+{id:'k11',c:'keiyaku',a:true,q:'個人が保証人となる根保証契約は、極度額を定めなければ効力を生じない。',e:'改正前は貸金等債務に限られていましたが、改正で賃貸借の連帯保証など個人根保証全般に拡大されました。極度額は書面（または電磁的記録）で定める必要があります。',r:'民法465条の2第2項・3項'},
+{id:'k12',c:'keiyaku',a:true,q:'事業のために負担した貸金等債務について個人が保証する場合は、原則として、契約締結の日前1か月以内に公正証書で保証意思を表示しなければならない。',e:'主債務者の取締役や過半数株主など、経営者等には例外があります（465条の9）。',r:'民法465条の6'},
+{id:'k13',c:'keiyaku',a:false,q:'第一審の管轄裁判所についての合意（合意管轄）は、口頭で合意した場合でも効力を生じる。',e:'合意管轄は、一定の法律関係に基づく訴えに関し、書面（電磁的記録を含む）でしなければ効力を生じません。契約書の管轄条項では、「専属的」か「付加的」かの書き分けにも注意が必要です。',r:'民訴法11条2項・3項'},
+{id:'k14',c:'keiyaku',a:true,q:'一般の債権の消滅時効は、債権者が権利を行使できることを知った時から5年、または権利を行使できる時から10年である。',e:'改正で職業別の短期消滅時効や商事消滅時効は廃止されました。人の生命・身体の侵害による損害賠償請求権は20年に延長されています（167条）。',r:'民法166条1項'},
+{id:'k15',c:'keiyaku',a:true,q:'電子契約で締結した請負契約は、紙の契約書に代わる電磁的記録しか作成されない場合、印紙税は課されない。',e:'印紙税は「文書」の作成に課されるもので、電磁的記録はこれに当たらないとされています（国税庁の見解）。電子契約を導入する理由の一つです。ただし、電子データを紙に印刷して交付すると課税される可能性があります。',r:'印紙税法2条・3条、国税庁の見解'},
+// ---- 会社法 ----
+{id:'c1',c:'kaisha',a:true,q:'株主総会の招集通知は、公開会社では会日の2週間前までに発しなければならないが、非公開会社では原則として1週間前までに発すれば足りる。',e:'書面投票・電子投票を定めた場合は、非公開会社でも2週間前までです。取締役会非設置会社では、定款で1週間より短縮できます。',r:'会社法299条1項'},
+{id:'c2',c:'kaisha',a:false,q:'取締役会設置会社であっても、取締役は2人いれば足りる。',e:'取締役会設置会社では、取締役は3人以上必要です。取締役会非設置会社では1人でもかまいません。中小企業で取締役会の廃止を提案する場合の検討事項になります。',r:'会社法331条5項'},
+{id:'c3',c:'kaisha',a:true,q:'株主総会の特別決議は、原則として議決権の過半数を有する株主が出席し、出席株主の議決権の3分の2以上の賛成によって成立する。',e:'定足数は定款で3分の1まで下げられ、決議要件は定款で引き上げることができます。定款変更、募集株式の発行（非公開会社）、事業譲渡、合併などが特別決議事項です。',r:'会社法309条2項'},
+{id:'c4',c:'kaisha',a:false,q:'取締役を任期途中で解任するには、株主総会の特別決議が必要である。',e:'取締役の解任は原則として普通決議で足ります（定款で要件を加重できます）。累積投票で選任された取締役と監査役の解任は特別決議です。正当な理由なく解任された取締役は、損害賠償を請求できます（339条2項）。',r:'会社法339条1項、341条、309条2項7号'},
+{id:'c5',c:'kaisha',a:true,q:'取締役会設置会社において、取締役が自己のために会社と取引をしようとするときは、取締役会でその取引について重要な事実を開示して承認を受けなければならない。',e:'利益相反取引（直接取引）の規制です。取締役会非設置会社では株主総会の承認が必要です。オーナー社長と会社との間の不動産取引などでよく問題になります。',r:'会社法356条1項2号、365条1項'},
+{id:'c6',c:'kaisha',a:true,q:'株主全員の同意があれば、招集の手続を経ることなく株主総会を開催することができる。',e:'書面投票・電子投票を定めた場合を除きます。少人数の同族会社で多く使われます。',r:'会社法300条'},
+{id:'c7',c:'kaisha',a:false,q:'株主総会の決議を省略する書面決議（みなし決議）は、議決権を行使できる株主の過半数が書面で同意すれば成立する。',e:'提案事項について、議決権を行使できる株主の「全員」が書面または電磁的記録で同意することが必要です。取締役会の書面決議（370条）も、定款の定めと取締役全員の同意が必要です。',r:'会社法319条1項'},
+{id:'c8',c:'kaisha',a:true,q:'取締役の任期は原則2年だが、非公開会社（監査等委員会設置会社・指名委員会等設置会社を除く）では、定款で最長10年まで伸長することができる。',e:'正確には、「選任後10年以内に終了する事業年度のうち最終のものに関する定時株主総会の終結の時まで」です。任期の伸長は登記の懈怠（過料）を防ぐ一方で、解任時の損害賠償額が大きくなるという面もあります。',r:'会社法332条1項・2項'},
+{id:'c9',c:'kaisha',a:true,q:'非公開会社が募集株式を発行する場合、募集事項の決定は原則として株主総会の特別決議による。',e:'株主総会の特別決議で、募集株式の数の上限と払込金額の下限を定めて、取締役（会）に委任することもできます（200条）。',r:'会社法199条2項、309条2項5号'},
+{id:'c10',c:'kaisha',a:false,q:'取締役の変更が生じたときは、4週間以内に本店の所在地で変更の登記をすれば足りる。',e:'登記期間は2週間以内です。任期満了による重任の登記を忘れる例が多く、登記懈怠は100万円以下の過料の対象になります（976条1号）。',r:'会社法915条1項'},
+{id:'c11',c:'kaisha',a:false,q:'譲渡制限株式を会社の承認を得ずに譲渡した場合、その譲渡は当事者間でも無効である。',e:'判例上、当事者間では有効で、会社に対する関係で効力を生じないにとどまります。株式譲渡型のM&Aでは、承認手続を必ず実行条件にします。',r:'最判昭48.6.15'},
+{id:'c12',c:'kaisha',a:true,q:'公開会社では、総株主の議決権の3%以上を6か月前から引き続き有する株主は、取締役に対して株主総会の招集を請求することができる。',e:'非公開会社では6か月の保有期間要件はありません。同族会社の内紛案件で使われる手段です。',r:'会社法297条1項・2項'},
+{id:'c13',c:'kaisha',a:true,q:'取締役の会社に対する任務懈怠責任は、総株主の同意がなければ全部を免除することはできない。',e:'一部免除は、株主総会決議（425条）、定款の定めに基づく取締役会決議（426条）、責任限定契約（427条）の3つの方法で可能です。',r:'会社法423条1項、424条'},
+// ---- 取適法・フリーランス法 ----
+{id:'s1',c:'shitauke',a:true,q:'2026年1月施行の改正により、下請法は「中小受託取引適正化法（取適法）」となり、「親事業者」「下請事業者」はそれぞれ「委託事業者」「中小受託事業者」に改められた。',e:'「下請代金」も「製造委託等代金」に改められています。契約書の雛形や社内規程の用語を見直す必要があります。',r:'製造委託等に係る中小受託事業者に対する代金の支払の遅延等の防止に関する法律'},
+{id:'s2',c:'shitauke',a:true,q:'取適法では、資本金基準に加えて従業員数基準が導入され、製造委託では常時使用する従業員300人超の事業者が300人以下の事業者に委託する場合も規制の対象となる。',e:'情報成果物作成委託・役務提供委託の一部では100人が基準です。資本金を減らして規制を免れる行為への対応として導入されました。',r:'取適法（2026年1月1日施行）'},
+{id:'s3',c:'shitauke',a:false,q:'取適法の下でも、手形による代金の支払は、手形期間が60日以内であれば認められる。',e:'改正により、手形による支払は禁止されました。電子記録債権やファクタリングなども、支払期日までに代金の満額の現金を受け取るのが難しいものは認められません。',r:'取適法（2026年1月1日施行）'},
+{id:'s4',c:'shitauke',a:true,q:'製造委託等代金の支払期日は、給付を受領した日から起算して60日の期間内で、できる限り短い期間内に定めなければならない。',e:'改正前の下請法から引き続く規律です。支払が遅れた場合は、年14.6%の遅延利息が発生します。',r:'取適法（旧下請法2条の2）'},
+{id:'s5',c:'shitauke',a:true,q:'中小受託事業者から価格協議を求められたのに協議に応じず、または必要な説明をせずに一方的に代金を決定することは、取適法の禁止行為として明記された。',e:'原材料費・労務費の上昇局面での価格据え置きを想定した規制です。協議の経過を記録しておくよう、委託側に助言しておくとよいでしょう。',r:'取適法（2026年1月1日施行）'},
+{id:'s6',c:'shitauke',a:false,q:'中小受託事業者に責任がないのに受領後に代金を減額することは、中小受託事業者の同意があれば違反とならない。',e:'代金の減額は、相手方の同意があっても、また名目（協賛金、値引き、歩引き等）を問わず違反となります。',r:'取適法（旧下請法4条1項3号）'},
+{id:'s7',c:'shitauke',a:true,q:'取適法では、発荷主が運送事業者に物品の運送を委託する取引も、新たに規制対象（特定運送委託）とされた。',e:'物流の取引適正化を目的とした追加です。荷待ちや荷役を無償で行わせる行為などが問題になります。',r:'取適法（2026年1月1日施行）'},
+{id:'s8',c:'shitauke',a:true,q:'フリーランス法上の取引条件の明示義務は、従業員を使用しない発注者（フリーランス同士の取引）にも適用される。',e:'明示義務（3条）は、すべての「業務委託事業者」が対象です。期日内の支払や禁止行為などの規制は、従業員を使用する「特定業務委託事業者」に限られます。',r:'フリーランス法（特定受託事業者に係る取引の適正化等に関する法律）3条'},
+{id:'s9',c:'shitauke',a:true,q:'特定業務委託事業者は、給付を受領した日から起算して60日以内のできる限り短い期間内で、報酬の支払期日を定めなければならない。',e:'元委託者から受けた業務を再委託する場合は、一定の要件のもとで元委託の支払期日から30日以内とする特例があります。',r:'フリーランス法4条'},
+{id:'s10',c:'shitauke',a:true,q:'フリーランス法上の受領拒否、報酬の減額、返品などの禁止行為は、一定期間（1か月）以上の業務委託に適用される。',e:'期間は政令で1か月と定められています。契約の更新で通算1か月以上となる場合も含まれます。',r:'フリーランス法5条、同法施行令1条'},
+{id:'s11',c:'shitauke',a:false,q:'特定業務委託事業者は、6か月以上の継続的業務委託であっても、契約書に中途解約条項があれば、予告なく直ちに契約を解除できる。',e:'6か月以上の継続的業務委託を中途解除する場合や更新しない場合は、原則として少なくとも30日前までに予告しなければなりません。特定受託事業者から理由の開示を求められたときは、原則として遅滞なく開示する必要があります。',r:'フリーランス法16条'},
+{id:'s12',c:'shitauke',a:false,q:'フリーランス法には資本金要件があり、資本金1,000万円以下の発注者には適用されない。',e:'資本金要件はありません。この点は取適法と大きく異なります。発注者が従業員を使用しているかどうかで規制の範囲が変わります。',r:'フリーランス法2条'},
+// ---- 個人情報保護法 ----
+{id:'p1',c:'kojin',a:true,q:'個人データの第三者提供には原則として本人の同意が必要だが、委託、事業承継、共同利用に伴う提供の場合、提供先は「第三者」に当たらない。',e:'委託の場合は委託先の監督義務（25条）、共同利用の場合はあらかじめ本人に通知等する事項（共同利用する項目、範囲、目的、責任者）に注意が必要です。',r:'個人情報保護法27条1項・5項'},
+{id:'p2',c:'kojin',a:false,q:'オプトアウト方式による第三者提供は、要配慮個人情報についても行うことができる。',e:'要配慮個人情報のほか、不正取得された個人データや、他の事業者からオプトアウトで提供を受けた個人データもオプトアウトでは提供できません。オプトアウトを行うには個人情報保護委員会への届出が必要です。',r:'個人情報保護法27条2項'},
+{id:'p3',c:'kojin',a:true,q:'要配慮個人情報が含まれる個人データの漏えい等が発生し、またはそのおそれがある場合、個人情報保護委員会への報告と本人への通知が義務となる。',e:'ほかに、財産的被害のおそれがある場合、不正目的のおそれがある場合、1,000人を超える場合も報告・通知の対象です。',r:'個人情報保護法26条、同法施行規則7条'},
+{id:'p4',c:'kojin',a:false,q:'漏えい等の報告は、知った後速やかに速報を行い、確報は原則として60日以内に行えば足りる。',e:'確報の期限は原則30日以内で、60日以内とされるのは不正の目的によるおそれがある漏えい等の場合です。速報の目安は、ガイドライン上、概ね3〜5日以内とされています。',r:'個人情報保護法施行規則8条'},
+{id:'p5',c:'kojin',a:true,q:'外国にある第三者に個人データを提供する場合、本人の同意を得るときは、移転先の国の名称や個人情報保護制度などの情報をあらかじめ本人に提供しなければならない。',e:'移転先が、日本と同等の水準にあると認められる国（EU・英国）にある場合や、基準に適合する体制を整備している場合は、同意以外の方法でも提供できます。海外のクラウドサービスを利用する場合の検討事項です。',r:'個人情報保護法28条1項・2項'},
+{id:'p6',c:'kojin',a:false,q:'取り扱う個人情報が5,000人分以下の事業者は、個人情報取扱事業者に該当しない。',e:'この除外規定は、2017年5月施行の改正で撤廃されました。現在は、取り扱う件数にかかわらず、個人情報データベース等を事業に用いていれば個人情報取扱事業者に該当します。',r:'個人情報保護法16条2項'},
+{id:'p7',c:'kojin',a:true,q:'個人データの取扱いを委託する場合、委託元は、委託先に対して必要かつ適切な監督を行わなければならない。',e:'委託契約に安全管理措置、再委託の条件、監査、事故時の報告などの条項を入れておくのが実務です。',r:'個人情報保護法25条'},
+{id:'p8',c:'kojin',a:false,q:'本人の同意を得て個人データを第三者に提供した場合は、提供に関する記録を作成する義務はない。',e:'本人の同意に基づく提供でも、提供元には記録の作成義務があり、原則3年間保存しなければなりません（記録事項は一部簡略化されます）。提供を受けた側にも確認・記録の義務があります（30条）。',r:'個人情報保護法29条、同法施行規則14条'},
+{id:'p9',c:'kojin',a:true,q:'Cookieなどの個人関連情報を提供する場合で、提供先が個人データとして取得することが想定されるときは、提供元は、提供先が本人の同意を得ていることを確認しなければならない。',e:'2022年4月施行の改正で新設されました。広告配信やDMPに関する契約で問題になります。',r:'個人情報保護法31条'},
+{id:'p10',c:'kojin',a:true,q:'仮名加工情報（個人情報であるもの）は、原則として第三者に提供してはならない。',e:'一方で、利用目的の変更の制限や漏えい等の報告義務などは適用されないため、社内でのデータ分析に使いやすい制度になっています。',r:'個人情報保護法41条6項・9項'},
+// ---- M&A ----
+{id:'m1',c:'ma',a:true,q:'株式譲渡によるM&Aでは、対象会社の法人格がそのまま維持されるため、取引契約や許認可は原則としてそのまま対象会社に残る。',e:'取引契約にチェンジ・オブ・コントロール条項（支配権変更時の解除権や通知義務）がないか、デューデリジェンスで確認します。',r:'実務'},
+{id:'m2',c:'ma',a:true,q:'事業譲渡で譲渡会社の債務を譲受会社に移すには、個々の債権者の同意（または承諾）が必要である。',e:'事業譲渡は個別の権利義務の移転なので、契約上の地位の移転にも相手方の承諾が必要です（539条の2）。従業員の転籍にも個別の同意が要ります。',r:'民法472条、539条の2'},
+{id:'m3',c:'ma',a:false,q:'会社分割（吸収分割）で雇用契約を承継させるには、対象となる労働者の個別の同意が必要である。',e:'会社分割は包括承継なので、承継事業に主として従事する労働者は、分割契約に定めれば同意なく承継されます。労働者への通知や協議、一定の場合の異議申出の制度があります（労働契約承継法、商法等改正法附則5条）。',r:'労働契約承継法3条〜5条'},
+{id:'m4',c:'ma',a:false,q:'事業の全部を譲渡する場合でも、取締役会設置会社であれば取締役会の決議だけで足り、株主総会の決議は不要である。',e:'事業の全部の譲渡には、原則として株主総会の特別決議が必要です。譲受会社が譲渡会社の特別支配会社（議決権90%以上）である場合は、略式手続により決議を省略できます（468条1項）。反対株主には株式買取請求権があります（469条）。',r:'会社法467条1項1号、309条2項11号'},
+{id:'m5',c:'ma',a:true,q:'事業の重要な一部の譲渡であっても、譲渡する資産の帳簿価額が総資産額の5分の1（定款でより低い割合も可）を超えない場合は、株主総会の決議は不要である。',e:'5分の1を超えても、「重要な一部」に当たらなければ決議は不要です。重要性は質的な面も考慮して判断されます。',r:'会社法467条1項2号'},
+{id:'m6',c:'ma',a:false,q:'吸収合併の債権者異議手続は、消滅会社についてだけ必要で、存続会社では不要である。',e:'存続会社でも債権者異議手続が必要です（799条）。官報公告と知れている債権者への各別の催告が原則で、定款の公告方法が日刊新聞紙または電子公告の場合は、あわせて公告すれば各別の催告を省略できます。異議を述べる期間は1か月以上必要です。',r:'会社法789条、799条'},
+{id:'m7',c:'ma',a:false,q:'表明保証違反に基づく補償請求について、買主が違反を知っていた場合には一切認められないとするのが確立した最高裁判例である。',e:'最高裁判例はありません。アルコ事件（東京地判平18.1.17）は、買主が重過失で違反を知らなかった場合に、公平の見地から責任を免れる余地を示唆しました。契約ではプロ・サンドバッギング条項やアンチ・サンドバッギング条項で手当てします。',r:'東京地判平18.1.17（アルコ事件）'},
+{id:'m8',c:'ma',a:true,q:'株式譲渡型のM&Aでは、デューデリジェンスで発見された未払残業代は対象会社に残るため、譲渡価格の調整や特別補償条項で手当てすることが多い。',e:'中小企業M&Aの労務DDで最も多く見つかる問題の一つです。賃金請求権の時効（当分の間3年）を踏まえて潜在債務の額を試算します。',r:'実務'},
+{id:'m9',c:'ma',a:true,q:'一定規模を超える株式取得や合併は、公正取引委員会への事前届出が必要で、原則として届出の受理日から30日を経過するまでは実行できない。',e:'待機期間は短縮されることがあります。届出基準は、当事会社グループの国内売上高の合計額などで判定します。',r:'独禁法10条2項・8項、15条'},
+{id:'m10',c:'ma',a:true,q:'事業譲渡の譲受会社が譲渡会社の商号を引き続き使用する場合、譲受会社も譲渡会社の事業によって生じた債務を弁済する責任を負う。',e:'譲渡後遅滞なく免責の登記をするか、第三者に通知すれば、責任を免れます（22条2項）。屋号を続用する場合にも類推適用された判例があります（最判平16.2.20、ゴルフクラブの名称）。',r:'会社法22条1項'},
+{id:'m11',c:'ma',a:true,q:'譲渡会社が、残存債権者を害することを知って事業を譲渡した場合、残存債権者は譲受会社に対し、承継した財産の価額を限度として債務の履行を請求できる。',e:'詐害的事業譲渡の規制です。会社分割についても同じ趣旨の規定があります（759条4項）。',r:'会社法23条の2'},
+{id:'m12',c:'ma',a:true,q:'吸収合併で、消滅会社の株主に交付する対価の額が存続会社の純資産額の5分の1以下である場合、原則として存続会社の株主総会決議を省略できる（簡易合併）。',e:'差損が生じる場合や、非公開会社が譲渡制限株式を交付する場合は簡易合併を使えません。一定数の株主が反対した場合も株主総会決議が必要になります。',r:'会社法796条2項・3項'},
+// ---- 債権回収・倒産 ----
+{id:'h1',c:'kaishu',a:false,q:'仮差押えを申し立てるには、確定判決などの債務名義を取得していることが必要である。',e:'仮差押えは、債務名義がなくても、被保全権利と保全の必要性を疎明すれば発令されえます。通常は担保（保証金）の提供が求められます。預金債権の仮差押えは、取引先の信用不安時に有効な手段です。',r:'民事保全法13条、14条'},
+{id:'h2',c:'kaishu',a:false,q:'少額訴訟は、訴訟の目的の価額が140万円以下の金銭の支払請求について利用できる。',e:'少額訴訟の上限は60万円で、同じ簡易裁判所では同一年に10回までしか利用できません。140万円は簡易裁判所の事物管轄の上限です（裁判所法33条1項1号）。',r:'民訴法368条1項、民訴規則223条'},
+{id:'h3',c:'kaishu',a:true,q:'支払督促に対して債務者が適法な督促異議を申し立てると、通常の訴訟に移行する。',e:'異議によって、請求額に応じた簡易裁判所または地方裁判所に訴えの提起があったものとみなされます。相手方の所在地を管轄する裁判所になる点に注意が必要です。',r:'民訴法395条'},
+{id:'h4',c:'kaishu',a:false,q:'財産開示手続は、確定判決を得ている場合に限って申し立てることができ、公正証書（執行証書）では申し立てられない。',e:'2020年4月施行の改正で、執行証書を含む金銭債権の債務名義全般で申し立てられるようになりました。不出頭や虚偽陳述には刑事罰（6か月以下の拘禁刑または50万円以下の罰金）があります。',r:'民事執行法197条、213条'},
+{id:'h5',c:'kaishu',a:true,q:'第三者からの情報取得手続により、債務者が有する預貯金債権に関する情報を金融機関から取得することができる。',e:'金融機関の本店に一括で照会でき、財産開示手続を先に行う必要はありません。不動産情報（登記所）や勤務先情報（市町村・年金機構）の取得には、財産開示手続を先に行うことが必要です。',r:'民事執行法207条'},
+{id:'h6',c:'kaishu',a:false,q:'内容証明郵便による催告をすれば時効の完成は6か月間猶予され、猶予期間中に再び催告すれば、さらに6か月間猶予される。',e:'猶予期間中の再度の催告には、時効の完成を猶予する効力がありません。猶予期間中に訴訟の提起などを行う必要があります。',r:'民法150条'},
+{id:'h7',c:'kaishu',a:true,q:'権利について協議を行う旨の合意を書面で行った場合、一定期間、時効の完成が猶予される。',e:'合意から1年（または合意で定めた1年未満の期間）が経過するまで猶予されます。再度の合意も可能ですが、本来の時効期間の満了から通算5年が上限です。',r:'民法151条'},
+{id:'h8',c:'kaishu',a:true,q:'破産手続開始決定があると、破産財団に属する財産の管理処分権は破産管財人に専属する。',e:'取引先が破産した場合、売掛金の請求や動産の取戻しは管財人と交渉することになります。',r:'破産法78条1項'},
+{id:'h9',c:'kaishu',a:true,q:'債務者が支払不能になった後に、特定の債権者にだけ弁済した行為は、偏頗行為否認の対象となりうる。',e:'債権者が支払不能などの事情を知っていたことが要件です。取引先が危ない時期に回収した場合のリスクとして、依頼者に説明しておくべき点です。',r:'破産法162条'},
+{id:'h10',c:'kaishu',a:true,q:'民事再生手続では、原則として、手続開始後も債務者自身が業務の遂行や財産の管理処分を続けることができる。',e:'いわゆるDIP型の手続です。裁判所が監督委員を選任して監督するのが通常で、管理命令が出されると管財人が選任されます。',r:'民事再生法38条1項'},
+{id:'h11',c:'kaishu',a:true,q:'破産手続開始決定があると、破産債権に基づく強制執行は新たに行うことができず、すでにされている強制執行は破産財団に対しては効力を失う。',e:'このため、債権者による個別の回収は、開始決定までに債務名義を得て執行を完了しているかどうかが分かれ目になります（ただし否認のリスクがあります）。',r:'破産法42条1項・2項'},
+{id:'h12',c:'kaishu',a:true,q:'破産債権者が破産手続開始後に破産財団に対して債務を負担した場合、その債務と破産債権とを相殺することはできない。',e:'相殺禁止の規定です。開始前に負担した債務でも、支払不能等を知った後に負担したものは原則として相殺できません（71条1項2号〜4号）。',r:'破産法71条1項1号'}
+];
+
+const KEY='kigyo-quiz-v1';
+let ST={};   // {qid:{c:正解数,w:不正解数,l:1|0（直近の結果）}}
+let PREF={sel:CATS.map(c=>c.id),mode:'all',order:'rand'};
+function load(){
+  try{const raw=localStorage.getItem(KEY);if(raw){const d=JSON.parse(raw);ST=d.st||{};if(d.pref)PREF=Object.assign(PREF,d.pref);}}catch(e){}
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({st:ST,pref:PREF}));}catch(e){}}
+
+const $=id=>document.getElementById(id);
+const catName=id=>CATS.find(c=>c.id===id).name;
+const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+
+function pool(){
+  const sel=new Set(PREF.sel);
+  return Q.filter(q=>{
+    if(!sel.has(q.c))return false;
+    const s=ST[q.id];
+    if(PREF.mode==='new')return !s;
+    if(PREF.mode==='wrong')return s&&s.l===0;
+    return true;
+  });
+}
+
+function renderHome(){
+  const answered=Q.filter(q=>ST[q.id]);
+  const wrongNow=Q.filter(q=>ST[q.id]&&ST[q.id].l===0).length;
+  let tc=0,tw=0;Object.values(ST).forEach(s=>{tc+=s.c;tw+=s.w;});
+  const rate=tc+tw?Math.round(tc/(tc+tw)*100)+'%':'—';
+  $('summary').innerHTML=
+    `<div><b>${answered.length}<small style="font-size:12px;color:var(--text-muted)"> / ${Q.length}</small></b><span>回答済みの問題</span></div>`+
+    `<div><b>${rate}</b><span>通算正答率</span></div>`+
+    `<div><b>${wrongNow}</b><span>前回間違えた問題</span></div>`;
+
+  $('catList').innerHTML=CATS.map(c=>{
+    const qs=Q.filter(q=>q.c===c.id);
+    const ok=qs.filter(q=>ST[q.id]&&ST[q.id].l===1).length;
+    const ng=qs.filter(q=>ST[q.id]&&ST[q.id].l===0).length;
+    const on=PREF.sel.includes(c.id);
+    return `<label class="cat${on?' on':''}"><input type="checkbox" id="cat-${c.id}" data-cat="${c.id}"${on?' checked':''}>
+      <div class="cat-body"><div class="cat-name">${c.name}</div>
+      <div class="cat-meta">${qs.length}問 ・ 前回正解 ${ok} ・ 前回不正解 ${ng}</div>
+      <div class="bar"><i class="ok" style="width:${ok/qs.length*100}%"></i><i class="ng" style="width:${ng/qs.length*100}%"></i></div></div></label>`;
+  }).join('');
+  document.querySelectorAll('#catList input').forEach(inp=>inp.addEventListener('change',()=>{
+    const id=inp.dataset.cat;
+    PREF.sel=inp.checked?[...new Set([...PREF.sel,id])]:PREF.sel.filter(x=>x!==id);
+    save();renderHome();
+  }));
+  document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===PREF.mode));
+  document.querySelectorAll('#orderSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===PREF.order));
+  const n=pool().length;
+  $('poolInfo').textContent=n?`対象 ${n}問`:(PREF.mode==='wrong'?'前回間違えた問題はありません':PREF.mode==='new'?'未回答の問題はありません':'分野を選んでください');
+  $('startBtn').disabled=!n;
+  $('startBtn').textContent=n?`${n}問を始める`:'開始';
+  renderReset(false);
+}
+
+function renderReset(asking){
+  $('resetArea').innerHTML=asking
+    ?`<div class="confirm"><span>すべての回答記録を消去します。よろしいですか？</span><button class="btn btn-small btn-danger" id="resetYes" type="button">消去する</button><button class="btn btn-small" id="resetNo" type="button">やめる</button></div>`
+    :`<div class="confirm"><span class="muted">回答記録（正答率・前回の結果）を初期化します。</span><button class="btn btn-small btn-danger" id="resetAsk" type="button">記録を消去</button></div>`;
+  if(asking){
+    $('resetYes').onclick=()=>{ST={};save();renderHome();};
+    $('resetNo').onclick=()=>renderReset(false);
+  }else $('resetAsk').onclick=()=>renderReset(true);
+}
+
+// ---- Quiz ----
+let deck=[],idx=0,results=[],answered=false;
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function startQuiz(list){
+  deck=PREF.order==='rand'?shuffle(list.slice()):list.slice();
+  idx=0;results=[];
+  show('quiz');renderQ();
+}
+function show(v){
+  $('home').hidden=v!=='home';$('home').style.display=v==='home'?'contents':'none';
+  $('quiz').hidden=v!=='quiz';$('result').hidden=v!=='result';
+  window.scrollTo(0,0);
+}
+function renderQ(){
+  const q=deck[idx];answered=false;
+  $('qCat').textContent=catName(q.c);
+  $('qCount').textContent=`${idx+1} / ${deck.length}`;
+  $('qProg').style.width=`${idx/deck.length*100}%`;
+  $('qText').textContent=q.q;
+  $('qVerdict').innerHTML='';
+  $('nextBtn').hidden=true;
+  [$('btnO'),$('btnX')].forEach(b=>{b.disabled=false;b.className='';});
+}
+function answer(v){
+  if(answered)return;answered=true;
+  const q=deck[idx],ok=v===q.a;
+  const s=ST[q.id]||{c:0,w:0,l:0};
+  ok?s.c++:s.w++;s.l=ok?1:0;ST[q.id]=s;save();
+  results.push({q,ok});
+  const picked=v?$('btnO'):$('btnX'),right=q.a?$('btnO'):$('btnX');
+  [$('btnO'),$('btnX')].forEach(b=>b.disabled=true);
+  picked.classList.add(ok?'pick-ok':'pick-ng');
+  if(!ok)right.classList.add('is-answer');
+  $('qVerdict').innerHTML=`<div class="verdict ${ok?'ok':'ng'}"><h3>${ok?'正解':'不正解'}　正答：${q.a?'○':'×'}</h3><p>${esc(q.e)}</p><div class="ref"><b>根拠</b>　${esc(q.r)}</div></div>`;
+  $('qProg').style.width=`${(idx+1)/deck.length*100}%`;
+  $('nextBtn').hidden=false;
+  $('nextBtn').textContent=idx+1<deck.length?'次へ':'結果を見る';
+  $('nextBtn').focus();
+}
+function next(){
+  if(!answered)return;
+  if(idx+1<deck.length){idx++;renderQ();}else finish();
+}
+function finish(){
+  const n=results.length,ok=results.filter(r=>r.ok).length;
+  $('rScore').textContent=n?`${ok} / ${n}問 正解`:'回答なし';
+  $('rSub').textContent=n?`正答率 ${Math.round(ok/n*100)}%`+(n<deck.length?`（全${deck.length}問中 ${n}問で中断）`:''):'';
+  const miss=results.filter(r=>!r.ok);
+  $('missCard').hidden=!miss.length;
+  $('retryWrongBtn').hidden=!miss.length;
+  $('missList').innerHTML=miss.map(r=>`<div class="miss"><span class="tag">${catName(r.q.c)}</span><div class="q">${esc(r.q.q)}</div><div class="a">正答：${r.q.a?'○':'×'}　${esc(r.q.e)}<br>根拠：${esc(r.q.r)}</div></div>`).join('');
+  show('result');
+}
+
+$('btnO').onclick=()=>answer(true);
+$('btnX').onclick=()=>answer(false);
+$('nextBtn').onclick=next;
+$('quitBtn').onclick=finish;
+$('startBtn').onclick=()=>{const p=pool();if(p.length)startQuiz(p);};
+$('homeBtn').onclick=()=>{show('home');renderHome();};
+$('retryWrongBtn').onclick=()=>startQuiz(results.filter(r=>!r.ok).map(r=>r.q));
+$('selAll').onclick=()=>{PREF.sel=CATS.map(c=>c.id);save();renderHome();};
+$('selNone').onclick=()=>{PREF.sel=[];save();renderHome();};
+document.querySelectorAll('#modeSeg button').forEach(b=>b.onclick=()=>{PREF.mode=b.dataset.v;save();renderHome();});
+document.querySelectorAll('#orderSeg button').forEach(b=>b.onclick=()=>{PREF.order=b.dataset.v;save();renderHome();});
+document.addEventListener('keydown',e=>{
+  if($('quiz').hidden||e.metaKey||e.ctrlKey||e.altKey)return;
+  const k=e.key.toLowerCase();
+  if(k==='o'||k==='1'){answer(true);}
+  else if(k==='x'||k==='2'){answer(false);}
+  else if(k==='enter'&&answered){e.preventDefault();next();}
+});
+
+load();renderHome();
+</script>
+</body>
+</html>
