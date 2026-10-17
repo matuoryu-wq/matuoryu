@@ -34,9 +34,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 button:focus-visible,label:focus-within{outline:2px solid var(--primary);outline-offset:2px}
 .grp-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 @media(max-width:520px){.grp-list{grid-template-columns:1fr}}
-.grp{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);border-radius:8px;padding:9px 12px;cursor:pointer;min-width:0}
-.grp.on{border-color:var(--primary);background:var(--primary-light)}
-.grp input{margin-top:3px;accent-color:var(--primary)}
+.grp{font:inherit;color:inherit;text-align:left;display:flex;gap:10px;align-items:center;border:1px solid var(--border);background:var(--card);border-radius:8px;padding:10px 12px;cursor:pointer;min-width:0;width:100%}
+.grp:hover{border-color:var(--primary);background:var(--primary-light)}
+.grp .go{font-size:18px;color:var(--primary);font-weight:700}
 .grp-body{flex:1;min-width:0}
 .grp-name{font-weight:700;font-size:13.5px}
 .grp-meta{font-size:11.5px;color:var(--text-muted);font-variant-numeric:tabular-nums}
@@ -97,7 +97,7 @@ button:focus-visible,label:focus-within{outline:2px solid var(--primary);outline
       <div class="summary" id="summary"></div>
     </div>
     <div class="card">
-      <div class="card-title"><span id="grpTitle">小分野</span><span class="row"><button class="btn btn-small" id="selAll" type="button">全選択</button><button class="btn btn-small" id="selNone" type="button">全解除</button></span></div>
+      <div class="card-title"><span id="grpTitle">小分野</span><span class="muted">タップするとすぐ出題します</span></div>
       <div class="grp-list" id="grpList"></div>
       <div class="opts">
         <div class="row"><span class="opt-label">出題範囲</span>
@@ -175,7 +175,7 @@ const CATS=QB.cats;
 const ALLQ=CATS.flatMap(c=>c.qs);
 const KEY='kigyo-quiz-v2';
 let ST={};   // {qid:{c:正解数,w:不正解数,l:1|0（直近の結果）}}
-let PREF={tab:'all',sel:{},mode:'all',order:'rand',limit:20};
+let PREF={tab:'all',mode:'all',order:'rand',limit:20};
 function load(){
   try{const raw=localStorage.getItem(KEY);if(raw){const d=JSON.parse(raw);ST=d.st||{};if(d.pref)PREF=Object.assign(PREF,d.pref);}}catch(e){}
   if(PREF.tab!=='all'&&!CATS.some(c=>c.id===PREF.tab))PREF.tab='all';
@@ -193,14 +193,8 @@ function groups(){
   const c=catOf(PREF.tab);
   return c.subs.map(s=>({id:s.id,name:s.name,qs:c.qs.filter(q=>q.s===s.id)}));
 }
-function selected(){
-  const g=groups();
-  if(!PREF.sel[PREF.tab])PREF.sel[PREF.tab]=g.map(x=>x.id);
-  return PREF.sel[PREF.tab].filter(id=>g.some(x=>x.id===id));
-}
-function pool(){
-  const sel=new Set(selected());
-  return groups().filter(g=>sel.has(g.id)).flatMap(g=>g.qs).filter(q=>{
+function pool(gid){
+  return groups().filter(g=>!gid||g.id===gid).flatMap(g=>g.qs).filter(q=>{
     const s=ST[q.id];
     if(PREF.mode==='new')return !s;
     if(PREF.mode==='wrong')return s&&s.l===0;
@@ -228,28 +222,26 @@ function renderHome(){
     `<div><b>${wrongNow}</b><span>前回間違えた問題</span></div>`;
   $('grpTitle').textContent=PREF.tab==='all'?'分野':'小分野';
 
-  const sel=selected();
   $('grpList').innerHTML=g.map(x=>{
     const ok=x.qs.filter(q=>ST[q.id]&&ST[q.id].l===1).length;
     const ng=x.qs.filter(q=>ST[q.id]&&ST[q.id].l===0).length;
-    const on=sel.includes(x.id),n=x.qs.length||1;
-    return `<label class="grp${on?' on':''}"><input type="checkbox" id="grp-${PREF.tab}-${x.id}" data-g="${x.id}"${on?' checked':''}>
+    const n=x.qs.length||1;
+    return `<button type="button" class="grp" data-g="${x.id}">
       <div class="grp-body"><div class="grp-name">${esc(x.name)}</div>
       <div class="grp-meta">${x.qs.length}問 ・ 前回正解 ${ok} ・ 前回不正解 ${ng}</div>
-      <div class="bar"><i class="ok" style="width:${ok/n*100}%"></i><i class="ng" style="width:${ng/n*100}%"></i></div></div></label>`;
+      <div class="bar"><i class="ok" style="width:${ok/n*100}%"></i><i class="ng" style="width:${ng/n*100}%"></i></div></div><span class="go">›</span></button>`;
   }).join('');
-  $('grpList').querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>{
-    const id=inp.dataset.g,cur=selected();
-    PREF.sel[PREF.tab]=inp.checked?[...new Set([...cur,id])]:cur.filter(x=>x!==id);
-    save();renderHome();
-  }));
+  $('grpList').querySelectorAll('.grp').forEach(el=>el.onclick=()=>{
+    const gid=el.dataset.g;
+    if(PREF.tab==='all'){PREF.tab=gid;save();renderTabs();startTab();}else startTab(gid);
+  });
   document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===PREF.mode));
   document.querySelectorAll('#orderSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===PREF.order));
   document.querySelectorAll('#limitSeg button').forEach(b=>b.classList.toggle('on',+b.dataset.v===PREF.limit));
   const n=pool().length,take=PREF.limit?Math.min(PREF.limit,n):n;
-  $('poolInfo').textContent=n?`対象 ${n}問`+(take<n?`（うち${take}問を出題）`:''):(PREF.mode==='wrong'?'前回間違えた問題はありません':PREF.mode==='new'?'未回答の問題はありません':'分野を選んでください');
-  $('startBtn').disabled=!n;
-  $('startBtn').textContent=n?`${take}問を始める`:'開始';
+  $('poolInfo').textContent=n?`対象 ${n}問`+(take<n?`（うち${take}問を出題）`:''):(PREF.mode==='wrong'?'前回間違えた問題はありません':'未回答の問題はありません');
+  $('startBtn').disabled=false;
+  $('startBtn').textContent=PREF.tab==='all'?'全分野から出題':'この分野の全体から出題';
   renderReset(false);
 }
 
@@ -266,14 +258,14 @@ function renderReset(asking){
 let deck=[],idx=0,answered=false,src=null,score={ok:0,n:0},pushed=false;
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 // 出題元。設定どおりの対象が0問なら、そのタブの全問題から出す
-function source(){const p=pool();return p.length?p:groups().flatMap(g=>g.qs);}
+function source(gid){const p=pool(gid);return p.length?p:groups().filter(g=>!gid||g.id===gid).flatMap(g=>g.qs);}
 function makeDeck(){
   let d=src();
   if(PREF.order==='rand')shuffle(d=d.slice());
   return PREF.limit?d.slice(0,PREF.limit):d;
 }
-function startTab(){
-  src=source;deck=makeDeck();idx=0;score={ok:0,n:0};
+function startTab(gid){
+  src=()=>source(gid);deck=makeDeck();idx=0;score={ok:0,n:0};
   if(!deck.length){show('home');renderHome();return;}
   show('quiz');renderQ();
 }
@@ -326,9 +318,7 @@ $('btnO').onclick=()=>answer(true);
 $('btnX').onclick=()=>answer(false);
 $('nextBtn').onclick=next;
 $('quitBtn').onclick=goHome;
-$('startBtn').onclick=()=>{if(pool().length)startTab();};
-$('selAll').onclick=()=>{PREF.sel[PREF.tab]=groups().map(x=>x.id);save();renderHome();};
-$('selNone').onclick=()=>{PREF.sel[PREF.tab]=[];save();renderHome();};
+$('startBtn').onclick=()=>startTab();
 document.querySelectorAll('#modeSeg button').forEach(b=>b.onclick=()=>{PREF.mode=b.dataset.v;save();renderHome();});
 document.querySelectorAll('#orderSeg button').forEach(b=>b.onclick=()=>{PREF.order=b.dataset.v;save();renderHome();});
 document.querySelectorAll('#limitSeg button').forEach(b=>b.onclick=()=>{PREF.limit=+b.dataset.v;save();renderHome();});
