@@ -1194,7 +1194,7 @@ function expHtml(q){
   let html = '';
   const deep = (typeof EXP_DEEP!=='undefined') && EXP_DEEP[q.id];
   if(deep) html += deep.map(([hd,body]) => `<div class="exp-sec-hd">${hd}</div><div class="exp-deep">${body}</div>`).join('');
-  if(names.length) html += `<div class="exp-sec-hd">勘定科目</div>` + names.map(n => { const kg = isKogyo && kogyoAnalog(n); return `<div class="exp-acct-line"><span class="acct-tag ${tagType(n)}">${n}</span>${ACCT_DEF[n]||''}${kg?`<div class="kg-analog">🏪 商業簿記でいう<strong>「${kg[0]}」</strong>：${kg[1]}</div>`:''}</div>`; }).join('');
+  if(names.length) html += `<div class="exp-sec-hd">勘定科目</div>` + names.map(n => { const kg = isKogyo && kogyoAnalog(n); return `<div class="exp-acct-line"><span class="acct-tag ${tagType(n)}">${n}</span>${ACCT_DEF[n]||''}${kg?`<div class="kg-analog"><strong>${kg[0].replace(/など$/,'')}</strong>類：${kg[1]}</div>`:''}</div>`; }).join('');
   if(q.calc && !(deep && deep.some(([hd])=>hd==='計算'))) html += `<div class="exp-sec-hd">計算</div><div class="exp-calc">${styleParens(q.calc.replace(/\n/g,'<br>'))}</div>`;
   return html ? `<div class="exp-res-exp exp-structured">${html}</div>` : '';
 }
