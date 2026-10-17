@@ -62,6 +62,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku 
 .verdict p{font-size:14px;line-height:1.8}
 .ref{margin-top:8px;font-size:12.5px;color:var(--muted)}
 .ref b{color:var(--text)}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{font-family:inherit;font-size:15px;line-height:1.75;text-align:left;display:flex;gap:10px;align-items:flex-start;width:100%;padding:12px 14px;border-radius:12px;border:2px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--primary);background:var(--primary-light)}
+.opt:disabled{cursor:default}
+.opt.is-ans{border-color:var(--ok);background:var(--ok-bg)}
+.opt.is-ng{border-color:var(--ng);background:var(--ng-bg)}
+.num{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--primary-light);color:var(--primary);font-weight:700;font-size:13px;margin-top:2px}
+.otext{flex:1;min-width:0}
+.kw-r{color:var(--ok)}.kw-w{color:var(--ng)}
+.exp{border-top:1px solid var(--border);padding-top:10px;margin-top:10px}
+.exp-h{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.mark{font-size:13px;font-weight:700}
+.m-o{color:var(--ok)}.m-x{color:var(--ng)}
+.verdict .exp p{font-size:13.5px}
+.hint{font-size:12px;color:var(--muted)}
 .after{display:flex;justify-content:flex-end;margin-top:12px}
 .empty{text-align:center;color:var(--muted);padding:40px 10px;font-size:14px}
 .note{font-size:11px;color:var(--warn-fg);background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:10px;padding:8px 12px;line-height:1.6}
@@ -72,7 +87,7 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 <body>
 <div class="header gut">
   <h1>企業法務 一問一答</h1>
-  <p>○か×かを答えて、解説と根拠を確認しよう</p>
+  <p>四択で答えて、選択肢ごとの解説と根拠を確認しよう</p>
 </div>
 
 <div class="controls gut">
@@ -81,17 +96,16 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
     <div class="pills row" id="cats" style="margin-top:4px"></div>
   </div>
   <div class="row sub-row" id="subs"></div>
+  <div class="row"><span class="lbl">形式：</span>
+    <button class="ctrl-btn" data-mode="mc" type="button">四択</button>
+    <button class="ctrl-btn" data-mode="ox" type="button">○×</button>
+  </div>
   <div class="row"><span class="lbl">表示方法：</span>
     <button class="ctrl-btn" data-view="all" type="button">全問</button>
     <button class="ctrl-btn" data-view="wrong" type="button">✖ 前回不正解</button>
     <button class="ctrl-btn" data-view="check" type="button">✅ チェックのみ</button>
     <button class="ctrl-btn" data-view="double" type="button">✅✅ ダブルチェックのみ</button>
   </div>
-  <div class="row"><span class="lbl">順番：</span>
-    <button class="ctrl-btn" data-order="seq" type="button">番号順</button>
-    <button class="ctrl-btn" data-order="rand" type="button">シャッフル</button>
-  </div>
-  <div class="row" id="ranges"></div>
 </div>
 
 <div class="check-bar gut">
@@ -109,13 +123,13 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
     <button class="nav-btn primary" id="nextBtn" type="button">次の問題 →</button>
   </div>
   <div class="card" id="card"></div>
-  <div class="note">問題・解説は2026年10月時点の法令に基づく学習用の要約です。条文は e-Gov 法令検索等で原文と最新の改正状況を確認してください。チェックや正答の記録はこの端末のブラウザ内にのみ保存されます。キーボード：O＝○　X＝×　←→＝前後の問題　C＝チェック</div>
+  <div class="note">問題・解説は2026年10月時点の法令に基づく学習用の要約です。条文は e-Gov 法令検索等で原文と最新の改正状況を確認してください。チェックや正答の記録はこの端末のブラウザ内にのみ保存されます。キーボード：1〜4＝選択肢（○×はO・X）　←→＝前後の問題　C＝チェック</div>
 </div>
 
 <script>
 // 問題データは kigyo-data/*.js が QB.add() で登録する。
-// 行の形式: [小分野ID, 1=○ / 0=×, 問題文, 解説, 根拠]
-// 問題IDは「分野.小分野.小分野内の通し番号」なので、問題は各小分野の末尾に追加すること（途中に挿入すると記録がずれる）。
+// 行の形式: [小分野ID, 1=正しい記述 / 0=誤った記述, 記述, 解説, 根拠]
+// 記述IDは「分野.小分野.小分野内の通し番号」なので、記述は各小分野の末尾に追加すること（途中に挿入すると記録がずれる）。
 const QB={cats:[],add(id,name,subs,rows){
   const n={};
   const qs=rows.map(r=>{n[r[0]]=(n[r[0]]||0)+1;return{id:`${id}.${r[0]}.${n[r[0]]}`,c:id,s:r[0],a:!!r[1],q:r[2],e:r[3],r:r[4]};});
@@ -130,49 +144,65 @@ const QB={cats:[],add(id,name,subs,rows){
 <script src="kigyo-data/ma.js"></script>
 <script src="kigyo-data/kaishu.js"></script>
 <script>
-const CATS=QB.cats,ALLQ=CATS.flatMap(c=>c.qs),RANGE=20;
-const KEY='kigyo-quiz-v3';
-let ST={},CHK={};   // ST: {qid:{c,w,l}} 正答記録 / CHK: {qid:1|2} チェック・ダブルチェック
-let P={cat:'all',sub:'all',view:'all',order:'seq',range:0,idx:0,hide:false};
+const CATS=QB.cats,KEY='kigyo-quiz-v3';
+const catOf=id=>CATS.find(c=>c.id===id);
+const subName=(c,s)=>catOf(c).subs.find(x=>x.id===s).name;
+
+// ---- 四択問題の生成 ----
+// 各記述を1問の「正解肢」とし、同じ小分野（足りなければ同じ分野）の記述から残り3肢を選ぶ。
+//  正しい記述が正解肢 →「正しいものはどれか」（他の3肢は誤った記述）
+//  誤った記述が正解肢 →「誤っているものはどれか」（他の3肢は正しい記述）
+// 乱数は記述IDから作るので、毎回同じ問題になる（チェックや記録が問題に結び付く）。
+function rng(str){let h=2166136261;for(const ch of str){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return()=>{h+=0x6D2B79F5;let t=h;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
+function pick(arr,k,r){const a=arr.slice(),out=[];while(out.length<k&&a.length)out.push(a.splice(Math.floor(r()*a.length),1)[0]);return out;}
+const MC=[];
+for(const c of CATS){
+  for(const s of c.qs){
+    const r=rng(s.id),want=!s.a;
+    let pool=c.qs.filter(x=>x.s===s.s&&x.a===want&&x!==s);
+    let d=pick(pool,3,r);
+    if(d.length<3)d=d.concat(pick(c.qs.filter(x=>x.s!==s.s&&x.a===want),3-d.length,r));
+    const opts=pick([s,...d],4,r);
+    MC.push({id:'m.'+s.id,c:c.id,s:s.s,mc:true,type:s.a?'right':'wrong',opts,ans:opts.indexOf(s),mixed:opts.some(o=>o.s!==s.s)});
+  }
+}
+const OX=CATS.flatMap(c=>c.qs);
+
+let ST={},CHK={};   // ST: {問題ID:{c,w,l}} 正答記録 / CHK: {問題ID:1|2} チェック・ダブルチェック
+let P={cat:'all',sub:'all',view:'all',mode:'mc',idx:0,hide:false};
 function load(){
   try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){ST=d.st||{};CHK=d.chk||{};Object.assign(P,d.p||{});}}catch(e){}
-  if(P.cat!=='all'&&!CATS.some(c=>c.id===P.cat))P.cat='all';
+  if(P.cat!=='all'&&!catOf(P.cat))P.cat='all';
+  if(P.mode!=='ox')P.mode='mc';
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify({st:ST,chk:CHK,p:P}));}catch(e){}}
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
-const catOf=id=>CATS.find(c=>c.id===id);
-const label=q=>{const c=catOf(q.c);return `${c.name} › ${c.subs.find(s=>s.id===q.s).name}`;};
+const label=q=>`${catOf(q.c).name} › ${subName(q.c,q.s)}`;
+const NUM=['1','2','3','4'];
 
-// 分野・小分野で絞った範囲（表示方法の絞り込み前）
+// 分野・細かい分野で絞った範囲（表示方法の絞り込み前）
 function scope(){
-  let qs=P.cat==='all'?ALLQ:catOf(P.cat).qs;
+  let qs=P.mode==='mc'?MC:OX;
+  if(P.cat!=='all')qs=qs.filter(q=>q.c===P.cat);
   if(P.cat!=='all'&&P.sub!=='all')qs=qs.filter(q=>q.s===P.sub);
   return qs;
 }
-let order=null,orderKey='';   // シャッフル順は条件が変わったときだけ作り直す
 function list(){
   let qs=scope();
   if(P.view==='wrong')qs=qs.filter(q=>ST[q.id]&&ST[q.id].l===0);
   if(P.view==='check')qs=qs.filter(q=>CHK[q.id]);
   if(P.view==='double')qs=qs.filter(q=>CHK[q.id]===2);
-  if(P.order==='rand'){
-    const k=[P.cat,P.sub,P.view,qs.map(q=>q.id).join()].join('|');
-    if(k!==orderKey||!order){order=qs.slice();for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}orderKey=k;}
-    qs=order;
-  }
   return qs;
 }
-function current(){
-  const all=list(),from=P.range?(P.range-1)*RANGE:0;
-  return {all,from,qs:P.range?all.slice(from,from+RANGE):all};
-}
+function rate(){let c=0,w=0;scope().forEach(q=>{const s=ST[q.id];if(s){c+=s.c;w+=s.w;}});return c+w?Math.round(c/(c+w)*100)+'%':'—';}
 
 function renderControls(){
   $('catWrap').classList.toggle('collapsed',P.hide);
   $('catToggleLbl').textContent=P.hide?'分野を表示':'分野を隠す';
-  const cats=[{id:'all',name:'すべて',n:ALLQ.length},...CATS.map(c=>({id:c.id,name:c.name,n:c.qs.length}))];
+  const all=P.mode==='mc'?MC:OX;
+  const cats=[{id:'all',name:'すべて',n:all.length},...CATS.map(c=>({id:c.id,name:c.name,n:c.qs.length}))];
   $('cats').innerHTML=cats.map(c=>`<button type="button" class="ctrl-btn${P.cat===c.id?' active':''}" data-cat="${c.id}">${esc(c.name)}<small>${c.n}</small></button>`).join('');
   if(P.cat==='all'){$('subs').innerHTML='<span class="lbl">細かい分野：</span><span class="hint">上の分野（労働・会社法など）を選ぶと、ここで細かい分野を選べます</span>';}
   else{
@@ -180,27 +210,19 @@ function renderControls(){
     $('subs').innerHTML=`<span class="lbl">${esc(c.name)}の細かい分野：</span><button type="button" class="ctrl-btn${P.sub==='all'?' active':''}" data-sub="all">すべて</button>`+
       c.subs.map(s=>`<button type="button" class="ctrl-btn${P.sub===s.id?' active':''}" data-sub="${s.id}">${esc(s.name)}<small>${c.qs.filter(q=>q.s===s.id).length}</small></button>`).join('');
   }
+  document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===P.mode));
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===P.view));
-  document.querySelectorAll('[data-order]').forEach(b=>b.classList.toggle('active',b.dataset.order===P.order));
-  const n=list().length,k=Math.ceil(n/RANGE);
-  if(P.range>k)P.range=0;
-  let h='';
-  if(k>1){
-    h=`<span class="lbl">範囲：</span><button type="button" class="ctrl-btn${!P.range?' active':''}" data-range="0">全問</button>`;
-    for(let i=1;i<=k;i++)h+=`<button type="button" class="ctrl-btn${P.range===i?' active':''}" data-range="${i}">Q${(i-1)*RANGE+1}-${Math.min(i*RANGE,n)}</button>`;
-  }
-  $('ranges').innerHTML=h;$('ranges').hidden=!h;
   const sc=scope();
-  $('sTotal').textContent=n;
+  $('sTotal').textContent=list().length;
   $('sCheck').textContent=sc.filter(q=>CHK[q.id]).length;
   $('sDouble').textContent=sc.filter(q=>CHK[q.id]===2).length;
-  let c=0,w=0;sc.forEach(q=>{const s=ST[q.id];if(s){c+=s.c;w+=s.w;}});
-  $('sRate').textContent=c+w?Math.round(c/(c+w)*100)+'%':'—';
+  $('sRate').textContent=rate();
 }
 
 let answered=false;
+const chkText=v=>v===2?'✅✅ ダブル':v===1?'✅ チェック':'☐ チェック';
 function renderQ(){
-  const {all,qs,from}=current();
+  const qs=list();
   answered=false;
   if(!qs.length){
     $('pos').textContent='問 0 / 0';$('prevBtn').disabled=true;$('nextBtn').disabled=true;
@@ -209,36 +231,49 @@ function renderQ(){
   }
   P.idx=Math.min(Math.max(P.idx,0),qs.length-1);
   const q=qs[P.idx],ck=CHK[q.id]||0;
-  $('pos').textContent=`問${from+P.idx+1} / ${all.length}`;
+  $('pos').textContent=`問${P.idx+1} / ${qs.length}`;
   $('prevBtn').disabled=P.idx===0;$('nextBtn').disabled=P.idx>=qs.length-1;
-  $('card').innerHTML=`<div class="q-top"><span class="tag">${esc(label(q))}</span><button type="button" class="chk c${ck}" id="chkBtn">${chkText(ck)}</button></div>
-    <div class="q-text">${esc(q.q)}</div>
-    <div class="ox"><button type="button" id="btnO">○<small>正しい</small></button><button type="button" id="btnX">×<small>誤り</small></button></div>
-    <div id="verdict"></div>`;
-  $('btnO').onclick=()=>answer(true);$('btnX').onclick=()=>answer(false);
+  const top=`<div class="q-top"><span class="tag">${esc(label(q))}</span><button type="button" class="chk c${ck}" id="chkBtn">${chkText(ck)}</button></div>`;
+  if(q.mc){
+    $('card').innerHTML=top+`<div class="q-text">${esc(q.mixed?catOf(q.c).name:subName(q.c,q.s))}に関する次の記述のうち、<b class="${q.type==='right'?'kw-r':'kw-w'}">${q.type==='right'?'正しいもの':'誤っているもの'}</b>はどれか。</div>
+      <div class="opts">${q.opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}"><span class="num">${NUM[i]}</span><span class="otext">${esc(o.q)}</span></button>`).join('')}</div>
+      <div id="verdict"></div>`;
+    document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(+b.dataset.i));
+  }else{
+    $('card').innerHTML=top+`<div class="q-text">${esc(q.q)}</div>
+      <div class="ox"><button type="button" id="btnO">○<small>正しい</small></button><button type="button" id="btnX">×<small>誤り</small></button></div>
+      <div id="verdict"></div>`;
+    $('btnO').onclick=()=>answer(true);$('btnX').onclick=()=>answer(false);
+  }
   $('chkBtn').onclick=toggleCheck;
   save();
 }
-const chkText=v=>v===2?'✅✅ ダブル':v===1?'✅ チェック':'☐ チェック';
 function answer(v){
   if(answered)return;
-  const {qs}=current(),q=qs[P.idx];if(!q)return;
+  const qs=list(),q=qs[P.idx];if(!q)return;
+  if(q.mc&&typeof v!=='number')return;
+  if(!q.mc&&typeof v!=='boolean')return;
   answered=true;
-  const ok=v===q.a,s=ST[q.id]||{c:0,w:0,l:0};
+  const ok=q.mc?v===q.ans:v===q.a,s=ST[q.id]||{c:0,w:0,l:0};
   ok?s.c++:s.w++;s.l=ok?1:0;ST[q.id]=s;save();
-  [$('btnO'),$('btnX')].forEach(b=>b.disabled=true);
-  (v?$('btnO'):$('btnX')).classList.add(ok?'pick-ok':'pick-ng');
-  if(!ok)(q.a?$('btnO'):$('btnX')).classList.add('is-answer');
+  let body;
+  if(q.mc){
+    document.querySelectorAll('.opt').forEach((b,i)=>{b.disabled=true;if(i===q.ans)b.classList.add('is-ans');else if(i===v)b.classList.add('is-ng');});
+    body=`<h3>${ok?'正解':'不正解'}　正答：${NUM[q.ans]}</h3>`+q.opts.map((o,i)=>`<div class="exp${i===q.ans?' exp-ans':''}"><div class="exp-h"><span class="num">${NUM[i]}</span><span class="mark ${o.a?'m-o':'m-x'}">${o.a?'○ 正しい':'× 誤り'}</span></div><p>${esc(o.e)}</p><div class="ref"><b>根拠</b>　${esc(o.r)}</div></div>`).join('');
+  }else{
+    [$('btnO'),$('btnX')].forEach(b=>b.disabled=true);
+    (v?$('btnO'):$('btnX')).classList.add(ok?'pick-ok':'pick-ng');
+    if(!ok)(q.a?$('btnO'):$('btnX')).classList.add('is-answer');
+    body=`<h3>${ok?'正解':'不正解'}　正答：${q.a?'○':'×'}</h3><p>${esc(q.e)}</p><div class="ref"><b>根拠</b>　${esc(q.r)}</div>`;
+  }
   const last=P.idx>=qs.length-1;
-  $('verdict').innerHTML=`<div class="verdict ${ok?'ok':'ng'}"><h3>${ok?'正解':'不正解'}　正答：${q.a?'○':'×'}</h3><p>${esc(q.e)}</p><div class="ref"><b>根拠</b>　${esc(q.r)}</div></div>`+
+  $('verdict').innerHTML=`<div class="verdict ${ok?'ok':'ng'}">${body}</div>`+
     (last?'':`<div class="after"><button type="button" class="nav-btn primary" id="next2">次の問題 →</button></div>`);
   if(!last)$('next2').onclick=()=>go(1);
-  // 前回不正解・チェックで絞り込み中でも、解答直後に問題が消えないよう一覧の再計算はしない
-  const sc=scope();let c=0,w=0;sc.forEach(x=>{const t=ST[x.id];if(t){c+=t.c;w+=t.w;}});
-  $('sRate').textContent=c+w?Math.round(c/(c+w)*100)+'%':'—';
+  $('sRate').textContent=rate();
 }
 function toggleCheck(){
-  const {qs}=current(),q=qs[P.idx];if(!q)return;
+  const q=list()[P.idx];if(!q)return;
   const v=((CHK[q.id]||0)+1)%3;if(v)CHK[q.id]=v;else delete CHK[q.id];save();
   const b=$('chkBtn');b.className=`chk c${v}`;b.textContent=chkText(v);
   const sc=scope();
@@ -247,25 +282,26 @@ function toggleCheck(){
 }
 function go(d){
   // 絞り込み中に解答・チェックした結果を反映してから移動する
-  const {qs}=current(),cur=qs[P.idx];
+  const cur=list()[P.idx];
   renderControls();
-  const now=current().qs,i=cur?now.indexOf(cur):-1;
+  const now=list(),i=cur?now.indexOf(cur):-1;
   P.idx=(i>=0?i:P.idx-(d>0?1:0))+d;
   renderQ();
   window.scrollTo({top:$('pos').getBoundingClientRect().top+window.scrollY-12});
 }
 function reset(){P.idx=0;renderControls();renderQ();}
 
-$('cats').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(!b)return;P.cat=b.dataset.cat;P.sub='all';P.range=0;reset();});
-$('subs').addEventListener('click',e=>{const b=e.target.closest('[data-sub]');if(!b)return;P.sub=b.dataset.sub;P.range=0;reset();});
-$('ranges').addEventListener('click',e=>{const b=e.target.closest('[data-range]');if(!b)return;P.range=+b.dataset.range;reset();});
-document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{P.view=b.dataset.view;P.range=0;reset();});
-document.querySelectorAll('[data-order]').forEach(b=>b.onclick=()=>{P.order=b.dataset.order;order=null;P.range=0;reset();});
+$('cats').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(!b)return;P.cat=b.dataset.cat;P.sub='all';reset();});
+$('subs').addEventListener('click',e=>{const b=e.target.closest('[data-sub]');if(!b)return;P.sub=b.dataset.sub;reset();});
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{P.mode=b.dataset.mode;reset();});
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{P.view=b.dataset.view;reset();});
 $('catToggle').onclick=()=>{P.hide=!P.hide;save();renderControls();};
 $('prevBtn').onclick=()=>go(-1);
 $('nextBtn').onclick=()=>go(1);
 $('copyBtn').onclick=()=>{
-  const txt=scope().filter(q=>CHK[q.id]===2).map(q=>`【${label(q)}】${q.q}（正答：${q.a?'○':'×'}）`).join('\n');
+  const txt=scope().filter(q=>CHK[q.id]===2).map(q=>q.mc
+    ?`【${label(q)}】次の記述のうち、${q.type==='right'?'正しいもの':'誤っているもの'}はどれか。\n`+q.opts.map((o,i)=>`${NUM[i]}. ${o.q}`).join('\n')+`\n（正答：${NUM[q.ans]}）`
+    :`【${label(q)}】${q.q}（正答：${q.a?'○':'×'}）`).join('\n\n');
   const btn=$('copyBtn'),done=m=>{btn.textContent=m;setTimeout(()=>btn.textContent='📋 ダブルの問題をコピー',1500);};
   if(!txt){done('ダブルの問題はありません');return;}
   try{navigator.clipboard.writeText(txt).then(()=>done('コピーしました'),()=>done('コピーできませんでした'));}catch(e){done('コピーできませんでした');}
@@ -273,8 +309,9 @@ $('copyBtn').onclick=()=>{
 document.addEventListener('keydown',e=>{
   if(e.metaKey||e.ctrlKey||e.altKey)return;
   const k=e.key.toLowerCase();
-  if(k==='o'||k==='1')answer(true);
-  else if(k==='x'||k==='2')answer(false);
+  if(P.mode==='mc'&&['1','2','3','4'].includes(k))answer(+k-1);
+  else if(P.mode==='ox'&&(k==='o'||k==='1'))answer(true);
+  else if(P.mode==='ox'&&(k==='x'||k==='2'))answer(false);
   else if(k==='arrowright'||(k==='enter'&&answered)){if(!$('nextBtn').disabled){e.preventDefault();go(1);}}
   else if(k==='arrowleft'){if(!$('prevBtn').disabled)go(-1);}
   else if(k==='c')toggleCheck();
