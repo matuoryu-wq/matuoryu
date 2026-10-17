@@ -4216,12 +4216,15 @@ function renderFlow(fig){
   const xs = fig.nodes.map((_,i)=> n===1 ? W/2 : x0 + i*(xn-x0)/(n-1));
   const pos = Object.fromEntries(fig.nodes.map((nd,i)=>[nd.id, xs[i]]));
   const used = {}, arcs = [], lh = 13;
+  // 時系列の番号：以前に起きていた取引（past）を先に、あとは並び順に①②③…
+  const seq = fig.flows.length>1 ? [...fig.flows.filter(f=>f.past), ...fig.flows.filter(f=>!f.past)] : [];
   fig.flows.forEach(f=>{
     const x1=pos[f.from], x2=pos[f.to], ltr = x2>x1;
     const up = f.side ? f.side==='up' : ltr;
     const key = (up?'u':'d')+Math.min(x1,x2)+'-'+Math.max(x1,x2);
     const k = used[key]=(used[key]||0)+1;
-    const lines = f.label.split('\n');
+    const no = seq.indexOf(f);
+    const lines = ((no>=0 ? '①②③④⑤⑥⑦⑧⑨'[no] : '') + f.label).split('\n');
     arcs.push({f,x1,x2,up,apex:16+(k-1)*(lines.length*lh+6),lines});
   });
   const ext = a => a.apex + a.lines.length*lh + 2;
@@ -4322,7 +4325,7 @@ const FLOW_FIGS = {
     flows:[{from:'P',to:'N',kind:'goods',label:'引き下げた16円を戻す'}],
     note:'洗替法では、前期に引き下げた分を期首にいったん取り消す。'},
   1023:{nodes:[{id:'C',label:'お客さん'},{id:'X',label:'X社',sub:'自社',me:true},{id:'K',label:'カード会社'}],
-    flows:[{from:'X',to:'C',kind:'goods',label:'書籍100円'},{from:'C',to:'X',kind:'promise',label:'カードで\n支払い'},{from:'K',to:'X',kind:'promise',label:'後で98円\n払ってもらう'},{from:'X',to:'K',kind:'money',label:'手数料2円\n（差し引き）'}],
+    flows:[{from:'X',to:'C',kind:'goods',label:'書籍100円'},{from:'C',to:'X',kind:'promise',label:'カードで\n支払い'},{from:'X',to:'K',kind:'money',label:'手数料2円\n（差し引き）'},{from:'K',to:'X',kind:'promise',label:'後で98円\n払ってもらう'}],
     note:'代金はカード会社から受け取る。手数料2円は売った時点でX社の費用にする。'},
   // --- 税金関連 ---
   1156:{nodes:[{id:'X',label:'X社',sub:'自社',me:true},{id:'P',label:'郵便局'}],
@@ -4429,13 +4432,13 @@ const FLOW_FIGS = {
     flows:[{from:'K',to:'X',kind:'money',label:'お金150円（記録は120円）'}],
     note:'記録が30円少なかった。足りない30円分だけ追加で直す。'},
   // --- 本支店・連結等 ---
-  1168:{nodes:[{id:'H',label:'本店',sub:'①本店側',me:true},{id:'B',label:'支店',sub:'②支店側',me:true}],
+  1168:{nodes:[{id:'H',label:'本店',me:true},{id:'B',label:'支店',me:true}],
     flows:[{from:'H',to:'B',kind:'money',label:'お金50円'}],
     note:'同じ会社の中の移動。本店と支店が、それぞれ自分の帳簿に記録する。'},
   1169:{nodes:[{id:'B',label:'支店',sub:'記録済み'},{id:'H',label:'本店',sub:'未記録',me:true}],
     flows:[{from:'B',to:'H',kind:'goods',label:'商品10円（まだ届いていない＝未達）'}],
     note:'支店はもう記録している。本店も、届いたものとして記録し、両方の帳簿をそろえる。'},
-  1170:{nodes:[{id:'K',label:'九州支店',sub:'①',me:true},{id:'H',label:'本店',sub:'②',me:true},{id:'S',label:'関西支店',sub:'③',me:true}],
+  1170:{nodes:[{id:'K',label:'九州支店',me:true},{id:'H',label:'本店',me:true},{id:'S',label:'関西支店',me:true}],
     flows:[{from:'K',to:'S',kind:'money',label:'実際のお金20円',side:'down'},{from:'K',to:'H',kind:'promise',label:'本店へ送った\nことにする'},{from:'H',to:'S',kind:'promise',label:'本店から送った\nことにする'}],
     note:'本店集中計算制度：支店どうしの取引も、すべて本店を通したものとして記録する。'},
   1171:{nodes:[{id:'H',label:'本店',me:true},{id:'B',label:'支店',sub:'期末に45円残る'}],
