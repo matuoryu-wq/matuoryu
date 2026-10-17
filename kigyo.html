@@ -78,11 +78,6 @@ button:focus-visible,label:focus-within{outline:2px solid var(--primary);outline
 .ref b{color:var(--text);font-weight:600}
 .q-actions{display:flex;justify-content:space-between;gap:8px;margin-top:14px;flex-wrap:wrap}
 .kbd{font-size:11px;color:var(--text-muted)}
-.miss{border-top:1px solid var(--border);padding-block:12px}
-.miss:first-child{border-top:none;padding-top:0}
-.miss .q{font-size:13.5px;font-weight:600;margin:4px 0}
-.miss .a{font-size:12.5px;color:var(--text-muted)}
-.big-score{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--primary);line-height:1.1}
 .confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -149,28 +144,13 @@ button:focus-visible,label:focus-within{outline:2px solid var(--primary);outline
       </div>
       <div id="qVerdict"></div>
       <div class="q-actions">
-        <button class="btn" id="quitBtn" type="button">中断して結果へ</button>
+        <button class="btn" id="quitBtn" type="button">戻る</button>
         <button class="btn btn-primary" id="nextBtn" type="button" hidden>次へ</button>
       </div>
-      <div class="kbd" style="margin-top:8px">キーボード：O＝○　X＝×　Enter＝次へ</div>
+      <div class="kbd" style="margin-top:8px">キーボード：O＝○　X＝×　Enter＝次へ　Esc＝戻る</div>
     </div>
   </section>
 
-  <section id="result" hidden>
-    <div class="card">
-      <div class="card-title">結果</div>
-      <div class="big-score" id="rScore"></div>
-      <div class="muted" id="rSub" style="margin-top:4px"></div>
-      <div class="row" style="margin-top:14px">
-        <button class="btn btn-primary" id="retryWrongBtn" type="button">間違えた問題をもう一度</button>
-        <button class="btn" id="homeBtn" type="button">分野選択に戻る</button>
-      </div>
-    </div>
-    <div class="card" id="missCard">
-      <div class="card-title">間違えた問題</div>
-      <div id="missList"></div>
-    </div>
-  </section>
 </div>
 
 <script>
@@ -231,7 +211,7 @@ function pool(){
 function renderTabs(){
   const items=[{id:'all',name:'総合',n:ALLQ.length},...CATS.map(c=>({id:c.id,name:c.name,n:c.qs.length}))];
   $('tabs').innerHTML=items.map(t=>`<button type="button" class="tab-btn${t.id===PREF.tab?' active':''}" data-tab="${t.id}">${esc(t.name)}<small>${t.n}</small></button>`).join('');
-  $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{PREF.tab=b.dataset.tab;save();show('home');renderHome();});
+  $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{PREF.tab=b.dataset.tab;save();renderTabs();startTab();});
 }
 
 function renderHome(){
@@ -283,23 +263,36 @@ function renderReset(asking){
   }else $('resetAsk').onclick=()=>renderReset(true);
 }
 
-let deck=[],idx=0,results=[],answered=false;
+let deck=[],idx=0,answered=false,src=null,score={ok:0,n:0},pushed=false;
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function startQuiz(list,useLimit){
-  let d=PREF.order==='rand'?shuffle(list.slice()):list.slice();
-  if(useLimit&&PREF.limit)d=d.slice(0,PREF.limit);
-  deck=d;idx=0;results=[];
+// 出題元。設定どおりの対象が0問なら、そのタブの全問題から出す
+function source(){const p=pool();return p.length?p:groups().flatMap(g=>g.qs);}
+function makeDeck(){
+  let d=src();
+  if(PREF.order==='rand')shuffle(d=d.slice());
+  return PREF.limit?d.slice(0,PREF.limit):d;
+}
+function startTab(){
+  src=source;deck=makeDeck();idx=0;score={ok:0,n:0};
+  if(!deck.length){show('home');renderHome();return;}
   show('quiz');renderQ();
 }
 function show(v){
+  const toQuiz=v==='quiz'&&$('quiz').hidden;
   $('home').hidden=v!=='home';$('home').style.display=v==='home'?'contents':'none';
-  $('quiz').hidden=v!=='quiz';$('result').hidden=v!=='result';
+  $('quiz').hidden=v!=='quiz';
+  if(toQuiz&&!pushed){try{history.pushState({quiz:1},'');pushed=true;}catch(e){}}
   window.scrollTo(0,0);
 }
+function goHome(){
+  if(pushed){pushed=false;try{history.back();}catch(e){}}
+  show('home');renderHome();
+}
+window.addEventListener('popstate',()=>{if(pushed||!$('quiz').hidden){pushed=false;show('home');renderHome();}});
 function renderQ(){
   const q=deck[idx];answered=false;
   $('qCat').textContent=label(q);
-  $('qCount').textContent=`${idx+1} / ${deck.length}`;
+  $('qCount').textContent=`${idx+1} / ${deck.length}`+(score.n?`　正解 ${score.ok}/${score.n}`:'');
   $('qProg').style.width=`${idx/deck.length*100}%`;
   $('qText').textContent=q.q;
   $('qVerdict').innerHTML='';
@@ -311,39 +304,29 @@ function answer(v){
   const q=deck[idx],ok=v===q.a;
   const s=ST[q.id]||{c:0,w:0,l:0};
   ok?s.c++:s.w++;s.l=ok?1:0;ST[q.id]=s;save();
-  results.push({q,ok});
+  score.n++;if(ok)score.ok++;
   const picked=v?$('btnO'):$('btnX'),right=q.a?$('btnO'):$('btnX');
   [$('btnO'),$('btnX')].forEach(b=>b.disabled=true);
   picked.classList.add(ok?'pick-ok':'pick-ng');
   if(!ok)right.classList.add('is-answer');
   $('qVerdict').innerHTML=`<div class="verdict ${ok?'ok':'ng'}"><h3>${ok?'正解':'不正解'}　正答：${q.a?'○':'×'}</h3><p>${esc(q.e)}</p><div class="ref"><b>根拠</b>　${esc(q.r)}</div></div>`;
   $('qProg').style.width=`${(idx+1)/deck.length*100}%`;
+  $('qCount').textContent=`${idx+1} / ${deck.length}　正解 ${score.ok}/${score.n}`;
   $('nextBtn').hidden=false;
-  $('nextBtn').textContent=idx+1<deck.length?'次へ':'結果を見る';
   $('nextBtn').focus();
 }
+// 最後の問題の次は、同じ出題元から新しい組を続けて出す（結果画面は出さない）
 function next(){
   if(!answered)return;
-  if(idx+1<deck.length){idx++;renderQ();}else finish();
-}
-function finish(){
-  const n=results.length,ok=results.filter(r=>r.ok).length;
-  $('rScore').textContent=n?`${ok} / ${n}問 正解`:'回答なし';
-  $('rSub').textContent=n?`正答率 ${Math.round(ok/n*100)}%`+(n<deck.length?`（全${deck.length}問中 ${n}問で中断）`:''):'';
-  const miss=results.filter(r=>!r.ok);
-  $('missCard').hidden=!miss.length;
-  $('retryWrongBtn').hidden=!miss.length;
-  $('missList').innerHTML=miss.map(r=>`<div class="miss"><span class="tag">${esc(label(r.q))}</span><div class="q">${esc(r.q.q)}</div><div class="a">正答：${r.q.a?'○':'×'}　${esc(r.q.e)}<br>根拠：${esc(r.q.r)}</div></div>`).join('');
-  show('result');
+  if(idx+1<deck.length){idx++;}else{deck=makeDeck();idx=0;if(!deck.length){goHome();return;}}
+  renderQ();window.scrollTo(0,0);
 }
 
 $('btnO').onclick=()=>answer(true);
 $('btnX').onclick=()=>answer(false);
 $('nextBtn').onclick=next;
-$('quitBtn').onclick=finish;
-$('startBtn').onclick=()=>{const p=pool();if(p.length)startQuiz(p,true);};
-$('homeBtn').onclick=()=>{show('home');renderHome();};
-$('retryWrongBtn').onclick=()=>startQuiz(results.filter(r=>!r.ok).map(r=>r.q),false);
+$('quitBtn').onclick=goHome;
+$('startBtn').onclick=()=>{if(pool().length)startTab();};
 $('selAll').onclick=()=>{PREF.sel[PREF.tab]=groups().map(x=>x.id);save();renderHome();};
 $('selNone').onclick=()=>{PREF.sel[PREF.tab]=[];save();renderHome();};
 document.querySelectorAll('#modeSeg button').forEach(b=>b.onclick=()=>{PREF.mode=b.dataset.v;save();renderHome();});
@@ -355,6 +338,7 @@ document.addEventListener('keydown',e=>{
   if(k==='o'||k==='1'){answer(true);}
   else if(k==='x'||k==='2'){answer(false);}
   else if(k==='enter'&&answered){e.preventDefault();next();}
+  else if(k==='escape'){goHome();}
 });
 
 load();renderHome();
