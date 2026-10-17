@@ -492,6 +492,7 @@
     .exp-deep { font-size:13px; line-height:1.8; margin:2px 0 6px; }
     .exp-deep b { color:#1A2B3C; background:linear-gradient(transparent 60%, #FFF59D 60%); }
     .q-annot { color:#D32F2F; font-weight:700; font-size:0.92em; }
+    .acct-side-note { margin-top:3px; font-size:12px; line-height:1.6; }
     .kg-analog { margin-top:4px; padding:4px 8px; background:#F1F8E9; border-left:3px solid #7CB342; border-radius:4px; font-size:12px; line-height:1.6; color:#33691E; }
     .kg-lbl { display:inline-block; font-size:10px; font-weight:800; color:#fff; background:#7CB342; border-radius:3px; padding:0 5px; margin-right:6px; }
     .exp-check-btn { width:100%; padding:9px 12px; border:1.5px solid var(--border); border-radius:10px; background:#fff; font-size:13px; font-weight:700; cursor:pointer; color:var(--text); margin-top:8px; text-align:center; transition:all 0.15s; }
@@ -1173,17 +1174,42 @@ function kogyoAnalog(n){
   if(/差異$/.test(n)) return ['現金過不足','予定（標準）と実際のズレを一時的にためておく科目。現金過不足を決算で雑損・雑益に振り替えるように、決算で売上原価に振り替える'];
   return null;
 }
+// ===== 他の同じ種類の科目と残高の位置（借方・貸方）が逆になる科目、どちらにもなる科目の注記 =====
+function acctSideNote(n){
+  const asset='資産の仲間だが、他の資産と逆で<strong>貸方</strong>に残高がたまる', eq='純資産の仲間だが、他の純資産と逆で<strong>借方</strong>に残高がたまる';
+  if(/減価償却累計額$|^減価償却引当金$|^減損損失累計額$/.test(n)) return asset+'（対応する固定資産から差し引く）';
+  if(n==='貸倒引当金') return asset+'（売掛金・受取手形・貸付金などから差し引く）';
+  if(n==='投資損失引当金') return asset+'（子会社株式・関連会社株式などから差し引く）';
+  if(n==='繰延内部利益') return asset+'（支店などに残っている在庫から差し引く）';
+  if(/^(商品評価引当金|商品低価引当金)$/.test(n)) return asset+'（商品から差し引く）';
+  if(n==='有価証券評価引当金') return asset+'（有価証券から差し引く）';
+  if(/^(割引手形|裏書手形)$/.test(n)) return asset+'（受取手形から差し引く）';
+  if(n==='年金資産') return '資産という名前だが、退職給付債務（負債）から差し引くもので、負債と逆の<strong>借方</strong>側に来る';
+  if(n==='自己株式') return eq+'（純資産から差し引く）';
+  if(/^(事業主貸|引出金|引出金（事業主貸）)$/.test(n)) return eq+'（資本金（元入金）から差し引く）';
+  if(n==='自己株式処分差損') return eq+'（その他資本剰余金を減らす）';
+  if(/^(売上戻り|売上値引|売上割戻)$/.test(n)) return '収益の仲間だが、他の収益と逆で<strong>借方</strong>に残高がたまる（売上から差し引く）';
+  if(/^(仕入戻し|仕入値引|仕入割戻)$/.test(n)) return '費用の仲間だが、他の費用と逆で<strong>貸方</strong>に残高がたまる（仕入から差し引く）';
+  if(/^(その他有価証券評価差額金|繰延ヘッジ損益|為替換算調整勘定|退職給付に係る調整累計額|土地再評価差額金)$/.test(n)) return '純資産だが、時価などの上がり下がりで<strong>借方にも貸方にも</strong>なる。借方残高のときは他の純資産と逆';
+  if(n==='繰越利益剰余金') return 'ふつうは貸方残高だが、赤字が積み重なると<strong>借方</strong>残高になり、他の純資産と逆になる';
+  if(/^(為替差損益|有価証券評価損益|有価証券運用損益|オプション差損益)$/.test(n)) return '損と益を1つの科目で記録するため、<strong>借方にも貸方にも</strong>なる。借方残高なら費用、貸方残高なら収益';
+  if(n==='現金過不足') return '不足なら借方、過剰なら貸方と、<strong>借方にも貸方にも</strong>なる仮の科目';
+  if(n==='損益') return '決算で収益（貸方）と費用（借方）を集める勘定。残高は利益なら貸方、損失なら借方と、<strong>どちらにも</strong>なる';
+  if(/^(本店|支店|本社|工場)$/.test(n)) return '相手側の帳簿にある科目と、金額が同じで<strong>貸借が逆</strong>になる。取引によって借方にも貸方にもなる';
+  if(/差異$/.test(n)) return '有利差異なら貸方、不利差異なら借方と、<strong>借方にも貸方にも</strong>なる';
+  return '';
+}
 function expHtml(q){
   if(q.calc === undefined) return q.exp ? `<div class="exp-res-exp">${styleParens(q.exp.replace(/\n/g,'<br>'))}</div>` : '';
   const names = [];
   const isKogyo = /^工業簿記/.test(q.chap||'') || /原価計算/.test(q.chap||'');
-  q.e.forEach(en => [...en.d, ...en.c].forEach(([n]) => { if(!names.includes(n) && ((!EXP_SIMPLE_ACCTS.has(n) && ACCT_DEF[n]) || (isKogyo && kogyoAnalog(n)))) names.push(n); }));
+  q.e.forEach(en => [...en.d, ...en.c].forEach(([n]) => { if(!names.includes(n) && ((!EXP_SIMPLE_ACCTS.has(n) && ACCT_DEF[n]) || (isKogyo && kogyoAnalog(n)) || acctSideNote(n))) names.push(n); }));
   let html = '';
   // 問題文に赤字の解説を書き込んだ問題は、下の解説を勘定科目の説明だけにする
   const annotated = (typeof Q_ANNOT!=='undefined') && Q_ANNOT[q.id];
   const deep = !annotated && (typeof EXP_DEEP!=='undefined') && EXP_DEEP[q.id];
   if(deep) html += deep.map(([hd,body]) => `<div class="exp-sec-hd">${hd}</div><div class="exp-deep">${body}</div>`).join('');
-  if(names.length) html += `<div class="exp-sec-hd">勘定科目</div>` + names.map(n => { const kg = isKogyo && kogyoAnalog(n); return `<div class="exp-acct-line"><span class="acct-tag ${tagType(n)}">${n}</span>${ACCT_DEF[n]||''}${kg?`<div class="kg-analog"><span class="kg-lbl">類</span><strong>${kg[0]}</strong>：${kg[1]}</div>`:''}</div>`; }).join('');
+  if(names.length) html += `<div class="exp-sec-hd">勘定科目</div>` + names.map(n => { const kg = isKogyo && kogyoAnalog(n); return `<div class="exp-acct-line"><span class="acct-tag ${tagType(n)}">${n}</span>${ACCT_DEF[n]||''}${acctSideNote(n)?`<div class="acct-side-note"><span class="acct-al ds">残高</span>${acctSideNote(n)}</div>`:''}${kg?`<div class="kg-analog"><span class="kg-lbl">類</span><strong>${kg[0]}</strong>：${kg[1]}</div>`:''}</div>`; }).join('');
   if(!annotated && q.calc && !(deep && deep.some(([hd])=>hd==='計算'))) html += `<div class="exp-sec-hd">計算</div><div class="exp-calc">${styleParens(q.calc.replace(/\n/g,'<br>'))}</div>`;
   return html ? `<div class="exp-res-exp exp-structured">${html}</div>` : '';
 }
@@ -4774,6 +4800,7 @@ function acctAnswerHtml(item){
   return `<div style="margin-bottom:6px;"><span class="acct-tag ${dispTagClass(item)}">${item.name}${item.disp?'　※':''}</span>　<span style="font-size:12px;font-weight:700;color:#455A64;">${item.en}</span></div>
     <div>${ACCT_EXPL[item.name]||item.def}</div>
     <div class="acct-ai"><span class="acct-al ds">表示</span>${dispAnsText(item)}${item.disp?`<span style="color:var(--muted);">（表示科目：${item.disp}）</span>`:''}</div>
+    ${acctSideNote(item.name)?`<div class="acct-ai"><span class="acct-al ds">残高</span>${acctSideNote(item.name)}</div>`:''}
     ${lines}
     ${gi?`<div style="margin-top:8px;padding-top:6px;border-top:1px dashed var(--border);font-size:12px;line-height:1.7;"><strong>${gi.g.no} ${gi.g.name}</strong><div style="margin-top:3px;"><span class="acct-al ds">使い方</span>${gi.g.use}</div><div style="margin-top:3px;"><span class="acct-al ds">理由</span>${gi.g.why}</div>${gi.s.label?`<div style="margin-top:3px;"><span class="acct-al ds">小分け</span><strong>${gi.s.label}</strong>：${gi.s.reason}</div>`:''}</div>`:''}`;
 }
