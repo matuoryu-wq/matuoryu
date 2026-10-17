@@ -500,6 +500,7 @@
     .exp-deep b { color:#1A2B3C; background:linear-gradient(transparent 60%, #FFF59D 60%); }
     .q-annot { color:#D32F2F; font-weight:700; font-size:0.92em; }
     .kg-analog { margin-top:4px; padding:4px 8px; background:#F1F8E9; border-left:3px solid #7CB342; border-radius:4px; font-size:12px; line-height:1.6; color:#33691E; }
+    .kg-lbl { display:inline-block; font-size:10px; font-weight:800; color:#fff; background:#7CB342; border-radius:3px; padding:0 5px; margin-right:6px; }
     .exp-check-btn { width:100%; padding:9px 12px; border:1.5px solid var(--border); border-radius:10px; background:#fff; font-size:13px; font-weight:700; cursor:pointer; color:var(--text); margin-top:8px; text-align:center; transition:all 0.15s; }
     .exp-check-btn.active { background:#FFF3E0; border-color:#FB8C00; color:#E65100; }
 
@@ -1194,7 +1195,7 @@ function expHtml(q){
   let html = '';
   const deep = (typeof EXP_DEEP!=='undefined') && EXP_DEEP[q.id];
   if(deep) html += deep.map(([hd,body]) => `<div class="exp-sec-hd">${hd}</div><div class="exp-deep">${body}</div>`).join('');
-  if(names.length) html += `<div class="exp-sec-hd">勘定科目</div>` + names.map(n => { const kg = isKogyo && kogyoAnalog(n); return `<div class="exp-acct-line"><span class="acct-tag ${tagType(n)}">${n}</span>${ACCT_DEF[n]||''}${kg?`<div class="kg-analog"><strong>${kg[0].replace(/など$/,'')}</strong>類：${kg[1]}</div>`:''}</div>`; }).join('');
+  if(names.length) html += `<div class="exp-sec-hd">勘定科目</div>` + names.map(n => { const kg = isKogyo && kogyoAnalog(n); return `<div class="exp-acct-line"><span class="acct-tag ${tagType(n)}">${n}</span>${ACCT_DEF[n]||''}${kg?`<div class="kg-analog"><span class="kg-lbl">類</span><strong>${kg[0]}</strong>：${kg[1]}</div>`:''}</div>`; }).join('');
   if(q.calc && !(deep && deep.some(([hd])=>hd==='計算'))) html += `<div class="exp-sec-hd">計算</div><div class="exp-calc">${styleParens(q.calc.replace(/\n/g,'<br>'))}</div>`;
   return html ? `<div class="exp-res-exp exp-structured">${html}</div>` : '';
 }
