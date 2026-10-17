@@ -28,6 +28,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku 
 .ctrl-btn.active{background:var(--act-bg);border-color:var(--act-bd);color:var(--act-fg)}
 .ctrl-btn small{font-weight:500;opacity:.7;margin-left:3px;font-variant-numeric:tabular-nums}
 .sub-row{border-top:1px solid var(--border);padding-top:8px}
+.hint{font-size:12px;color:var(--muted)}
 .check-bar{background:var(--card);border-bottom:1px solid var(--border);padding-block:8px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:12px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
 .check-bar strong{font-size:14px}
 .main{max-width:760px;margin:0 auto;padding-block:16px;display:flex;flex-direction:column;gap:14px}
@@ -173,10 +174,10 @@ function renderControls(){
   $('catToggleLbl').textContent=P.hide?'分野を表示':'分野を隠す';
   const cats=[{id:'all',name:'すべて',n:ALLQ.length},...CATS.map(c=>({id:c.id,name:c.name,n:c.qs.length}))];
   $('cats').innerHTML=cats.map(c=>`<button type="button" class="ctrl-btn${P.cat===c.id?' active':''}" data-cat="${c.id}">${esc(c.name)}<small>${c.n}</small></button>`).join('');
-  if(P.cat==='all'){$('subs').hidden=true;}
+  if(P.cat==='all'){$('subs').innerHTML='<span class="lbl">細かい分野：</span><span class="hint">上の分野（労働・会社法など）を選ぶと、ここで細かい分野を選べます</span>';}
   else{
-    const c=catOf(P.cat);$('subs').hidden=false;
-    $('subs').innerHTML=`<button type="button" class="ctrl-btn${P.sub==='all'?' active':''}" data-sub="all">すべて</button>`+
+    const c=catOf(P.cat);
+    $('subs').innerHTML=`<span class="lbl">${esc(c.name)}の細かい分野：</span><button type="button" class="ctrl-btn${P.sub==='all'?' active':''}" data-sub="all">すべて</button>`+
       c.subs.map(s=>`<button type="button" class="ctrl-btn${P.sub===s.id?' active':''}" data-sub="${s.id}">${esc(s.name)}<small>${c.qs.filter(q=>q.s===s.id).length}</small></button>`).join('');
   }
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===P.view));
