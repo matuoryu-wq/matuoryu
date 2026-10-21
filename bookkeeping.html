@@ -8025,6 +8025,15 @@ function _unusedColorize(el){
   });
 }
 
+// 初期化で消えたダブルチェック（2026/10/17にコピーしてもらった33問）を、次に開いたとき1回だけ付け直す
+(function restoreLostDoubles(){
+  const KEY = 'bk_restored_doubles_20261021';
+  try{ if(localStorage.getItem(KEY)) return; }catch(e){ return; }
+  [1056,1078,1080,1081,1083,1091,1095,1096,1097,1098,1107,1109,1110,1125,1128,1134,1141,1145,1148,1152,1155,1171,1177,1183,1186,1187,1190,1192,1198,1199,1200,1202,1203]
+    .forEach(id => { doubled[id] = true; checked[id] = true; });
+  saveProgress();
+  try{ localStorage.setItem(KEY, '1'); }catch(e){}
+})();
 // リンクの末尾の #restore=d:番号,番号;c:番号,番号 で、ダブルチェック（d）とチェック（c）を付け直す（今ある印は消さない）
 (function restoreMarksFromHash(){
   const m = location.hash.match(/^#restore=(.+)$/);
