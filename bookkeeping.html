@@ -3961,6 +3961,14 @@ function stopSpeak(){
   if('speechSynthesis' in window) speechSynthesis.cancel();
   const b=document.getElementById('q-speak-btn'); if(b) b.textContent='🔊 読み上げ';
 }
+// 日本語の声のうち、高音質の声（Premium → Enhanced）を優先して選ぶ
+function pickJaVoice(){
+  const ja=speechSynthesis.getVoices().filter(v=>/^ja/i.test(v.lang));
+  const rank=v=>{ const s=(v.name+' '+v.voiceURI).toLowerCase();
+    return /premium|プレミアム/.test(s) ? 0 : /enhanced|拡張/.test(s) ? 1 : 2; };
+  return ja.sort((a,b)=>rank(a)-rank(b))[0];
+}
+if('speechSynthesis' in window){ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices(); }
 function speakQ(id){
   if(!('speechSynthesis' in window)) return;
   if(speechSynthesis.speaking){ stopSpeak(); return; }
@@ -3968,7 +3976,7 @@ function speakQ(id){
   const u=new SpeechSynthesisUtterance(speakText(q));
   u.lang='ja-JP';
   u.rate=1.5; // 速さ（ふつう＝1）
-  const v=speechSynthesis.getVoices().find(v=>/^ja/i.test(v.lang)); if(v) u.voice=v;
+  const v=pickJaVoice(); if(v) u.voice=v;
   const b=document.getElementById('q-speak-btn');
   u.onend=u.onerror=()=>{ const b2=document.getElementById('q-speak-btn'); if(b2) b2.textContent='🔊 読み上げ'; };
   if(b) b.textContent='■ 停止';
