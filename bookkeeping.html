@@ -3950,7 +3950,7 @@ function fmtQ(q){
 // ===== 問題文の音声読み上げ（ブラウザの読み上げ機能を使う） =====
 function speakBtnHtml(q){
   if(!('speechSynthesis' in window)) return '';
-  return `<button class="q-speak" id="q-speak-btn" onclick="speakQ(${q.id})">🔊 読み上げ</button>`;
+  return `<button class="q-speak" id="q-speak-btn" onclick="speakQ(${q.id})">🔊 読み上げ</button><button class="q-speak" onclick="showJaVoices()">声の一覧</button>`;
 }
 function speakText(q){
   return (q.q||'').replace(/<[^>]+>/g,'')
@@ -3970,6 +3970,12 @@ function pickJaVoice(){
   return ja.sort((a,b)=>rank(a)-rank(b))[0];
 }
 if('speechSynthesis' in window){ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices(); }
+// この端末のブラウザで使える日本語の声と、読み上げで使う声を表示する（声が変わらないときの確認用）
+function showJaVoices(){
+  const ja=speechSynthesis.getVoices().filter(v=>/^ja/i.test(v.lang));
+  const v=pickJaVoice();
+  alert(`読み上げで使う声：${v?v.name:'（日本語の声が見つからない）'}\n\nこのブラウザで使える日本語の声（${ja.length}個）：\n${ja.map(x=>'・'+x.name+'　'+x.voiceURI).join('\n')||'なし'}`);
+}
 function speakQ(id){
   if(!('speechSynthesis' in window)) return;
   if(speechSynthesis.speaking){ stopSpeak(); return; }
@@ -3980,7 +3986,7 @@ function speakQ(id){
   const v=pickJaVoice(); if(v) u.voice=v;
   const b=document.getElementById('q-speak-btn');
   u.onend=u.onerror=()=>{ const b2=document.getElementById('q-speak-btn'); if(b2) b2.textContent='🔊 読み上げ'; };
-  if(b) b.textContent='■ 停止';
+  if(b) b.textContent=`■ 停止（声：${v?v.name:'標準'}）`;
   speechSynthesis.speak(u);
 }
 function loadExpQ(){
