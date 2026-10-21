@@ -408,7 +408,6 @@
     .exp-q-card br+br { display:block; content:''; margin-top:4px; }
     .exp-q-card u.q-ul { text-decoration:underline; text-decoration-color:#E53935; text-decoration-thickness:1.5px; text-underline-offset:3px; }
     .exp-term { font-size:12.5px; line-height:1.7; margin:3px 0; }
-    .q-speak { float:right; margin:-4px -6px 4px 8px; font-size:11px; font-weight:700; padding:3px 9px; border-radius:12px; border:1.5px solid var(--border); background:#fff; color:#455A64; line-height:1.4; cursor:pointer; }
     .exp-q-card mark { color:inherit; padding:0 2px; border-radius:2px; }
     .exp-q-card mark.q-asset { background:#FCF569; }
     .exp-q-card mark.q-liability { background:#FE8980; }
@@ -3947,63 +3946,7 @@ function fmtQ(q){
   return html;
 }
 
-// ===== 問題文の音声読み上げ（ブラウザの読み上げ機能を使う） =====
-function speakBtnHtml(q){
-  if(!('speechSynthesis' in window)) return '';
-  return `<button class="q-speak" id="q-speak-btn" onclick="speakQ(${q.id})">🔊 読み上げ</button><button class="q-speak" onclick="showJaVoices()">声の一覧</button>`;
-}
-function speakText(q){
-  return (q.q||'').replace(/<[^>]+>/g,'')
-    .replace(/×(\d+)年/g,'エックス$1年')   // ×2年 などの年度の表記
-    .replace(/＠/g,'単価');
-}
-function stopSpeak(){
-  if(typeof qAudio!=='undefined' && qAudio){ qAudio.pause(); }
-  if('speechSynthesis' in window) speechSynthesis.cancel();
-  const b=document.getElementById('q-speak-btn'); if(b) b.textContent='🔊 読み上げ';
-}
-// 日本語の声は O-ren を使う（O-ren の中では Premium → Enhanced の順）。O-ren がなければ高音質の声を優先
-function pickJaVoice(){
-  const ja=speechSynthesis.getVoices().filter(v=>/^ja/i.test(v.lang));
-  const rank=v=>{ const s=(v.name+' '+v.voiceURI).toLowerCase();
-    const q=/premium|プレミアム/.test(s) ? 0 : /enhanced|拡張/.test(s) ? 1 : 2;
-    return (/o-?ren/.test(s) ? 0 : 10) + q; };
-  return ja.sort((a,b)=>rank(a)-rank(b))[0];
-}
-if('speechSynthesis' in window){ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices(); }
-// この端末のブラウザで使える日本語の声と、読み上げで使う声を表示する（声が変わらないときの確認用）
-function showJaVoices(){
-  const ja=speechSynthesis.getVoices().filter(v=>/^ja/i.test(v.lang));
-  const v=pickJaVoice();
-  alert(`読み上げで使う声：${v?v.name:'（日本語の声が見つからない）'}\n\nこのブラウザで使える日本語の声（${ja.length}個）：\n${ja.map(x=>'・'+x.name+'　'+x.voiceURI).join('\n')||'なし'}`);
-}
-// 音声ファイルを埋め込んだ問題（audio/q番号.mp3）。ある問題はブラウザの読み上げの代わりにこれを再生する
-const Q_AUDIO = new Set([1056,1078,1080]);
-let qAudio = null;
-function speakQ(id){
-  if(qAudio && !qAudio.paused){ stopSpeak(); return; }
-  if('speechSynthesis' in window && speechSynthesis.speaking){ stopSpeak(); return; }
-  const q=ALL.find(x=>x.id===id); if(!q) return;
-  if(Q_AUDIO.has(id)){
-    qAudio = new Audio(`audio/q${id}.mp3`);
-    qAudio.playbackRate = 1.4;
-    const b=document.getElementById('q-speak-btn'); if(b) b.textContent='■ 停止（音声ファイル）';
-    qAudio.onended = qAudio.onerror = () => { const b2=document.getElementById('q-speak-btn'); if(b2) b2.textContent='🔊 読み上げ'; };
-    qAudio.play().catch(()=>{ const b2=document.getElementById('q-speak-btn'); if(b2) b2.textContent='🔊 読み上げ'; });
-    return;
-  }
-  if(!('speechSynthesis' in window)) return;
-  const u=new SpeechSynthesisUtterance(speakText(q));
-  u.lang='ja-JP';
-  u.rate=1.4; // 速さ（ふつう＝1）
-  const v=pickJaVoice(); if(v) u.voice=v;
-  const b=document.getElementById('q-speak-btn');
-  u.onend=u.onerror=()=>{ const b2=document.getElementById('q-speak-btn'); if(b2) b2.textContent='🔊 読み上げ'; };
-  if(b) b.textContent=`■ 停止（声：${v?v.name:'標準'}）`;
-  speechSynthesis.speak(u);
-}
 function loadExpQ(){
-  stopSpeak();
   const q=expQuestions[expQIdx];
   if(!q){
     document.getElementById('exp-main').innerHTML = `
@@ -4022,13 +3965,13 @@ function loadExpQ(){
   if(!q.e){
     main.innerHTML=`
       ${expNavBar()}
-      <div class="exp-q-card">${speakBtnHtml(q)}<div class="q-body">${fmtQ(q)}</div>${flowFigHtml(q)}</div>
+      <div class="exp-q-card"><div class="q-body">${fmtQ(q)}</div>${flowFigHtml(q)}</div>
       <button class="exp-reveal-btn" onclick="expRevealAns(this)">答えを見る ▼</button>
       <div class="exp-readonly-ans" id="exp-ro-ans">${q.ans_html||''}</div>`;
   } else {
     main.innerHTML=`
       ${expNavBar()}
-      <div class="exp-q-card">${speakBtnHtml(q)}<div class="q-body">${fmtQ(q)}</div>${flowFigHtml(q)}</div>
+      <div class="exp-q-card"><div class="q-body">${fmtQ(q)}</div>${flowFigHtml(q)}</div>
       <div class="exp-result" id="exp-res"></div>
       <div id="exp-entry-area"></div>`;
     loadExpEntry();
@@ -4065,7 +4008,7 @@ function loadExpSteps(){
   const main=document.getElementById('exp-main');
   main.innerHTML=`
     ${expNavBar()}
-    <div class="exp-q-card">${speakBtnHtml(q)}<div class="q-body">${fmtQ(q)}</div>${flowFigHtml(q)}</div>
+    <div class="exp-q-card"><div class="q-body">${fmtQ(q)}</div>${flowFigHtml(q)}</div>
     <div id="exp-step-area" class="exp-step-area"></div>`;
   renderExpStep();
 }
