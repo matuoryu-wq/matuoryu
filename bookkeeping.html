@@ -222,6 +222,8 @@
     /* 資産のマイナス（減価償却累計額・貸倒引当金等）：白地に資産の黄枠 */
     /* 勘定科目名の色分けタグ（表示区分クイズ等、"解答を隠す"の対象にしないため.tagとは別クラス） */
     .acct-tag { padding: 4px 11px; border-radius: 12px; font-size: 13px; font-weight: 700; text-align: center; display:inline-block; }
+    .tag.rev, .acct-tag.rev { text-decoration:underline; text-decoration-color:#E53935; text-decoration-thickness:2px; text-underline-offset:3px; }
+    .tag.rev .tag-en, .tag.rev .tag-amt { display:inline-block; width:100%; }  /* 下線は科目名だけに（英語・金額には引かない） */
     .acct-tag.asset     { background: #FFF9C4; color: #5D4037; border: 1.5px solid #F9C400; }
     .acct-tag.liability { background: #FCE4EC; color: #880E4F; border: 1.5px solid #C2185B; }
     .acct-tag.expense   { background: #E8F5E9; color: #1B5E20; border: 1.5px solid #388E3C; }
@@ -752,10 +754,13 @@ const CONTRA_ASSET = new Set(['貸倒引当金','減価償却累計額','車両�
   'リース資産減価償却累計額','繰延内部利益']);
 // 資産のマイナス・純資産のマイナスも、本当の分類の1色で表示する
 const CONTRA_EQUITY = new Set(['事業主貸','引出金（事業主貸）','自己株式']);
+// 同じ種類の他の科目と、残高の位置（借方・貸方）がいつも逆になる科目。科目名に赤い下線を引く
+const REVERSE_ACCTS = new Set([...CONTRA_ASSET, ...CONTRA_EQUITY, '自己株式処分差損','減損損失累計額','投資損失引当金']);
 function tagType(a){
-  if(CONTRA_ASSET.has(a)) return 'asset';
-  if(CONTRA_EQUITY.has(a)) return 'equity';
-  return T[a] || 'other';
+  const rev = (REVERSE_ACCTS.has(a) || /減価償却累計額$/.test(a)) ? 'rev ' : '';
+  if(CONTRA_ASSET.has(a) || /減価償却累計額$/.test(a)) return rev+'asset';
+  if(CONTRA_EQUITY.has(a)) return rev+'equity';
+  return rev + (T[a] || 'other');
 }
 
 // ===== 一問一答（表示区分）：勘定科目がP/L・B/S・製造原価報告書のどこに表示されるか =====
