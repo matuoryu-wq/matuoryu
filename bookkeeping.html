@@ -3967,6 +3967,7 @@ function speakQ(id){
   const q=ALL.find(x=>x.id===id); if(!q) return;
   const u=new SpeechSynthesisUtterance(speakText(q));
   u.lang='ja-JP';
+  u.rate=5;   // 速さ（ふつう＝1）。機種によっては上限があり、それ以上は速くならない
   const v=speechSynthesis.getVoices().find(v=>/^ja/i.test(v.lang)); if(v) u.voice=v;
   const b=document.getElementById('q-speak-btn');
   u.onend=u.onerror=()=>{ const b2=document.getElementById('q-speak-btn'); if(b2) b2.textContent='🔊 読み上げ'; };
