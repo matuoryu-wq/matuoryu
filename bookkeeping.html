@@ -3958,6 +3958,7 @@ function speakText(q){
     .replace(/＠/g,'単価');
 }
 function stopSpeak(){
+  if(typeof qAudio!=='undefined' && qAudio){ qAudio.pause(); }
   if('speechSynthesis' in window) speechSynthesis.cancel();
   const b=document.getElementById('q-speak-btn'); if(b) b.textContent='🔊 読み上げ';
 }
@@ -3976,10 +3977,22 @@ function showJaVoices(){
   const v=pickJaVoice();
   alert(`読み上げで使う声：${v?v.name:'（日本語の声が見つからない）'}\n\nこのブラウザで使える日本語の声（${ja.length}個）：\n${ja.map(x=>'・'+x.name+'　'+x.voiceURI).join('\n')||'なし'}`);
 }
+// 音声ファイルを埋め込んだ問題（audio/q番号.mp3）。ある問題はブラウザの読み上げの代わりにこれを再生する
+const Q_AUDIO = new Set([1056,1078,1080]);
+let qAudio = null;
 function speakQ(id){
-  if(!('speechSynthesis' in window)) return;
-  if(speechSynthesis.speaking){ stopSpeak(); return; }
+  if(qAudio && !qAudio.paused){ stopSpeak(); return; }
+  if('speechSynthesis' in window && speechSynthesis.speaking){ stopSpeak(); return; }
   const q=ALL.find(x=>x.id===id); if(!q) return;
+  if(Q_AUDIO.has(id)){
+    qAudio = new Audio(`audio/q${id}.mp3`);
+    qAudio.playbackRate = 1.4;
+    const b=document.getElementById('q-speak-btn'); if(b) b.textContent='■ 停止（音声ファイル）';
+    qAudio.onended = qAudio.onerror = () => { const b2=document.getElementById('q-speak-btn'); if(b2) b2.textContent='🔊 読み上げ'; };
+    qAudio.play().catch(()=>{ const b2=document.getElementById('q-speak-btn'); if(b2) b2.textContent='🔊 読み上げ'; });
+    return;
+  }
+  if(!('speechSynthesis' in window)) return;
   const u=new SpeechSynthesisUtterance(speakText(q));
   u.lang='ja-JP';
   u.rate=1.4; // 速さ（ふつう＝1）
