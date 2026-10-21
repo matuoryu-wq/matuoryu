@@ -3961,11 +3961,12 @@ function stopSpeak(){
   if('speechSynthesis' in window) speechSynthesis.cancel();
   const b=document.getElementById('q-speak-btn'); if(b) b.textContent='🔊 読み上げ';
 }
-// 日本語の声のうち、高音質の声（Premium → Enhanced）を優先して選ぶ
+// 日本語の声は O-ren を使う（O-ren の中では Premium → Enhanced の順）。O-ren がなければ高音質の声を優先
 function pickJaVoice(){
   const ja=speechSynthesis.getVoices().filter(v=>/^ja/i.test(v.lang));
   const rank=v=>{ const s=(v.name+' '+v.voiceURI).toLowerCase();
-    return /premium|プレミアム/.test(s) ? 0 : /enhanced|拡張/.test(s) ? 1 : 2; };
+    const q=/premium|プレミアム/.test(s) ? 0 : /enhanced|拡張/.test(s) ? 1 : 2;
+    return (/o-?ren/.test(s) ? 0 : 10) + q; };
   return ja.sort((a,b)=>rank(a)-rank(b))[0];
 }
 if('speechSynthesis' in window){ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices(); }
