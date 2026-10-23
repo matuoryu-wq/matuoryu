@@ -488,6 +488,7 @@
     .flow-btn { border:1px solid #B0BEC5; background:#fff; border-radius:14px; padding:2px 10px; font-size:11px; font-weight:700; color:#546E7A; cursor:pointer; }
     .flow-legend { display:flex; gap:8px; font-size:10px; font-weight:700; }
     .flow-fig { margin-top:4px; }
+    .flow-head { font-size:14px; font-weight:800; line-height:1.5; color:#263238; background:#FFFDE7; border-left:4px solid #FBC02D; border-radius:6px; padding:6px 10px; margin:4px 0 6px; }
     .flow-note { font-size:11px; line-height:1.5; color:#546E7A; margin:2px 2px 0; }
     .acct-mini { font-size:11px !important; padding:0 5px !important; border-radius:4px !important; margin:1px; display:inline-block; }
     .acct-ai { font-size:12px; line-height:1.7; margin-top:4px; }
@@ -4260,12 +4261,21 @@ function toggleFlowFig(btn){
   box.style.display = flowFigOpen ? '' : 'none';
   btn.textContent = flowFigOpen ? '▲ 図' : '▼ 図';
 }
+// ===== 図の見出し：一目で事案の概要がわかる一言（答えの勘定科目名は書かない） =====
+const FLOW_HEADS = {
+  1056:'Bも渡して全部納品完了📦 → やっと60円を請求できる',
+  1078:'持っている株が帳簿価額より8円値上がり🙌（まだ売っていない）',
+  1080:'満期に100円戻る社債を93円で安く買った💰 差の7円は持っている間に少しずつ受け取る分',
+  1081:'関連会社が50円もうけた🎉 そのうち自分の取り分は20％の10円',
+  1083:'利払日の途中で社債を買った🧾 売り手が持っていた2か月分を先に払う',
+  1091:'使い古した備品（帳簿48円）が60円で売れた🙌 12円得した',
+};
 function flowFigHtml(q){
   const fig = FLOW_FIGS[q.id];
   if(!fig) return '';
   const legend = `<span class="flow-legend">${Object.values(FLOW_KIND).map(k=>`<span style="color:${k.color}">${k.dash?'┅':'━'} ${k.label}</span>`).join('')}</span>`;
   return `<div class="flow-wrap"><div class="flow-bar"><button class="flow-btn" onclick="toggleFlowFig(this)">${flowFigOpen?'▲ 図':'▼ 図'}</button>${legend}</div>
-    <div class="flow-fig"${flowFigOpen?'':' style="display:none"'}>${renderFlow(fig)}</div></div>`;
+    <div class="flow-fig"${flowFigOpen?'':' style="display:none"'}>${FLOW_HEADS[q.id]?`<div class="flow-head">${FLOW_HEADS[q.id]}</div>`:''}${renderFlow(fig)}</div></div>`;
 }
 function renderFlow(fig){
   const W=340, n=fig.nodes.length;
