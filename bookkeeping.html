@@ -1219,17 +1219,10 @@ function expHtml(q){
   const isKogyo = /^工業簿記/.test(q.chap||'') || /原価計算/.test(q.chap||'');
   q.e.forEach(en => [...en.d, ...en.c].forEach(([n]) => { if(!names.includes(n) && ((!EXP_SIMPLE_ACCTS.has(n) && ACCT_DEF[n]) || (isKogyo && kogyoAnalog(n)) || acctSideNote(n))) names.push(n); }));
   let html = '';
-  // 問題文に赤字の解説を書き込んだ問題は、下の解説を勘定科目の説明だけにする
+  // 問題文に赤字の解説を書き込んだ問題と工業簿記は、下の解説を勘定科目の説明だけにする
   const kgQ = /^工業簿記/.test(q.chap||'');
-  const annotated = !kgQ && (typeof Q_ANNOT!=='undefined') && Q_ANNOT[q.id];
+  const annotated = kgQ || ((typeof Q_ANNOT!=='undefined') && Q_ANNOT[q.id]);
   const deep = !annotated && (typeof EXP_DEEP!=='undefined') && EXP_DEEP[q.id];
-  // 工業簿記：解説の本文と、問題文・解説に出てきた専門用語の説明
-  if(kgQ && q.exp) html += `<div class="exp-sec-hd">解説</div><div class="exp-deep">${styleParens(q.exp)}</div>`;
-  if(kgQ){
-    const src = (q.q||'').replace(/<[^>]+>/g,'') + (q.exp||'');
-    const terms = Object.keys(KOGYO_TERMS).map(k=>[k, src.indexOf(k)]).filter(([,i])=>i>=0).sort((x,y)=>x[1]-y[1]).map(([k])=>k);
-    if(terms.length) html += `<div class="exp-sec-hd">用語</div>` + terms.map(k=>`<div class="exp-term"><strong>${k}</strong>：${KOGYO_TERMS[k]}</div>`).join('');
-  }
   if(deep) html += deep.map(([hd,body]) => `<div class="exp-sec-hd">${hd}</div><div class="exp-deep">${body}</div>`).join('');
   if(names.length) html += `<div class="exp-sec-hd">勘定科目</div>` + names.map(n => { const kg = isKogyo && kogyoAnalog(n); return `<div class="exp-acct-line"><span class="acct-tag ${tagType(n)}">${n}</span>${ACCT_DEF[n]||''}${acctSideNote(n)?`<div class="acct-side-note"><span class="acct-al ds">残高</span>${acctSideNote(n)}</div>`:''}${kg?`<div class="kg-analog"><span class="kg-lbl">類</span><strong>${kg[0]}</strong>：${kg[1]}</div>`:''}</div>`; }).join('');
   if(!annotated && q.calc && !(deep && deep.some(([hd])=>hd==='計算'))) html += `<div class="exp-sec-hd">計算</div><div class="exp-calc">${styleParens(q.calc.replace(/\n/g,'<br>'))}</div>`;
