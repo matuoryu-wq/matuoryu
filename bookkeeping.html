@@ -377,6 +377,10 @@
     .sec-tabs-wrap.collapsed .sec-tabs { display:none; }
     .sec-tabs { display:flex; flex-wrap:wrap; gap:6px; }
 
+    .sogo-cat { background:var(--card,#fff); border:1px solid var(--border,#E0E0E0); border-radius:12px; padding:10px 12px; margin:8px 0; }
+    .sogo-cat-hd { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; font-weight:800; font-size:14px; }
+    .sogo-all-btn { flex-shrink:0; border:1px solid var(--primary,#1F4E79); background:var(--primary,#1F4E79); color:#fff; border-radius:16px; padding:4px 10px; font-size:12px; font-weight:700; cursor:pointer; }
+    .sogo-one-btn { display:block; width:100%; text-align:left; border:1px solid var(--border,#E0E0E0); background:transparent; color:inherit; border-radius:8px; padding:8px 10px; margin-top:6px; font-size:13px; cursor:pointer; }
     /* ===== 総合問題（財務諸表作成・本支店会計・株主資本等変動・標準原価計算・CVP分析） ===== */
     .comp-title { font-size:15px; font-weight:800; margin-bottom:8px; color:var(--primary); }
     .comp-sect-hd { font-size:12px; font-weight:700; color:var(--muted); margin:12px 0 4px; }
@@ -6483,6 +6487,7 @@ let compQuizCorrectFirstTry = 0;
 let compQuizTotalSteps = 0;
 let compQuizFirstAttemptUsed = false;
 let compQuizLastCat = null;
+let compQuizLastOne = null;
 let compMode = 'comp'; // 'comp'＝総合問題 / 'calc'＝計算問題
 function compGens(){ return compMode==='calc' ? CALC_GENERATORS : compMode==='sogo' ? sogoGens() : COMP_GENERATORS; }
 
@@ -6506,6 +6511,11 @@ function sogoGens(){
   _sogoGens = {};
   SOGO_CATS.forEach(c => { _sogoGens[c.key] = c.titles.map(ti => (fns.find(([x]) => x.startsWith(ti))||[])[1]).filter(Boolean); });
   return _sogoGens;
+}
+// 問題の一覧に出す題名（毎回変わる部分を含むものは、固定部分で閉じる）
+function sogoTitle(key, i){
+  const c = SOGO_CATS.find(x=>x.key===key), ti = c.titles[i];
+  return ti.includes('（') && !ti.endsWith('）') ? ti + '）' : ti;
 }
 function startSogoQuiz(){
   compMode = 'sogo';
@@ -6549,9 +6559,10 @@ function renderCompCatSelect(){
       <div style="font-size:11px;color:var(--muted);margin-top:4px;">数字は毎回ランダムに変わります。前の設問の答えは、次の設問のヒントに表示されます</div>
     </div>
     ${['商業簿記','工業簿記'].map(gr=>`<div class="comp-sect-hd">${gr}</div>
-    <div class="exp-step-choices wide">
-      ${SOGO_CATS.filter(c=>c.group===gr).map(c=>`<button class="exp-step-choice-btn" onclick="launchCompCat('${c.key}')">${c.label}（${g[c.key].length}問）</button>`).join('')}
-    </div>`).join('')}`;
+    ${SOGO_CATS.filter(c=>c.group===gr).map(c=>`<div class="sogo-cat">
+      <div class="sogo-cat-hd"><span>${c.label}</span><button class="sogo-all-btn" onclick="launchCompCat('${c.key}')">まとめて解く（${g[c.key].length}問）</button></div>
+      ${g[c.key].map((fn,i)=>`<button class="sogo-one-btn" onclick="launchCompCat('${c.key}',${i})">${sogoTitle(c.key,i)}</button>`).join('')}
+    </div>`).join('')}`).join('')}`;
     return;
   }
   if(compMode==='calc'){
@@ -6594,9 +6605,11 @@ function renderCompCatSelect(){
     </div>`;
 }
 
-function launchCompCat(key){
-  compQuizLastCat = key;
-  compQuizDeck = (compMode==='calc' ? calcGensFor(key) : compGens()[key]).map(fn => fn());
+function launchCompCat(key, one){
+  // one を指定すると、その分野の1問だけを解く（総合で問題を選んだとき）
+  compQuizLastCat = key; compQuizLastOne = (one===undefined ? null : one);
+  const gens = (compMode==='calc' ? calcGensFor(key) : compGens()[key]);
+  compQuizDeck = (compQuizLastOne===null ? gens : [gens[compQuizLastOne]]).map(fn => fn());
   compQuizIdx = 0;
   compQuizStepIdx = 0;
   compQuizCorrectFirstTry = 0;
@@ -6749,7 +6762,7 @@ function renderCompQuizFinish(){
       <div class="exp-fin-score">${compQuizCorrectFirstTry} / ${compQuizTotalSteps}</div>
       <div class="exp-fin-label">1回目で正解した設問の割合：${pct}%</div>
       <div class="exp-fin-btns">
-        <button class="exp-fin-btn exp-fin-btn-retry" onclick="launchCompCat('${compQuizLastCat}')">もう一度（数字は変わります）</button>
+        <button class="exp-fin-btn exp-fin-btn-retry" onclick="launchCompCat('${compQuizLastCat}'${compQuizLastOne===null?'':','+compQuizLastOne})">もう一度（数字は変わります）</button>
         <button class="exp-fin-btn exp-fin-btn-back" onclick="exitCompQuiz()">仕訳問題に戻る</button>
       </div>
       <button class="exp-nav-btn" style="width:100%;margin-top:10px;" onclick="renderCompCatSelect()">↩ 別の分野を選ぶ</button>
