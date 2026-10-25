@@ -556,6 +556,7 @@
       <button class="big-btn" data-big="shogyo" onclick="setBig('shogyo')">商業簿記</button>
       <button class="big-btn" data-big="kogyo" onclick="setBig('kogyo')">工業簿記</button>
       <button class="big-btn" data-big="kyu1" onclick="setBig('kyu1')">1級</button>
+      <button class="big-btn" data-big="riron" onclick="setBig('riron')">理論</button>
     </div>
     <div class="sec-tabs" id="sec-tabs">
       <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="big:shogyo" title="商業簿記のすべて" onclick="setSection('big:shogyo')">すべて</button>
@@ -581,7 +582,6 @@
       <button class="ctrl-btn grp-btn" data-big="kogyo" data-sec="chap:応用（工業簿記）" title="応用（複数の論点を組み合わせた仕訳）" onclick="setSection('chap:応用（工業簿記）')">応用</button>
       <button class="ctrl-btn" data-big="kogyo" title="総合（試験の第4問・第5問の型の計算問題）" onclick="startSogoQuiz('工業簿記',this)">🧮 総合</button>
       <button class="ctrl-btn" data-big="kyu1" title="1級の計算問題（工業簿記・原価計算・会計学）" onclick="startK1Quiz('k1calc',this)">🧮 1級計算</button>
-      <button class="ctrl-btn" data-big="kyu1" title="1級の会計学の理論（正誤・穴埋め）" onclick="startK1Quiz('k1theory',this)">📘 理論</button>
       <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級" title="1級のすべて" onclick="setSection('chap:1級')">すべて</button>
       <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級：収益認識・資産" title="収益認識・資産" onclick="setSection('chap:1級：収益認識・資産')">収益認識・資産</button>
       <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級：負債・純資産・外貨・税効果" title="負債・純資産・外貨・税効果" onclick="setSection('chap:1級：負債・純資産・外貨・税効果')">負債・純資産・外貨・税効果</button>
@@ -1289,7 +1289,7 @@ function toggleSecTabs(){
   const collapsed = wrap.classList.toggle('collapsed');
   label.textContent = collapsed ? '分野を表示' : '分野を隠す';
   // 分野と一緒に「表示方法」も隠す
-  document.getElementById('view-mode-row').style.display = collapsed ? 'none' : 'flex';
+  document.getElementById('view-mode-row').style.display = (collapsed || bigFilter==='riron') ? 'none' : 'flex';
 }
 
 
@@ -6650,6 +6650,27 @@ let compQuizLastCat = null;
 let compQuizLastOne = null;
 let compMode = 'comp'; // 'comp'＝総合問題 / 'calc'＝計算問題
 function compGens(){ return compMode==='calc' ? CALC_GENERATORS : compMode==='sogo' ? sogoGens() : compMode==='k1calc' ? k1Gens(KYU1_CALC_CATS) : compMode==='k1theory' ? k1Gens(KYU1_THEORY_CATS) : COMP_GENERATORS; }
+// 総合・1級計算・理論のチェック（問題ごとの鍵で保存）
+let compChecked = {};
+try{ compChecked = JSON.parse(localStorage.getItem('bk_comp_checked')||'{}')||{}; }catch(e){ compChecked = {}; }
+function compKey(item){ return item.ckey || ('C:'+item.title); }
+function toggleCompCheck(){
+  const k = compKey(compQuizDeck[compQuizIdx]);
+  if(compChecked[k]) delete compChecked[k]; else compChecked[k] = true;
+  try{ localStorage.setItem('bk_comp_checked', JSON.stringify(compChecked)); }catch(e){}
+  const b = document.getElementById('comp-check-btn');
+  if(b){ b.textContent = compChecked[k] ? '☑ チェック済み' : '☐ チェックをつける'; b.classList.toggle('active', !!compChecked[k]); }
+}
+// 問題ごとのチェックの鍵：総合は分野と番号、1級計算・理論は題名や問題文
+function compCkFor(key, i, fn){
+  if(compMode==='sogo') return 'S:'+key+':'+i;
+  const d = fn(); return d.ckey || ('C:'+d.title);
+}
+function compAllPairs(){
+  if(compMode==='sogo'){ const g=sogoGens(); return SOGO_CATS.filter(c=>c.group===sogoGroup).flatMap(c=>g[c.key].map((fn,i)=>[fn,'S:'+c.key+':'+i])); }
+  return compGens()['k1-all'].map(fn=>[fn, compCkFor('k1-all',0,fn)]);
+}
+function compCheckedCount(){ return compAllPairs().filter(([,ck])=>compChecked[ck]).length; }
 function k1Gens(cats){
   const o={}; cats.forEach(c=>{ o[c.key]=c.gens; }); o['k1-all']=cats.flatMap(c=>c.gens);
   // 20問ごとの区切り（一覧の並び順のまま）
@@ -6729,18 +6750,15 @@ function renderCompCatSelect(){
     main.innerHTML = `
     <div class="exp-nav-row">
       <button class="exp-nav-btn" onclick="exitCompQuiz()">✕ 終了</button>
-      <span class="exp-nav-info">${th?'1級 理論':'1級 計算'}：分野を選択（${total}問）</span>
+      <span class="exp-nav-info">${th?'理論':'1級 計算'}：分野を選択（${total}問）</span>
       <span style="width:64px;"></span>
     </div>
     <div class="exp-q-card" style="text-align:center;">
       <div style="font-size:14px;font-weight:700;">${th?'会計学の理論（正誤・穴埋め）です':'工業簿記・原価計算と会計学の計算問題です'}</div>
       <div style="font-size:11px;color:var(--muted);margin-top:4px;">${th?'答えた後に、正しい内容と理由が表示されます':'設問ごとに一歩ずつ選んで解きます'}</div>
       <button class="sogo-all-btn" style="margin-top:10px;padding:8px 16px;font-size:13px;" onclick="launchCompCat('k1-all')">全${total}問をまとめて解く（順番はランダム）</button>
+      <div><button class="sogo-all-btn" style="margin-top:8px;padding:8px 16px;font-size:13px;background:#E65100;border-color:#E65100;" onclick="launchCompCat('chk')">✅ チェックした問題を解く（${compCheckedCount()}問）</button></div>
     </div>
-    ${th ? `<div class="sec-tabs" style="margin:10px 0 4px;">
-      <button class="ctrl-btn${k1ThChunk===0?' active':''}" onclick="setK1ThChunk(0)">全問</button>
-      ${Array.from({length:Math.ceil(total/20)},(_,i)=>`<button class="ctrl-btn${k1ThChunk===i+1?' active':''}" onclick="setK1ThChunk(${i+1})">Q${i*20+1}-${Math.min(total,(i+1)*20)}</button>`).join('')}
-    </div>` : ''}
     ${th && k1ThChunk ? `<div style="text-align:center;margin:6px 0;"><button class="sogo-all-btn" style="padding:8px 16px;font-size:13px;" onclick="launchCompCat('k1-chunk-${k1ThChunk}')">この${Math.min(20,total-(k1ThChunk-1)*20)}問をまとめて解く</button></div>` : ''}
     ${(()=>{ let no=0; const lo=th&&k1ThChunk?(k1ThChunk-1)*20:0, hi=th&&k1ThChunk?k1ThChunk*20:Infinity;
       const view = cats.map(c=>({c, items:c.gens.map((fn,i)=>({fn,i,no:no++})).filter(x=>x.no>=lo&&x.no<hi)})).filter(v=>v.items.length);
@@ -6762,6 +6780,7 @@ function renderCompCatSelect(){
     <div class="exp-q-card" style="text-align:center;">
       <div style="font-size:14px;font-weight:700;">試験の${sogoGroup==='商業簿記'?'第2問・第3問':'第4問・第5問'}の型の計算問題です</div>
       <div style="font-size:11px;color:var(--muted);margin-top:4px;">数字は毎回ランダムに変わります。前の設問の答えは、次の設問のヒントに表示されます</div>
+      <div><button class="sogo-all-btn" style="margin-top:10px;padding:8px 16px;font-size:13px;background:#E65100;border-color:#E65100;" onclick="launchCompCat('chk')">✅ チェックした問題を解く（${compCheckedCount()}問）</button></div>
     </div>
     ${[sogoGroup].map(gr=>`<div class="comp-sect-hd">${gr}</div>
     ${SOGO_CATS.filter(c=>c.group===gr).map(c=>`<div class="sogo-cat">
@@ -6813,9 +6832,16 @@ function renderCompCatSelect(){
 function launchCompCat(key, one){
   // one を指定すると、その分野の1問だけを解く（総合で問題を選んだとき）
   compQuizLastCat = key; compQuizLastOne = (one===undefined ? null : one);
-  const gens = (compMode==='calc' ? calcGensFor(key) : compGens()[key]);
-  compQuizDeck = (compQuizLastOne===null ? gens : [gens[compQuizLastOne]]).map(fn => fn());
-  if(key==='k1-all') shuffleArr(compQuizDeck);
+  let pairs;
+  if(key==='chk'){ pairs = compAllPairs().filter(([,ck])=>compChecked[ck]); }
+  else {
+    const gens = (compMode==='calc' ? calcGensFor(key) : compGens()[key]);
+    pairs = gens.map((fn,i)=>[fn, compCkFor(key,i,fn)]);
+    if(compQuizLastOne!==null) pairs = [pairs[compQuizLastOne]];
+  }
+  compQuizDeck = pairs.map(([fn,ck])=>{ const d=fn(); d.ckey=ck; return d; });
+  if(key==='k1-all' || key==='chk') shuffleArr(compQuizDeck);
+  if(!compQuizDeck.length){ alert('チェックした問題はまだありません'); renderCompCatSelect(); return; }
   compQuizIdx = 0;
   compQuizStepIdx = 0;
   compQuizCorrectFirstTry = 0;
@@ -6825,6 +6851,7 @@ function launchCompCat(key, one){
 }
 
 function exitCompQuiz(){
+  if(bigFilter==='riron'){ setRironTab(k1ThChunk); return; }
   setSection(sectionFilter);
 }
 
@@ -6936,6 +6963,7 @@ function showCompStepExplanation(){
   res.innerHTML = `
     <div class="exp-res-hd">⭕ 正解</div>
     <button class="exp-nav-btn exp-nav-next" style="width:100%;margin:10px 0;" onclick="compQuizNextStep()">${nextLabel}</button>
+    ${isLastStepOfProblem ? (()=>{ const c=!!compChecked[compKey(item)]; return `<div style="margin:0 0 10px;"><button id="comp-check-btn" class="exp-check-btn${c?' active':''}" onclick="toggleCompCheck()">${c?'☑ チェック済み':'☐ チェックをつける'}</button></div>`; })() : ''}
     <div class="exp-res-exp">${step.exp}</div>
     ${compStmtHtml(item, step)}`;
   if(step.stmtKey && step.stmtLines){
@@ -8799,6 +8827,217 @@ const KYU1_CALC_CATS = [
       ['潜在株式調整後1株当たり当期純利益は？', '83.33円', ['83.33円','90.91円','76.92円','100.00円'], '10,000,000÷（110,000＋10,000）≒<strong>83.33円</strong>。']]),
   ]},
 ];
+// 理論の用語：問題文・答えに出てきたものを解説の下に表示する（問題文の中で「〜とは」と説明している用語は出さない）
+const THEORY_TERMS = {
+  '真実性の原則':'財務諸表が企業の財政状態と経営成績について真実な報告をすることを求める、一般原則の最上位の原則。',
+  '正規の簿記の原則':'網羅性・検証可能性・秩序性のある会計帳簿を作り、それにもとづいて財務諸表を作ることを求める原則。',
+  '継続性の原則':'一度採用した会計処理の方法を、正当な理由なく変更しないことを求める原則。期間比較を可能にし、利益操作を防ぐ。',
+  '保守主義の原則':'不利な影響に備えて、慎重な（健全な）会計処理を求める原則。ただし過度の保守主義は認めない。',
+  '単一性の原則':'目的別に形式の異なる財務諸表を作っても、その内容は同じ会計記録にもとづくことを求める原則。',
+  '重要性の原則':'重要性の乏しいものは、簡便な方法で処理してもよいとする原則。',
+  '明瞭性の原則':'財務諸表で会計事実を分かりやすく示すことを求める原則。',
+  '発生主義':'収益・費用を、現金の収支ではなく、経済的な事実が発生した時点で認識する考え方。',
+  '実現主義':'収益を、商品の販売や役務の提供により実現した時点で認識する考え方。',
+  '総額主義':'収益と費用、資産と負債を相殺せず、総額で表示する考え方。',
+  '費用収益対応の原則':'収益と、それを生み出すのにかかった費用を対応させて期間損益を計算する原則。',
+  '経過勘定':'時間の経過に応じて費用・収益を期間配分するための勘定（前払費用・前受収益・未払費用・未収収益）。',
+  '前払費用':'継続的な役務提供契約で、まだ提供を受けていない役務に対して前もって支払った対価。',
+  '正常営業循環基準':'仕入→製造→販売→回収という通常の営業の循環の中にある資産・負債を流動項目とする基準。',
+  '1年基準':'決算日の翌日から1年以内に回収・支払期限が来るかどうかで、流動・固定を分ける基準。',
+  '流動性配列法':'貸借対照表で、資産・負債を流動項目から先に並べる方法。',
+  '取得原価主義':'資産を、取得したときに支払った対価（取得原価）を基礎として評価する考え方。',
+  '費用配分の原則':'資産の取得原価を、使用する各期間に費用として配分する原則。減価償却がその代表。',
+  '引当金':'将来の費用・損失のうち、当期に原因があり、発生の可能性が高く、金額を見積もれるものを、当期の費用として前もって計上したもの。',
+  '評価性引当金':'資産の金額を間接的に減らす引当金。貸倒引当金がこれにあたる。',
+  '負債性引当金':'将来の支出に備えて負債として計上する引当金。修繕引当金、賞与引当金、退職給付引当金など。',
+  '資本的支出':'固定資産の価値を高めたり、使える期間を延ばしたりする支出。固定資産の取得原価に加える。',
+  '収益的支出':'固定資産を元の状態に戻すための支出。その期の費用（修繕費など）とする。',
+  '繰延資産':'支払いは済んでいるが、効果が将来に及ぶため、資産として計上して数年で償却する費用。',
+  '株式交付費':'株式を発行するときにかかる費用（広告費、証券会社への手数料など）。',
+  '売買目的有価証券':'時価の変動で利益を得るために保有する有価証券。時価で評価し、評価差額は当期の損益。',
+  '満期保有目的の債券':'満期まで保有するつもりの債券。取得原価（または償却原価）で評価し、時価評価しない。',
+  'その他有価証券':'売買目的・満期保有・子会社関連会社株式のどれにも当たらない有価証券。時価で評価し、評価差額は原則として純資産に計上する。',
+  '償却原価法':'債券を額面と異なる金額で取得したとき、その差額を満期までの期間に配分して帳簿価額に加減する方法。',
+  '利息法':'実効利子率を使って利息を配分する、償却原価法の原則的な方法。',
+  '全部純資産直入法':'その他有価証券の評価差額を、評価差益も評価差損もすべて純資産の部に計上する方法。',
+  '部分純資産直入法':'その他有価証券の評価差益は純資産に、評価差損は当期の損失とする方法。',
+  '洗い替え方式':'前期末の評価替えを翌期首に元に戻し、毎期取得原価から評価し直す方式。',
+  '洗替法':'前期末に切り下げた額を翌期首に戻し入れる方法。',
+  '切放法':'前期末に切り下げた後の金額を、翌期の取得原価とする方法。戻し入れない。',
+  '正味売却価額':'売価から、見積追加製造原価と見積販売直接経費を差し引いた額。',
+  '再調達原価':'同じ資産を今買い直すとした場合にかかる金額。',
+  '売価還元法':'売価で把握した期末商品に原価率を掛けて、期末商品の原価を求める方法。',
+  '後入先出法':'後から受け入れたものから先に払い出したとみる方法。日本では廃止された。',
+  '収益性の低下':'棚卸資産の正味売却価額が取得原価を下回り、投資額を回収できなくなった状態。',
+  '回収可能価額':'正味売却価額と使用価値のいずれか高い方の金額。',
+  '使用価値':'資産を使い続け、使用後に処分することで得られる将来キャッシュ・フローの現在価値。',
+  '資産グループ':'他の資産からおおむね独立したキャッシュ・フローを生み出す最小の単位。減損の判定に使う。',
+  'ファイナンス・リース':'解約不能（ノンキャンセラブル）でフルペイアウトのリース取引。売買取引に準じて処理する。',
+  'オペレーティング・リース':'ファイナンス・リース以外のリース取引。賃貸借取引に準じて処理する。',
+  'フルペイアウト':'借手が、リース物件の経済的利益を実質的に受け、使用に伴うコストも実質的に負担すること。',
+  'ノンキャンセラブル':'リース期間の途中で契約を解除できないこと。',
+  '利子抜き法':'リース料総額から利息相当額を除いた金額でリース資産・リース債務を計上する方法。',
+  '資産除去債務':'有形固定資産を除去するときに、法令や契約で求められる義務。割引後の金額で負債に計上する。',
+  '割引現在価値':'将来受け取る（支払う）金額を、利率を使って現在の価値に直した金額。',
+  '研究開発費':'新しい知識の発見や、新製品の計画・設計にかかる費用。発生時にすべて費用処理する。',
+  '製品マスター':'市場販売目的のソフトウェアの複写の元になる完成品。完成までの費用は研究開発費。',
+  '自己株式':'会社が取得して保有している自社の株式。純資産の部の株主資本から控除する。',
+  '新株予約権':'あらかじめ決めた価格で会社から株式を受け取ることができる権利。発行者側では純資産の部に計上する。',
+  'ストック・オプション':'従業員などに報酬として与える新株予約権。サービスの提供に応じて費用（株式報酬費用）を計上する。',
+  '新株予約権付社債':'新株予約権が付いた社債。',
+  '一括法':'新株予約権付社債を、社債と新株予約権に分けず、まとめて社債として処理する方法。',
+  '区分法':'新株予約権付社債を、社債の部分と新株予約権の部分に分けて処理する方法。',
+  'その他資本剰余金':'資本剰余金のうち資本準備金以外のもの。自己株式の処分差益などが入る。',
+  '資本準備金':'会社法で積立てが求められる資本剰余金。',
+  '利益準備金':'会社法で積立てが求められる利益剰余金。配当の10分の1を、資本準備金と合わせて資本金の4分の1まで積み立てる。',
+  'パーチェス法':'取得企業が、受け入れた資産・負債を時価で計上する、企業結合の会計処理。',
+  '負ののれん':'取得原価が、受け入れた資産・負債の純額（時価）を下回る部分。発生した期の利益とする。',
+  'のれん':'取得原価が、受け入れた資産・負債の純額（時価）を上回る部分。超過収益力を表し、20年以内に償却する。',
+  '取得関連費用':'企業結合のために外部のアドバイザーなどに支払った報酬・手数料。発生した期の費用とする。',
+  '段階取得':'何回かに分けて株式を取得し、支配を獲得すること。',
+  '共通支配下の取引':'親会社と子会社の合併など、同じ企業グループの中で行われる企業結合。帳簿価額で引き継ぐ。',
+  '事業分離':'会社の事業を他の企業に移転すること。会社分割や事業譲渡など。',
+  '移転損益':'事業分離で、受け取った対価の時価と移転した事業の株主資本相当額との差額。',
+  '持分法':'被投資会社の純資産と損益のうち自社の持分の変動に応じて、投資の額を修正する方法。',
+  '関連会社':'子会社以外で、財務や営業の方針に重要な影響を与えることができる会社。議決権20％以上が目安。',
+  '投資差額':'持分法で、投資の額と被投資会社の純資産のうち自社の持分との差額。',
+  '為替予約':'将来の一定の日に、あらかじめ決めた相場で外貨を売買する契約。',
+  '振当処理':'為替予約の相場で、外貨建の債権債務を換算する方法。',
+  '直々差額':'取引発生時の直物相場と、為替予約日の直物相場との差額。予約日の属する期の損益とする。',
+  '直先差額':'為替予約日の直物相場と先物相場との差額。予約日から決済日までの期間に配分する。',
+  '為替換算調整勘定':'在外子会社の財務諸表を換算するときに生じる差額。純資産の部に計上する。',
+  '期中平均相場':'一会計期間の為替相場の平均。在外子会社の収益・費用の換算に原則として使う。',
+  '遡及適用':'新しい会計方針を、過去の財務諸表にもさかのぼって適用すること。',
+  '修正再表示':'過去の財務諸表の誤謬を訂正して表示し直すこと。',
+  '会計上の見積り':'資産・負債や収益・費用の額に不確実性がある場合に、合理的に算定した金額。耐用年数や貸倒見積高など。',
+  '誤謬':'財務諸表作成時に入手できた情報を使わなかったり、誤って使ったりしたことによる誤り。',
+  '現金同等物':'容易に換金でき、価値の変動リスクがわずかな短期投資。取得日から3か月以内の定期預金など。',
+  '間接法':'税引前当期純利益から出発して、非資金項目などを調整して営業活動によるキャッシュ・フローを示す方法。',
+  '直接法':'主な取引ごとに収入と支出の総額を示して、営業活動によるキャッシュ・フローを示す方法。',
+  '包括利益':'純資産の変動額のうち、株主との直接的な取引によらない部分。当期純利益＋その他の包括利益。',
+  'その他の包括利益':'包括利益のうち当期純利益に含まれない部分。その他有価証券評価差額金など。',
+  '組替調整額':'過去にその他の包括利益に含めた金額のうち、当期に当期純利益に含められた部分。',
+  '潜在株式':'新株予約権など、将来普通株式を受け取れる権利がついた証券や契約。',
+  '希薄化':'潜在株式が普通株式になることで、1株当たり当期純利益が減ること。',
+  '期中平均株式数':'期中に発行済株式数が変わった場合に、期間の長さで平均した株式数。自己株式は除く。',
+  '履行義務':'顧客との契約で、別個の財やサービスを顧客に移転する約束。',
+  '取引価格':'財やサービスと交換に企業が受け取ると見込む対価の額。消費税など第三者のために回収する額は除く。',
+  '独立販売価格':'財やサービスを単独で販売する場合の価格。取引価格を履行義務に配分するときの基準。',
+  '変動対価':'値引き・リベート・返品などで金額が変わりうる対価。',
+  '契約資産':'企業が顧客に移転した財・サービスの対価を受け取る権利のうち、まだ無条件ではないもの。',
+  '契約負債':'財・サービスを移転する前に、顧客から対価を受け取ったもの（または受け取る期限が来たもの）。',
+  '代理人':'他の企業の財やサービスの提供を手配するだけの立場。手数料など純額で収益を認識する。',
+  '原価回収基準':'進捗度を合理的に見積もれないが費用は回収できる場合に、発生した費用と同額の収益を認識する方法。',
+  '重要な金融要素':'代金の支払時期が財の移転時期と大きくずれ、契約に実質的な融資が含まれていること。',
+  '有償支給':'材料などを外注先に有償で渡し、加工後の部品を買い戻す取引。',
+  '返金負債':'受け取った対価のうち、顧客に返金すると見込まれる部分。',
+  '返品資産':'返品された場合に顧客から商品を回収する権利。',
+  'ライセンス':'知的財産（ソフトウェア、ブランドなど）を使用・アクセスする権利を顧客に与えること。',
+  'デリバティブ':'先物、先渡、オプション、スワップなど、元の資産の価格などに連動して価値が決まる金融商品。',
+  'ヘッジ会計':'ヘッジ対象とヘッジ手段の損益を、同じ会計期間に認識させるための特別な会計処理。',
+  '繰延ヘッジ':'ヘッジ手段の損益を、ヘッジ対象の損益が認識されるまで純資産の部に繰り延べる方法。ヘッジ会計の原則。',
+  '時価ヘッジ':'ヘッジ対象の時価の変動を損益に反映させ、ヘッジ手段の損益と同じ期に認識する方法。',
+  '支配力基準':'議決権の所有割合だけでなく、実質的に意思決定機関を支配しているかで子会社を判定する基準。',
+  '全面時価評価法':'子会社の資産・負債のすべてを、支配獲得日の時価で評価する方法。',
+  '部分時価評価法':'子会社の資産・負債のうち親会社の持分相当額だけを時価評価する方法。現在は認められていない。',
+  '非支配株主':'子会社の株主のうち、親会社以外の株主。',
+  'アップストリーム':'子会社から親会社への販売。未実現利益の消去額を非支配株主にも負担させる。',
+  '一時差異':'会計上の資産・負債の額と、税務上の資産・負債の額との差額。',
+  '永久差異':'交際費の損金不算入額など、将来も解消しない会計と税務の差。税効果会計の対象にならない。',
+  '将来減算一時差異':'解消するときに課税所得を減らす一時差異。繰延税金資産の対象。',
+  '将来加算一時差異':'解消するときに課税所得を増やす一時差異。繰延税金負債の対象。',
+  '繰延税金資産':'将来減算一時差異などにより、将来の税金が減る効果。税金の前払いにあたる資産。',
+  '繰延税金負債':'将来加算一時差異により、将来の税金が増える効果。税金の後払いにあたる負債。',
+  '繰越欠損金':'過去の赤字のうち、将来の課税所得と相殺できるもの。',
+  '退職給付債務':'退職給付の見込額のうち、期末までに発生している部分の割引現在価値。',
+  '年金資産':'退職給付のために外部に積み立てた資産。時価で評価し、退職給付債務から控除する。',
+  '勤務費用':'1期間の労働の対価として発生した退職給付。',
+  '利息費用':'時の経過により退職給付債務に生じる利息。期首の退職給付債務×割引率。',
+  '期待運用収益':'年金資産の運用で見込まれる収益。期首の年金資産×長期期待運用収益率。',
+  '数理計算上の差異':'見積りと実績の差や、見積りの変更から生じる退職給付債務・年金資産の差異。',
+  '過去勤務費用':'退職給付の水準の改訂などで生じた退職給付債務の増減。',
+  '退職給付に係る負債':'連結貸借対照表で、退職給付債務から年金資産を控除した額を計上する科目。',
+  '簡便法':'小規模企業などで、期末自己都合要支給額などを退職給付債務とする方法。',
+  '時価':'市場参加者間の秩序ある取引で、資産の売却で受け取る価格（出口価格）。',
+  'マネジメント・アプローチ':'経営者が意思決定や業績評価に使っている区分のとおりに、セグメント情報を開示する考え方。',
+  '報告セグメント':'セグメント情報として開示しなければならない事業セグメント。',
+  '賃貸等不動産':'賃貸収益や値上がり益を得るために保有する不動産。時価を注記する。',
+  '修正後発事象':'決算日後に生じた事象のうち、原因が決算日に既にあり、財務諸表を修正するもの。',
+  '開示後発事象':'決算日後に生じ、翌期以降に影響する事象。財務諸表は修正せず注記する。',
+  '継続企業の前提':'企業が将来にわたって事業を続けるという前提。重要な疑義があれば注記する。',
+  '原価計算制度':'財務会計の帳簿と結びついて、常に継続して行われる原価計算。',
+  '非原価項目':'原価に含めない項目。異常な状態による損失、経営目的に関連しない価値の減少など。',
+  '直接費':'特定の製品にかかったことが直接わかる原価。',
+  '間接費':'複数の製品に共通してかかり、製品ごとに直接わからない原価。',
+  '予定配賦':'あらかじめ決めた配賦率で、製造間接費を製品に配ること。',
+  '原価差異':'予定価格などで計算した原価と、実際発生額との差額。',
+  '現実的標準原価':'良好な能率で達成が期待される標準原価。通常の仕損・減損・遊休時間などを含む。',
+  '理想標準原価':'技術的に達成可能な最高の能率を前提とした標準原価。原価計算制度では使わない。',
+  '正常原価':'過去の実際数値を平均し、将来の趨勢を加味した正常な能率での原価。',
+  '直接原価計算':'変動費だけを製品原価とし、固定費は期間の費用とする原価計算。',
+  '等価係数':'等級別・連産品の原価計算で、製品ごとの原価の負担割合を示す係数。',
+  '連産品':'同じ工程で同じ原料から必然的に生産される、相互に主副を区別できない複数の製品。',
+  '副産物':'主産物の製造過程で必然的に生まれる、価値の低い物品。',
+  '仕損':'加工に失敗し、所定の品質を満たさない不良品が生じること。',
+  '資本取引':'株主との間の出資・払戻しなど、純資産（元手）そのものを増減させる取引。',
+  '損益取引':'収益・費用を生じさせ、利益を増減させる取引。',
+  '資本剰余金':'株主からの払込資本のうち資本金に組み入れなかった部分など。資本準備金とその他資本剰余金。',
+  '利益剰余金':'会社が稼いだ利益のうち、社内に留保されている部分。利益準備金とその他利益剰余金。',
+  '未実現収益':'まだ販売などで実現していない収益。原則として当期の損益に計上しない。',
+  '未実現損益':'グループ内の取引で生じ、まだ外部に販売されていない損益。連結で消去する。',
+  '固定性配列法':'貸借対照表で、固定資産・固定負債から先に並べる方法。電力会社など一部の業種で使う。',
+  '建設仮勘定':'建設中の固定資産への支出を一時的に記録する勘定。完成して使い始めるまで減価償却しない。',
+  '在外子会社':'海外にある子会社。財務諸表を円に換算して連結する。',
+  '決算時の為替相場':'決算日の為替相場（CR）。外貨建の金銭債権債務や在外子会社の資産・負債の換算に使う。',
+  '持株基準':'議決権の過半数を持っているかどうかだけで子会社を判定する基準。現在は支配力基準を使う。',
+  '減損の兆候':'営業損益の継続的なマイナス、使用方法の大きな変更、市場価格の著しい下落など、減損が生じている可能性を示す事象。',
+  '前払金':'商品などの代金の前払い。お金で返ってくるものではないので、外貨換算では非貨幣項目として扱う。',
+  '金融資産':'現金預金、金銭債権、有価証券、デリバティブ取引により生じる正味の債権など。',
+  'トレーディング目的':'市場価格の変動で短期的に利益を得る目的。',
+  '意思決定有用性':'会計情報が、投資家の意思決定に役立つという性質。会計情報に求められる基本的な特性。',
+  '経済的資源':'キャッシュの獲得に貢献する便益の源泉。',
+  '自社利用のソフトウェア':'社内の業務で使うソフトウェア。将来の収益獲得や費用削減が確実なら資産計上する。',
+  '外貨建取引':'売買価格などが外国通貨で表示されている取引。',
+  '原価':'製品の製造や販売などのために消費した財貨・用役を、お金の額で表したもの。',
+  '引取費用':'材料を受け入れるまでにかかる引取運賃・買入手数料など。材料の購入原価に含める。',
+  '給付':'経営が作り出す製品やサービス（最終給付）と、その途中の生産物（中間給付）。',
+  '純利益':'包括利益のうち、リスクから解放された投資の成果で、株主に帰属する部分。',
+  '財務報告の目的':'投資家が企業の成果を予測し、企業価値を評価するのに役立つ情報を開示すること。',
+  '支配獲得日':'親会社が子会社の支配を獲得した日。子会社の資産・負債をこの日の時価で評価する。',
+  '利息及び配当金':'利息と配当金の受取額・支払額。キャッシュ・フロー計算書での表示区分に選択肢がある。',
+  '投資活動':'固定資産や有価証券の取得・売却、貸付けなど、将来の利益を生む資源への投資に関するキャッシュ・フロー。',
+  '財務活動':'借入れ・返済、社債や株式の発行、配当の支払いなど、資金調達に関するキャッシュ・フロー。',
+  '識別可能':'企業結合で、のれんとは区別して資産・負債として計上できること。',
+  '貸倒見積高':'債権のうち回収できないと見込まれる金額。債権の区分（一般債権・貸倒懸念債権・破産更生債権等）ごとに算定する。',
+  '表示方法':'財務諸表の科目の分類や配列などの表示のしかた。変更した場合は過去の財務諸表を組み替える。',
+  '連結決算日':'連結財務諸表を作成する基準日。親会社の決算日。',
+};
+// 問題文の言い回しから、対応する用語を引く
+const THEORY_ALIAS = {
+  '真実な報告':'真実性の原則',
+  '正確な会計帳簿':'正規の簿記の原則',
+  '健全な会計処理':'保守主義の原則',
+  '異なる形式の財務諸表':'単一性の原則',
+  '発生した期間に正しく割り当て':'発生主義',
+  '総額によって記載':'総額主義',
+  '対応表示':'費用収益対応の原則',
+  '期間的対応':'費用収益対応の原則',
+  '個別的対応':'費用収益対応の原則',
+  '取得原価を基礎':'取得原価主義',
+  '相対的な真実':'真実性の原則',
+  '必要な会計事実を':'明瞭性の原則',
+  '処理の原則及び手続を毎期':'継続性の原則',
+  '不利な影響を及ぼす可能性':'保守主義の原則',
+};
+function theoryTermsHtml(stmt, ans){
+  const src = stmt + ' ' + (ans||'');
+  let hits = Object.keys(THEORY_TERMS).filter(k => src.includes(k) && !stmt.includes(k+'とは'));
+  Object.entries(THEORY_ALIAS).forEach(([ph,k]) => { if(src.includes(ph) && !hits.includes(k)) hits.push(k); });
+  hits = hits.filter(k => !hits.some(o => o!==k && o.includes(k)));
+  if(!hits.length) return '';
+  return `<div class="exp-sec-hd" style="margin-top:10px;">用語</div>` + hits.map(k=>`<div class="exp-term"><strong>${k}</strong>：${THEORY_TERMS[k]}</div>`).join('');
+}
+
 // 理論：[会計基準, 問題文, 答え, 選択肢（省略時は正誤）, 解説]
 const KYU1_THEORY = [
   ['一般原則','企業会計は、企業の財政状態及び経営成績に関して、真実な報告を提供するものでなければならない。','正しい',null,'真実性の原則。ここでいう真実は、会計処理の選択の幅を認める相対的な真実。','会計学（基礎・2級の復習）'],
@@ -9048,7 +9287,8 @@ const KYU1_THEORY_CATS = (() => {
     c.gens.push(() => ({
       title: `${std}（${isFill?'穴埋め':'正誤'}）`,
       scenario_html: `<div class="comp-table"><div class="comp-row"><span class="l" style="font-weight:400;line-height:1.8;">${s}</span></div></div>`,
-      steps: [{ label: isFill ? '（　　）に入る語句は？' : 'この文は正しいか？', ans, choices: ch || ['正しい','誤り'], exp }]
+      ckey: 'T:'+s,
+      steps: [{ label: isFill ? '（　　）に入る語句は？' : 'この文は正しいか？', ans, choices: ch || ['正しい','誤り'], exp: exp + theoryTermsHtml(s, isFill ? ans : '') }]
     }));
   });
   const order = ['会計学（基礎・2級の復習）','会計学（会計基準）','原価計算基準'];
@@ -9066,8 +9306,29 @@ const BIG_DEFAULT = {shogyo:'big:shogyo', kogyo:'big:kogyo', kyu1:'chap:1級'};
 function setBig(big){
   bigFilter = big;
   document.querySelectorAll('.big-btn').forEach(b=>b.classList.toggle('active', b.dataset.big===big));
+  if(big==='riron') buildRironTabs();
   document.querySelectorAll('#sec-tabs [data-big]').forEach(b=>{ b.style.display = b.dataset.big===big ? '' : 'none'; });
+  const vm=document.getElementById('view-mode-row'), wrap=document.getElementById('sec-tabs-wrap');
+  if(big==='riron'){ vm.style.display='none'; setRironTab(0); return; }
+  vm.style.display = wrap.classList.contains('collapsed') ? 'none' : 'flex';
   setSection(BIG_DEFAULT[big]);
+}
+// 理論（大枠）：20問ごと・チェックのタブ
+function buildRironTabs(){
+  const box=document.getElementById('sec-tabs');
+  box.querySelectorAll('[data-big="riron"]').forEach(b=>b.remove());
+  const total=KYU1_THEORY.length, html=[`<button class="ctrl-btn" data-big="riron" data-ch="0" onclick="setRironTab(0)">全問</button>`];
+  for(let i=0;i<Math.ceil(total/20);i++) html.push(`<button class="ctrl-btn" data-big="riron" data-ch="${i+1}" onclick="setRironTab(${i+1})">Q${i*20+1}-${Math.min(total,(i+1)*20)}</button>`);
+  html.push(`<button class="ctrl-btn" data-big="riron" data-ch="chk" onclick="setRironTab('chk')">✅ チェック</button>`);
+  box.insertAdjacentHTML('beforeend', html.join(''));
+}
+function setRironTab(n){
+  document.querySelectorAll('#sec-tabs [data-big="riron"]').forEach(b=>b.classList.toggle('active', String(b.dataset.ch)===String(n)));
+  compMode='k1theory';
+  document.getElementById('check-bar').style.display='none';
+  document.getElementById('group-row').style.display='none';
+  if(n==='chk'){ k1ThChunk=0; launchCompCat('chk'); return; }
+  k1ThChunk=n; renderCompCatSelect();
 }
 function setSection(sec){
   sectionFilter=sec;
@@ -9146,7 +9407,7 @@ function resetAll(){
 function updateStats(){
   document.getElementById('s-total').textContent = deck.length;
   // チェック数は、いま選んでいる大枠の中だけを数える
-  const ids = new Set(getSectionQuestions(BIG_DEFAULT[bigFilter]).map(q=>q.id));
+  const ids = new Set(getSectionQuestions(BIG_DEFAULT[bigFilter]||'big:shogyo').map(q=>q.id));
   document.getElementById('s-check').textContent = Object.keys(checked).filter(id=>ids.has(+id)).length;
 }
 
