@@ -571,7 +571,7 @@
       <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:決算整理" title="決算整理" onclick="setSection('chap:決算整理')">決算整理</button>
       <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:本支店・連結・個人事業主" title="本支店・連結・個人事業主" onclick="setSection('chap:本支店・連結・個人事業主')">本支店・連結等</button>
       <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:応用（商業簿記）" title="応用（複数の論点を組み合わせた仕訳）" onclick="setSection('chap:応用（商業簿記）')">応用</button>
-      <button class="ctrl-btn" data-big="shogyo" title="総合（試験の第2問・第3問の型の計算問題）" onclick="startSogoQuiz('商業簿記')">🧮 総合</button>
+      <button class="ctrl-btn" data-big="shogyo" title="総合（試験の第2問・第3問の型の計算問題）" onclick="startSogoQuiz('商業簿記',this)">🧮 総合</button>
       <button class="ctrl-btn grp-btn" data-big="kogyo" data-sec="big:kogyo" title="工業簿記のすべて" onclick="setSection('big:kogyo')">すべて</button>
       <button class="ctrl-btn grp-btn" data-big="kogyo" data-sec="chap:工業簿記①材料費・労務費" title="工業簿記①材料費・労務費" onclick="setSection('chap:工業簿記①材料費・労務費')">工業①材料・労務</button>
       <button class="ctrl-btn grp-btn" data-big="kogyo" data-sec="chap:工業簿記②経費・製造間接費・個別" title="工業簿記②経費・製造間接費・個別" onclick="setSection('chap:工業簿記②経費・製造間接費・個別')">工業②経費・間接費・個別</button>
@@ -579,9 +579,9 @@
       <button class="ctrl-btn grp-btn" data-big="kogyo" data-sec="chap:工業簿記④標準原価計算" title="工業簿記④標準原価計算" onclick="setSection('chap:工業簿記④標準原価計算')">工業④標準原価</button>
       <button class="ctrl-btn grp-btn" data-big="kogyo" data-sec="chap:工業簿記⑤総合原価計算" title="工業簿記⑤総合原価計算" onclick="setSection('chap:工業簿記⑤総合原価計算')">工業⑤総合原価</button>
       <button class="ctrl-btn grp-btn" data-big="kogyo" data-sec="chap:応用（工業簿記）" title="応用（複数の論点を組み合わせた仕訳）" onclick="setSection('chap:応用（工業簿記）')">応用</button>
-      <button class="ctrl-btn" data-big="kogyo" title="総合（試験の第4問・第5問の型の計算問題）" onclick="startSogoQuiz('工業簿記')">🧮 総合</button>
-      <button class="ctrl-btn" data-big="kyu1" title="1級の計算問題（工業簿記・原価計算・会計学）" onclick="startK1Quiz('k1calc')">🧮 1級計算</button>
-      <button class="ctrl-btn" data-big="kyu1" title="1級の会計学の理論（正誤・穴埋め）" onclick="startK1Quiz('k1theory')">📘 理論</button>
+      <button class="ctrl-btn" data-big="kogyo" title="総合（試験の第4問・第5問の型の計算問題）" onclick="startSogoQuiz('工業簿記',this)">🧮 総合</button>
+      <button class="ctrl-btn" data-big="kyu1" title="1級の計算問題（工業簿記・原価計算・会計学）" onclick="startK1Quiz('k1calc',this)">🧮 1級計算</button>
+      <button class="ctrl-btn" data-big="kyu1" title="1級の会計学の理論（正誤・穴埋め）" onclick="startK1Quiz('k1theory',this)">📘 理論</button>
       <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級" title="1級のすべて" onclick="setSection('chap:1級')">すべて</button>
       <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級：収益認識・資産" title="収益認識・資産" onclick="setSection('chap:1級：収益認識・資産')">収益認識・資産</button>
       <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級：負債・純資産・外貨・税効果" title="負債・純資産・外貨・税効果" onclick="setSection('chap:1級：負債・純資産・外貨・税効果')">負債・純資産・外貨・税効果</button>
@@ -6651,13 +6651,9 @@ let compQuizLastOne = null;
 let compMode = 'comp'; // 'comp'＝総合問題 / 'calc'＝計算問題
 function compGens(){ return compMode==='calc' ? CALC_GENERATORS : compMode==='sogo' ? sogoGens() : compMode==='k1calc' ? k1Gens(KYU1_CALC_CATS) : compMode==='k1theory' ? k1Gens(KYU1_THEORY_CATS) : COMP_GENERATORS; }
 function k1Gens(cats){ const o={}; cats.forEach(c=>{ o[c.key]=c.gens; }); return o; }
-function startK1Quiz(mode){
+function startK1Quiz(mode, btn){
   compMode = mode;
-  document.getElementById('controls-main').style.display='none';
-  document.getElementById('check-bar').style.display='none';
-  document.getElementById('group-row').style.display='none';
-  renderCompCatSelect();
-  document.getElementById('exp-panel').scrollIntoView({behavior:'smooth',block:'start'});
+  openCompMenu(btn);
 }
 
 // ===== 総合（総合問題と計算問題を統合し、試験の第2〜5問の型に絞って厳選） =====
@@ -6687,14 +6683,18 @@ function sogoTitle(key, i){
   return ti.includes('（') && !ti.endsWith('）') ? ti + '）' : ti;
 }
 let sogoGroup = '商業簿記';
-function startSogoQuiz(group){
-  compMode = 'sogo';
-  if(group) sogoGroup = group;
-  document.getElementById('controls-main').style.display='none';
+// 総合・1級計算・理論：タブは表示したまま、下の問題の場所だけを切り替える
+function openCompMenu(btn){
+  document.querySelectorAll('#sec-tabs .ctrl-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
   document.getElementById('check-bar').style.display='none';
   document.getElementById('group-row').style.display='none';
   renderCompCatSelect();
-  document.getElementById('exp-panel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function startSogoQuiz(group, btn){
+  compMode = 'sogo';
+  if(group) sogoGroup = group;
+  openCompMenu(btn);
 }
 
 function startCalcQuiz(){
@@ -6809,10 +6809,7 @@ function launchCompCat(key, one){
 }
 
 function exitCompQuiz(){
-  document.getElementById('controls-main').style.display='';
-  document.getElementById('check-bar').style.display='';
-  updateGroupButtons();
-  loadExpQ();
+  setSection(sectionFilter);
 }
 
 function compQuizNavBar(){
@@ -8863,6 +8860,8 @@ function setBig(big){
 }
 function setSection(sec){
   sectionFilter=sec;
+  document.getElementById('check-bar').style.display='';
+  document.querySelectorAll('#sec-tabs .ctrl-btn:not(.grp-btn)').forEach(b=>b.classList.remove('active'));
   groupFilter=0;
   document.querySelectorAll('.grp-btn').forEach(btn=>{
     const bsec = btn.dataset.sec||btn.id.replace('sec-','');
