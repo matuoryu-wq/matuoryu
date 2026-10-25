@@ -231,10 +231,10 @@
           <div class="input-wrap"><input type="number" id="k-housing-amount" placeholder="例：72000" min="0"><span class="unit">円</span></div>
         </div>
       </div>
-      <div class="form-group"><label>標準的住居関係費（月額・円）／空欄なら暫定値で自動算出</label>
+      <div class="form-group"><label>標準的住居関係費（月額・円）／空欄なら統計表から自動算出</label>
         <div class="input-wrap"><input type="number" id="k-housing-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
       </div>
-      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>標準的住居関係費の自動算出値は<strong>暫定値</strong>です。正式には司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」の住居関係費の数値を上欄に直接入力してください。</div>
+      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>標準的住居関係費は、権利者の年間収入階級に応じて司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」の住居関係費から自動で判定します。別の数値を使う場合のみ上欄に入力してください。</div>
     </div>
     <button class="btn-calc" onclick="calcKonin()">計算する</button>
     <div id="k-result" style="display:none;margin-top:14px"></div>
@@ -342,10 +342,10 @@
           <div class="input-wrap"><input type="number" id="y-housing-amount" placeholder="例：72000" min="0"><span class="unit">円</span></div>
         </div>
       </div>
-      <div class="form-group"><label>標準的住居関係費（月額・円）／空欄なら暫定値で自動算出</label>
+      <div class="form-group"><label>標準的住居関係費（月額・円）／空欄なら統計表から自動算出</label>
         <div class="input-wrap"><input type="number" id="y-housing-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
       </div>
-      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>標準的住居関係費の自動算出値は<strong>暫定値</strong>です。正式には司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」の住居関係費の数値を上欄に直接入力してください。</div>
+      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>標準的住居関係費は、権利者の年間収入階級に応じて司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」の住居関係費から自動で判定します。別の数値を使う場合のみ上欄に入力してください。</div>
     </div>
     <button class="btn-calc" onclick="calcYouiku()">計算する</button>
     <div id="y-result" style="display:none;margin-top:14px"></div>
@@ -538,46 +538,64 @@ const HELP={
   break_overview:{title:'損益分岐点とは',body:`<p>離婚を検討する際、<strong>経済的な観点から「いつ離婚するのが得か」</strong>を判断するための計算です。</p><h4>比較の仕組み</h4><ul><li><strong>婚姻継続</strong>：毎月、婚姻費用を受け取る</li><li><strong>今すぐ離婚</strong>：毎月、養育費＋児童扶養手当を受け取る</li></ul><p>この差額を月ごとに累積し、累積差額が0を超えた時点が「損益分岐点」です。</p><h4>注意点</h4><ul><li>児童扶養手当は末子が18歳年度末（3月31日）を迎えると支給が終了します</li><li>養育費は合意した終期（18歳・20歳・22歳等）で終了します</li><li>経済的判断だけでなく、精神的・家庭的事情も重要です</li></ul><div class="help-note">この計算は概算です。具体的な判断は弁護士にご相談ください。</div>`},
   kijunji:{title:'財産分与の基準時',body:`<p>財産分与の対象となる財産は、原則として<strong>別居時点</strong>に存在した財産です。別居後にそれぞれが得た財産・負った借金は、二人で協力して築いたものではないため対象外となります。</p><h4>評価の基準時は別</h4><p>対象財産を確定する基準時は別居時ですが、不動産や株式など<strong>価格が変動する財産の評価額</strong>は、離婚時（または裁判時）の時価で評価するのが一般的です。</p><h4>婚姻期間が使われる場面</h4><p>退職金・保険の解約返戻金・企業年金などは、その全期間のうち婚姻期間に対応する部分だけが分与の対象になります。そのため婚姻（入籍）から別居までの期間を正確に把握する必要があります。</p><div class="help-note">別居していない場合は、離婚予定時を入れて計算してください。長期間の別居後に離婚する場合など、基準時の判断が難しいケースは弁護士にご相談ください。</div>`},
   anbun:{title:'退職金・保険などの期間按分',body:`<p>退職金や保険の解約返戻金は、その全額が財産分与の対象になるわけではありません。<strong>婚姻期間中に形成された部分だけ</strong>が二人で築いた財産だからです。</p><h4>計算式</h4><p>分与対象額 ＝ 金額 × 婚姻期間 ÷ 全期間（勤続年数・契約年数）</p><h4>例：退職金</h4><p>勤続30年、退職金1,200万円、うち婚姻期間20年の場合</p><p>1,200万円 × 20年 ÷ 30年 ＝ <strong>800万円</strong>が分与対象</p><h4>退職金でよく問題になる点</h4><ul><li><strong>まだ退職していない場合</strong>：別居時に自己都合退職したと仮定した場合の金額を使う方法が一般的です。</li><li><strong>退職までまだ相当先の場合</strong>：支給の確実性が低いとして対象外とされることもあります。</li></ul><h4>保険の解約返戻金</h4><p>婚姻前から契約していた保険は、契約期間のうち婚姻期間に対応する部分のみが対象です。別居時に解約したと仮定した返戻金額を使います。</p><div class="help-note">退職金が対象になるか、どの時点の金額を使うかは事案によって判断が分かれます。金額が大きくなりやすい項目のため、弁護士にご相談ください。</div>`},
-  housing:{title:'義務者が住居費を負担している場合',body:`<p>義務者が家を出た後も、権利者（と子）が住む家の<strong>住宅ローンや家賃を払い続けている</strong>場合、義務者は自分の新居費用と合わせて住居費を二重に負担していることになります。そこで、公平の観点から婚姻費用・養育費から一定額を控除する扱いがされています。</p><h4>控除できるのは「標準的住居関係費」まで</h4><p>算定表の基礎収入は、総収入から公租公課・職業費・特別経費（住居関係費・医療費・保険料など）を統計的に控除して算出されています。つまり<strong>標準的な住居費はすでに算定表に織り込み済み</strong>です。</p><p>そのため、負担額の全額を控除すると二重に差し引くことになり、婚姻費用が不当に低額になってしまいます。実務では、<strong>権利者の収入帯に対応する標準的住居関係費を上限</strong>として控除します。</p><h4>超過部分はどうなるか</h4><p>住宅ローンには「住居を確保する費用」と「資産形成のための支出」の両面があります。標準的住居関係費を超える部分は資産形成的な支出とみなされ、婚姻費用ではなく<strong>財産分与の手続で清算</strong>するのが実務の考え方です。</p><h4>計算例</h4><p>算定表上の婚姻費用が月10万円、標準的住居関係費が22,247円、義務者の住宅ローン負担が月7万円の場合：</p><p>10万円 − 22,247円 ＝ <strong>77,753円</strong>（ローン7万円を全額引くのではない）</p><div class="help-note">標準的住居関係費の正式な数値は、司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」に掲載されています。このアプリの自動算出値は公表事例から補間した暫定値のため、正式な数値がある場合は入力欄に直接入力してください。</div>`},
+  housing:{title:'義務者が住居費を負担している場合',body:`<p>義務者が家を出た後も、権利者（と子）が住む家の<strong>住宅ローンや家賃を払い続けている</strong>場合、義務者は自分の新居費用と合わせて住居費を二重に負担していることになります。そこで、公平の観点から婚姻費用・養育費から一定額を控除する扱いがされています。</p><h4>控除できるのは「標準的住居関係費」まで</h4><p>算定表の基礎収入は、総収入から公租公課・職業費・特別経費を統計的に控除して算出されています。この<strong>特別経費には「住居関係費」が含まれている</strong>ため、標準的な住居費はすでに算定表に織り込み済みです。</p><p>したがって負担額の全額を控除すると二重に差し引くことになり、婚姻費用が不当に低額になります。実務では、<strong>権利者の年間収入階級に対応する標準的住居関係費を上限</strong>として控除します。</p><h4>住宅ローンの元本も統計に含まれている</h4><p>統計上の「住居関係費」は、家計調査年報の「住居」の額に<strong>「土地家屋に関する借金返済」の額を加えたもの</strong>です（出典注2）。つまりローンの返済額そのものが織り込まれているため、元本と利息を分けて考える必要はありません。</p><h4>超過部分はどうなるか</h4><p>住宅ローンには「住居を確保する費用」と「資産形成のための支出」の両面があります。標準的住居関係費を超える部分は資産形成的な支出とみなされ、婚姻費用ではなく<strong>財産分与の手続で清算</strong>するのが実務の考え方です。</p><h4>年間収入階級別の標準的住居関係費（月額）</h4><table><tr><th>年間収入</th><th>住居関係費</th><th>年間収入</th><th>住居関係費</th></tr><tr><td>200万円未満</td><td>22,247円</td><td>700万円未満</td><td>58,376円</td></tr><tr><td>250万円未満</td><td>26,630円</td><td>750万円未満</td><td>63,085円</td></tr><tr><td>300万円未満</td><td>35,586円</td><td>800万円未満</td><td>64,056円</td></tr><tr><td>350万円未満</td><td>34,812円</td><td>900万円未満</td><td>64,469円</td></tr><tr><td>400万円未満</td><td>37,455円</td><td>1000万円未満</td><td>68,332円</td></tr><tr><td>450万円未満</td><td>45,284円</td><td>1250万円未満</td><td>78,065円</td></tr><tr><td>500万円未満</td><td>46,562円</td><td>1500万円未満</td><td>78,903円</td></tr><tr><td>550万円未満</td><td>46,659円</td><td>1500万円以上</td><td>91,554円</td></tr><tr><td>600万円未満</td><td>50,890円</td><td colspan="2" style="color:#8a7a68">階級別の平均値のため、<br>階級間で逆転する箇所があります</td></tr><tr><td>650万円未満</td><td>55,167円</td><td colspan="2"></td></tr></table><h4>計算例</h4><p>算定表上の婚姻費用が月10万円、権利者の年収が180万円（標準的住居関係費22,247円）、義務者の住宅ローン負担が月7万円の場合：</p><p>10万円 − 22,247円 ＝ <strong>77,753円</strong>（ローン7万円を全額引くのではない）</p><div class="help-note">出典：司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」（家計調査年報第2−6表・全国・二人以上の世帯のうち勤労者世帯）。実際にいくら控除されるかは事案ごとの裁判所の判断によります。</div>`},
   break_income:{title:'児童扶養手当と収入について',body:`<p>児童扶養手当は、<strong>受け取る側（権利者）の前年の所得</strong>に基づいて支給額が決まります。</p><h4>STEP 1：給与所得の算出（給与所得控除 令和2年改正・住民税基準）</h4><table><tr><th>年収</th><th>給与所得控除額</th></tr><tr><td>162.5万円以下</td><td>55万円（一律）</td></tr><tr><td>162.5万〜180万円</td><td>年収×40%−10万円</td></tr><tr><td>180万〜360万円</td><td>年収×30%＋8万円</td></tr><tr><td>360万〜660万円</td><td>年収×20%＋44万円</td></tr><tr><td>660万〜850万円</td><td>年収×10%＋110万円</td></tr><tr><td>850万円超</td><td>195万円（一律）</td></tr></table><p style="margin-top:6px">給与所得 ＝ 年収 − 給与所得控除額</p><h4>STEP 2：所得額の算出</h4><p>所得額 ＝ 給与所得 ＋ 養育費年額×80% − 8万円（社保相当） − 10万円（給与所得者控除）</p><h4>STEP 3：所得制限限度額との比較（2026年度）</h4><table><tr><th>扶養人数（子の数）</th><th>全部支給限度額</th><th>一部支給限度額</th></tr><tr><td>1人</td><td>107万円</td><td>246万円</td></tr><tr><td>2人</td><td>145万円</td><td>284万円</td></tr><tr><td>3人</td><td>183万円</td><td>322万円</td></tr><tr><td>4人</td><td>221万円</td><td>360万円</td></tr></table><div class="help-note">令和6年11月改正で所得限度額が引き上げられました。限度額は毎年度改定されます。</div>`}
 };
 
 // ───────────────────────────────────────────────────────────────
-// 標準的住居関係費（暫定値）
-// 正式値は司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁
-// 「（資料2）平成25〜29年 特別経費実収入比の平均値」の住居関係費。
-// 正式表を入手したら下記 HOUSING_ANCHORS を差し替えるだけでよい。
-// 形式: [権利者の総収入(万円), 標準的住居関係費(月額・円)]
-// 現在の値は公表事例（年収180万→27,940円 / 年収650万→63,085円 /
-// 低所得帯→22,247円）から線形補間したもの。
-const HOUSING_ANCHORS=[[0,22247],[180,27940],[650,63085]];
+// 標準的住居関係費
+// 出典：司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁
+//   （資料2）平成25〜29年 特別経費実収入比の平均値
+//   家計調査年報第2-6表 年間収入階級別1世帯当たり1か月間の収入と支出
+//   （全国・二人以上の世帯のうち勤労者世帯）
+// 住居関係費＝「住居」の額に「土地家屋に関する借金返済」の額を加えたもの（同注2）。
+// 形式: [年間収入階級の上限(万円・未満), 住居関係費(月額・円)]
+// 統計上の階級別平均値のため、階級間で逆転する箇所がある（300万円未満 35,586円 >
+// 350万円未満 34,812円）。補間せず階級をそのまま引く。
+const HOUSING_TABLE=[
+  [200,22247],[250,26630],[300,35586],[350,34812],[400,37455],
+  [450,45284],[500,46562],[550,46659],[600,50890],[650,55167],
+  [700,58376],[750,63085],[800,64056],[900,64469],[1000,68332],
+  [1250,78065],[1500,78903],[Infinity,91554]
+];
 
-// 権利者の総収入（万円）から標準的住居関係費（月額・円）を返す
-function stdHousingCost(income){
+// 権利者の総収入（万円）が属する階級と標準的住居関係費（月額・円）を返す
+function stdHousing(income){
   const inc=Number(income)||0;
-  const A=HOUSING_ANCHORS;
-  if(inc<=A[0][0])return A[0][1];
-  for(let i=0;i<A.length-1;i++){
-    const[x1,y1]=A[i],[x2,y2]=A[i+1];
-    if(inc<=x2)return y1+(y2-y1)*(inc-x1)/(x2-x1);
+  for(let i=0;i<HOUSING_TABLE.length;i++){
+    const[max,amt]=HOUSING_TABLE[i];
+    if(inc<max){
+      const lower=i===0?0:HOUSING_TABLE[i-1][0];
+      return{amount:amt,label:i===0?'200万円未満':(max===Infinity?'1500万円以上':`${lower}万円以上${max}万円未満`)};
+    }
   }
-  // 最終区間の傾きで外挿
-  const[x1,y1]=A[A.length-2],[x2,y2]=A[A.length-1];
-  return y2+(y2-y1)/(x2-x1)*(inc-x2);
+  const last=HOUSING_TABLE[HOUSING_TABLE.length-1];
+  return{amount:last[1],label:'1500万円以上'};
+}
+
+// 資料2の階級は「実収入（税込収入）」基準の勤労者世帯の統計。
+// 事業所得者の課税所得をそのまま当てると過小になるため、アプリ内の
+// 事業所得⇔給与の換算（×0.85）に合わせて給与換算してから階級を引く。
+function housingLookupIncome(ee){
+  if(ee.basis==='self')return{income:ee.totalIncome/0.85,converted:true};
+  return{income:ee.totalIncome,converted:false};
 }
 
 // 住居費控除額（月額・円）を算出する。
 // 実務の主流は「算定表上の金額から、権利者の収入に対応する標準的住居関係費を
 // 控除する」方法のため、基礎収入ではなく最終金額から控除する。
-function calcHousingDeduction(p,eeTotalIncome){
+function calcHousingDeduction(p,ee){
   const type=v(`${p}-housing-type`);
   if(!type||type==='none')return null;
   const amount=nv(`${p}-housing-amount`)||0;
   if(amount<=0)return null;
   const override=nv(`${p}-housing-std`);
-  const std=override!==null&&override>=0?override:stdHousingCost(eeTotalIncome);
-  const deduction=Math.min(amount,std);
-  return{type,amount,std,deduction,isOverride:override!==null&&override>=0};
+  const isOverride=override!==null&&override>=0;
+  const look=housingLookupIncome(ee);
+  const table=stdHousing(look.income);
+  const std=isOverride?override:table.amount;
+  return{type,amount,std,deduction:Math.min(amount,std),isOverride,
+         bracket:table.label,lookupIncome:look.income,converted:look.converted};
 }
 
 // 住居費控除の内訳HTML。label は「婚姻費用」「養育費」。
@@ -592,8 +610,8 @@ function housingBreakdownHtml(h,label,monBefore,monAfter){
   return `<div class="breakdown"><div class="breakdown-title">住居費の控除</div>
     <div class="bk-row"><span class="bk-key">義務者の負担額（${typeLabel}）</span><span class="bk-val">${yen(h.amount)}／月</span></div>
     ${D('義務者が、権利者（と子）の住む家のために実際に負担している月額です。')}
-    <div class="bk-row"><span class="bk-key">標準的住居関係費${h.isOverride?'（手入力）':'（暫定値・自動算出）'}</span><span class="bk-val">${yen(h.std)}／月</span></div>
-    ${D('権利者の収入帯に対応する統計上の住居関係費です。算定表の基礎収入にはこの額があらかじめ織り込まれているため、控除できるのはこの額が上限となります。'+(h.isOverride?'':'この自動算出値は暫定値です。正式な統計表の数値がある場合は入力欄に直接入力してください。'))}
+    <div class="bk-row"><span class="bk-key">標準的住居関係費${h.isOverride?'（手入力）':`（年間収入 ${h.bracket}）`}</span><span class="bk-val">${yen(h.std)}／月</span></div>
+    ${D('権利者の収入階級に対応する統計上の住居関係費です。算定表の基礎収入にはこの額があらかじめ織り込まれているため、控除できるのはこの額が上限となります。'+(h.isOverride?'':'出典：司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁（資料2）平成25〜29年 特別経費実収入比の平均値。'+(h.converted?`なお権利者が事業所得者のため、課税所得を給与換算（÷0.85＝約${Math.round(h.lookupIncome)}万円）して階級を判定しています。`:'')))}
     <div class="bk-row" style="padding-top:8px;border-top:2px solid var(--border)"><span class="bk-key" style="font-weight:700;color:var(--primary)">控除額</span><span class="bk-val" style="color:var(--primary);font-size:15px">−${yen(h.deduction)}／月</span></div>
     ${D(capped?`負担額（${yen(h.amount)}）が標準的住居関係費（${yen(h.std)}）を上回るため、標準的住居関係費を上限として控除しています。${rentNote}`:`負担額が標準的住居関係費の範囲内のため、負担額の全額を控除しています。${rentNote}`)}
     <div class="bk-formula">${label} ${yen(monBefore*10000)} − 控除 ${yen(h.deduction)} ＝ ${yen(Math.max(0,monAfter)*10000)}</div>
@@ -608,11 +626,11 @@ function fmtEn(val){return '約'+Math.round(val*10000).toLocaleString('ja-JP')+'
 
 function calcBaseIncome(type,salary,business,insurance){
   salary=Number(salary)||0;business=Number(business)||0;insurance=Number(insurance)||0;
-  let totalIncome,rate,baseIncome,steps=[];
-  if(type==='self'){rate=getRate(salary,SELF_RATES);baseIncome=salary*rate/100;totalIncome=salary;steps.push(`課税所得 ${salary}万×${rate}%=${baseIncome.toFixed(3)}万円`);}
-  else if(type==='mixed'){const bizToSal=(business+insurance)/0.85;if(salary>=bizToSal){totalIncome=salary+bizToSal;rate=getRate(totalIncome,EMPLOYEE_RATES);baseIncome=totalIncome*rate/100;steps.push(`給与所得(${salary}万)≥事業所得の給与換算(${bizToSal.toFixed(1)}万)のため給与所得換算で計算`);steps.push(`事業所得の給与換算: (${business}+${insurance})÷0.85=${bizToSal.toFixed(3)}万円`);steps.push(`給与合計: ${salary}+${bizToSal.toFixed(3)}=${totalIncome.toFixed(3)}万円`);steps.push(`基礎収入: ${totalIncome.toFixed(3)}万×${rate}%(給与所得割合)=${baseIncome.toFixed(3)}万円`);}else{const salToBiz=salary*0.85;totalIncome=business+salToBiz;rate=getRate(totalIncome,SELF_RATES);baseIncome=totalIncome*rate/100;steps.push(`事業所得の給与換算(${bizToSal.toFixed(1)}万)>給与所得(${salary}万)のため事業所得換算で計算`);steps.push(`給与所得の事業換算: ${salary}×0.85=${salToBiz.toFixed(3)}万円`);steps.push(`事業所得合計: ${business}+${salToBiz.toFixed(3)}=${totalIncome.toFixed(3)}万円`);steps.push(`基礎収入: ${totalIncome.toFixed(3)}万×${rate}%(事業所得割合)=${baseIncome.toFixed(3)}万円`);}}
-  else{rate=getRate(salary,EMPLOYEE_RATES);baseIncome=salary*rate/100;totalIncome=salary;steps.push(`給与 ${salary}万×${rate}%=${baseIncome.toFixed(3)}万円`);}
-  return{baseIncome,rate,totalIncome,steps};
+  let totalIncome,rate,baseIncome,basis='employee',steps=[];
+  if(type==='self'){basis='self';rate=getRate(salary,SELF_RATES);baseIncome=salary*rate/100;totalIncome=salary;steps.push(`課税所得 ${salary}万×${rate}%=${baseIncome.toFixed(3)}万円`);}
+  else if(type==='mixed'){const bizToSal=(business+insurance)/0.85;if(salary>=bizToSal){basis='employee';totalIncome=salary+bizToSal;rate=getRate(totalIncome,EMPLOYEE_RATES);baseIncome=totalIncome*rate/100;steps.push(`給与所得(${salary}万)≥事業所得の給与換算(${bizToSal.toFixed(1)}万)のため給与所得換算で計算`);steps.push(`事業所得の給与換算: (${business}+${insurance})÷0.85=${bizToSal.toFixed(3)}万円`);steps.push(`給与合計: ${salary}+${bizToSal.toFixed(3)}=${totalIncome.toFixed(3)}万円`);steps.push(`基礎収入: ${totalIncome.toFixed(3)}万×${rate}%(給与所得割合)=${baseIncome.toFixed(3)}万円`);}else{basis='self';const salToBiz=salary*0.85;totalIncome=business+salToBiz;rate=getRate(totalIncome,SELF_RATES);baseIncome=totalIncome*rate/100;steps.push(`事業所得の給与換算(${bizToSal.toFixed(1)}万)>給与所得(${salary}万)のため事業所得換算で計算`);steps.push(`給与所得の事業換算: ${salary}×0.85=${salToBiz.toFixed(3)}万円`);steps.push(`事業所得合計: ${business}+${salToBiz.toFixed(3)}=${totalIncome.toFixed(3)}万円`);steps.push(`基礎収入: ${totalIncome.toFixed(3)}万×${rate}%(事業所得割合)=${baseIncome.toFixed(3)}万円`);}}
+  else{basis='employee';rate=getRate(salary,EMPLOYEE_RATES);baseIncome=salary*rate/100;totalIncome=salary;steps.push(`給与 ${salary}万×${rate}%=${baseIncome.toFixed(3)}万円`);}
+  return{baseIncome,rate,totalIncome,basis,steps};
 }
 
 function calcOtherCS(a,otherParentIncome,otherAges){
@@ -674,7 +692,7 @@ function calcKonin(){
   const mon=ann/12;
 
   // 住居費控除（算定結果から標準的住居関係費を上限に控除）
-  const housing=calcHousingDeduction('k',ee.totalIncome);
+  const housing=calcHousingDeduction('k',ee);
   const monFinal=mon-(housing?housing.deduction/10000:0);
 
   // ② Conditional a label
@@ -782,7 +800,7 @@ function calcYouiku(){
   const mon=ann/12;
 
   // 住居費控除（算定結果から標準的住居関係費を上限に控除）
-  const housing=calcHousingDeduction('y',ee.totalIncome);
+  const housing=calcHousingDeduction('y',ee);
   const monFinal=mon-(housing?housing.deduction/10000:0);
 
   // ① Formula with a (not a')
