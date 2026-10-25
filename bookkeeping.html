@@ -6650,7 +6650,14 @@ let compQuizLastCat = null;
 let compQuizLastOne = null;
 let compMode = 'comp'; // 'comp'＝総合問題 / 'calc'＝計算問題
 function compGens(){ return compMode==='calc' ? CALC_GENERATORS : compMode==='sogo' ? sogoGens() : compMode==='k1calc' ? k1Gens(KYU1_CALC_CATS) : compMode==='k1theory' ? k1Gens(KYU1_THEORY_CATS) : COMP_GENERATORS; }
-function k1Gens(cats){ const o={}; cats.forEach(c=>{ o[c.key]=c.gens; }); o['k1-all']=cats.flatMap(c=>c.gens); return o; }
+function k1Gens(cats){
+  const o={}; cats.forEach(c=>{ o[c.key]=c.gens; }); o['k1-all']=cats.flatMap(c=>c.gens);
+  // 20問ごとの区切り（一覧の並び順のまま）
+  for(let i=0;i<o['k1-all'].length;i+=20) o['k1-chunk-'+(i/20+1)] = o['k1-all'].slice(i,i+20);
+  return o;
+}
+let k1ThChunk = 0; // 理論の表示範囲：0＝全問、n＝n番目の20問
+function setK1ThChunk(n){ k1ThChunk = n; renderCompCatSelect(); }
 function startK1Quiz(mode, btn){
   compMode = mode;
   openCompMenu(btn);
@@ -6730,11 +6737,18 @@ function renderCompCatSelect(){
       <div style="font-size:11px;color:var(--muted);margin-top:4px;">${th?'答えた後に、正しい内容と理由が表示されます':'設問ごとに一歩ずつ選んで解きます'}</div>
       <button class="sogo-all-btn" style="margin-top:10px;padding:8px 16px;font-size:13px;" onclick="launchCompCat('k1-all')">全${total}問をまとめて解く（順番はランダム）</button>
     </div>
-    ${[...new Set(cats.map(c=>c.group||(th?'会計学':'工業簿記・原価計算')))].map(gr=>`<div class="comp-sect-hd">${gr}</div>
-    ${cats.filter(c=>(c.group||(th?'会計学':'工業簿記・原価計算'))===gr).map(c=>`<div class="sogo-cat">
-      <div class="sogo-cat-hd"><span>${c.label}</span><button class="sogo-all-btn" onclick="launchCompCat('${c.key}')">まとめて解く（${c.gens.length}問）</button></div>
-      ${c.gens.map((fn,i)=>{ const d=fn(); const lab = th ? d.scenario_html.replace(/<[^>]+>/g,'').slice(0,28)+'…' : d.title; return `<button class="sogo-one-btn" onclick="launchCompCat('${c.key}',${i})">${lab}</button>`; }).join('')}
-    </div>`).join('')}`).join('')}`;
+    ${th ? `<div class="sec-tabs" style="margin:10px 0 4px;">
+      <button class="ctrl-btn${k1ThChunk===0?' active':''}" onclick="setK1ThChunk(0)">全問</button>
+      ${Array.from({length:Math.ceil(total/20)},(_,i)=>`<button class="ctrl-btn${k1ThChunk===i+1?' active':''}" onclick="setK1ThChunk(${i+1})">Q${i*20+1}-${Math.min(total,(i+1)*20)}</button>`).join('')}
+    </div>` : ''}
+    ${th && k1ThChunk ? `<div style="text-align:center;margin:6px 0;"><button class="sogo-all-btn" style="padding:8px 16px;font-size:13px;" onclick="launchCompCat('k1-chunk-${k1ThChunk}')">この${Math.min(20,total-(k1ThChunk-1)*20)}問をまとめて解く</button></div>` : ''}
+    ${(()=>{ let no=0; const lo=th&&k1ThChunk?(k1ThChunk-1)*20:0, hi=th&&k1ThChunk?k1ThChunk*20:Infinity;
+      const view = cats.map(c=>({c, items:c.gens.map((fn,i)=>({fn,i,no:no++})).filter(x=>x.no>=lo&&x.no<hi)})).filter(v=>v.items.length);
+      return [...new Set(view.map(v=>v.c.group||(th?'会計学':'工業簿記・原価計算')))].map(gr=>`<div class="comp-sect-hd">${gr}</div>
+      ${view.filter(v=>(v.c.group||(th?'会計学':'工業簿記・原価計算'))===gr).map(({c,items})=>`<div class="sogo-cat">
+        <div class="sogo-cat-hd"><span>${c.label}</span><button class="sogo-all-btn" onclick="launchCompCat('${c.key}')">まとめて解く（${c.gens.length}問）</button></div>
+        ${items.map(({fn,i,no})=>{ const d=fn(); const lab = th ? `Q${no+1}　`+d.scenario_html.replace(/<[^>]+>/g,'').slice(0,26)+'…' : d.title; return `<button class="sogo-one-btn" onclick="launchCompCat('${c.key}',${i})">${lab}</button>`; }).join('')}
+      </div>`).join('')}`).join(''); })()}`;
     return;
   }
   if(compMode==='sogo'){
