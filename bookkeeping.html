@@ -374,7 +374,10 @@
     .sec-tabs-toggle { display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none; font-size:12px; color:var(--muted); font-weight:600; margin-bottom:4px; }
     .sec-tabs-toggle-arrow { font-size:10px; transition:transform 0.2s; }
     .sec-tabs-wrap.collapsed .sec-tabs-toggle-arrow { transform:rotate(-90deg); }
-    .sec-tabs-wrap.collapsed .sec-tabs { display:none; }
+    .sec-tabs-wrap.collapsed .sec-tabs, .sec-tabs-wrap.collapsed .big-tabs { display:none; }
+    .big-tabs { display:flex; gap:4px; margin-bottom:8px; }
+    .big-btn { flex:1; border:1.5px solid var(--primary); background:#fff; color:var(--primary); border-radius:10px; padding:8px 2px; font-size:13px; font-weight:800; cursor:pointer; }
+    .big-btn.active { background:var(--primary); color:#fff; }
     .sec-tabs { display:flex; flex-wrap:wrap; gap:6px; }
 
     .sogo-cat { background:var(--card,#fff); border:1px solid var(--border,#E0E0E0); border-radius:12px; padding:10px 12px; margin:8px 0; }
@@ -549,26 +552,41 @@
       <span class="sec-tabs-toggle-arrow">▼</span>
       <span id="sec-tabs-toggle-label">分野を隠す</span>
     </div>
+    <div class="big-tabs" id="big-tabs">
+      <button class="big-btn" data-big="shogyo" onclick="setBig('shogyo')">商業簿記</button>
+      <button class="big-btn" data-big="kogyo" onclick="setBig('kogyo')">工業簿記</button>
+      <button class="big-btn" data-big="oyo" onclick="setBig('oyo')">応用・総合</button>
+      <button class="big-btn" data-big="kyu1" onclick="setBig('kyu1')">1級</button>
+    </div>
     <div class="sec-tabs" id="sec-tabs">
-      <button class="ctrl-btn grp-btn" data-sec="all" title="すべての分野" onclick="setSection('all')">すべて</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:第1章：商品売買" title="第1章：商品売買" onclick="setSection('chap:第1章：商品売買')">商品売買</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:収益認識・現金預金" title="収益認識・現金預金" onclick="setSection('chap:収益認識・現金預金')">収益認識・現金預金</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:第4章：債権債務（手形・電子記録債権）" title="第4章：債権債務（手形・電子記録債権）" onclick="setSection('chap:第4章：債権債務（手形・電子記録債権）')">債権債務</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:第5章：有価証券" title="第5章：有価証券" onclick="setSection('chap:第5章：有価証券')">有価証券</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:第6章：有形固定資産" title="第6章：有形固定資産" onclick="setSection('chap:第6章：有形固定資産')">有形固定資産</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:無形資産・リース・引当金" title="無形資産・リース・引当金" onclick="setSection('chap:無形資産・リース・引当金')">無形・リース・引当金</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:第10章：株式会社会計" title="第10章：株式会社会計" onclick="setSection('chap:第10章：株式会社会計')">株式会社会計</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:外貨建・伝票・給与" title="外貨建・伝票" onclick="setSection('chap:外貨建・伝票・給与')">外貨建・伝票</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:税効果" title="税金関連（税効果・消費税・法人税・源泉税等）" onclick="setSection('chap:税効果')">税金関連</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:決算整理" title="決算整理" onclick="setSection('chap:決算整理')">決算整理</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:本支店・連結・個人事業主" title="本支店・連結・個人事業主" onclick="setSection('chap:本支店・連結・個人事業主')">本支店・連結等</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:工業簿記①材料費・労務費" title="工業簿記①材料費・労務費" onclick="setSection('chap:工業簿記①材料費・労務費')">工業①材料・労務</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:工業簿記②経費・製造間接費・個別" title="工業簿記②経費・製造間接費・個別" onclick="setSection('chap:工業簿記②経費・製造間接費・個別')">工業②経費・間接費・個別</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:工業簿記③部門別・直接原価" title="工業簿記③部門別・直接原価" onclick="setSection('chap:工業簿記③部門別・直接原価')">工業③部門別・直接原価</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:工業簿記④標準原価計算" title="工業簿記④標準原価計算" onclick="setSection('chap:工業簿記④標準原価計算')">工業④標準原価</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:工業簿記⑤総合原価計算" title="工業簿記⑤総合原価計算" onclick="setSection('chap:工業簿記⑤総合原価計算')">工業⑤総合原価</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:応用" title="応用（複数の論点を組み合わせた総ざらい）" onclick="setSection('chap:応用')">応用</button>
-      <button class="ctrl-btn grp-btn" data-sec="chap:1級" title="1級（連結会計・企業結合・金融商品・退職給付・減損リース・会計方針誤謬・原価計算応用）" onclick="setSection('chap:1級')">🎓1級</button>
+      <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="big:shogyo" title="商業簿記のすべて" onclick="setSection('big:shogyo')">すべて</button>
+      <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:第1章：商品売買" title="第1章：商品売買" onclick="setSection('chap:第1章：商品売買')">商品売買</button>
+      <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:収益認識・現金預金" title="収益認識・現金預金" onclick="setSection('chap:収益認識・現金預金')">収益認識・現金預金</button>
+      <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:第4章：債権債務（手形・電子記録債権）" title="第4章：債権債務（手形・電子記録債権）" onclick="setSection('chap:第4章：債権債務（手形・電子記録債権）')">債権債務</button>
+      <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:第5章：有価証券" title="第5章：有価証券" onclick="setSection('chap:第5章：有価証券')">有価証券</button>
+      <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:第6章：有形固定資産" title="第6章：有形固定資産" onclick="setSection('chap:第6章：有形固定資産')">有形固定資産</button>
+      <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:無形資産・リース・引当金" title="無形資産・リース・引当金" onclick="setSection('chap:無形資産・リース・引当金')">無形・リース・引当金</button>
+      <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:第10章：株式会社会計" title="第10章：株式会社会計" onclick="setSection('chap:第10章：株式会社会計')">株式会社会計</button>
+      <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:外貨建・伝票・給与" title="外貨建・伝票" onclick="setSection('chap:外貨建・伝票・給与')">外貨建・伝票</button>
+      <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:税効果" title="税金関連（税効果・消費税・法人税・源泉税等）" onclick="setSection('chap:税効果')">税金関連</button>
+      <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:決算整理" title="決算整理" onclick="setSection('chap:決算整理')">決算整理</button>
+      <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="chap:本支店・連結・個人事業主" title="本支店・連結・個人事業主" onclick="setSection('chap:本支店・連結・個人事業主')">本支店・連結等</button>
+      <button class="ctrl-btn grp-btn" data-big="kogyo" data-sec="big:kogyo" title="工業簿記のすべて" onclick="setSection('big:kogyo')">すべて</button>
+      <button class="ctrl-btn grp-btn" data-big="kogyo" data-sec="chap:工業簿記①材料費・労務費" title="工業簿記①材料費・労務費" onclick="setSection('chap:工業簿記①材料費・労務費')">工業①材料・労務</button>
+      <button class="ctrl-btn grp-btn" data-big="kogyo" data-sec="chap:工業簿記②経費・製造間接費・個別" title="工業簿記②経費・製造間接費・個別" onclick="setSection('chap:工業簿記②経費・製造間接費・個別')">工業②経費・間接費・個別</button>
+      <button class="ctrl-btn grp-btn" data-big="kogyo" data-sec="chap:工業簿記③部門別・直接原価" title="工業簿記③部門別・直接原価" onclick="setSection('chap:工業簿記③部門別・直接原価')">工業③部門別・直接原価</button>
+      <button class="ctrl-btn grp-btn" data-big="kogyo" data-sec="chap:工業簿記④標準原価計算" title="工業簿記④標準原価計算" onclick="setSection('chap:工業簿記④標準原価計算')">工業④標準原価</button>
+      <button class="ctrl-btn grp-btn" data-big="kogyo" data-sec="chap:工業簿記⑤総合原価計算" title="工業簿記⑤総合原価計算" onclick="setSection('chap:工業簿記⑤総合原価計算')">工業⑤総合原価</button>
+      <button class="ctrl-btn grp-btn" data-big="oyo" data-sec="chap:応用" title="応用（複数の論点を組み合わせた総ざらい）" onclick="setSection('chap:応用')">応用</button>
+      <button class="ctrl-btn" data-big="oyo" title="総合（試験の第2問〜第5問の型の計算問題）" onclick="startSogoQuiz()">🧮 総合</button>
+      <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級" title="1級のすべて" onclick="setSection('chap:1級')">すべて</button>
+      <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級：連結会計" title="1級：連結会計" onclick="setSection('chap:1級：連結会計')">連結会計</button>
+      <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級：企業結合・事業分離" title="1級：企業結合・事業分離" onclick="setSection('chap:1級：企業結合・事業分離')">企業結合・事業分離</button>
+      <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級：金融商品" title="1級：金融商品" onclick="setSection('chap:1級：金融商品')">金融商品</button>
+      <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級：退職給付会計" title="1級：退職給付会計" onclick="setSection('chap:1級：退職給付会計')">退職給付会計</button>
+      <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級：固定資産の応用（減損・リース）" title="1級：固定資産の応用（減損・リース）" onclick="setSection('chap:1級：固定資産の応用（減損・リース）')">減損・リース</button>
+      <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級：会計方針の変更・誤謬の訂正" title="1級：会計方針の変更・誤謬の訂正" onclick="setSection('chap:1級：会計方針の変更・誤謬の訂正')">会計方針・誤謬</button>
+      <button class="ctrl-btn grp-btn" data-big="kyu1" data-sec="chap:1級：原価計算（差異分析・ABC・本社工場）" title="1級：原価計算（差異分析・ABC・本社工場）" onclick="setSection('chap:1級：原価計算（差異分析・ABC・本社工場）')">原価計算</button>
     </div>
   </div>
   <div id="view-mode-row" style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center;">
@@ -579,7 +597,6 @@
   </div>
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
     <button class="apx-btn" id="disp-quiz-btn" onclick="startDispQuiz()">📖 勘定科目クイズ</button>
-    <button class="apx-btn" id="sogo-quiz-btn" onclick="startSogoQuiz()">🧮 総合</button>
   </div>
 </div>
 <div class="controls" id="group-row" style="padding-top:6px;border-top:1px solid var(--border);display:none;"></div>
@@ -4078,10 +4095,17 @@ const KOGYO_ORDER = [1211, 1212, 1257, 1258, 1259, 1260, 1261, 1306, 1307, 1213,
 function getSectionQuestions(sec){
   if(!sec) return ALL;
   if(sec === 'all'){
-    const order = [...document.querySelectorAll('#sec-tabs .grp-btn')].map(b=>b.dataset.sec).filter(x=>x && x!=='all');
+    const order = [...document.querySelectorAll('#sec-tabs .grp-btn')].map(b=>b.dataset.sec).filter(x=>x && x.startsWith('chap:'));
     const seen = new Set(), out = [];
     order.forEach(x => getSectionQuestions(x).forEach(q => { if(!seen.has(q.id)){ seen.add(q.id); out.push(q); } }));
     ALL.forEach(q => { if(!seen.has(q.id)) out.push(q); });
+    return out;
+  }
+  if(sec.startsWith('big:')){
+    // 大枠：その大枠に属する分野を、タブの並び順につなげる
+    const big = sec.slice(4), seen = new Set(), out = [];
+    [...document.querySelectorAll(`#sec-tabs .grp-btn[data-big="${big}"]`)].map(b=>b.dataset.sec).filter(x=>x.startsWith('chap:') && x!=='chap:1級')
+      .forEach(x => getSectionQuestions(x).forEach(q => { if(!seen.has(q.id)){ seen.add(q.id); out.push(q); } }));
     return out;
   }
   if(sec.startsWith('chap:')){
@@ -4096,7 +4120,7 @@ function getSectionQuestions(sec){
 
 function updateGroupButtons(){
   const row = document.getElementById('group-row');
-  if(!sectionFilter || sectionFilter==='all' || checkOnly){ row.style.display='none'; groupFilter=0; return; }
+  if(!sectionFilter || sectionFilter==='all' || sectionFilter.startsWith('big:') || sectionFilter==='chap:1級' || checkOnly){ row.style.display='none'; groupFilter=0; return; }
   const secQs = getSectionQuestions(sectionFilter);
   const numGroups = Math.ceil(secQs.length/20);
   row.style.display='';
@@ -8409,6 +8433,15 @@ function toggleCalcLevel(l){
 
 
 
+// 大枠（商業簿記・工業簿記・応用・総合・1級）を切り替え、その大枠の分野だけを表示する
+let bigFilter = 'shogyo';
+const BIG_DEFAULT = {shogyo:'big:shogyo', kogyo:'big:kogyo', oyo:'chap:応用', kyu1:'chap:1級'};
+function setBig(big){
+  bigFilter = big;
+  document.querySelectorAll('.big-btn').forEach(b=>b.classList.toggle('active', b.dataset.big===big));
+  document.querySelectorAll('#sec-tabs [data-big]').forEach(b=>{ b.style.display = b.dataset.big===big ? '' : 'none'; });
+  setSection(BIG_DEFAULT[big]);
+}
 function setSection(sec){
   sectionFilter=sec;
   groupFilter=0;
@@ -8483,13 +8516,15 @@ function resetAll(){
   document.getElementById('btn-check-only').classList.remove('active');
   document.getElementById('btn-double-only').classList.remove('active');
   document.getElementById('btn-show-all').classList.add('active');
-  setSection('all');
+  setBig(bigFilter);
 }
 
 function updateStats(){
   document.getElementById('s-total').textContent = deck.length;
-  document.getElementById('s-check').textContent = Object.keys(checked).length;
-  document.getElementById('s-double').textContent = Object.keys(doubled).length;
+  // チェック数は、いま選んでいる大枠の中だけを数える
+  const ids = new Set(getSectionQuestions(BIG_DEFAULT[bigFilter]).map(q=>q.id));
+  document.getElementById('s-check').textContent = Object.keys(checked).filter(id=>ids.has(+id)).length;
+  document.getElementById('s-double').textContent = Object.keys(doubled).filter(id=>ids.has(+id)).length;
 }
 
 function makeTags(arr){
@@ -8552,7 +8587,7 @@ function _unusedColorize(el){
   history.replaceState(null, '', location.pathname + location.search);
   alert(`付け直しました：ダブルチェック${Object.keys(doubled).length-before.d}問、チェック${Object.keys(checked).length-before.c}問`);
 })();
-setSection('all');
+setBig('shogyo');
 </script>
 </body>
 </html>
