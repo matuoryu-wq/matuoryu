@@ -383,6 +383,7 @@
     .k1-ex-btn { margin-top:8px; border:1px dashed #90A4AE; background:#fff; color:#455A64; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer; }
     .k1-ex { margin-top:8px; background:#FFFDE7; border-left:4px solid #FBC02D; border-radius:6px; padding:8px 10px; font-size:13px; line-height:1.8; }
     .k1-shushi { margin-top:10px; background:#E8F0FA; border-left:4px solid #1E4D7B; border-radius:6px; padding:8px 10px; font-size:13px; line-height:1.8; }
+    .k1-term-box { margin-top:8px; background:#F3F6FA; border-left:4px solid #90A4AE; border-radius:6px; padding:8px 10px; font-size:13px; line-height:1.8; }
     .sogo-cat { background:var(--card,#fff); border:1px solid var(--border,#E0E0E0); border-radius:12px; padding:10px 12px; margin:8px 0; }
     .sogo-cat-hd { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; font-weight:800; font-size:14px; }
     .sogo-all-btn { flex-shrink:0; border:1px solid var(--primary,#1F4E79); background:var(--primary,#1F4E79); color:#fff; border-radius:16px; padding:4px 10px; font-size:12px; font-weight:700; cursor:pointer; }
@@ -6652,7 +6653,7 @@ let compQuizFirstAttemptUsed = false;
 let compQuizLastCat = null;
 let compQuizLastOne = null;
 let compMode = 'comp'; // 'comp'＝総合問題 / 'calc'＝計算問題
-function compGens(){ return compMode==='calc' ? CALC_GENERATORS : compMode==='sogo' ? sogoGens() : compMode==='k1calc' ? k1Gens(KYU1_CALC_CATS) : compMode==='k1theory' ? k1Gens(KYU1_THEORY_CATS) : COMP_GENERATORS; }
+function compGens(){ return compMode==='calc' ? CALC_GENERATORS : compMode==='sogo' ? sogoGens() : compMode==='k1calc' ? k1Gens(KYU1_CALC_CATS) : compMode==='k1theory' ? k1Gens(KYU1_THEORY_CATS) : compMode==='k1shushi' ? k1Gens(KYU1_SHUSHI_CATS) : COMP_GENERATORS; }
 // 総合・1級計算・理論のチェック（問題ごとの鍵で保存）
 let compChecked = {};
 try{ compChecked = JSON.parse(localStorage.getItem('bk_comp_checked')||'{}')||{}; }catch(e){ compChecked = {}; }
@@ -6748,16 +6749,17 @@ function startCompQuiz(){
 
 function renderCompCatSelect(){
   const main=document.getElementById('exp-main');
-  if(compMode==='k1calc' || compMode==='k1theory'){
-    const th = compMode==='k1theory', cats = th ? KYU1_THEORY_CATS : KYU1_CALC_CATS, total = cats.reduce((s,c)=>s+c.gens.length,0);
+  if(compMode==='k1calc' || compMode==='k1theory' || compMode==='k1shushi'){
+    const sh = compMode==='k1shushi', th = compMode==='k1theory' || sh, cats = sh ? KYU1_SHUSHI_CATS : th ? KYU1_THEORY_CATS : KYU1_CALC_CATS, total = cats.reduce((s,c)=>s+c.gens.length,0);
+    if(sh) k1ThChunk = 0;
     main.innerHTML = `
     <div class="exp-nav-row">
       <button class="exp-nav-btn" onclick="exitCompQuiz()">✕ 終了</button>
-      <span class="exp-nav-info">${th?'理論':'1級 計算'}：分野を選択（${total}問）</span>
+      <span class="exp-nav-info">${sh?'理論（趣旨）':th?'理論':'1級 計算'}：分野を選択（${total}問）</span>
       <span style="width:64px;"></span>
     </div>
     <div class="exp-q-card" style="text-align:center;">
-      <div style="font-size:14px;font-weight:700;">${th?'会計学の理論（正誤・穴埋め）です':'工業簿記・原価計算と会計学の計算問題です'}</div>
+      <div style="font-size:14px;font-weight:700;">${sh?'会計の処理が「なぜそうなっているか」（趣旨）を問う問題です':th?'会計学の理論（正誤・穴埋め）です':'工業簿記・原価計算と会計学の計算問題です'}</div>
       <div style="font-size:11px;color:var(--muted);margin-top:4px;">${th?'答えた後に、正しい内容と理由が表示されます':'設問ごとに一歩ずつ選んで解きます'}</div>
       <button class="sogo-all-btn" style="margin-top:10px;padding:8px 16px;font-size:13px;" onclick="launchCompCat('k1-all')">全${total}問をまとめて解く（順番はランダム）</button>
       <div><button class="sogo-all-btn" style="margin-top:8px;padding:8px 16px;font-size:13px;background:#E65100;border-color:#E65100;" onclick="launchCompCat('chk')">✅ チェックした問題を解く（${compCheckedCount()}問）</button></div>
@@ -6854,7 +6856,7 @@ function launchCompCat(key, one){
 }
 
 function exitCompQuiz(){
-  if(bigFilter==='riron'){ setRironTab(k1ThChunk); return; }
+  if(bigFilter==='riron'){ setRironTab(rironTab==='chk' ? 0 : rironTab); return; }
   setSection(sectionFilter);
 }
 
@@ -9749,24 +9751,93 @@ const THEORY_SHUSHI = {
   235:'アクセス権は、期間中ずっと企業の活動の影響を受ける知的財産を提供するので、期間にわたって履行されるため。',
   236:'支配が続く限り、株主どうしの取引とみるため。'
 };
-const KYU1_THEORY_CATS = (() => {
+// 趣旨の問題：対象の用語の説明と具体例（問題文の中に表示）
+const SHUSHI_INFO = {
+  '継続性の原則の主な趣旨として最も適切なものは？':['継続性の原則：一度採用した会計処理の方法を、毎期続けて使うことを求める原則。','ある会社が減価償却を去年まで定額法で行い、今年から定率法に変えたら、利益が20円変わった。'],
+  '保守主義の原則の主な趣旨として最も適切なものは？':['保守主義の原則：不利な影響が起こりそうなときに、慎重な会計処理をすることを求める原則。','回収が危うい売掛金100円に、貸倒引当金を積んで費用にする。'],
+  '未実現収益を当期の損益に計上しない主な理由として最も適切なものは？':['未実現収益：まだ販売などで実現していない収益。','100円で買った株が120円に値上がりしたが、まだ売っていない。この値上がり益20円は未実現。'],
+  '引当金を計上する趣旨として最も適切なものは？':['引当金：将来の費用や損失のうち、原因が当期にあり、発生の可能性が高く、金額を見積もれるものを、当期に計上するもの。','今期に売った商品の無料修理を来期に行う見込みが10円。今期に商品保証引当金10円を積んで費用にする。'],
+  '取得原価主義の主な根拠として最も適切なものは？':['取得原価主義：資産を、取得したときに支払った金額を基礎として評価する考え方。','10年前に1,000円で買った土地が今は3,000円になったが、貸借対照表には1,000円で載せる。'],
+  '減価償却の目的として最も適切なものは？':['減価償却：固定資産の取得原価を、使う期間にわたって毎期の費用にしていく手続き。','100円の機械を5年使うので、毎年20円ずつ費用にする。'],
+  '資本的支出を固定資産の取得原価に加える理由として最も適切なものは？':['資本的支出：固定資産の価値を高めたり、使える期間を延ばしたりする支出。','建物にエレベーターを付けて使い勝手と価値が上がった工事代50円。'],
+  '繰延資産の計上が認められる理由として最も適切なものは？':['繰延資産：支払いは済んでいるが効果が将来に及ぶため、資産に計上して数年で償却するもの。','会社を作るときにかかった創立費100円を資産に計上し、5年で償却する。'],
+  '売買目的有価証券を時価で評価する理由として最も適切なものは？':['売買目的有価証券：時価の変動で利益を得るために持つ有価証券。','株価が上がったら売るつもりで、100円で買った株の期末の時価が120円になった。'],
+  '満期保有目的の債券を時価評価しない理由として最も適切なものは？':['満期保有目的の債券：満期まで持ち続けるつもりの社債など。','満期に100円戻る社債を持っている。途中で時価が95円に下がった。'],
+  'その他有価証券の評価差額を、原則として当期の損益にしない理由として最も適切なものは？':['その他有価証券：売買目的・満期保有・子会社関連会社株式のどれにも当たらない有価証券。','取引先との関係を保つために持っている株（取得100円）の時価が130円になった。'],
+  '子会社株式・関連会社株式を取得原価で評価する理由として最も適切なものは？':['子会社株式：支配している会社（子会社）の株式。','子会社の株を100円で買い、株価が上がって時価が150円になった。'],
+  '収益性の低下による簿価切下げの趣旨として最も適切なものは？':['簿価切下げ：棚卸資産の収益性が下がったとき、帳簿価額を正味売却価額まで下げること。','仕入値100円の商品が流行遅れで、60円でしか売れなくなった。'],
+  '後入先出法が廃止された理由として最も適切なものは？':['後入先出法：後から仕入れたものから先に払い出したとみる方法。','10年前に50円で仕入れた在庫が、後入先出法だと払い出されずに50円のまま残り続け、今の仕入値150円とかけ離れる。'],
+  '減損処理の趣旨として最も適切なものは？':['減損処理：固定資産の収益性が下がり、投資額を回収できなくなったときに、帳簿価額を減らす処理。','帳簿価額1,000円の工場から、今後700円しか回収できない見込みになった。'],
+  '減損の認識の判定に割引前将来キャッシュ・フローを使う理由として最も適切なものは？':['減損の認識の判定：減損損失を計上するかどうかを決める段階。将来キャッシュ・フローの合計（割引前）と帳簿価額を比べる。','帳簿価額1,000円の工場から今後得られるお金の合計は、割り引く前だと950円、割り引くと850円。'],
+  '減損損失の戻入れを行わない理由として最も適切なものは？':['減損損失の戻入れ：一度計上した減損損失を、価値が回復したときに元に戻すこと。','300円減損した工場の業績が、翌年に回復した。'],
+  'ファイナンス・リース取引を売買処理する趣旨として最も適切なものは？':['ファイナンス・リース：途中で解約できず、借り手が物件の利益とコストをほぼすべて負うリース。','機械（現金で買うと100円）を5年間借り、リース料を合計110円払う。途中解約はできない。'],
+  'ファイナンス・リースを賃貸借処理した場合に生じる問題として最も適切なものは？':['賃貸借処理：リース料を支払うたびに費用にするだけで、資産も負債も計上しない処理。','5年で総額110円を払うことが決まっている機械のリースを、毎年22円の支払リース料としてだけ記録する。'],
+  '資産除去債務を負債に計上し、同額を資産に加える（資産負債の両建て）趣旨として最も適切なものは？':['資産除去債務：有形固定資産を撤去するときに、法律や契約で求められる義務。','借りた土地に工場を建て、契約終了時に更地に戻す義務がある。撤去費用は将来110円、今の価値で100円。'],
+  '資産除去債務の割引率に、自社の信用リスクを反映しない理由として最も適切なものは？':['割引率と信用リスク：将来の支出を現在の価値に直すときの利率と、その会社がお金を返せなくなる危険度。','信用が悪化した会社ほど借入金利が高い。その高い利率で割り引くと、撤去の義務が小さい金額になる。'],
+  '研究開発費を発生時に費用処理する理由として最も適切なものは？':['研究開発費：新しい知識の発見や、新製品の計画・設計にかかる費用。','新薬の研究に100円を使った。成功すれば大きな利益になるが、失敗するかもしれない。'],
+  '自己株式を資産ではなく株主資本から控除する理由として最も適切なものは？':['自己株式：会社が買い取って持っている自社の株式。','会社が自社の株を株主から100円で買い取った。'],
+  'ストック・オプションの費用を計上する理由として最も適切なものは？':['ストック・オプション：従業員などに、報酬として決まった価格で株式を買える権利を与えること。','社員に「3年後に1株100円で株を買える権利」を与えた。株価が150円になれば社員は得をする。'],
+  '新株予約権を負債ではなく純資産に表示する理由として最も適切なものは？':['新株予約権：決まった価格で会社から株式を受け取ることができる権利。','1個10円で新株予約権を売った。持ち主は、期限までに1株100円で株を買うかどうかを選べる。'],
+  'のれんを規則的に償却する理由として最も適切なものは？':['のれん：買収の代金が、受け入れた資産と負債の差額（純資産の時価）を上回る部分。超過収益力を表す。','純資産の時価が100円の会社を、ブランド力を見込んで120円で買った。差の20円がのれん。'],
+  '負ののれんを発生した期の利益とする理由として最も適切なものは？':['負ののれん：買収の代金が、受け入れた純資産の時価を下回る部分。','純資産の時価が100円の会社を、相手が売り急いでいたので80円で買えた。'],
+  '取得とされた企業結合にパーチェス法を使う理由として最も適切なものは？':['パーチェス法：取得した会社の資産・負債を時価で受け入れ、対価との差額をのれんとする方法。','A社がB社を株式と交換で買収した。B社の土地は帳簿50円、時価80円。'],
+  '共通支配下の取引で帳簿価額を引き継ぐ理由として最も適切なものは？':['共通支配下の取引：親会社と子会社の合併など、同じグループの中で行われる企業結合。','親会社が100％子会社を吸収合併した。子会社の土地は帳簿50円、時価80円。'],
+  '事業分離で移転損益を認識するかを判断する基準として最も適切なものは？':['事業分離：会社の事業を、他の会社に移すこと。','A社がX事業を、①他社に現金で売った場合と、②新しく作った子会社に移して、その子会社の株を受け取った場合がある。'],
+  '持分法を「一行連結」とする趣旨として最も適切なものは？':['持分法：関連会社の純資産と損益のうち、自社の持分に応じて投資の額を修正する方法。','30％を持つ関連会社が利益100円を出したので、関連会社株式を30円増やし、持分法による投資利益30円を計上する。'],
+  '在外子会社の資産・負債を決算時の為替相場で換算する趣旨として最も適切なものは？':['決算日レート法：在外子会社の資産・負債を、決算日の為替相場で円に換算する方法。','アメリカ子会社の資産100ドル。取得時は1ドル100円、決算日は150円。決算日の150円で15,000円と換算する。'],
+  '為替換算調整勘定を純資産の部に計上する理由として最も適切なものは？':['為替換算調整勘定：在外子会社の決算書を円に換算するときに生じる差額。','アメリカ子会社の業績は変わらないのに、円安で円換算した純資産が増え、差額が生じた。'],
+  '為替予約の振当処理で直先差額を期間に配分する理由として最も適切なものは？':['直先差額：為替予約をした日の、直物相場（今の相場）と先物相場（予約の相場）の差額。','予約日の直物相場が1ドル102円、3か月後に決済する先物相場が1ドル105円。差の3円が直先差額。'],
+  '会計方針の変更を遡及適用する趣旨として最も適切なものは？':['遡及適用：新しい会計方針を、過去の決算書にもさかのぼって適用すること。','在庫の評価を先入先出法から平均法に変えた会社が、前期の決算書も平均法で計算し直して並べる。'],
+  '会計上の見積りの変更を遡及処理しない理由として最も適切なものは？':['会計上の見積りの変更：耐用年数や貸倒見積高など、見積もった金額を新しい情報で見直すこと。','機械の耐用年数を10年と見積もっていたが、技術の進歩で8年しか使えないと分かった。'],
+  'キャッシュ・フロー計算書を作る趣旨として最も適切なものは？':['キャッシュ・フロー計算書：1年間のお金の出入りを、営業・投資・財務の3つに分けて示す決算書。','利益は100円の黒字なのに、売掛金が回収できず、手元の現金が足りなくなった会社がある。'],
+  '包括利益を表示する趣旨として最も適切なものは？':['包括利益：株主との取引を除いた、1年間の純資産の増減。当期純利益とその他の包括利益の合計。','当期純利益80円に加えて、持っている株の値上がり20円で、純資産が合計100円増えた。'],
+  '組替調整額を示す趣旨として最も適切なものは？':['組替調整額：過去にその他の包括利益に入れた金額のうち、当期に売却などで当期純利益に移った部分。','前期に株の値上がり20円をその他の包括利益にしていた。今期その株を売り、売却益20円を当期純利益に計上した。'],
+  '1株当たり利益の計算に期中平均株式数を使う理由として最も適切なものは？':['期中平均株式数：期中に発行済株式数が変わったとき、期間の長さで平均した株式数。','期首に1,000株、期末の直前に1,000株を増資して期末2,000株。1年分の利益を2,000株で割ると、実態より小さくなる。'],
+  '履行義務の充足で収益を認識する趣旨として最も適切なものは？':['履行義務：顧客との契約で、財やサービスを顧客に移転する約束。','パソコンを売る契約を結び、代金を前もって受け取った。パソコンを渡すのは1か月後。'],
+  '取引価格を独立販売価格の比で配分する趣旨として最も適切なものは？':['独立販売価格：その財やサービスを単独で売る場合の価格。','パソコン（単独なら90円）と1年保守（単独なら30円）をセットで100円で売った。'],
+  '代理人が純額で収益を認識する理由として最も適切なものは？':['代理人：他の会社の財やサービスの提供を手配するだけの立場の会社。','旅行会社がホテルの部屋を手配し、客から10,000円受け取り、ホテルに9,000円払う。'],
+  '返品が見込まれる部分の収益を認識しない理由として最も適切なものは？':['返品権付きの販売：顧客が一定期間内なら返品できる条件の販売。','商品100円を売り、過去の実績から10％が返品されると見込まれる。'],
+  '重要な金融要素を調整する趣旨として最も適切なものは？':['重要な金融要素：代金の支払いが大きく遅れるなどで、契約に実質的な融資が含まれていること。','現金なら100円の商品を、2年後払いで121円で売った。'],
+  '金融資産を保有目的ごとに異なる方法で評価する趣旨として最も適切なものは？':['金融資産の保有目的：売買目的、満期保有目的、子会社・関連会社株式、その他、という区分。','同じ社債でも、すぐ売るつもりのものと、満期まで持つつもりのものがある。'],
+  'ヘッジ会計の趣旨として最も適切なものは？':['ヘッジ会計：ヘッジ手段とヘッジ対象の損益を、同じ期間に計上する特別な処理。','来期の輸入代金（ドル払い）の値上がりに備えて、今期に為替予約をした。予約には今期末に評価益が出ている。'],
+  'デリバティブを時価で評価する理由として最も適切なものは？':['デリバティブ：先物、オプション、スワップなど、元になる資産の価格などに連動して価値が決まる取引。','ほぼゼロの元手で為替予約をしたが、相場が動いて50円の含み損が出ている。'],
+  '連結の範囲に支配力基準を使う趣旨として最も適切なものは？':['支配力基準：議決権の割合だけでなく、実質的に支配しているかで子会社を判定する基準。','持株は40％だが、取締役の過半数を送り込み、会社の方針を決めている。'],
+  '子会社の資産・負債を全面時価評価法で評価する趣旨として最も適切なものは？':['全面時価評価法：子会社の資産・負債のすべてを、支配獲得日の時価で評価する方法。','80％を取得した子会社の土地が、帳簿50円、時価80円。'],
+  'グループ内取引の未実現利益を消去する趣旨として最も適切なものは？':['未実現利益の消去：グループ内の取引で生じ、まだ外部に売れていない利益を、連結で取り消すこと。','親会社が原価80円の商品を子会社に100円で売り、商品は子会社の倉庫に残っている。'],
+  '支配獲得後の追加取得で生じた差額を資本剰余金とする理由として最も適切なものは？':['追加取得：すでに支配している子会社の株式を、さらに買い増すこと。','80％を持つ子会社の株を10％追加で買い、払った額が持分より5円多かった。'],
+  '税効果会計の趣旨として最も適切なものは？':['税効果会計：会計上の利益と税金費用を対応させるため、会計と税務のずれの税金の影響を調整する会計。','会計上は費用にした100円が税務上は認められず、今期の税金が30円多くなった。この100円は将来、税務上も費用になる。'],
+  '繰延税金資産・負債を、回収・支払が見込まれる期の税率で計算する趣旨として最も適切なものは？':['資産負債法：将来の税金の増減を、資産・負債として計上する考え方。','一時差異100円は3年後に解消する。今の税率は30％だが、3年後には25％に下がると決まっている。'],
+  '退職給付を勤務期間にわたって費用にする趣旨として最も適切なものは？':['退職給付：従業員が退職したときに支払う退職金や年金。','社員が30年働いて退職し、退職金3,000万円を受け取る。'],
+  '数理計算上の差異を、一定の年数で費用処理する（遅延認識）理由として最も適切なものは？':['数理計算上の差異：退職給付の見積りと実績の差や、見積りの変更から生じる差異。','年金資産の運用利回りを3％と見込んでいたが、実際は株価の下落でマイナス5％だった。'],
+  '製造間接費を予定配賦する主な理由として最も適切なものは？':['製造間接費の予定配賦：製造間接費を、あらかじめ決めた配賦率で製品に配ること。','工場の電気代や減価償却費は月によって大きく変わるが、1時間あたり50円と決めて製品に配る。'],
+  '異常な仕損や減損を原価に含めない理由として最も適切なものは？':['異常な仕損：火災や機械の大故障など、通常は起こらない原因による仕損。','機械が大故障して、製品1,000個がすべて不良品になった。'],
+  '標準原価計算を行う主な目的として最も適切なものは？':['標準原価計算：目標となる原価（標準原価）を決めて、実際の原価と比べる原価計算。','製品1個の材料費の目標を500円と決めていたが、実際は520円かかった。'],
+  '直接原価計算が原価計算制度として認められていない理由として最も適切なものは？':['直接原価計算：変動費だけを製品原価とし、固定費はその期の費用とする原価計算。','工場の家賃（固定費）を製品原価に入れず、毎月の費用にする。在庫が増えても利益は変わらない。']
+};
+// 理論の分野一覧を作る（趣旨の問題は別タブ）
+function buildTheoryCats(wantShushi){
   const cats = [];
   KYU1_THEORY.forEach(([std, s, ans, ch, exp, group], idx) => {
-    let c = cats.find(x => x.label === std);
-    if(!c){ c = {key:'k1t-'+cats.length, label:std, group: group || '会計学（会計基準）', gens:[]}; cats.push(c); }
     const isFill = !!ch, isShushi = !!ch && !s.includes('（　　）');
+    if(isShushi !== wantShushi) return;
+    let c = cats.find(x => x.label === std);
+    if(!c){ c = {key:(wantShushi?'k1s-':'k1t-')+cats.length, label:std, group: group || '会計学（会計基準）', gens:[]}; cats.push(c); }
+    const info = SHUSHI_INFO[s];
     c.gens.push(() => ({
       title: `${std}（${isShushi?'趣旨':isFill?'穴埋め':'正誤'}）`,
       scenario_html: `<div class="comp-table"><div class="comp-row"><span class="l" style="font-weight:400;line-height:1.8;">${s}</span></div></div>`
-        + (THEORY_EXAMPLES[idx] ? `<button class="k1-ex-btn" onclick="this.style.display='none';this.nextElementSibling.style.display='block';">💡 具体例を見る</button><div class="k1-ex" style="display:none;"><strong>具体例</strong>　${THEORY_EXAMPLES[idx]}</div>` : ''),
+        + (isShushi && info ? `<div class="k1-term-box"><strong>用語</strong>　${info[0]}</div><div class="k1-ex"><strong>具体例</strong>　${info[1]}</div>`
+          : THEORY_EXAMPLES[idx] ? `<button class="k1-ex-btn" onclick="this.style.display='none';this.nextElementSibling.style.display='block';">💡 具体例を見る</button><div class="k1-ex" style="display:none;"><strong>具体例</strong>　${THEORY_EXAMPLES[idx]}</div>` : ''),
       ckey: 'T:'+s,
       steps: [{ label: isShushi ? '最も適切なものを選んでください' : isFill ? '（　　）に入る語句は？' : 'この文は正しいか？', ans, choices: ch || ['正しい','誤り'],
-        exp: exp + (THEORY_SHUSHI[idx] ? `<div class="k1-shushi"><strong>趣旨</strong>　${THEORY_SHUSHI[idx]}</div>` : '') + theoryTermsHtml(s, isFill ? ans : '') }]
+        exp: exp + (THEORY_SHUSHI[idx] ? `<div class="k1-shushi"><strong>趣旨</strong>　${THEORY_SHUSHI[idx]}</div>` : '') + (isShushi ? '' : theoryTermsHtml(s, isFill ? ans : '')) }]
     }));
   });
   const order = ['会計学（基礎・2級の復習）','会計学（会計基準）','原価計算基準'];
   return cats.sort((a,b)=>order.indexOf(a.group)-order.indexOf(b.group));
-})();
+}
+const KYU1_SHUSHI_CATS = buildTheoryCats(true);
+const KYU1_THEORY_CATS = buildTheoryCats(false);
 
 // ===== 総合問題ここまで =====
 
@@ -9790,17 +9861,21 @@ function setBig(big){
 function buildRironTabs(){
   const box=document.getElementById('sec-tabs');
   box.querySelectorAll('[data-big="riron"]').forEach(b=>b.remove());
-  const total=KYU1_THEORY.length, html=[`<button class="ctrl-btn" data-big="riron" data-ch="0" onclick="setRironTab(0)">全問</button>`];
+  const total=KYU1_THEORY_CATS.reduce((s,c)=>s+c.gens.length,0), html=[`<button class="ctrl-btn" data-big="riron" data-ch="0" onclick="setRironTab(0)">全問</button>`];
   for(let i=0;i<Math.ceil(total/20);i++) html.push(`<button class="ctrl-btn" data-big="riron" data-ch="${i+1}" onclick="setRironTab(${i+1})">Q${i*20+1}-${Math.min(total,(i+1)*20)}</button>`);
   html.push(`<button class="ctrl-btn" data-big="riron" data-ch="chk" onclick="setRironTab('chk')">✅ チェック</button>`);
+  html.push(`<button class="ctrl-btn" data-big="riron" data-ch="shushi" onclick="setRironTab('shushi')">📖 趣旨（${KYU1_SHUSHI_CATS.reduce((s,c)=>s+c.gens.length,0)}問）</button>`);
   box.insertAdjacentHTML('beforeend', html.join(''));
 }
+let rironTab = 0;
 function setRironTab(n){
   document.querySelectorAll('#sec-tabs [data-big="riron"]').forEach(b=>b.classList.toggle('active', String(b.dataset.ch)===String(n)));
-  compMode='k1theory';
+  rironTab = n;
+  compMode = n==='shushi' ? 'k1shushi' : 'k1theory';
   document.getElementById('check-bar').style.display='none';
   document.getElementById('group-row').style.display='none';
   if(n==='chk'){ k1ThChunk=0; launchCompCat('chk'); return; }
+  if(n==='shushi'){ k1ThChunk=0; renderCompCatSelect(); return; }
   k1ThChunk=n; renderCompCatSelect();
 }
 function setSection(sec){
