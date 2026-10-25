@@ -215,26 +215,44 @@
         </div>
       </div>
     </div>
-    <!-- 住居費（義務者が権利者側の住居費を負担している場合） -->
+    <!-- 特別経費（義務者が権利者側の特別経費を負担している場合） -->
     <div class="card">
-      <div class="card-title"><span class="icon" style="background:#eef2ff;color:#4f46e5">住</span>義務者が、権利者（と子）の住む家の住宅ローン・家賃を負担している場合<button class="help-btn" onclick="showHelp('housing')">詳しく</button></div>
-      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>実務では、負担額の<strong>全額</strong>ではなく、権利者の収入に対応する<strong>標準的住居関係費を上限</strong>として婚姻費用から控除する扱いが主流です（超過部分は資産形成的支出として財産分与で清算）。</div>
-      <div class="form-row">
-        <div class="form-group"><label>負担の種類</label>
-          <select id="k-housing-type">
-            <option value="none">負担していない</option>
-            <option value="loan">住宅ローン</option>
-            <option value="rent">家賃</option>
-          </select>
-        </div>
+      <div class="card-title"><span class="icon" style="background:#eef2ff;color:#4f46e5">特</span>義務者が、権利者（と子）の住居費・医療費・保険料を負担している場合<button class="help-btn" onclick="showHelp('housing')">詳しく</button></div>
+      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>これらは算定表の基礎収入を出す際に<strong>標準額が既に控除済み</strong>です。そのため婚姻費用から控除できるのは<strong>標準額が上限</strong>で、負担額の全額ではありません（住宅ローンの超過部分は資産形成的支出として財産分与で清算）。</div>
+      <div class="form-group"><label>住居費の負担の種類</label>
+        <select id="k-housing-type">
+          <option value="loan">住宅ローン</option>
+          <option value="rent">家賃</option>
+        </select>
+      </div>
+      <div class="sec-title" style="margin-top:12px">住居関係費（住宅ローン・家賃）</div>
+      <div class="form-row" style="margin-bottom:0">
         <div class="form-group"><label>義務者の負担額（月額・円）</label>
           <div class="input-wrap"><input type="number" id="k-housing-amount" placeholder="例：72000" min="0"><span class="unit">円</span></div>
         </div>
+        <div class="form-group"><label>標準額／空欄で自動</label>
+          <div class="input-wrap"><input type="number" id="k-housing-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
+        </div>
       </div>
-      <div class="form-group"><label>標準的住居関係費（月額・円）／空欄なら統計表から自動算出</label>
-        <div class="input-wrap"><input type="number" id="k-housing-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
+      <div class="sec-title" style="margin-top:12px">保健医療（医療費）</div>
+      <div class="form-row" style="margin-bottom:0">
+        <div class="form-group"><label>義務者の負担額（月額・円）</label>
+          <div class="input-wrap"><input type="number" id="k-medical-amount" placeholder="例：0" min="0"><span class="unit">円</span></div>
+        </div>
+        <div class="form-group"><label>標準額／空欄で自動</label>
+          <div class="input-wrap"><input type="number" id="k-medical-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
+        </div>
       </div>
-      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>標準的住居関係費は、権利者の年間収入階級に応じて司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」の住居関係費から自動で判定します。別の数値を使う場合のみ上欄に入力してください。</div>
+      <div class="sec-title" style="margin-top:12px">保険掛金（生命保険・医療保険などの保険料）</div>
+      <div class="form-row" style="margin-bottom:0">
+        <div class="form-group"><label>義務者の負担額（月額・円）</label>
+          <div class="input-wrap"><input type="number" id="k-insurance-amount" placeholder="例：0" min="0"><span class="unit">円</span></div>
+        </div>
+        <div class="form-group"><label>標準額／空欄で自動</label>
+          <div class="input-wrap"><input type="number" id="k-insurance-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>標準額は権利者の年間収入階級に応じて、司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」から自動で判定します。負担していない費目は空欄のままにしてください。</div>
     </div>
     <button class="btn-calc" onclick="calcKonin()">計算する</button>
     <div id="k-result" style="display:none;margin-top:14px"></div>
@@ -326,26 +344,44 @@
         </div>
       </div>
     </div>
-    <!-- 住居費（義務者が権利者側の住居費を負担している場合） -->
+    <!-- 特別経費（義務者が権利者側の特別経費を負担している場合） -->
     <div class="card">
-      <div class="card-title"><span class="icon" style="background:#eef2ff;color:#4f46e5">住</span>義務者が、権利者（と子）の住む家の住宅ローン・家賃を負担している場合<button class="help-btn" onclick="showHelp('housing')">詳しく</button></div>
-      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>実務では、負担額の<strong>全額</strong>ではなく、権利者の収入に対応する<strong>標準的住居関係費を上限</strong>として養育費から控除する扱いが主流です（超過部分は資産形成的支出として財産分与で清算）。</div>
-      <div class="form-row">
-        <div class="form-group"><label>負担の種類</label>
-          <select id="y-housing-type">
-            <option value="none">負担していない</option>
-            <option value="loan">住宅ローン</option>
-            <option value="rent">家賃</option>
-          </select>
-        </div>
+      <div class="card-title"><span class="icon" style="background:#eef2ff;color:#4f46e5">特</span>義務者が、権利者（と子）の住居費・医療費・保険料を負担している場合<button class="help-btn" onclick="showHelp('housing')">詳しく</button></div>
+      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>これらは算定表の基礎収入を出す際に<strong>標準額が既に控除済み</strong>です。そのため養育費から控除できるのは<strong>標準額が上限</strong>で、負担額の全額ではありません（住宅ローンの超過部分は資産形成的支出として財産分与で清算）。</div>
+      <div class="form-group"><label>住居費の負担の種類</label>
+        <select id="y-housing-type">
+          <option value="loan">住宅ローン</option>
+          <option value="rent">家賃</option>
+        </select>
+      </div>
+      <div class="sec-title" style="margin-top:12px">住居関係費（住宅ローン・家賃）</div>
+      <div class="form-row" style="margin-bottom:0">
         <div class="form-group"><label>義務者の負担額（月額・円）</label>
           <div class="input-wrap"><input type="number" id="y-housing-amount" placeholder="例：72000" min="0"><span class="unit">円</span></div>
         </div>
+        <div class="form-group"><label>標準額／空欄で自動</label>
+          <div class="input-wrap"><input type="number" id="y-housing-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
+        </div>
       </div>
-      <div class="form-group"><label>標準的住居関係費（月額・円）／空欄なら統計表から自動算出</label>
-        <div class="input-wrap"><input type="number" id="y-housing-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
+      <div class="sec-title" style="margin-top:12px">保健医療（医療費）</div>
+      <div class="form-row" style="margin-bottom:0">
+        <div class="form-group"><label>義務者の負担額（月額・円）</label>
+          <div class="input-wrap"><input type="number" id="y-medical-amount" placeholder="例：0" min="0"><span class="unit">円</span></div>
+        </div>
+        <div class="form-group"><label>標準額／空欄で自動</label>
+          <div class="input-wrap"><input type="number" id="y-medical-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
+        </div>
       </div>
-      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>標準的住居関係費は、権利者の年間収入階級に応じて司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」の住居関係費から自動で判定します。別の数値を使う場合のみ上欄に入力してください。</div>
+      <div class="sec-title" style="margin-top:12px">保険掛金（生命保険・医療保険などの保険料）</div>
+      <div class="form-row" style="margin-bottom:0">
+        <div class="form-group"><label>義務者の負担額（月額・円）</label>
+          <div class="input-wrap"><input type="number" id="y-insurance-amount" placeholder="例：0" min="0"><span class="unit">円</span></div>
+        </div>
+        <div class="form-group"><label>標準額／空欄で自動</label>
+          <div class="input-wrap"><input type="number" id="y-insurance-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>標準額は権利者の年間収入階級に応じて、司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」から自動で判定します。負担していない費目は空欄のままにしてください。</div>
     </div>
     <button class="btn-calc" onclick="calcYouiku()">計算する</button>
     <div id="y-result" style="display:none;margin-top:14px"></div>
@@ -543,34 +579,58 @@ const HELP={
 };
 
 // ───────────────────────────────────────────────────────────────
-// 標準的住居関係費
+// 特別経費の標準額（住居関係費・保健医療・保険掛金）
 // 出典：司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁
 //   （資料2）平成25〜29年 特別経費実収入比の平均値
 //   家計調査年報第2-6表 年間収入階級別1世帯当たり1か月間の収入と支出
 //   （全国・二人以上の世帯のうち勤労者世帯）
 // 住居関係費＝「住居」の額に「土地家屋に関する借金返済」の額を加えたもの（同注2）。
-// 形式: [年間収入階級の上限(万円・未満), 住居関係費(月額・円)]
-// 統計上の階級別平均値のため、階級間で逆転する箇所がある（300万円未満 35,586円 >
-// 350万円未満 34,812円）。補間せず階級をそのまま引く。
-const HOUSING_TABLE=[
-  [200,22247],[250,26630],[300,35586],[350,34812],[400,37455],
-  [450,45284],[500,46562],[550,46659],[600,50890],[650,55167],
-  [700,58376],[750,63085],[800,64056],[900,64469],[1000,68332],
-  [1250,78065],[1500,78903],[Infinity,91554]
+// これら3費目は基礎収入の算出時に総収入から控除済み＝算定表に織り込み済みのため、
+// 義務者が権利者側のこれらを直接負担している場合、控除できるのは標準額が上限となる。
+// 形式: [年間収入階級の上限(万円・未満), 住居関係費, 保健医療, 保険掛金]（月額・円）
+// 統計上の階級別平均値のため階級間で逆転する箇所がある（住居関係費の
+// 300万円未満 35,586円 > 350万円未満 34,812円）。補間せず階級をそのまま引く。
+const SPECIAL_COST_TABLE=[
+  [200,  22247, 4278,  3673],
+  [250,  26630, 7078,  8339],
+  [300,  35586, 8859,  10456],
+  [350,  34812, 8626,  13167],
+  [400,  37455, 8804,  13421],
+  [450,  45284, 9000,  15320],
+  [500,  46562, 9839,  16753],
+  [550,  46659, 9888,  19055],
+  [600,  50890, 10481, 20979],
+  [650,  55167, 10638, 21570],
+  [700,  58376, 10752, 24475],
+  [750,  63085, 11227, 25426],
+  [800,  64056, 11704, 26429],
+  [900,  64469, 12566, 31494],
+  [1000, 68332, 13722, 35889],
+  [1250, 78065, 15452, 37813],
+  [1500, 78903, 16156, 46678],
+  [Infinity, 91554, 16891, 50486]
 ];
 
-// 権利者の総収入（万円）が属する階級と標準的住居関係費（月額・円）を返す
-function stdHousing(income){
+// 特別経費の費目。UIのselect値・ラベル・SPECIAL_COST_TABLE内の列位置を対応させる。
+const SPECIAL_COST_ITEMS=[
+  {key:'housing', col:1, label:'住居関係費', note:'住宅ローン・家賃'},
+  {key:'medical', col:2, label:'保健医療',   note:'医療費'},
+  {key:'insurance',col:3,label:'保険掛金',   note:'生命保険・医療保険などの保険料'}
+];
+
+// 権利者の総収入（万円）が属する階級と、3費目の標準額（月額・円）を返す
+function stdSpecialCost(income){
   const inc=Number(income)||0;
-  for(let i=0;i<HOUSING_TABLE.length;i++){
-    const[max,amt]=HOUSING_TABLE[i];
+  for(let i=0;i<SPECIAL_COST_TABLE.length;i++){
+    const row=SPECIAL_COST_TABLE[i];
+    const max=row[0];
     if(inc<max){
-      const lower=i===0?0:HOUSING_TABLE[i-1][0];
-      return{amount:amt,label:i===0?'200万円未満':(max===Infinity?'1500万円以上':`${lower}万円以上${max}万円未満`)};
+      const lower=i===0?0:SPECIAL_COST_TABLE[i-1][0];
+      return{row,label:i===0?'200万円未満':(max===Infinity?'1500万円以上':`${lower}万円以上${max}万円未満`)};
     }
   }
-  const last=HOUSING_TABLE[HOUSING_TABLE.length-1];
-  return{amount:last[1],label:'1500万円以上'};
+  const last=SPECIAL_COST_TABLE[SPECIAL_COST_TABLE.length-1];
+  return{row:last,label:'1500万円以上'};
 }
 
 // 資料2の階級は「実収入（税込収入）」基準の勤労者世帯の統計。
@@ -581,39 +641,57 @@ function housingLookupIncome(ee){
   return{income:ee.totalIncome,converted:false};
 }
 
-// 住居費控除額（月額・円）を算出する。
-// 実務の主流は「算定表上の金額から、権利者の収入に対応する標準的住居関係費を
-// 控除する」方法のため、基礎収入ではなく最終金額から控除する。
+// 特別経費の控除額（月額・円）を算出する。
+// 実務の主流は「算定表上の金額から、権利者の収入に対応する標準額を控除する」
+// 方法のため、基礎収入ではなく最終金額から控除する。
 function calcHousingDeduction(p,ee){
-  const type=v(`${p}-housing-type`);
-  if(!type||type==='none')return null;
-  const amount=nv(`${p}-housing-amount`)||0;
-  if(amount<=0)return null;
-  const override=nv(`${p}-housing-std`);
-  const isOverride=override!==null&&override>=0;
   const look=housingLookupIncome(ee);
-  const table=stdHousing(look.income);
-  const std=isOverride?override:table.amount;
-  return{type,amount,std,deduction:Math.min(amount,std),isOverride,
+  const table=stdSpecialCost(look.income);
+  const items=[];
+  let total=0;
+  for(const it of SPECIAL_COST_ITEMS){
+    const amount=nv(`${p}-${it.key}-amount`)||0;
+    if(amount<=0)continue;
+    const override=nv(`${p}-${it.key}-std`);
+    const isOverride=override!==null&&override>=0;
+    const std=isOverride?override:table.row[it.col];
+    const deduction=Math.min(amount,std);
+    total+=deduction;
+    items.push({...it,amount,std,deduction,isOverride,capped:amount>std});
+  }
+  if(!items.length)return null;
+  // 住居関係費のみ、ローンか家賃かで説明を変える
+  const housingType=v(`${p}-housing-type`)||'loan';
+  return{items,deduction:total,housingType,
          bracket:table.label,lookupIncome:look.income,converted:look.converted};
 }
 
-// 住居費控除の内訳HTML。label は「婚姻費用」「養育費」。
+// 特別経費控除の内訳HTML。label は「婚姻費用」「養育費」。
 function housingBreakdownHtml(h,label,monBefore,monAfter){
   if(!h)return'';
   const yen=n=>Math.round(n).toLocaleString('ja-JP')+'円';
-  const typeLabel=h.type==='loan'?'住宅ローン':'家賃';
-  const capped=h.amount>h.std;
-  const rentNote=h.type==='rent'
-    ?'<br>※家賃は資産形成的な側面がないため、事案によっては実額の控除が認められることもあります。'
-    :'<br>※住宅ローンのうち標準的住居関係費を超える部分は、資産形成的支出として財産分与の手続で清算するのが実務の考え方です。';
-  return `<div class="breakdown"><div class="breakdown-title">住居費の控除</div>
-    <div class="bk-row"><span class="bk-key">義務者の負担額（${typeLabel}）</span><span class="bk-val">${yen(h.amount)}／月</span></div>
-    ${D('義務者が、権利者（と子）の住む家のために実際に負担している月額です。')}
-    <div class="bk-row"><span class="bk-key">標準的住居関係費${h.isOverride?'（手入力）':`（年間収入 ${h.bracket}）`}</span><span class="bk-val">${yen(h.std)}／月</span></div>
-    ${D('権利者の収入階級に対応する統計上の住居関係費です。算定表の基礎収入にはこの額があらかじめ織り込まれているため、控除できるのはこの額が上限となります。'+(h.isOverride?'':'出典：司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁（資料2）平成25〜29年 特別経費実収入比の平均値。'+(h.converted?`なお権利者が事業所得者のため、課税所得を給与換算（÷0.85＝約${Math.round(h.lookupIncome)}万円）して階級を判定しています。`:'')))}
-    <div class="bk-row" style="padding-top:8px;border-top:2px solid var(--border)"><span class="bk-key" style="font-weight:700;color:var(--primary)">控除額</span><span class="bk-val" style="color:var(--primary);font-size:15px">−${yen(h.deduction)}／月</span></div>
-    ${D(capped?`負担額（${yen(h.amount)}）が標準的住居関係費（${yen(h.std)}）を上回るため、標準的住居関係費を上限として控除しています。${rentNote}`:`負担額が標準的住居関係費の範囲内のため、負担額の全額を控除しています。${rentNote}`)}
+  const rows=h.items.map(it=>{
+    const name=it.key==='housing'?`${it.label}（${h.housingType==='rent'?'家賃':'住宅ローン'}）`:it.label;
+    const cap=it.capped
+      ?`負担額（${yen(it.amount)}）が標準額（${yen(it.std)}）を超えるため、標準額を上限として控除しています。`
+      :`負担額が標準額の範囲内のため、負担額の全額を控除しています。`;
+    const extra=it.key==='housing'&&it.capped
+      ?(h.housingType==='rent'
+        ?'家賃は資産形成的な側面がないため、事案によっては実額の控除が認められることもあります。'
+        :'住宅ローンのうち標準額を超える部分は、資産形成的支出として財産分与の手続で清算するのが実務の考え方です。')
+      :(it.capped?'超える部分を考慮するかどうかは、事案に応じた判断になります。':'');
+    return `<div class="bk-row"><span class="bk-key">${name}</span><span class="bk-val">${yen(it.amount)}／月</span></div>
+      <div class="bk-row"><span class="bk-key">　標準額${it.isOverride?'（手入力）':''}</span><span class="bk-val" style="color:var(--text-muted)">${yen(it.std)}／月</span></div>
+      <div class="bk-row"><span class="bk-key" style="font-weight:700">　控除額</span><span class="bk-val" style="font-weight:700;color:var(--primary)">−${yen(it.deduction)}／月</span></div>
+      ${D(cap+extra)}`;
+  }).join('');
+  const multi=h.items.length>1;
+  return `<div class="breakdown"><div class="breakdown-title">特別経費の控除</div>
+    ${D('算定表の基礎収入は、総収入から公租公課・職業費・特別経費（住居関係費・保健医療・保険掛金）を控除して算出されています。これらの標準額はすでに算定表に織り込み済みのため、義務者が権利者側の分を直接負担していても、控除できるのは標準額が上限となります。')}
+    <div class="bk-row"><span class="bk-key">権利者の年間収入階級</span><span class="bk-val">${h.bracket}</span></div>
+    ${D('この階級に対応する統計上の標準額を使っています。出典：司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁（資料2）平成25〜29年 特別経費実収入比の平均値。'+(h.converted?`なお権利者が事業所得者のため、課税所得を給与換算（÷0.85＝約${Math.round(h.lookupIncome)}万円）して階級を判定しています。`:''))}
+    ${rows}
+    ${multi?`<div class="bk-row" style="padding-top:8px;border-top:2px solid var(--border)"><span class="bk-key" style="font-weight:700;color:var(--primary)">控除額の合計</span><span class="bk-val" style="color:var(--primary);font-size:15px">−${yen(h.deduction)}／月</span></div>`:''}
     <div class="bk-formula">${label} ${yen(monBefore*10000)} − 控除 ${yen(h.deduction)} ＝ ${yen(Math.max(0,monAfter)*10000)}</div>
   </div>`;
 }
@@ -624,13 +702,77 @@ function fmt(val,d=0){return val.toLocaleString('ja-JP',{maximumFractionDigits:d
 function fmtMan(val){return fmt(val,3)+'万円';}
 function fmtEn(val){return '約'+Math.round(val*10000).toLocaleString('ja-JP')+'円';}
 
-function calcBaseIncome(type,salary,business,insurance){
-  salary=Number(salary)||0;business=Number(business)||0;insurance=Number(insurance)||0;
+// ───────────────────────────────────────────────────────────────
+// 自営業者の総収入の認定
+// 出典：司法研修所編『養育費，婚姻費用の算定に関する実証的研究』32頁
+// 自営業者の総収入は確定申告書の「課税される所得金額」に基づいて認定するが、
+// 同額には税法上控除されているものの現実には支出されていない費用が含まれる
+// ため、これらを加算して総収入を認定する必要があるとされている。
+const SELF_ADDBACK_ITEMS=[
+  {key:'kiso',    label:'基礎控除'},
+  {key:'haigu',   label:'配偶者控除・配偶者特別控除'},
+  {key:'fuyo',    label:'扶養控除'},
+  {key:'kafu',    label:'寡婦・ひとり親控除'},
+  {key:'kinro',   label:'勤労学生・障害者控除'},
+  {key:'zasson',  label:'雑損控除'},
+  {key:'aoiro',   label:'青色申告特別控除'},
+  {key:'senju',   label:'専従者給与（現実に支払いがない場合）'},
+  {key:'iryo',    label:'医療費控除'},
+  {key:'seimei',  label:'生命保険料控除'},
+  {key:'songai',  label:'損害保険料控除'},
+  {key:'shokibo', label:'小規模企業共済等掛金控除'},
+  {key:'kifu',    label:'寄附金控除'},
+  {key:'genka',   label:'減価償却費（当該年度に支出がない場合）',caution:true}
+];
+
+// 加算額の合計（万円）
+function selfAddback(prefix){
+  let total=0;
+  for(const it of SELF_ADDBACK_ITEMS)total+=nv(`${prefix}-ab-${it.key}`)||0;
+  return total;
+}
+
+// 加算額の内訳（表示用）
+function selfAddbackDetail(prefix){
+  return SELF_ADDBACK_ITEMS.map(it=>({label:it.label,value:nv(`${prefix}-ab-${it.key}`)||0}))
+    .filter(x=>x.value>0);
+}
+
+function updAddback(prefix){
+  const el=document.getElementById(`${prefix}-ab-total`);
+  if(el)el.textContent=fmtMan(selfAddback(prefix));
+}
+
+// 4つの収入欄（婚姻費用・養育費 × 義務者・権利者）に加算欄を生成する
+function buildAddbackBlocks(){
+  ['k-ob','k-ee','y-ob','y-ee'].forEach(prefix=>{
+    const extra=document.getElementById(`${prefix}-extra`);
+    if(!extra)return;
+    const d=document.createElement('div');
+    d.id=`${prefix}-addback`;
+    d.style.display='none';
+    d.innerHTML=`<details style="margin-top:10px">
+      <summary style="cursor:pointer;font-size:13px;font-weight:700;color:var(--primary)">確定申告書からの加算（課税される所得金額に戻す項目）</summary>
+      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>「課税される所得金額」には、税法上控除されているものの<strong>現実には支出されていない費用</strong>が含まれています。確定申告書の「所得から差し引かれる金額」から該当額を転記すると、総収入に加算して計算します。</div>
+      ${SELF_ADDBACK_ITEMS.map(it=>`<div class="form-group" style="margin-top:8px"><label>${it.label}${it.caution?'<span style="color:var(--warning)">※</span>':''}</label><div class="input-wrap"><input type="number" min="0" placeholder="0" id="${prefix}-ab-${it.key}" oninput="updAddback('${prefix}')"><span class="unit">万</span></div></div>`).join('')}
+      <div class="note" style="margin-top:8px"><span class="note-icon">⚠️</span><span style="color:var(--warning)">※</span>減価償却費は税法上必要経費として控除されますが、当該年度に具体的な支出がありません。総収入に加算すべきか否かは<strong>議論があります</strong>（同32頁注44）。</div>
+      <div class="re-equity-row" style="margin-top:8px"><span class="re-equity-label">加算額の合計：</span><span class="re-equity pos" id="${prefix}-ab-total">0.000万円</span></div>
+    </details>`;
+    extra.parentNode.insertBefore(d,extra.nextSibling);
+  });
+}
+
+function calcBaseIncome(type,salary,business,insurance,addback){
+  salary=Number(salary)||0;business=Number(business)||0;insurance=Number(insurance)||0;addback=Number(addback)||0;
+  // 自営業者の課税所得には現実に支出されていない控除が含まれるため加算して総収入とする（同32頁）
+  if(addback>0){if(type==='self')salary+=addback;else if(type==='mixed')business+=addback;}
+  const abStep=addback>0?`課税所得に現実に支出されていない控除を加算: +${addback.toFixed(3)}万円`:null;
   let totalIncome,rate,baseIncome,basis='employee',steps=[];
   if(type==='self'){basis='self';rate=getRate(salary,SELF_RATES);baseIncome=salary*rate/100;totalIncome=salary;steps.push(`課税所得 ${salary}万×${rate}%=${baseIncome.toFixed(3)}万円`);}
   else if(type==='mixed'){const bizToSal=(business+insurance)/0.85;if(salary>=bizToSal){basis='employee';totalIncome=salary+bizToSal;rate=getRate(totalIncome,EMPLOYEE_RATES);baseIncome=totalIncome*rate/100;steps.push(`給与所得(${salary}万)≥事業所得の給与換算(${bizToSal.toFixed(1)}万)のため給与所得換算で計算`);steps.push(`事業所得の給与換算: (${business}+${insurance})÷0.85=${bizToSal.toFixed(3)}万円`);steps.push(`給与合計: ${salary}+${bizToSal.toFixed(3)}=${totalIncome.toFixed(3)}万円`);steps.push(`基礎収入: ${totalIncome.toFixed(3)}万×${rate}%(給与所得割合)=${baseIncome.toFixed(3)}万円`);}else{basis='self';const salToBiz=salary*0.85;totalIncome=business+salToBiz;rate=getRate(totalIncome,SELF_RATES);baseIncome=totalIncome*rate/100;steps.push(`事業所得の給与換算(${bizToSal.toFixed(1)}万)>給与所得(${salary}万)のため事業所得換算で計算`);steps.push(`給与所得の事業換算: ${salary}×0.85=${salToBiz.toFixed(3)}万円`);steps.push(`事業所得合計: ${business}+${salToBiz.toFixed(3)}=${totalIncome.toFixed(3)}万円`);steps.push(`基礎収入: ${totalIncome.toFixed(3)}万×${rate}%(事業所得割合)=${baseIncome.toFixed(3)}万円`);}}
   else{basis='employee';rate=getRate(salary,EMPLOYEE_RATES);baseIncome=salary*rate/100;totalIncome=salary;steps.push(`給与 ${salary}万×${rate}%=${baseIncome.toFixed(3)}万円`);}
-  return{baseIncome,rate,totalIncome,basis,steps};
+  if(abStep)steps.unshift(abStep);
+  return{baseIncome,rate,totalIncome,basis,steps,addback};
 }
 
 function calcOtherCS(a,otherParentIncome,otherAges){
@@ -649,8 +791,8 @@ function calcKonin(){
   const obSal=nv('k-ob-salary'),eeSal=nv('k-ee-salary');
   if(obSal===null)return showErr('k-result','義務者の収入を入力してください。');
   if(eeSal===null)return showErr('k-result','権利者の収入を入力してください。');
-  const ob=calcBaseIncome(v('k-ob-type'),obSal,nv('k-ob-business'),nv('k-ob-insurance'));
-  const ee=calcBaseIncome(v('k-ee-type'),eeSal,nv('k-ee-business'),nv('k-ee-insurance'));
+  const ob=calcBaseIncome(v('k-ob-type'),obSal,nv('k-ob-business'),nv('k-ob-insurance'),selfAddback('k-ob'));
+  const ee=calcBaseIncome(v('k-ee-type'),eeSal,nv('k-ee-business'),nv('k-ee-insurance'),selfAddback('k-ee'));
   const a=ob.baseIncome,b=ee.baseIncome;
 
   // 非同居・養育費支払いの他の子
@@ -754,8 +896,8 @@ function calcYouiku(){
   if(obSal===null)return showErr('y-result','義務者の収入を入力してください。');
   const ages=getChildAges('y');
   if(!ages.length)return showErr('y-result','(元)夫婦間の子の年齢を1人以上入力してください。');
-  const ob=calcBaseIncome(v('y-ob-type'),obSal,nv('y-ob-business'),nv('y-ob-insurance'));
-  const ee=calcBaseIncome(v('y-ee-type'),nv('y-ee-salary')||0,nv('y-ee-business'),nv('y-ee-insurance'));
+  const ob=calcBaseIncome(v('y-ob-type'),obSal,nv('y-ob-business'),nv('y-ob-insurance'),selfAddback('y-ob'));
+  const ee=calcBaseIncome(v('y-ee-type'),nv('y-ee-salary')||0,nv('y-ee-business'),nv('y-ee-insurance'),selfAddback('y-ee'));
   const a=ob.baseIncome;let b=ee.baseIncome;const corr=b>a;const bOrig=b;if(corr)b=a;
 
   // 非同居・養育費払いの他の子
@@ -1184,7 +1326,7 @@ function addDebt(){dc++;const id=dc;const d=document.createElement('div');d.clas
 
 function rmEl(id){const el=document.getElementById(id);if(el)el.remove();}
 
-function toggleExtra(prefix){const sel=document.getElementById(`${prefix}-type`);if(!sel)return;const type=sel.value;const extra=document.getElementById(`${prefix}-extra`);if(extra)extra.style.display=type==='mixed'?'block':'none';const lbl=document.getElementById(`${prefix}-salary-label`);if(lbl)lbl.textContent=type==='self'?'課税所得（万円）':type==='mixed'?'給与収入（万円）':'年収（万円）';}
+function toggleExtra(prefix){const sel=document.getElementById(`${prefix}-type`);if(!sel)return;const type=sel.value;const extra=document.getElementById(`${prefix}-extra`);if(extra)extra.style.display=type==='mixed'?'block':'none';const ab=document.getElementById(`${prefix}-addback`);if(ab)ab.style.display=(type==='self'||type==='mixed')?'block':'none';const lbl=document.getElementById(`${prefix}-salary-label`);if(lbl)lbl.textContent=type==='self'?'課税所得（万円）':type==='mixed'?'給与収入（万円）':'年収（万円）';}
 
 function switchTab(name,btn){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById(`panel-${name}`).classList.add('active');btn.classList.add('active');}
 
@@ -1514,7 +1656,12 @@ function setupSync(){
     ['k-res-other-income','y-res-other-income'],
     ['k-housing-type','y-housing-type'],
     ['k-housing-amount','y-housing-amount'],
-    ['k-housing-std','y-housing-std']
+    ['k-housing-std','y-housing-std'],
+    ['k-medical-amount','y-medical-amount'],
+    ['k-medical-std','y-medical-std'],
+    ['k-insurance-amount','y-insurance-amount'],
+    ['k-insurance-std','y-insurance-std'],
+    ...SELF_ADDBACK_ITEMS.flatMap(it=>[[`k-ob-ab-${it.key}`,`y-ob-ab-${it.key}`],[`k-ee-ab-${it.key}`,`y-ee-ab-${it.key}`]])
   ];
   function link(aId,bId){
     const a=document.getElementById(aId),b=document.getElementById(bId);
@@ -1526,6 +1673,7 @@ function setupSync(){
         try{
           to.value=from.value;
           if(toId.endsWith('-type'))toggleExtra(toId.replace('-type',''));
+          const abm=toId.match(/^((?:k|y)-(?:ob|ee))-ab-/);if(abm)updAddback(abm[1]);
         }finally{_syncing=false;}
       }));
     }
@@ -1538,7 +1686,7 @@ function setupSync(){
   });
 }
 
-addChild('k');addProperty();addAsset();addDebt();setupSync();
+addChild('k');addProperty();addAsset();addDebt();buildAddbackBlocks();setupSync();
 
 </script>
 </body>
