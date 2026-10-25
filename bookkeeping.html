@@ -1254,7 +1254,9 @@ function expHtml(q){
   if(!annotated && q.calc && !(deep && deep.some(([hd])=>hd==='計算'))) html += `<div class="exp-sec-hd">計算</div><div class="exp-calc">${styleParens(q.calc.replace(/\n/g,'<br>'))}</div>`;
   return html ? `<div class="exp-res-exp exp-structured">${html}</div>` : '';
 }
-function acctEnHtml(n){ const e=ACCT_EN[n]; return e?`<span class="tag-en">(${e})</span>`:''; }
+// 1級の問題を解いているときは、英語の科目名を出さない
+function isKyu1Now(){ const q=(typeof expQuestions!=='undefined')&&expQuestions[expQIdx]; return !!(q && /^1級/.test(q.chap||'')); }
+function acctEnHtml(n){ const e=ACCT_EN[n]; return (e && !isKyu1Now())?`<span class="tag-en">(${e})</span>`:''; }
 
 // ===== 一問一答（表示区分の意味）：グループ0 - 区分そのものの定義を問う =====
 const CONCEPT_DATA = [
@@ -4381,7 +4383,7 @@ function fmtQ(q){
   txt=addQBreaks(txt);
   let html=styleParens(txt);
   const enq = q.en_q || JRNL_EN_Q[q.id];
-  if(enq) html+=`<div class="q-en-trans">${enq}</div>`;
+  if(enq && !/^1級/.test(q.chap||'')) html+=`<div class="q-en-trans">${enq}</div>`;
   return html;
 }
 
