@@ -452,7 +452,7 @@
     <!-- 子の情報 -->
     <div class="card">
       <div class="card-title"><span class="icon icon-child">子</span>子の情報（誕生年月）</div>
-      <div class="note" style="margin-bottom:10px"><span class="note-icon">ℹ️</span>婚姻費用・養育費タブで子を追加すると、各子の欄がここに自動で表示されます。それぞれの誕生年月を入力してください。</div>
+      <div class="note" style="margin-bottom:10px"><span class="note-icon">ℹ️</span>誕生年月は、婚姻費用・養育費タブで入力した<strong>年齢から自動で入ります</strong>。入力は不要です。手当や養育費の終期は誕生月で変わるため、正確な年月が分かる場合だけ上書きしてください。</div>
       <div id="br-children-list"></div>
     </div>
 
@@ -1122,22 +1122,56 @@ function addBrChild(id){
     <div class="form-row" style="margin-bottom:0">
       <div class="form-group">
         <label>誕生年（西暦）</label>
-        <div class="input-wrap"><input type="number" id="br-year-${id}" placeholder="例：2018" min="2000" max="2040"><span class="unit">年</span></div>
+        <div class="input-wrap"><input type="number" id="br-year-${id}" placeholder="年齢から自動" min="1990" max="2040" oninput="markBirthManual(${id})"><span class="unit">年</span></div>
       </div>
       <div class="form-group">
         <label>誕生月</label>
-        <select id="br-month-${id}">${opts}</select>
+        <select id="br-month-${id}" onchange="markBirthManual(${id})">${opts}</select>
       </div>
-    </div>`;
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:6px" id="br-auto-${id}"></div>`;
   list.appendChild(d);
 }
 function rmBrChild(id){rmEl(`br-child-${id}`);}
+
+// 婚姻費用・養育費タブで入力された年齢から誕生年月を推定して埋める。
+// 年齢だけでは誕生月まで特定できないため、「今月でその年齢になった」と仮定する
+// （誕生年＝今年−年齢、誕生月＝今月）。正確な年月が分かる場合は手入力で上書きできる。
+function autoFillBirth(id,age){
+  const y=document.getElementById(`br-year-${id}`),m=document.getElementById(`br-month-${id}`),
+        note=document.getElementById(`br-auto-${id}`);
+  if(!y||!m)return;
+  if(y.dataset.manual==='1')return;
+  const a=Number(age);
+  if(String(age).trim()===''||!isFinite(a)||a<0){
+    y.value='';if(note)note.textContent='';return;
+  }
+  const now=new Date();
+  y.value=now.getFullYear()-Math.floor(a);
+  m.value=now.getMonth()+1;
+  if(note)note.textContent=`※ 婚姻費用タブの年齢（${Math.floor(a)}歳）から推定した年月です。正確な誕生年月が分かる場合は上書きしてください。`;
+}
+
+function markBirthManual(id){
+  const y=document.getElementById(`br-year-${id}`),note=document.getElementById(`br-auto-${id}`);
+  if(y)y.dataset.manual='1';
+  if(note)note.textContent='';
+}
+
+// 子の欄の年齢をすべて損益分岐点タブへ反映する
+function refreshAllBirths(){
+  document.querySelectorAll('[id^="k-cage-"]').forEach(el=>{
+    autoFillBirth(el.id.replace('k-cage-',''),el.value);
+  });
+}
 function syncChildAge(srcP,id,val){
   if(_syncing)return;_syncing=true;
-  const peer=srcP==='k'?'y':'k';
-  const peerEl=document.getElementById(`${peer}-cage-${id}`);
-  if(peerEl){peerEl.value=val;updIdx(peerEl,`${peer}-cidx-${id}`);}
-  _syncing=false;
+  try{
+    const peer=srcP==='k'?'y':'k';
+    const peerEl=document.getElementById(`${peer}-cage-${id}`);
+    if(peerEl){peerEl.value=val;updIdx(peerEl,`${peer}-cidx-${id}`);}
+    autoFillBirth(id,val);
+  }finally{_syncing=false;}
 }
 function rmSharedChild(id){rmEl(`k-child-${id}`);rmEl(`y-child-${id}`);rmBrChild(id);}
 
@@ -1409,20 +1443,37 @@ function calcBreakeven(){
   const youikuMan=nv('br-youiku')||0;
   const endAge=parseInt(v('br-youiku-end-age'))||18;
 
-  // 各子の誕生年月を収集
+  // 各子の誕生年月を収集。未入力のものは婚姻費用タブの年齢から推定する。
   const brList=document.getElementById('br-children-list');
   const childEls=brList?brList.querySelectorAll('[id^="br-child-"]'):[];
-  if(!childEls.length)return showErr('br-result','子の誕生年月を入力してください。（婚姻費用・養育費タブで子を追加してください）');
-  const children=[];
+  if(!childEls.length)return showErr('br-result','婚姻費用・養育費タブで子を追加してください。');
+  const now=new Date();
+  const children=[];let estimated=0;
   for(const el of childEls){
     const cid=el.id.replace('br-child-','');
-    const yr=parseInt(document.getElementById(`br-year-${cid}`)?.value)||0;
+    const yEl=document.getElementById(`br-year-${cid}`);
+    let yr=parseInt(yEl?.value)||0;
     const mo=parseInt(document.getElementById(`br-month-${cid}`)?.value)||1;
-    if(!yr||yr<1990||yr>2040)
+    // 手入力された年月はそのまま使い、年齢から自動で入った値は推定として扱う
+    let est=yr>0&&!(yEl&&yEl.dataset.manual==='1');
+    if(!yr){
+      // 誕生年が未入力なら年齢から推定（今月でその年齢になったものとみなす）
+      const ageEl=document.getElementById(`k-cage-${cid}`)||document.getElementById(`y-cage-${cid}`);
+      const age=ageEl&&ageEl.value.trim()!==''?Number(ageEl.value):NaN;
+      if(!isFinite(age)||age<0)
+        return showErr('br-result',`第${cid}子の年齢を婚姻費用タブで入力するか、誕生年月を直接入力してください。`);
+      yr=now.getFullYear()-Math.floor(age);
+      est=true;
+    }
+    if(est)estimated++;
+    if(yr<1990||yr>2040)
       return showErr('br-result',`第${cid}子の誕生年（西暦4桁）を正しく入力してください。`);
     const jidoEndYM=brJidoEndYM(yr,mo);
-    children.push({cid,yr,mo,jidoEndYM,jidoEndMN:toMN(jidoEndYM.year,jidoEndYM.month)});
+    children.push({cid,yr,mo,est,jidoEndYM,jidoEndMN:toMN(jidoEndYM.year,jidoEndYM.month)});
   }
+  const estNote=estimated>0
+    ?`<div class="note" style="margin-bottom:10px"><span class="note-icon">ℹ️</span>誕生年月が未入力の子は、婚姻費用タブの年齢から推定して計算しています（今月でその年齢になったものとみなしています）。手当や養育費の終期は誕生月で変わるため、正確な年月が分かる場合は上の欄に入力してください。</div>`
+    :'';
 
   // 末子（最後に追加した子 = 最も若い子）の養育費終期
   const lastChild=children[children.length-1];
@@ -1640,7 +1691,7 @@ function calcBreakeven(){
     </div>`;
 
   const el=document.getElementById('br-result');
-  el.innerHTML=jidoResultHtml+verdictHtml+bepHtml+breakdown1+breakdown2+breakdown3+breakdown4+cautions;
+  el.innerHTML=estNote+jidoResultHtml+verdictHtml+bepHtml+breakdown1+breakdown2+breakdown3+breakdown4+cautions;
   el.style.display='block';
   el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
