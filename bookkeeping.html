@@ -596,11 +596,7 @@
   <div id="view-mode-row" style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center;">
     <span style="font-size:11px;font-weight:700;color:var(--muted);">表示方法：</span>
     <button class="ctrl-btn active" id="btn-show-all" onclick="setCheckOnly(false)">全問</button>
-    <button class="ctrl-btn" id="btn-check-only" onclick="setCheckOnly(true)">✅ チェックのみ</button>
-    <button class="ctrl-btn" id="btn-double-only" onclick="setCheckOnly('double')">✅✅ ダブルチェックのみ</button>
-  </div>
-  <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-    <button class="apx-btn" id="disp-quiz-btn" onclick="startDispQuiz()">📖 勘定科目クイズ</button>
+    <button class="ctrl-btn" id="btn-check-only" onclick="setCheckOnly(true)">✅ チェック</button>
   </div>
 </div>
 <div class="controls" id="group-row" style="padding-top:6px;border-top:1px solid var(--border);display:none;"></div>
@@ -608,8 +604,7 @@
 <div class="check-bar" id="check-bar">
   <span style="font-size:12px;font-weight:700;color:var(--muted);">問題数：<strong id="s-total" style="color:var(--primary);">0</strong>問</span>
   <span style="font-size:12px;font-weight:700;color:var(--muted);">チェック：<strong id="s-check" style="color:#E65100;">0</strong>問</span>
-  <span style="font-size:12px;font-weight:700;color:var(--muted);">ダブル：<strong id="s-double" style="color:#C62828;">0</strong>問</span>
-  <button class="ctrl-btn" style="font-size:11px;padding:3px 8px;" onclick="copyDoubledIds()">📋 ダブルの番号をコピー</button>
+  <button class="ctrl-btn" style="font-size:11px;padding:3px 8px;" onclick="copyCheckedIds()">📋 チェックの番号をコピー</button>
 </div>
 
 <div class="exp-panel" id="exp-panel"><div id="exp-main"></div></div>
@@ -4308,10 +4303,18 @@ function updateGroupButtons(){
 let deck = [];
 let idx  = 0;
 let checked   = JSON.parse(localStorage.getItem('bk_checked')   || '{}');
-let checkOnly = false; // false＝全問 / true＝チェックのみ / 'double'＝ダブルチェックのみ
+let checkOnly = false; // false＝全問 / true＝チェックのみ
 // ダブルチェック：チェックした問題の中から、さらに絞り込むための印（ダブルチェックは必ずチェックも付く）
 let doubled = {};
 try{ doubled = JSON.parse(localStorage.getItem('bk_doubled') || '{}') || {}; }catch(e){ doubled = {}; }
+// ダブルチェックは廃止：残っているダブルチェックをチェックに移し、ダブルチェックは空にする（移す前の状態は控えとして残す）
+if(Object.keys(doubled).length){
+  try{ localStorage.setItem('bk_before_merge_20261025', JSON.stringify({checked: JSON.parse(localStorage.getItem('bk_checked')||'{}'), doubled})); }catch(e){}
+  Object.keys(doubled).forEach(id=>{ checked[id]=true; });
+  try{ localStorage.setItem('bk_checked', JSON.stringify(checked)); }catch(e){}
+  doubled = {};
+  try{ localStorage.setItem('bk_doubled', '{}'); }catch(e){}
+}
 let groupFilter = 0;
 let sectionFilter = null;
 function saveProgress(){
@@ -4321,8 +4324,8 @@ function saveProgress(){
 
 function buildDeck(){
   if(checkOnly){
-    deck = getSectionQuestions(sectionFilter).filter(q=> checkOnly==='double' ? doubled[q.id] : checked[q.id]);
-    if(checkOnly==='double') shuffleArr(deck);
+    deck = getSectionQuestions(sectionFilter).filter(q=> checked[q.id]);
+    shuffleArr(deck);
     return;
   }
   let base = getSectionQuestions(sectionFilter);
@@ -4429,8 +4432,8 @@ function loadExpQ(){
     document.getElementById('exp-main').innerHTML = `
       <div class="exp-fin" style="padding:30px 16px;">
         <div style="font-size:40px;">☐</div>
-        <div style="font-size:15px;font-weight:700;margin:10px 0 6px;">${(()=>{ const dbl=checkOnly==='double', mk=dbl?'ダブルチェック':'チェック', n=Object.keys(dbl?doubled:checked).length; return (sectionFilter && sectionFilter!=='all' && n)?`この分野には${mk}した問題がありません`:`まだ${mk}した問題がありません`; })()}</div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.8;">問題に正解・不正解した後に表示される「${checkOnly==='double'?'☐ ダブルチェック':'☐ チェックをつける'}」を押すと、その問題がここに集まります。</div>
+        <div style="font-size:15px;font-weight:700;margin:10px 0 6px;">${(()=>{ const mk='チェック', n=Object.keys(checked).length; return (sectionFilter && sectionFilter!=='all' && n)?`この分野には${mk}した問題がありません`:`まだ${mk}した問題がありません`; })()}</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8;">問題に正解・不正解した後に表示される「☐ チェックをつける」を押すと、その問題がここに集まります。</div>
         <button class="exp-fin-btn exp-fin-btn-back" style="width:100%;margin-top:16px;" onclick="setCheckOnly(false)">全問表示に戻る</button>
       </div>`;
     return;
@@ -8633,7 +8636,6 @@ function setSection(sec){
 function setCheckOnly(on){
   checkOnly = on;
   document.getElementById('btn-check-only').classList.toggle('active', on===true);
-  document.getElementById('btn-double-only').classList.toggle('active', on==='double');
   document.getElementById('btn-show-all').classList.toggle('active', !on);
   updateGroupButtons();
   buildDeck();
@@ -8645,17 +8647,14 @@ function setCheckOnly(on){
 }
 
 function checkBtnsHtml(qId){
-  const c=!!checked[qId], d=!!doubled[qId];
+  const c=!!checked[qId];
   return `<div style="display:flex;gap:8px;">
     <button id="exp-check-btn" class="exp-check-btn${c?' active':''}" onclick="toggleChecked(${qId})">${c?'☑ チェック済み':'☐ チェックをつける'}</button>
-    <button id="exp-double-btn" class="exp-check-btn${d?' active':''}" onclick="toggleDoubled(${qId})">${d?'☑☑ ダブルチェック済み':'☐ ダブルチェック'}</button>
   </div>`;
 }
 function refreshCheckBtns(qId){
   const btn=document.getElementById('exp-check-btn');
   if(btn){ btn.textContent=checked[qId]?'☑ チェック済み':'☐ チェックをつける'; btn.classList.toggle('active',!!checked[qId]); }
-  const dbtn=document.getElementById('exp-double-btn');
-  if(dbtn){ dbtn.textContent=doubled[qId]?'☑☑ ダブルチェック済み':'☐ ダブルチェック'; dbtn.classList.toggle('active',!!doubled[qId]); }
 }
 function toggleChecked(qId){
   if(checked[qId]){ delete checked[qId]; delete doubled[qId]; } else { checked[qId]=true; }
@@ -8663,11 +8662,11 @@ function toggleChecked(qId){
   updateStats();
   refreshCheckBtns(qId);
 }
-// ダブルチェックした問題の番号を、チャットに貼れる形でコピーする
-function copyDoubledIds(){
-  const ids = Object.keys(doubled).map(Number).sort((a,b)=>a-b);
-  if(!ids.length){ alert('ダブルチェックした問題はまだありません'); return; }
-  const text = `ダブルチェック（${ids.length}問）: ${ids.map(i=>'#'+i).join(', ')}`;
+// チェックした問題の番号を、チャットに貼れる形でコピーする
+function copyCheckedIds(){
+  const ids = Object.keys(checked).map(Number).sort((a,b)=>a-b);
+  if(!ids.length){ alert('チェックした問題はまだありません'); return; }
+  const text = `チェック（${ids.length}問）: ${ids.map(i=>'#'+i).join(', ')}`;
   const fallback = () => { window.prompt('次の文字をコピーしてください', text); };
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(text).then(()=>alert(`${ids.length}問の番号をコピーしました。チャットに貼り付けてください。`)).catch(fallback);
@@ -8686,7 +8685,6 @@ function resetAll(){
   checkOnly=false;
   saveProgress();
   document.getElementById('btn-check-only').classList.remove('active');
-  document.getElementById('btn-double-only').classList.remove('active');
   document.getElementById('btn-show-all').classList.add('active');
   setBig(bigFilter);
 }
@@ -8696,7 +8694,6 @@ function updateStats(){
   // チェック数は、いま選んでいる大枠の中だけを数える
   const ids = new Set(getSectionQuestions(BIG_DEFAULT[bigFilter]).map(q=>q.id));
   document.getElementById('s-check').textContent = Object.keys(checked).filter(id=>ids.has(+id)).length;
-  document.getElementById('s-double').textContent = Object.keys(doubled).filter(id=>ids.has(+id)).length;
 }
 
 function makeTags(arr){
@@ -8739,7 +8736,7 @@ function _unusedColorize(el){
   const KEY = 'bk_restored_doubles_20261021';
   try{ if(localStorage.getItem(KEY)) return; }catch(e){ return; }
   [1056,1078,1080,1081,1083,1091,1095,1096,1097,1098,1107,1109,1110,1125,1128,1134,1141,1145,1148,1152,1155,1171,1177,1183,1186,1187,1190,1192,1198,1199,1200,1202,1203]
-    .forEach(id => { doubled[id] = true; checked[id] = true; });
+    .forEach(id => { checked[id] = true; });
   saveProgress();
   try{ localStorage.setItem(KEY, '1'); }catch(e){}
 })();
@@ -8751,13 +8748,13 @@ function _unusedColorize(el){
   decodeURIComponent(m[1]).split(';').forEach(part => {
     const [kind, list] = part.split(':');
     (list||'').split(',').map(Number).filter(id => ALL.some(q => q.id === id)).forEach(id => {
-      if(kind === 'd'){ doubled[id] = true; checked[id] = true; }
+      if(kind === 'd'){ checked[id] = true; }
       else if(kind === 'c'){ checked[id] = true; }
     });
   });
   saveProgress();
   history.replaceState(null, '', location.pathname + location.search);
-  alert(`付け直しました：ダブルチェック${Object.keys(doubled).length-before.d}問、チェック${Object.keys(checked).length-before.c}問`);
+  alert(`付け直しました：チェック${Object.keys(checked).length-before.c}問`);
 })();
 setBig('shogyo');
 </script>
