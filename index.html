@@ -23,10 +23,7 @@
     .icon-obligor{background:#dbeafe;color:#1d4ed8}
     .icon-obligee{background:#fce7f3;color:#be185d}
     .icon-child{background:#d1fae5;color:#059669}
-    .icon-asset{background:#fef3c7;color:#b45309}
     .icon-other{background:#f3e8ff;color:#7c3aed}
-    .icon-re{background:#e0f2fe;color:#0369a1}
-    .icon-nenkin{background:#fef9c3;color:#ca8a04}
     .person-obligor .card-title{border-left:3px solid #1d4ed8;padding-left:10px;margin-left:-18px}
     .person-obligee .card-title{border-left:3px solid #be185d;padding-left:10px;margin-left:-18px}
     .help-btn{border:1px solid #C8A882;border-radius:20px;background:#FAF3EC;color:var(--text-muted);cursor:pointer;font-size:11px;font-weight:600;flex-shrink:0;margin-left:auto;padding:3px 9px;white-space:nowrap;transition:all .2s}
@@ -71,19 +68,8 @@
     .bk-key{color:var(--text-muted);flex:1}.bk-val{font-weight:700;white-space:nowrap;color:var(--text)}
     .bk-desc{font-size:12px;color:var(--text);padding:3px 2px 6px;line-height:1.65;background:#fff;border-radius:5px;padding:6px 8px;margin:4px 0 6px;border-left:3px solid #C8A882}
     .bk-formula{font-size:11.5px;color:var(--text-muted);background:#EDE5D8;padding:6px 10px;border-radius:5px;font-family:'Courier New',monospace;margin-top:2px;margin-bottom:6px;line-height:1.8;word-break:break-all}
-    .re-card{background:#F7F0E8;border-radius:8px;border:1px solid var(--border);padding:14px;margin-bottom:10px}
-    .re-card-top{display:flex;align-items:center;gap:8px;margin-bottom:12px}
     .re-card-top select{flex:1}
-    .re-equity-row{display:flex;align-items:center;gap:8px;font-size:13px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
-    .re-equity-label{color:var(--text-muted);font-weight:600}
-    .re-equity{font-weight:700;font-size:15px}
-    .re-equity.pos{color:var(--success)}.re-equity.neg{color:var(--danger)}
-    .asset-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
-    .asset-row{display:grid;grid-template-columns:1fr 120px auto;gap:8px;align-items:center;background:#F7F0E8;border-radius:8px;padding:9px 12px;border:1px solid var(--border)}
-    .asset-row input{width:100%}
-    .ratio-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
     .ratio-row input{width:72px}
-    .ratio-sep{font-size:16px;font-weight:700;color:var(--text-muted)}
     .sec-title{font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
     .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
     .note{font-size:12px;color:#7A4A1E;background:#FBF5EC;border:1px solid #F0C070;border-radius:7px;padding:8px 12px 8px 32px;margin-top:8px;position:relative;line-height:1.7}
@@ -119,13 +105,12 @@
 <body>
 <header class="header">
   <h1>離婚関連費用 計算ツール</h1>
-  <p>標準算定方式による婚姻費用・養育費・財産分与の計算</p>
+  <p>標準算定方式による婚姻費用・養育費・児童扶養手当の計算</p>
 </header>
 <nav class="tabs">
   <button class="tab-btn active" onclick="switchTab('konin',this)">💰 婚姻費用</button>
   <button class="tab-btn" onclick="switchTab('youiku',this)">👶 養育費</button>
   <button class="tab-btn" onclick="switchTab('break',this)">🏥 児童扶養手当</button>
-  <button class="tab-btn" onclick="switchTab('zaisan',this)">🏠 財産分与</button>
 </nav>
 <div class="container">
 
@@ -329,106 +314,6 @@
     <div id="y-result" style="display:none;margin-top:14px"></div>
   </div>
 
-  <!-- ===== 財産分与 ===== -->
-  <div id="panel-zaisan" class="panel">
-    <div class="info-banner">
-      <p>財産分与とは、婚姻中に二人で築いた財産を離婚時に分け合うことです。</p>
-      <button class="help-btn" onclick="showHelp('zaisan')">詳しく</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fef3c7;color:#b45309">時</span>基準時（婚姻期間）<button class="help-btn" onclick="showHelp('kijunji')">詳しく</button></div>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">財産分与の対象は原則として<strong>別居時</strong>の財産です。退職金・保険などの期間按分に使います。</p>
-      <div class="form-row">
-        <div class="form-group"><label>婚姻（入籍）年月</label>
-          <div class="form-row" style="margin-bottom:0;gap:6px">
-            <div class="input-wrap"><input type="number" id="z-mar-year" placeholder="例：2005" min="1950" max="2100" oninput="updMarriageYears()"><span class="unit">年</span></div>
-            <div class="input-wrap" style="max-width:90px"><input type="number" id="z-mar-month" placeholder="4" min="1" max="12" oninput="updMarriageYears()"><span class="unit">月</span></div>
-          </div>
-        </div>
-        <div class="form-group"><label>別居年月（別居していなければ離婚予定時）</label>
-          <div class="form-row" style="margin-bottom:0;gap:6px">
-            <div class="input-wrap"><input type="number" id="z-sep-year" placeholder="例：2024" min="1950" max="2100" oninput="updMarriageYears()"><span class="unit">年</span></div>
-            <div class="input-wrap" style="max-width:90px"><input type="number" id="z-sep-month" placeholder="10" min="1" max="12" oninput="updMarriageYears()"><span class="unit">月</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="re-equity-row"><span class="re-equity-label">婚姻期間：</span><span class="re-equity pos" id="z-marriage-years">─</span></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon icon-re">家</span>不動産<button class="help-btn" onclick="showHelp('fudosan')">詳しく</button></div>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">査定額からローン残高を差し引いた純資産を計算します。マイナスになる場合（オーバーローン）は負債として扱います。頭金に特有財産（婚前貯金・親からの援助など）が入っている場合は、購入価格と頭金を入力すると持込割合で按分します。</p>
-      <div id="z-re-list"></div>
-      <button class="btn-add" onclick="addProperty()">＋ 不動産を追加</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#e0f2fe;color:#0369a1">按</span>期間按分が必要な財産（退職金・保険・企業年金など）<button class="help-btn" onclick="showHelp('anbun')">詳しく</button></div>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">全期間のうち婚姻期間に対応する部分だけが分与の対象になります。<br>対象額 ＝ 金額 × 婚姻期間 ÷ 全期間（勤続年数・契約年数）</p>
-      <div id="z-prorate-list"></div>
-      <button class="btn-add" onclick="addProrate()">＋ 按分財産を追加</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon icon-asset">＋</span>その他の共有財産（預貯金・株式・退職金など）</div>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">婚姻中に二人で形成した財産を入力してください。名義はどちらでも構いません。</p>
-      <div id="z-asset-list" class="asset-list"></div>
-      <button class="btn-add" onclick="addAsset()">＋ 財産を追加</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fee2e2;color:#dc2626">－</span>共同の負債（不動産ローン以外）<button class="help-btn" onclick="showHelp('kyodo_saimu')">詳しく</button></div>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">婚姻中に共同で負担した借金（カーローン・教育ローンなど）を入力してください。</p>
-      <div id="z-debt-list" class="asset-list"></div>
-      <button class="btn-add" onclick="addDebt()">＋ 負債を追加</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#f3e8ff;color:#7c3aed">除</span>特有財産（婚姻前から持っていた財産・相続や贈与で得た財産など）<button class="help-btn" onclick="showHelp('separate_property')">詳しく</button></div>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">二人で築いた財産ではないため、分与の対象外として差し引きます。</p>
-      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>不動産の頭金として入れた特有財産は「不動産」欄で按分処理されるため、ここに<strong>重複して入力しないで</strong>ください。</div>
-      <div class="form-row">
-        <div class="form-group"><label>ご自身の特有財産（万円）</label><div class="input-wrap"><input type="number" id="z-sep-a" placeholder="0" min="0"><span class="unit">万</span></div></div>
-        <div class="form-group"><label>相手方の特有財産（万円）</label><div class="input-wrap"><input type="number" id="z-sep-b" placeholder="0" min="0"><span class="unit">万</span></div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#f0fdf4;color:#16a34a">⚙</span>分与条件</div>
-      <div class="sec-title">分与割合</div>
-      <div class="ratio-row">
-        <span style="font-size:13px;font-weight:600">ご自身</span>
-        <div class="input-wrap" style="width:80px"><input type="number" id="z-ratio-a" value="50" min="0" max="100" oninput="linkRatio('a',this.value)"><span class="unit">%</span></div>
-        <span class="ratio-sep">:</span>
-        <span style="font-size:13px;font-weight:600">相手方</span>
-        <div class="input-wrap" style="width:80px"><input type="number" id="z-ratio-b" value="50" min="0" max="100" oninput="linkRatio('b',this.value)"><span class="unit">%</span></div>
-      </div>
-      <div class="note" style="margin-top:8px"><span class="note-icon">ℹ️</span>通常は50%ずつ（2分の1ずつ）の分与が原則です。</div>
-      <div class="sec-title" style="margin-top:14px">現在の保有状況</div>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">分与対象財産のうち、それぞれが実際に名義・占有している額を入力してください（特有財産は含めません）。</p>
-      <div class="form-row">
-        <div class="form-group"><label>ご自身が保有している分与対象財産（万円）</label><div class="input-wrap"><input type="number" id="z-hold-a" placeholder="例：3000" min="0"><span class="unit">万</span></div></div>
-        <div class="form-group"><label>相手方が保有している分与対象財産（万円）</label><div class="input-wrap"><input type="number" id="z-hold-b" placeholder="例：1000" min="0"><span class="unit">万</span></div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon icon-nenkin">年</span>年金分割（合意分割）の概算<button class="help-btn" onclick="showHelp('nenkin')">詳しく</button></div>
-      <div class="form-row">
-        <div class="form-group"><label>婚姻期間（年）</label><div class="input-wrap"><input type="number" id="z-nenkin-years" placeholder="例：10" min="0"><span class="unit">年</span></div></div>
-        <div class="form-group"><label>按分割合（権利者側の取得分・上限50%）</label><div class="input-wrap"><input type="number" id="z-nenkin-ratio" value="50" min="0" max="50"><span class="unit">%</span></div></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>ご自身の平均標準報酬月額（万円）</label><div class="input-wrap"><input type="number" id="z-nenkin-a" placeholder="例：30" min="0"><span class="unit">万</span></div></div>
-        <div class="form-group"><label>相手方の平均標準報酬月額（万円）</label><div class="input-wrap"><input type="number" id="z-nenkin-b" placeholder="例：0" min="0"><span class="unit">万</span></div></div>
-      </div>
-      <div class="note"><span class="note-icon">ℹ️</span>この計算は概算であり、実際の分割には年金事務所への請求が必要です。</div>
-    </div>
-
-    <button class="btn-calc" onclick="calcZaisan()">計算する</button>
-    <div id="z-result" style="display:none;margin-top:14px"></div>
-  </div>
 
   <!-- ===== 損益分岐点 ===== -->
   <div id="panel-break" class="panel">
@@ -504,18 +389,11 @@ const SELF_RATES=[[66,61],[82,60],[98,59],[256,58],[349,57],[392,56],[496,55],[5
 const HELP={
   konin:{title:'婚姻費用について',body:`<p><strong>婚姻費用</strong>とは、婚姻関係が続いている間（別居中を含む）、収入の多い一方が少ない一方（子の養育費含む）に対して支払う生活費のことです。</p><h4>いつから請求できますか？</h4><p>一般的に、請求または調停申立てをした月からとされています。時期が遅れると請求できる範囲が限られることがあります。</p><h4>請求の手順</h4><ol><li><strong>話し合い</strong>：まず相手方に対して直接請求します。</li><li><strong>調停の申立て</strong>：家庭裁判所に「婚姻費用分担調停」を申し立てることができます。</li><li><strong>審判</strong>：調停で合意に至らない場合は審判に移行し、裁判官が金額を決定します。</li></ol><h4>支払われない場合</h4><p>調停調書や審判書がある場合、強制執行の手続きをとることができる場合があります。</p>`},
   youiku:{title:'養育費について',body:`<p><strong>養育費</strong>とは、子と離れて暮らす親が、子を養育している親に対して支払う、子の生活・教育に必要な費用のことです。</p><h4>いつまで支払いますか？</h4><p>一般的には子が18歳（高校卒業時）になるまでとされることが多いですが、大学等進学の場合の取り決めは当事者間の合意によります。</p><h4>請求の手順</h4><ol><li><strong>話し合い</strong>：当事者間で協議して決定します。合意内容は書面に残しておくことが重要です。</li><li><strong>調停の申立て</strong>：家庭裁判所に「養育費請求調停」を申し立てることができます。</li><li><strong>審判</strong>：調停で合意に至らない場合は審判に移行し、裁判官が決定します。</li></ol><h4>支払われない場合</h4><p>公正証書（強制執行認諾条項付き）や調停調書・審判書がある場合、強制執行の手続きをとることができる場合があります。また、家庭裁判所に履行勧告の申出をすることもできます。</p>`},
-  zaisan:{title:'財産分与とは',body:`<p><strong>財産分与</strong>とは、婚姻中に夫婦が共同で形成した財産を、離婚の際に分配することです。</p><h4>対象になる財産（共有財産の例）</h4><ul><li>婚姻中に形成した預貯金・有価証券</li><li>婚姻中に購入した不動産・車両</li><li>婚姻中に取得した退職金（婚姻期間対応分）</li></ul><h4>対象にならない財産（特有財産）</h4><ul><li>婚姻前から所有していた財産</li><li>婚姻中に相続または贈与を受けた財産</li></ul><h4>分与の割合</h4><p>原則として2分の1ずつとされていますが、個別の事情により異なる場合があります。</p><h4>請求期限</h4><p>離婚成立後2年以内に請求する必要があります。</p>`},
   obligor:{title:'義務者・権利者とは',body:`<h4>義務者</h4><p>婚姻費用または養育費を「支払う義務を負う側」のことです。一般的に収入の多い方が義務者となります。</p><h4>権利者</h4><p>婚姻費用または養育費を「受け取る権利を持つ側」のことです。一般的に収入の少ない方・子と暮らす方が権利者となります。</p><div class="help-note">義務者・権利者はどちらが夫・妻でも構いません。収入状況や子の居住状況によって決まります。</div>`},
   child_index:{title:'子の生活費指数とは',body:`<p>大人の生活費を<strong>100</strong>とした場合に、子の生活費がどの程度の割合になるかを示す数値です。標準算定方式で使用されます。</p><table><tr><th>年齢</th><th>生活費指数</th></tr><tr><td>0〜14歳</td><td>62</td></tr><tr><td>15歳以上</td><td>85</td></tr></table><p style="margin-top:8px">この指数を用いて、各当事者がどの程度の生活費を負担すべきかを算出します。</p>`},
-  fudosan:{title:'不動産の計算について',body:`<p>不動産の財産分与における価値は、<strong>査定額（時価）からローン残高を差し引いた純資産</strong>が基本となります。</p><h4>計算方法</h4><p>純資産 ＝ 査定額 − ローン残高</p><ul><li>純資産がプラスの場合：共有財産に加算されます</li><li>純資産がマイナス（オーバーローン）の場合：負債として扱われます</li></ul><div class="help-note">査定額は不動産会社への査定や路線価等で確認してください。ローン残高は金融機関に確認してください。</div>`},
-  nenkin:{title:'年金分割とは',body:`<p><strong>年金分割</strong>とは、婚姻期間中に厚生年金に加入していた場合、その期間の標準報酬記録を離婚時に分割する制度です。</p><h4>合意分割</h4><p>当事者間の合意（または裁判所の決定）により、婚姻期間中の標準報酬記録を按分します。按分割合は最大50%です。</p><h4>3号分割</h4><p>2008年4月以降の期間について、第3号被保険者（主に専業主婦・主夫）であった方は、その期間分の標準報酬の2分の1を自動的に受け取ることができます。</p><div class="help-note">この計算は概算です。実際の分割請求は、離婚後2年以内に年金事務所へ行う必要があります。</div>`},
-  separate_property:{title:'特有財産とは',body:`<p><strong>特有財産</strong>とは、財産分与の対象とならない、各自の固有の財産のことです。</p><h4>特有財産の例</h4><ul><li>婚姻前から所有していた預貯金・不動産</li><li>婚姻中に相続によって取得した財産</li><li>婚姻中に贈与を受けた財産</li></ul><div class="help-note">特有財産であることの立証は、主張する側が行う必要があります。</div>`},
   base_income:{title:'基礎収入とは',body:`<p><strong>基礎収入</strong>とは、総収入から税金・社会保険料・職業費等を控除した後の、実際に生活費として使用できる収入の目安となる金額です。</p><h4>算定方法</h4><ul><li><strong>給与所得者</strong>：年収 × 38〜54%（収入が高いほど割合が低下）</li><li><strong>事業所得者</strong>：課税所得 × 48〜61%</li><li><strong>給与＋事業所得</strong>：多い方の所得に換算した上で合計</li></ul>`},
   ob_child:{title:'義務者と同居する子について',body:`<p>夫婦間の子のうち、義務者（支払う側）と同居している子がいる場合、その子の生活費指数を義務者側の指数に加算します。</p><p>これにより、義務者が養育する子のコストが考慮され、婚姻費用・養育費の金額が調整されます。</p>`},
-  kyodo_saimu:{title:'共同の負債の分与方法について',body:`<p>婚姻中に共同で作った借金（カーローン・教育ローンなど）は、<strong>共有財産から差し引いた上で財産分与が行われます</strong>。</p><h4>計算の仕組み</h4><p>共有財産 − 共同の負債 ＝ 分与対象の純財産 として、この純財産を決めた割合で分け合います。</p><h4>計算例</h4><p>共有財産 2,000万円、共同の負債 400万円 の場合：<br>純財産 ＝ 1,600万円 → 各自 800万円ずつ（50%の場合）</p><h4>注意点</h4><ul><li>金融機関との関係では、<strong>名義人が返済義務を負い続けます</strong>。離婚後に相手が支払わなかった場合のリスクがあります。</li><li>純財産がマイナスになる場合（負債超過）は、双方が負担する形での協議が別途必要になります。</li><li>具体的な負債の引き受け方や金融機関との交渉については、弁護士にご相談ください。</li></ul><div class="help-note">不動産ローンは「不動産」欄で別途管理します（査定額からローン残高を引いた純資産として計上）。</div>`},
   break_overview:{title:'損益分岐点とは',body:`<p>離婚を検討する際、<strong>経済的な観点から「いつ離婚するのが得か」</strong>を判断するための計算です。</p><h4>比較の仕組み</h4><ul><li><strong>婚姻継続</strong>：毎月、婚姻費用を受け取る</li><li><strong>今すぐ離婚</strong>：毎月、養育費＋児童扶養手当を受け取る</li></ul><p>この差額を月ごとに累積し、累積差額が0を超えた時点が「損益分岐点」です。</p><h4>注意点</h4><ul><li>児童扶養手当は末子が18歳年度末（3月31日）を迎えると支給が終了します</li><li>養育費は合意した終期（18歳・20歳・22歳等）で終了します</li><li>経済的判断だけでなく、精神的・家庭的事情も重要です</li></ul><div class="help-note">この計算は概算です。具体的な判断は弁護士にご相談ください。</div>`},
-  kijunji:{title:'財産分与の基準時',body:`<p>財産分与の対象となる財産は、原則として<strong>別居時点</strong>に存在した財産です。別居後にそれぞれが得た財産・負った借金は、二人で協力して築いたものではないため対象外となります。</p><h4>評価の基準時は別</h4><p>対象財産を確定する基準時は別居時ですが、不動産や株式など<strong>価格が変動する財産の評価額</strong>は、離婚時（または裁判時）の時価で評価するのが一般的です。</p><h4>婚姻期間が使われる場面</h4><p>退職金・保険の解約返戻金・企業年金などは、その全期間のうち婚姻期間に対応する部分だけが分与の対象になります。そのため婚姻（入籍）から別居までの期間を正確に把握する必要があります。</p><div class="help-note">別居していない場合は、離婚予定時を入れて計算してください。長期間の別居後に離婚する場合など、基準時の判断が難しいケースは弁護士にご相談ください。</div>`},
-  anbun:{title:'退職金・保険などの期間按分',body:`<p>退職金や保険の解約返戻金は、その全額が財産分与の対象になるわけではありません。<strong>婚姻期間中に形成された部分だけ</strong>が二人で築いた財産だからです。</p><h4>計算式</h4><p>分与対象額 ＝ 金額 × 婚姻期間 ÷ 全期間（勤続年数・契約年数）</p><h4>例：退職金</h4><p>勤続30年、退職金1,200万円、うち婚姻期間20年の場合</p><p>1,200万円 × 20年 ÷ 30年 ＝ <strong>800万円</strong>が分与対象</p><h4>退職金でよく問題になる点</h4><ul><li><strong>まだ退職していない場合</strong>：別居時に自己都合退職したと仮定した場合の金額を使う方法が一般的です。</li><li><strong>退職までまだ相当先の場合</strong>：支給の確実性が低いとして対象外とされることもあります。</li></ul><h4>保険の解約返戻金</h4><p>婚姻前から契約していた保険は、契約期間のうち婚姻期間に対応する部分のみが対象です。別居時に解約したと仮定した返戻金額を使います。</p><div class="help-note">退職金が対象になるか、どの時点の金額を使うかは事案によって判断が分かれます。金額が大きくなりやすい項目のため、弁護士にご相談ください。</div>`},
   housing:{title:'義務者が住居費を負担している場合',body:`<p>義務者が家を出た後も、権利者（と子）が住む家の<strong>住宅ローンや家賃を払い続けている</strong>場合、義務者は自分の新居費用と合わせて住居費を二重に負担していることになります。そこで、公平の観点から婚姻費用・養育費から一定額を控除する扱いがされています。</p><h4>控除できるのは「標準的住居関係費」まで</h4><p>算定表の基礎収入は、総収入から公租公課・職業費・特別経費を統計的に控除して算出されています。この<strong>特別経費には「住居関係費」が含まれている</strong>ため、標準的な住居費はすでに算定表に織り込み済みです。</p><p>したがって負担額の全額を控除すると二重に差し引くことになり、婚姻費用が不当に低額になります。実務では、<strong>権利者の年間収入階級に対応する標準的住居関係費を上限</strong>として控除します。</p><h4>住宅ローンの元本も統計に含まれている</h4><p>統計上の「住居関係費」は、家計調査年報の「住居」の額に<strong>「土地家屋に関する借金返済」の額を加えたもの</strong>です（出典注2）。つまりローンの返済額そのものが織り込まれているため、元本と利息を分けて考える必要はありません。</p><h4>超過部分はどうなるか</h4><p>住宅ローンには「住居を確保する費用」と「資産形成のための支出」の両面があります。標準的住居関係費を超える部分は資産形成的な支出とみなされ、婚姻費用ではなく<strong>財産分与の手続で清算</strong>するのが実務の考え方です。</p><h4>年間収入階級別の標準的住居関係費（月額）</h4><table><tr><th>年間収入</th><th>住居関係費</th><th>年間収入</th><th>住居関係費</th></tr><tr><td>200万円未満</td><td>22,247円</td><td>700万円未満</td><td>58,376円</td></tr><tr><td>250万円未満</td><td>26,630円</td><td>750万円未満</td><td>63,085円</td></tr><tr><td>300万円未満</td><td>35,586円</td><td>800万円未満</td><td>64,056円</td></tr><tr><td>350万円未満</td><td>34,812円</td><td>900万円未満</td><td>64,469円</td></tr><tr><td>400万円未満</td><td>37,455円</td><td>1000万円未満</td><td>68,332円</td></tr><tr><td>450万円未満</td><td>45,284円</td><td>1250万円未満</td><td>78,065円</td></tr><tr><td>500万円未満</td><td>46,562円</td><td>1500万円未満</td><td>78,903円</td></tr><tr><td>550万円未満</td><td>46,659円</td><td>1500万円以上</td><td>91,554円</td></tr><tr><td>600万円未満</td><td>50,890円</td><td colspan="2" style="color:#8a7a68">階級別の平均値のため、<br>階級間で逆転する箇所があります</td></tr><tr><td>650万円未満</td><td>55,167円</td><td colspan="2"></td></tr></table><h4>計算例</h4><p>算定表上の婚姻費用が月10万円、権利者の年収が180万円（標準的住居関係費22,247円）、義務者の住宅ローン負担が月7万円の場合：</p><p>10万円 − 22,247円 ＝ <strong>77,753円</strong>（ローン7万円を全額引くのではない）</p><div class="help-note">出典：司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」（家計調査年報第2−6表・全国・二人以上の世帯のうち勤労者世帯）。実際にいくら控除されるかは事案ごとの裁判所の判断によります。</div>`},
   break_income:{title:'児童扶養手当と収入について',body:`<p>児童扶養手当は、<strong>受け取る側（権利者）の前年の所得</strong>に基づいて支給額が決まります。</p><h4>STEP 1：給与所得の算出（給与所得控除 令和2年改正・住民税基準）</h4><table><tr><th>年収</th><th>給与所得控除額</th></tr><tr><td>162.5万円以下</td><td>55万円（一律）</td></tr><tr><td>162.5万〜180万円</td><td>年収×40%−10万円</td></tr><tr><td>180万〜360万円</td><td>年収×30%＋8万円</td></tr><tr><td>360万〜660万円</td><td>年収×20%＋44万円</td></tr><tr><td>660万〜850万円</td><td>年収×10%＋110万円</td></tr><tr><td>850万円超</td><td>195万円（一律）</td></tr></table><p style="margin-top:6px">給与所得 ＝ 年収 − 給与所得控除額</p><h4>STEP 2：所得額の算出</h4><p>所得額 ＝ 給与所得 ＋ 養育費年額×80% − 8万円（社保相当） − 10万円（給与所得者控除）</p><h4>STEP 3：所得制限限度額との比較（2026年度）</h4><table><tr><th>扶養人数（子の数）</th><th>全部支給限度額</th><th>一部支給限度額</th></tr><tr><td>1人</td><td>107万円</td><td>246万円</td></tr><tr><td>2人</td><td>145万円</td><td>284万円</td></tr><tr><td>3人</td><td>183万円</td><td>322万円</td></tr><tr><td>4人</td><td>221万円</td><td>360万円</td></tr></table><div class="help-note">令和6年11月改正で所得限度額が引き上げられました。限度額は毎年度改定されます。</div>`}
 };
@@ -992,112 +870,8 @@ function calcYouiku(){
   const brYEl=document.getElementById('br-youiku');if(brYEl)brYEl.value=Math.round(Math.max(0,monFinal)*10)/10;
 }
 
-function linkRatio(src,val){
-  const other=document.getElementById(src==='a'?'z-ratio-b':'z-ratio-a');
-  if(!other)return;
-  const n=Math.min(100,Math.max(0,Number(val)||0));
-  other.value=100-n;
-}
-
-function calcZaisan(){
-  // ── 不動産（持込特有財産の按分を含む） ──
-  let reAssets=0,reDebts=0,reSepA=0,reSepB=0;
-  const reRows=[];
-  document.querySelectorAll('.z-re-card').forEach(row=>{
-    const r=readProperty(row);
-    if(!r.val&&!r.loan)return;
-    const typeEl=row.querySelector('.re-type');
-    r.label=typeEl?typeEl.value:'不動産';
-    if(r.target>=0)reAssets+=r.target; else reDebts+=Math.abs(r.target);
-    if(r.sep>0){if(r.who==='a')reSepA+=r.sep; else reSepB+=r.sep;}
-    reRows.push(r);
-  });
-
-  // ── 期間按分財産 ──
-  let proTotal=0;const proRows=[];
-  document.querySelectorAll('#z-prorate-list .re-card').forEach(row=>{
-    const r=readProrate(row);
-    if(!r.val||!r.total)return;
-    proTotal+=r.target;
-    proRows.push(r);
-  });
-
-  let otherAssets=0;document.querySelectorAll('.z-asset-val').forEach(el=>{otherAssets+=Number(el.value)||0;});
-  let otherDebts=0;document.querySelectorAll('.z-debt-val').forEach(el=>{otherDebts+=Number(el.value)||0;});
-  const totalAssets=reAssets+otherAssets+proTotal;
-  const totalDebts=reDebts+otherDebts;
-  const sepA=nv('z-sep-a')||0,sepB=nv('z-sep-b')||0;
-  const ratioA=Number(v('z-ratio-a'))||50,ratioB=Number(v('z-ratio-b'))||50;
-  const holdA=nv('z-hold-a')||0,holdB=nv('z-hold-b')||0;
-  if(totalAssets===0&&totalDebts===0)return showErr('z-result','財産または負債を入力してください。');
-
-  const net=totalAssets-totalDebts-sepA-sepB;
-  // 債務超過のときは分与すべき財産がないため、按分は行わない
-  const insolvent=net<=0;
-  const netForSplit=insolvent?0:net;
-  const shouldA=netForSplit*ratioA/100,shouldB=netForSplit*ratioB/100;
-  const diff=holdA-shouldA;
-
-  // 頭金だけ入力され購入価格が空の不動産を検出（按分できないため無視されてしまう）
-  let downWarn='';
-  const badDown=reRows.filter(r=>r.down>0&&!(r.price>0));
-  if(badDown.length){
-    downWarn=`<div class="note" style="margin-top:10px"><span class="note-icon">⚠️</span>頭金が入力されていますが<strong>購入価格が未入力</strong>の不動産があります（${badDown.map(r=>r.label).join('、')}）。持込割合を計算できないため、この頭金は特有財産として控除されていません。購入価格を入力してください。</div>`;
-  }
-
-  // 保有額の整合性チェック（両方入力されている場合のみ）
-  let holdWarn='';
-  if(holdA||holdB){
-    const holdSum=holdA+holdB;
-    const gap=holdSum-netForSplit;
-    if(!insolvent&&Math.abs(gap)>Math.max(1,netForSplit*0.02)){
-      holdWarn=`<div class="note" style="margin-top:10px"><span class="note-icon">⚠️</span>保有額の合計（${fmtMan(holdSum)}）と分与対象の純財産（${fmtMan(netForSplit)}）が${fmtMan(Math.abs(gap))}ずれています。${gap>0?'保有額に特有財産が含まれていないか':'入力漏れの財産がないか'}確認してください。</div>`;
-    }
-  }
-
-  // ── 年金分割 ──
-  let nenkinHtml='';
-  const years=nv('z-nenkin-years'),ratioN=(Number(v('z-nenkin-ratio'))||50)/100;
-  const aMon=nv('z-nenkin-a')||0,bMon=nv('z-nenkin-b')||0;
-  if(years&&(aMon||bMon)){
-    const aTotal=aMon*12*years,bTotal=bMon*12*years,combined=aTotal+bTotal;
-    const newA=combined*(1-ratioN)/(12*years),newB=combined*ratioN/(12*years);
-    nenkinHtml=`<div class="breakdown"><div class="breakdown-title">年金分割の概算（参考値）</div><div class="bk-row"><span class="bk-key">対象期間の標準報酬総額（ご自身）</span><span class="bk-val">${fmtMan(aTotal)}</span></div>${D('平均標準報酬月額×12ヶ月×婚姻年数で求めます。婚姻期間中に厚生年金の対象となった報酬の総額です。')}<div class="bk-row"><span class="bk-key">対象期間の標準報酬総額（相手方）</span><span class="bk-val">${fmtMan(bTotal)}</span></div><div class="bk-row"><span class="bk-key">双方の合計</span><span class="bk-val">${fmtMan(combined)}</span></div>${D('二人分の標準報酬総額を合算します。この合計額を按分割合で分け直します。')}<div class="bk-row" style="margin-top:6px"><span class="bk-key">按分後のご自身の標準報酬月額相当</span><span class="bk-val">${fmtMan(newA)}</span></div><div class="bk-row"><span class="bk-key">按分後の相手方の標準報酬月額相当</span><span class="bk-val">${fmtMan(newB)}</span></div>${D('合算額を按分割合で振り分け、月額に換算した参考値です。実際の年金額は年金事務所にご確認ください。')}<div class="bk-formula">按分割合 ${Math.round(ratioN*100)}%（権利者側取得分）<br>ご自身: ${fmtMan(combined)}×${Math.round((1-ratioN)*100)}%÷(12×${years}年)=${fmtMan(newA)}/月<br>相手方: ${fmtMan(combined)}×${Math.round(ratioN*100)}%÷(12×${years}年)=${fmtMan(newB)}/月</div><div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>この計算は概算であり、実際の手続きには年金事務所への照会・請求が必要です。</div></div>`;
-  }
-
-  // ── 不動産の内訳 ──
-  let reHtml='';
-  if(reRows.length){
-    reHtml=`<div class="breakdown"><div class="breakdown-title">不動産の内訳</div>`+reRows.map((r,i)=>{
-      const sepLine=r.sep>0?`<div class="bk-row"><span class="bk-key">　うち特有財産分（${r.who==='a'?'ご自身':'相手方'}の頭金 ${r.down}万／購入価格 ${r.price}万＝${(r.down/r.price*100).toFixed(1)}%）</span><span class="bk-val" style="color:var(--text-muted)">−${fmtMan(r.sep)}</span></div>${D('購入時に特有財産から出した頭金の割合（持込割合）を、現在の査定額に乗じて特有財産分を算出します。値上がり・値下がりの影響も割合に応じて反映されます。')}<div class="bk-formula">特有財産分 ＝ 査定額${r.val}万 × ${r.down}万 ÷ ${r.price}万 ＝ ${fmtMan(r.sep)}</div>`:'';
-      return `<div class="bk-row" style="${i?'margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)':''}"><span class="bk-key" style="font-weight:700">${r.label}</span><span class="bk-val">査定${fmtMan(r.val)} − ローン${fmtMan(r.loan)}</span></div><div class="bk-row"><span class="bk-key">　純資産</span><span class="bk-val" style="color:${r.equity>=0?'var(--text)':'var(--danger)'}">${fmtMan(r.equity)}${r.equity<0?'（オーバーローン）':''}</span></div>${sepLine}<div class="bk-row"><span class="bk-key" style="font-weight:700">　分与対象額</span><span class="bk-val" style="font-weight:700;color:${r.target>=0?'var(--primary)':'var(--danger)'}">${fmtMan(r.target)}</span></div>`;
-    }).join('')+`</div>`;
-  }
-
-  // ── 期間按分の内訳 ──
-  let proHtml='';
-  if(proRows.length){
-    proHtml=`<div class="breakdown"><div class="breakdown-title">期間按分財産の内訳</div>`+proRows.map((r,i)=>{
-      const capped=r.mar>r.total;
-      return `<div class="bk-row" style="${i?'margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)':''}"><span class="bk-key" style="font-weight:700">${r.name}（${r.who==='a'?'ご自身':'相手方'}名義）</span><span class="bk-val">${fmtMan(r.val)}</span></div>${D('全期間のうち婚姻期間に対応する部分だけが、二人で築いた財産として分与の対象になります。')}<div class="bk-formula">${fmtMan(r.val)} × 婚姻期間${r.marUsed}年 ÷ 全期間${r.total}年 ＝ ${fmtMan(r.target)}${capped?'<br>※婚姻期間が全期間を超えていたため全期間で頭打ちにしています':''}</div><div class="bk-row"><span class="bk-key" style="font-weight:700">　分与対象額</span><span class="bk-val" style="font-weight:700;color:var(--primary)">${fmtMan(r.target)}</span></div>`;
-    }).join('')+`</div>`;
-  }
-
-  // ── 結果ボックス ──
-  const resultBox=insolvent
-    ?`<div class="result-box warning"><div class="result-label">財産の精算額</div><div class="result-amount">0円</div><div class="result-sub">負債が資産を上回っているため（債務超過）、分与すべき財産はありません。<br>純財産：${fmtMan(net)}</div></div>`
-    :`<div class="result-box"><div class="result-label">財産の精算額（${diff>0?'ご自身→相手方':'相手方→ご自身'}）</div><div class="result-amount">${fmtEn(Math.abs(diff))}</div><div class="result-sub">${diff>0?'ご自身から相手方へ':'相手方からご自身へ'} ${fmtMan(Math.abs(diff))} の支払いが必要です</div></div>`;
-
-  const insolventNote=insolvent
-    ?`<div class="note" style="margin-top:10px"><span class="note-icon">⚠️</span>債務超過の場合、原則として財産分与は行われません。残った負債をどちらが負担するかは、名義・使途などを踏まえた別途の取り決めになります。具体的な事案については弁護士等の専門家にご相談ください。</div>`
-    :'';
-
-  const html=`${resultBox}${insolventNote}<div class="breakdown"><div class="breakdown-title">財産分与計算内訳</div>${reAssets>0?`<div class="bk-row"><span class="bk-key">不動産の分与対象額合計</span><span class="bk-val">${fmtMan(reAssets)}</span></div>${D('各不動産の査定額からローン残高と特有財産分（頭金の持込割合）を差し引いた、分与の対象となる金額の合計です。')}`:''}${reDebts>0?`<div class="bk-row"><span class="bk-key">不動産のオーバーローン合計</span><span class="bk-val" style="color:var(--danger)">−${fmtMan(reDebts)}</span></div>${D('査定額よりローン残高が多い不動産（オーバーローン）の超過額の合計です。売却しても借金が残るため、資産ではなく負債として計算します。')}`:''}${proTotal>0?`<div class="bk-row"><span class="bk-key">期間按分財産の対象額合計</span><span class="bk-val">${fmtMan(proTotal)}</span></div>${D('退職金・保険解約返戻金などのうち、婚姻期間に対応する部分の合計です。')}`:''}<div class="bk-row"><span class="bk-key">その他の共有財産</span><span class="bk-val">${fmtMan(otherAssets)}</span></div>${D('婚姻中に二人で形成した預貯金・投資・車などの合計です。どちらの名義であっても、婚姻中に形成された財産は原則として共有財産です。')}<div class="bk-row"><span class="bk-key">その他の共同の負債</span><span class="bk-val" style="color:var(--danger)">−${fmtMan(otherDebts)}</span></div>${D('不動産ローン以外で、婚姻中に共同で負担した借金（カーローン・教育ローンなど）の合計です。')}<div class="bk-row"><span class="bk-key">ご自身の特有財産（除外）</span><span class="bk-val" style="color:var(--text-muted)">−${fmtMan(sepA)}</span></div><div class="bk-row"><span class="bk-key">相手方の特有財産（除外）</span><span class="bk-val" style="color:var(--text-muted)">−${fmtMan(sepB)}</span></div>${D('婚姻前から持っていた財産や、相続・贈与で得た財産は二人で築いたものではないため、分与の対象外として差し引きます。')}${(reSepA>0||reSepB>0)?`<div class="bk-row"><span class="bk-key" style="color:var(--text-muted)">（参考）不動産の頭金として持ち込んだ特有財産</span><span class="bk-val" style="color:var(--text-muted)">ご自身${fmtMan(reSepA)}／相手方${fmtMan(reSepB)}</span></div>${D('不動産の分与対象額の計算ですでに控除済みのため、上の特有財産欄とは二重に差し引いていません。')}`:''}<div class="bk-row" style="padding-top:8px;border-top:2px solid var(--border)"><span class="bk-key" style="font-weight:700;color:var(--primary)">分与対象の純財産</span><span class="bk-val" style="color:${net>=0?'var(--primary)':'var(--danger)'};font-size:15px">${fmtMan(net)}</span></div>${D('これが二人で実際に分け合う財産の総額です。共有財産から共同の負債と特有財産をすべて差し引いた金額です。')}${insolvent?'':`<div class="bk-row" style="margin-top:8px"><span class="bk-key">ご自身が取得すべき金額（${ratioA}%）</span><span class="bk-val">${fmtMan(shouldA)}</span></div>${D(`分与対象の純財産に、取り決めた分与割合（${ratioA}%）を掛けた金額です。これがご自身が本来受け取るべき金額です。`)}<div class="bk-row"><span class="bk-key">相手方が取得すべき金額（${ratioB}%）</span><span class="bk-val">${fmtMan(shouldB)}</span></div><div class="bk-row" style="margin-top:8px"><span class="bk-key">ご自身が保有している分与対象財産</span><span class="bk-val">${fmtMan(holdA)}</span></div>${holdB?`<div class="bk-row"><span class="bk-key">相手方が保有している分与対象財産</span><span class="bk-val">${fmtMan(holdB)}</span></div>`:''}<div class="bk-row"><span class="bk-key">ご自身の過不足</span><span class="bk-val" style="color:${diff>=0?'var(--danger)':'var(--success)'}">${diff>=0?'超過（支払い）: ':'不足（受取り）: '}${fmtMan(Math.abs(diff))}</span></div>${D('現在保有している財産と、取得すべき金額の差額です。超過している場合はその分を相手方に支払い、不足している場合は相手方から受け取ることで精算します。')}`}</div>${downWarn}${holdWarn}${reHtml}${proHtml}${nenkinHtml}`;
-  const el=document.getElementById('z-result');el.innerHTML=html;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-
 // UI HELPERS
-let cc=0,ocCount=0,ac=0,dc=0,rc=0;
+let cc=0,ocCount=0;
 // ⑧ New counters for ob-children and res-other children
 let obcCount=0,rocCount=0;
 
@@ -1251,112 +1025,6 @@ function getOtherAges(p){const a=[];document.querySelectorAll(`[id^="${p}-oage-"
 // ⑧ New helper functions
 function getObChildAges(p){const a=[];document.querySelectorAll(`[id^="${p}-obage-"]`).forEach(el=>{if(el.value.trim()!=='')a.push(Number(el.value));});return a;}
 function getResOtherAges(p){const a=[];document.querySelectorAll(`[id^="${p}-rosage-"]`).forEach(el=>{if(el.value.trim()!=='')a.push(Number(el.value));});return a;}
-
-function addProperty(){
-  rc++;const id=rc;
-  const d=document.createElement('div');
-  d.className='re-card z-re-card';d.id=`z-re-${id}`;
-  const u=`updReEquity('z-re-${id}')`;
-  d.innerHTML=`<div class="re-card-top"><select class="re-type"><option>自宅</option><option>土地</option><option>マンション</option><option>アパート</option><option>その他の不動産</option></select><button class="btn-remove" onclick="rmEl('z-re-${id}')">✕</button></div>
-  <div class="form-row" style="margin-bottom:0"><div class="form-group"><label>査定額（万円）</label><div class="input-wrap"><input type="number" placeholder="例：3000" min="0" class="z-re-val" oninput="${u}"><span class="unit">万</span></div></div><div class="form-group"><label>ローン残高（万円）</label><div class="input-wrap"><input type="number" placeholder="例：1500" min="0" class="z-re-loan" oninput="${u}"><span class="unit">万</span></div></div></div>
-  <div class="sec-title" style="margin-top:12px">特有財産からの頭金がある場合（任意）</div>
-  <div class="form-row" style="margin-bottom:0"><div class="form-group"><label>購入価格（万円）</label><div class="input-wrap"><input type="number" placeholder="例：4000" min="0" class="z-re-price" oninput="${u}"><span class="unit">万</span></div></div><div class="form-group"><label>特有財産からの頭金（万円）</label><div class="input-wrap"><input type="number" placeholder="例：500" min="0" class="z-re-down" oninput="${u}"><span class="unit">万</span></div></div></div>
-  <div class="form-group" style="margin-top:8px"><label>頭金を出した人</label><select class="z-re-downwho" onchange="${u}"><option value="a">ご自身</option><option value="b">相手方</option></select></div>
-  <div class="re-equity-row"><span class="re-equity-label">純資産：</span><span class="re-equity" id="z-re-eq-${id}">─</span></div>
-  <div class="re-equity-row" id="z-re-sep-row-${id}" style="display:none"><span class="re-equity-label">うち特有財産分（持込割合）：</span><span class="re-equity" id="z-re-sep-${id}">─</span></div>
-  <div class="re-equity-row" id="z-re-tgt-row-${id}" style="display:none"><span class="re-equity-label">分与対象額：</span><span class="re-equity pos" id="z-re-tgt-${id}">─</span></div>`;
-  document.getElementById('z-re-list').appendChild(d);
-}
-
-// 1件の不動産から、純資産・特有財産分・分与対象額を求める
-function readProperty(row){
-  const num=cls=>{const el=row.querySelector(cls);return el?Number(el.value)||0:0;};
-  const val=num('.z-re-val'),loan=num('.z-re-loan'),price=num('.z-re-price'),down=num('.z-re-down');
-  const whoEl=row.querySelector('.z-re-downwho');
-  const who=whoEl?whoEl.value:'a';
-  const equity=val-loan;
-  // 持込割合説：現在の査定額 × (特有財産からの頭金 ÷ 購入価格)
-  let sep=0;
-  if(price>0&&down>0)sep=val*Math.min(down,price)/price;
-  // 特有財産分は純資産を超えない（オーバーローン時は0）
-  sep=Math.max(0,Math.min(sep,Math.max(0,equity)));
-  return{val,loan,price,down,who,equity,sep,target:equity-sep,hasDown:price>0&&down>0};
-}
-
-function updReEquity(rowId){
-  const row=document.getElementById(rowId);if(!row)return;
-  const r=readProperty(row);
-  const span=row.querySelector('.re-equity');
-  span.textContent=r.val||r.loan?fmtMan(r.equity):'─';
-  span.className='re-equity '+(r.equity>=0?'pos':'neg');
-  const id=rowId.replace('z-re-','');
-  const sepRow=document.getElementById(`z-re-sep-row-${id}`),tgtRow=document.getElementById(`z-re-tgt-row-${id}`);
-  if(r.hasDown&&r.sep>0){
-    if(sepRow)sepRow.style.display='';
-    if(tgtRow)tgtRow.style.display='';
-    const sepEl=document.getElementById(`z-re-sep-${id}`),tgtEl=document.getElementById(`z-re-tgt-${id}`);
-    if(sepEl){sepEl.textContent=fmtMan(r.sep)+`（${r.who==='a'?'ご自身':'相手方'}・持込${(r.down/r.price*100).toFixed(1)}%）`;sepEl.className='re-equity';}
-    if(tgtEl){tgtEl.textContent=fmtMan(r.target);tgtEl.className='re-equity '+(r.target>=0?'pos':'neg');}
-  }else{
-    if(sepRow)sepRow.style.display='none';
-    if(tgtRow)tgtRow.style.display='none';
-  }
-}
-
-// ── 期間按分財産（退職金・保険解約返戻金など） ──
-let pr=0;
-function addProrate(){
-  pr++;const id=pr;
-  const d=document.createElement('div');
-  d.className='re-card';d.id=`z-pro-${id}`;
-  const u=`updProrate('z-pro-${id}')`;
-  const my=Number(document.getElementById('z-marriage-years')?.dataset.years)||'';
-  d.innerHTML=`<div class="re-card-top"><select class="z-pro-name" onchange="${u}"><option>退職金</option><option>保険の解約返戻金</option><option>確定拠出年金</option><option>企業年金</option><option>その他</option></select><button class="btn-remove" onclick="rmEl('z-pro-${id}')">✕</button></div>
-  <div class="form-row" style="margin-bottom:0"><div class="form-group"><label>金額（万円）</label><div class="input-wrap"><input type="number" placeholder="例：1200" min="0" class="z-pro-val" oninput="${u}"><span class="unit">万</span></div></div><div class="form-group"><label>全期間（勤続・契約年数）</label><div class="input-wrap"><input type="number" placeholder="例：30" min="0" step="0.1" class="z-pro-total" oninput="${u}"><span class="unit">年</span></div></div></div>
-  <div class="form-group" style="margin-top:8px"><label>うち婚姻期間（年）</label><div class="input-wrap"><input type="number" placeholder="基準時カードから自動" min="0" step="0.1" class="z-pro-mar" value="${my}" oninput="${u}"><span class="unit">年</span></div></div>
-  <div class="form-group" style="margin-top:8px"><label>名義</label><select class="z-pro-who" onchange="${u}"><option value="a">ご自身</option><option value="b">相手方</option></select></div>
-  <div class="re-equity-row"><span class="re-equity-label">分与対象額：</span><span class="re-equity pos" id="z-pro-tgt-${id}">─</span></div>`;
-  document.getElementById('z-prorate-list').appendChild(d);
-}
-
-function readProrate(row){
-  const num=cls=>{const el=row.querySelector(cls);return el?Number(el.value)||0:0;};
-  const nameEl=row.querySelector('.z-pro-name'),whoEl=row.querySelector('.z-pro-who');
-  const val=num('.z-pro-val'),total=num('.z-pro-total'),mar=num('.z-pro-mar');
-  // 婚姻期間は全期間を超えない
-  const marUsed=total>0?Math.min(mar,total):0;
-  const target=total>0?val*marUsed/total:0;
-  return{name:nameEl?nameEl.value:'財産',who:whoEl?whoEl.value:'a',val,total,mar,marUsed,target};
-}
-
-function updProrate(rowId){
-  const row=document.getElementById(rowId);if(!row)return;
-  const r=readProrate(row);
-  const el=document.getElementById(rowId.replace('z-pro-','z-pro-tgt-'));
-  if(el)el.textContent=r.total>0&&r.val>0?fmtMan(r.target):'─';
-}
-
-// ── 基準時（婚姻期間）の自動計算 ──
-function updMarriageYears(){
-  const my=nv('z-mar-year'),mm=nv('z-mar-month')||1,sy=nv('z-sep-year'),sm=nv('z-sep-month')||1;
-  const el=document.getElementById('z-marriage-years');if(!el)return;
-  if(!my||!sy){el.textContent='─';delete el.dataset.years;return;}
-  const months=(sy*12+sm)-(my*12+mm);
-  if(months<=0){el.textContent='別居年月が婚姻年月より前です';el.className='re-equity neg';delete el.dataset.years;return;}
-  const years=months/12;
-  el.className='re-equity pos';
-  el.textContent=`${Math.floor(months/12)}年${months%12}ヶ月（${years.toFixed(1)}年）`;
-  el.dataset.years=years.toFixed(1);
-  // 未入力の按分行に反映する
-  document.querySelectorAll('.z-pro-mar').forEach(inp=>{
-    if(inp.value===''){inp.value=years.toFixed(1);const card=inp.closest('.re-card');if(card)updProrate(card.id);}
-  });
-}
-
-function addAsset(){ac++;const id=ac;const d=document.createElement('div');d.className='asset-row';d.id=`z-asset-${id}`;d.innerHTML=`<input type="text" placeholder="財産名（例：銀行預金）"><div class="input-wrap"><input type="number" placeholder="金額" min="0" class="z-asset-val"><span class="unit">万</span></div><button class="btn-remove" onclick="rmEl('z-asset-${id}')">✕</button>`;document.getElementById('z-asset-list').appendChild(d);}
-
-// ⑤ Changed 負債名 input to select dropdown
-function addDebt(){dc++;const id=dc;const d=document.createElement('div');d.className='asset-row';d.id=`z-debt-${id}`;d.innerHTML=`<select class="z-debt-name"><option>カーローン</option><option>教育ローン</option><option>奨学金ローン</option><option>消費者ローン</option><option>その他の借金</option></select><div class="input-wrap"><input type="number" placeholder="残高" min="0" class="z-debt-val"><span class="unit">万</span></div><button class="btn-remove" onclick="rmEl('z-debt-${id}')">✕</button>`;document.getElementById('z-debt-list').appendChild(d);}
 
 function rmEl(id){const el=document.getElementById(id);if(el)el.remove();}
 
@@ -1730,7 +1398,7 @@ function setupSync(){
   });
 }
 
-addChild('k');addProperty();addAsset();addDebt();buildAddbackBlocks();setupSync();
+addChild('k');buildAddbackBlocks();setupSync();
 
 </script>
 </body>
