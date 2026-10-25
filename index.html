@@ -215,44 +215,15 @@
         </div>
       </div>
     </div>
-    <!-- 特別経費（義務者が権利者側の特別経費を負担している場合） -->
+    <!-- 特別経費 -->
     <div class="card">
       <div class="card-title"><span class="icon" style="background:#eef2ff;color:#4f46e5">特</span>義務者が、権利者（と子）の住居費・医療費・保険料を負担している場合<button class="help-btn" onclick="showHelp('housing')">詳しく</button></div>
-      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>これらは算定表の基礎収入を出す際に<strong>標準額が既に控除済み</strong>です。そのため婚姻費用から控除できるのは<strong>標準額が上限</strong>で、負担額の全額ではありません（住宅ローンの超過部分は資産形成的支出として財産分与で清算）。</div>
-      <div class="form-group"><label>住居費の負担の種類</label>
-        <select id="k-housing-type">
-          <option value="loan">住宅ローン</option>
-          <option value="rent">家賃</option>
-        </select>
-      </div>
-      <div class="sec-title" style="margin-top:12px">住居関係費（住宅ローン・家賃）</div>
-      <div class="form-row" style="margin-bottom:0">
-        <div class="form-group"><label>義務者の負担額（月額・円）</label>
-          <div class="input-wrap"><input type="number" id="k-housing-amount" placeholder="例：72000" min="0"><span class="unit">円</span></div>
-        </div>
-        <div class="form-group"><label>標準額／空欄で自動</label>
-          <div class="input-wrap"><input type="number" id="k-housing-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
-        </div>
-      </div>
-      <div class="sec-title" style="margin-top:12px">保健医療（医療費）</div>
-      <div class="form-row" style="margin-bottom:0">
-        <div class="form-group"><label>義務者の負担額（月額・円）</label>
-          <div class="input-wrap"><input type="number" id="k-medical-amount" placeholder="例：0" min="0"><span class="unit">円</span></div>
-        </div>
-        <div class="form-group"><label>標準額／空欄で自動</label>
-          <div class="input-wrap"><input type="number" id="k-medical-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
-        </div>
-      </div>
-      <div class="sec-title" style="margin-top:12px">保険掛金（生命保険・医療保険などの保険料）</div>
-      <div class="form-row" style="margin-bottom:0">
-        <div class="form-group"><label>義務者の負担額（月額・円）</label>
-          <div class="input-wrap"><input type="number" id="k-insurance-amount" placeholder="例：0" min="0"><span class="unit">円</span></div>
-        </div>
-        <div class="form-group"><label>標準額／空欄で自動</label>
-          <div class="input-wrap"><input type="number" id="k-insurance-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
-        </div>
-      </div>
-      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>標準額は権利者の年間収入階級に応じて、司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」から自動で判定します。負担していない費目は空欄のままにしてください。</div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">負担しているものがあれば追加してください。なければ何も追加する必要はありません。</p>
+      <div id="k-special-list"></div>
+      <div class="note" id="k-special-note" style="display:none"><span class="note-icon">ℹ️</span>標準額は権利者の年間収入階級に応じて、司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」から自動で判定します。控除できるのは<strong>標準額が上限</strong>で、負担額の全額ではありません（住宅ローンの超過部分は資産形成的支出として財産分与で清算）。</div>
+      <button class="btn-add" id="k-add-housing" onclick="addSpecialCost('housing')">＋ 住居費（住宅ローン・家賃）を追加</button>
+      <button class="btn-add" id="k-add-medical" onclick="addSpecialCost('medical')">＋ 医療費を追加</button>
+      <button class="btn-add" id="k-add-insurance" onclick="addSpecialCost('insurance')">＋ 保険料を追加</button>
     </div>
     <button class="btn-calc" onclick="calcKonin()">計算する</button>
     <div id="k-result" style="display:none;margin-top:14px"></div>
@@ -344,44 +315,15 @@
         </div>
       </div>
     </div>
-    <!-- 特別経費（義務者が権利者側の特別経費を負担している場合） -->
+    <!-- 特別経費 -->
     <div class="card">
       <div class="card-title"><span class="icon" style="background:#eef2ff;color:#4f46e5">特</span>義務者が、権利者（と子）の住居費・医療費・保険料を負担している場合<button class="help-btn" onclick="showHelp('housing')">詳しく</button></div>
-      <div class="note" style="margin-bottom:10px"><span class="note-icon">⚠️</span>これらは算定表の基礎収入を出す際に<strong>標準額が既に控除済み</strong>です。そのため養育費から控除できるのは<strong>標準額が上限</strong>で、負担額の全額ではありません（住宅ローンの超過部分は資産形成的支出として財産分与で清算）。</div>
-      <div class="form-group"><label>住居費の負担の種類</label>
-        <select id="y-housing-type">
-          <option value="loan">住宅ローン</option>
-          <option value="rent">家賃</option>
-        </select>
-      </div>
-      <div class="sec-title" style="margin-top:12px">住居関係費（住宅ローン・家賃）</div>
-      <div class="form-row" style="margin-bottom:0">
-        <div class="form-group"><label>義務者の負担額（月額・円）</label>
-          <div class="input-wrap"><input type="number" id="y-housing-amount" placeholder="例：72000" min="0"><span class="unit">円</span></div>
-        </div>
-        <div class="form-group"><label>標準額／空欄で自動</label>
-          <div class="input-wrap"><input type="number" id="y-housing-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
-        </div>
-      </div>
-      <div class="sec-title" style="margin-top:12px">保健医療（医療費）</div>
-      <div class="form-row" style="margin-bottom:0">
-        <div class="form-group"><label>義務者の負担額（月額・円）</label>
-          <div class="input-wrap"><input type="number" id="y-medical-amount" placeholder="例：0" min="0"><span class="unit">円</span></div>
-        </div>
-        <div class="form-group"><label>標準額／空欄で自動</label>
-          <div class="input-wrap"><input type="number" id="y-medical-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
-        </div>
-      </div>
-      <div class="sec-title" style="margin-top:12px">保険掛金（生命保険・医療保険などの保険料）</div>
-      <div class="form-row" style="margin-bottom:0">
-        <div class="form-group"><label>義務者の負担額（月額・円）</label>
-          <div class="input-wrap"><input type="number" id="y-insurance-amount" placeholder="例：0" min="0"><span class="unit">円</span></div>
-        </div>
-        <div class="form-group"><label>標準額／空欄で自動</label>
-          <div class="input-wrap"><input type="number" id="y-insurance-std" placeholder="自動算出" min="0"><span class="unit">円</span></div>
-        </div>
-      </div>
-      <div class="note" style="margin-top:10px"><span class="note-icon">ℹ️</span>標準額は権利者の年間収入階級に応じて、司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」から自動で判定します。負担していない費目は空欄のままにしてください。</div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">負担しているものがあれば追加してください。なければ何も追加する必要はありません。</p>
+      <div id="y-special-list"></div>
+      <div class="note" id="y-special-note" style="display:none"><span class="note-icon">ℹ️</span>標準額は権利者の年間収入階級に応じて、司法研修所編『養育費，婚姻費用の算定に関する実証的研究』31頁「（資料2）平成25〜29年 特別経費実収入比の平均値」から自動で判定します。控除できるのは<strong>標準額が上限</strong>で、負担額の全額ではありません（住宅ローンの超過部分は資産形成的支出として財産分与で清算）。</div>
+      <button class="btn-add" id="y-add-housing" onclick="addSpecialCost('housing')">＋ 住居費（住宅ローン・家賃）を追加</button>
+      <button class="btn-add" id="y-add-medical" onclick="addSpecialCost('medical')">＋ 医療費を追加</button>
+      <button class="btn-add" id="y-add-insurance" onclick="addSpecialCost('insurance')">＋ 保険料を追加</button>
     </div>
     <button class="btn-calc" onclick="calcYouiku()">計算する</button>
     <div id="y-result" style="display:none;margin-top:14px"></div>
@@ -639,6 +581,64 @@ function stdSpecialCost(income){
 function housingLookupIncome(ee){
   if(ee.basis==='self')return{income:ee.totalIncome/0.85,converted:true};
   return{income:ee.totalIncome,converted:false};
+}
+
+// 特別経費の行を両タブに追加する（子の欄と同じく k/y で共有）
+function addSpecialCost(key){
+  if(_syncing)return;
+  const it=SPECIAL_COST_ITEMS.find(x=>x.key===key);
+  if(!it)return;
+  ['k','y'].forEach(tab=>{
+    const list=document.getElementById(`${tab}-special-list`);
+    if(!list||document.getElementById(`${tab}-sp-${key}`))return;
+    const typeSel=key==='housing'
+      ? `<div class="form-group" style="margin-top:8px"><label>負担の種類</label><select id="${tab}-housing-type" onchange="syncSpecial('${tab}','housing-type',this.value)"><option value="loan">住宅ローン</option><option value="rent">家賃</option></select></div>`
+      : '';
+    const d=document.createElement('div');
+    d.className='re-card';
+    d.id=`${tab}-sp-${key}`;
+    d.innerHTML=`<div class="re-card-top"><span style="font-weight:700;font-size:14px">${it.label}（${it.note}）</span><button class="btn-remove" onclick="rmSpecialCost('${key}')">✕</button></div>
+      ${typeSel}
+      <div class="form-row" style="margin-bottom:0;margin-top:8px">
+        <div class="form-group"><label>義務者の負担額（月額・円）</label>
+          <div class="input-wrap"><input type="number" min="0" placeholder="例：72000" id="${tab}-${key}-amount" oninput="syncSpecial('${tab}','${key}-amount',this.value)"><span class="unit">円</span></div>
+        </div>
+        <div class="form-group"><label>標準額／空欄で自動</label>
+          <div class="input-wrap"><input type="number" min="0" placeholder="自動算出" id="${tab}-${key}-std" oninput="syncSpecial('${tab}','${key}-std',this.value)"><span class="unit">円</span></div>
+        </div>
+      </div>
+`;
+    list.appendChild(d);
+    const btn=document.getElementById(`${tab}-add-${key}`);
+    if(btn)btn.style.display='none';
+    updSpecialNote(tab);
+  });
+}
+
+// 費目が1つ以上あるときだけ注記を表示する
+function updSpecialNote(tab){
+  const list=document.getElementById(`${tab}-special-list`);
+  const note=document.getElementById(`${tab}-special-note`);
+  if(list&&note)note.style.display=list.children.length?'':'none';
+}
+
+function rmSpecialCost(key){
+  ['k','y'].forEach(tab=>{
+    rmEl(`${tab}-sp-${key}`);
+    const btn=document.getElementById(`${tab}-add-${key}`);
+    if(btn)btn.style.display='';
+    updSpecialNote(tab);
+  });
+}
+
+// 追加した行の入力を相手タブへ反映する
+function syncSpecial(srcTab,suffix,val){
+  if(_syncing)return;_syncing=true;
+  try{
+    const peer=srcTab==='k'?'y':'k';
+    const el=document.getElementById(`${peer}-${suffix}`);
+    if(el)el.value=val;
+  }finally{_syncing=false;}
 }
 
 // 特別経費の控除額（月額・円）を算出する。
@@ -1654,13 +1654,6 @@ function setupSync(){
     ['k-ee-business','y-ee-business'],['k-ee-insurance','y-ee-insurance'],
     ['k-other-parent-income','y-other-parent-income'],
     ['k-res-other-income','y-res-other-income'],
-    ['k-housing-type','y-housing-type'],
-    ['k-housing-amount','y-housing-amount'],
-    ['k-housing-std','y-housing-std'],
-    ['k-medical-amount','y-medical-amount'],
-    ['k-medical-std','y-medical-std'],
-    ['k-insurance-amount','y-insurance-amount'],
-    ['k-insurance-std','y-insurance-std'],
     ...SELF_ADDBACK_ITEMS.flatMap(it=>[[`k-ob-ab-${it.key}`,`y-ob-ab-${it.key}`],[`k-ee-ab-${it.key}`,`y-ee-ab-${it.key}`]])
   ];
   function link(aId,bId){
