@@ -567,7 +567,7 @@
       <button class="ctrl-btn grp-btn" data-sec="chap:1級" title="1級（連結会計・企業結合・金融商品・退職給付・減損リース・会計方針誤謬・原価計算応用）" onclick="setSection('chap:1級')">🎓1級</button>
     </div>
   </div>
-  <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center;">
+  <div id="view-mode-row" style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center;">
     <span style="font-size:11px;font-weight:700;color:var(--muted);">表示方法：</span>
     <button class="ctrl-btn active" id="btn-show-all" onclick="setCheckOnly(false)">全問</button>
     <button class="ctrl-btn" id="btn-check-only" onclick="setCheckOnly(true)">✅ チェックのみ</button>
@@ -1265,6 +1265,8 @@ function toggleSecTabs(){
   const label = document.getElementById('sec-tabs-toggle-label');
   const collapsed = wrap.classList.toggle('collapsed');
   label.textContent = collapsed ? '分野を表示' : '分野を隠す';
+  // 分野と一緒に「表示方法」も隠す
+  document.getElementById('view-mode-row').style.display = collapsed ? 'none' : 'flex';
 }
 
 
