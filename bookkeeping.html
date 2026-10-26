@@ -5577,8 +5577,14 @@ function renderDispQuizFinish(){
 // ===== 総合問題（財務諸表作成・本支店会計・株主資本等変動・標準原価計算・CVP分析）=====
 // ===== shared helpers =====
 function compRandMult(base, loMult, hiMult){
-  const n = loMult + Math.floor(Math.random()*(hiMult-loMult+1));
-  return base*n;
+  // 目視で計算しやすいよう、金額（1,000円以上の単位）は切りのよい倍数（5の倍数、なければ偶数）にする
+  let cands = [];
+  for(let n=loMult;n<=hiMult;n++) cands.push(n);
+  if(base >= 1000){
+    const r5 = cands.filter(n=>n%5===0), r2 = cands.filter(n=>n%2===0);
+    if(r5.length >= 2) cands = r5; else if(r2.length >= 2) cands = r2;
+  }
+  return base * cands[Math.floor(Math.random()*cands.length)];
 }
 function compPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function fmtVar(n){
