@@ -4315,8 +4315,46 @@ function getSectionQuestions(sec){
   return ALL;
 }
 
+// 商業簿記のチェック：「商品売買〜引当金」「株式会社〜連結」に分けて解く
+const CHECK_PARTS = [
+  {label:'商品売買〜引当金', from:'chap:第1章：商品売買', to:'chap:無形資産・リース・引当金'},
+  {label:'株式会社〜連結', from:'chap:第10章：株式会社会計', to:'chap:本支店・連結・個人事業主'},
+];
+let checkPart = 0;
+function checkPartChaps(n){
+  const secs=[...document.querySelectorAll('#sec-tabs .grp-btn[data-big="shogyo"]')].map(b=>b.dataset.sec);
+  const pt=CHECK_PARTS[n-1];
+  return secs.slice(secs.indexOf(pt.from), secs.indexOf(pt.to)+1).map(s=>s.slice(5));
+}
+function checkPartQuestions(n){
+  const chaps=checkPartChaps(n);
+  return getSectionQuestions('big:shogyo').filter(q=>chaps.includes(q.chap));
+}
+function setCheckPart(n){
+  checkPart = n;
+  updateGroupButtons();
+  buildDeck();
+  idx = 0;
+  syncExpFromDeck(0);
+  document.getElementById('exp-main').innerHTML='';
+  loadExpQ();
+  updateStats();
+}
+
 function updateGroupButtons(){
   const row = document.getElementById('group-row');
+  if(checkOnly && sectionFilter==='big:shogyo'){
+    row.style.display='';
+    const n0=getSectionQuestions('big:shogyo').filter(q=>checked[q.id]).length;
+    let html='<span style="font-size:11px;font-weight:700;color:var(--muted);align-self:center;">範囲：</span>';
+    html+=`<button class="ctrl-btn grp-btn${checkPart===0?' active':''}" onclick="setCheckPart(0)">全部（${n0}）</button>`;
+    CHECK_PARTS.forEach((pt,i)=>{
+      const n=checkPartQuestions(i+1).filter(q=>checked[q.id]).length;
+      html+=`<button class="ctrl-btn grp-btn${checkPart===i+1?' active':''}" onclick="setCheckPart(${i+1})">${pt.label}（${n}）</button>`;
+    });
+    row.innerHTML=html;
+    return;
+  }
   if(!sectionFilter || sectionFilter==='all' || sectionFilter.startsWith('big:') || sectionFilter==='chap:1級' || checkOnly){ row.style.display='none'; groupFilter=0; return; }
   const secQs = getSectionQuestions(sectionFilter);
   const numGroups = Math.ceil(secQs.length/20);
@@ -4354,7 +4392,8 @@ function saveProgress(){
 
 function buildDeck(){
   if(checkOnly){
-    deck = getSectionQuestions(sectionFilter).filter(q=> checked[q.id]);
+    const base = (checkPart && sectionFilter==='big:shogyo') ? checkPartQuestions(checkPart) : getSectionQuestions(sectionFilter);
+    deck = base.filter(q=> checked[q.id]);
     shuffleArr(deck);
     return;
   }
@@ -10093,6 +10132,7 @@ function setRironTab(n){
 }
 function setSection(sec){
   sectionFilter=sec;
+  checkPart=0;
   document.getElementById('check-bar').style.display='';
   document.querySelectorAll('#sec-tabs .ctrl-btn:not(.grp-btn)').forEach(b=>b.classList.remove('active'));
   groupFilter=0;
@@ -10111,6 +10151,7 @@ function setSection(sec){
 
 function setCheckOnly(on){
   checkOnly = on;
+  checkPart = 0;
   document.getElementById('btn-check-only').classList.toggle('active', on===true);
   document.getElementById('btn-show-all').classList.toggle('active', !on);
   updateGroupButtons();
