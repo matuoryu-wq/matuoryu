@@ -5584,8 +5584,10 @@ function compRandMult(base, loMult, hiMult){
     const r5 = cands.filter(n=>n%5===0), r2 = cands.filter(n=>n%2===0);
     if(r5.length >= 2) cands = r5; else if(r2.length >= 2) cands = r2;
   }
-  return base * cands[Math.floor(Math.random()*cands.length)];
+  return (base >= 1000 ? base/COMP_SCALE : base) * cands[Math.floor(Math.random()*cands.length)];
 }
+// 金額の桁を小さくする（1,000円以上の単位をこの数で割る）
+const COMP_SCALE = 10;
 function compPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function fmtVar(n){
   return `${Math.abs(n).toLocaleString()}円（${n<0?'不利':'有利'}差異）`;
@@ -5706,7 +5708,7 @@ function genFS1(){
   const genkin = totalCredit - totalDebitNoGenkin;
 
   // sanity: must be valid for a believable problem
-  if(genkin < 50000 || keijou <= 0 || junRieki <= 0 || hokenHiyou < 0 || taoreireKurinyure <= 0) return genFS1();
+  if(genkin < 50000/COMP_SCALE || keijou <= 0 || junRieki <= 0 || hokenHiyou < 0 || taoreireKurinyure <= 0) return genFS1();
 
   const shisanGoukei = genkin + uketori + urikake - taoreireNeed + genmatsuShouhin + hokenMaebarai + tatemonoBs + bihinBs;
   const fusai = kakekin + risokuMikarai + hojinzei + kariirekin;
@@ -5880,7 +5882,7 @@ function genFS2(){
   const totalCredit = taoreireExisting+bihinRuikei0+kakekin+shihonkin+kurikoshiKishu+uriage;
   const genkin = totalCredit - totalDebitNoGenkin;
 
-  if(genkin < 30000 || eigyouRieki<=0 || junRieki<=0 || koukokuHiyou<0 || taoreireKurinyure<=0) return genFS2();
+  if(genkin < 30000/COMP_SCALE || eigyouRieki<=0 || junRieki<=0 || koukokuHiyou<0 || taoreireKurinyure<=0) return genFS2();
 
   const shisanGoukei = genkin + urikake - taoreireNeed + genmatsuShouhin + koukokuMaebarai + bihinBs;
   const fusai = kakekin + hojinzei;
@@ -6354,9 +6356,9 @@ function genEquity2(){
 function genStdCost1(){
   const hyoujunTanka = compRandMult(10, 15, 40);
   const hyoujunPerUnit = compPick([2,3,4,5]);
-  const seisanryou = compRandMult(100, 5, 20);
+  const seisanryou = compRandMult(10, 5, 20);
   const hyoujunShouhiryou = seisanryou*hyoujunPerUnit;
-  const jissaiShouhiryou = hyoujunShouhiryou + compPick([-1,1])*compRandMult(10, 5, 30);
+  const jissaiShouhiryou = hyoujunShouhiryou + compPick([-1,1])*compRandMult(1, 5, 30);
   const jissaiTanka = hyoujunTanka + compPick([-1,1])*compRandMult(1, 5, 25);
   if(jissaiShouhiryou<=0 || jissaiTanka<=0) return genStdCost1();
   const jissaiShouhigaku = jissaiShouhiryou*jissaiTanka;
@@ -6464,12 +6466,12 @@ function genStdCost2(){
 function genStdCost3(){
   const hendouhiRitsu = compRandMult(10, 20, 50);
   const kiteihiRitsu = compRandMult(10, 15, 40);
-  const kijunSougyoudo = compRandMult(100, 10, 25);
+  const kijunSougyoudo = compRandMult(10, 10, 25);
   const kiteihiYosan = kiteihiRitsu*kijunSougyoudo;
   const hyoujunHaifuRitsu = hendouhiRitsu+kiteihiRitsu;
 
-  const hyoujunJikan = kijunSougyoudo + compPick([-1,1])*compRandMult(10, 2, 15);
-  const jissaiJikan = hyoujunJikan + compPick([-1,1])*compRandMult(10, 2, 15);
+  const hyoujunJikan = kijunSougyoudo + compPick([-1,1])*compRandMult(1, 2, 15);
+  const jissaiJikan = hyoujunJikan + compPick([-1,1])*compRandMult(1, 2, 15);
   if(hyoujunJikan<=0 || jissaiJikan<=0) return genStdCost3();
   const yosanKyoyougaku = hendouhiRitsu*jissaiJikan + kiteihiYosan;
   const jissaiHassei = yosanKyoyougaku + compPick([-1,1])*compRandMult(1000, 5, 40);
@@ -6531,8 +6533,8 @@ function genStdCost3(){
 
 // ===== CVP-1 generator =====
 function genCVP1(){
-  const hendouhi = compRandMult(100, 5, 25);
-  const kouken = compRandMult(100, 3, 15);
+  const hendouhi = compRandMult(10, 5, 25);
+  const kouken = compRandMult(10, 3, 15);
   const hanbaikakaku = hendouhi+kouken;
   const koteihi = kouken * compRandMult(1000, 2, 10);
   const bepRyou = koteihi/kouken;
@@ -6591,8 +6593,8 @@ function genCVP1(){
 // ===== CVP-2 generator =====
 function genCVP2(){
   const hendouHanbaihi = compRandMult(10, 5, 30);
-  const hendouSeizouhi = compRandMult(100, 5, 25);
-  const taniKouken = compRandMult(100, 3, 15);
+  const hendouSeizouhi = compRandMult(10, 5, 25);
+  const taniKouken = compRandMult(10, 3, 15);
   const hanbaikakaku = hendouSeizouhi+hendouHanbaihi+taniKouken;
   const koteiTotal = taniKouken * compRandMult(100, 3, 15);
   const koteiSeizouHiritsu = compPick([0.6,0.65,0.7,0.75]);
@@ -7185,14 +7187,14 @@ function genCalcDepUnits(){
 
 function genCalcAssetSale(){
   const n = compPick([5,8,10]);
-  const cost = n*12*calcRand(2,8)*1000;
+  const cost = n*12*calcRand(2,8)*(1000/COMP_SCALE);
   const annual = cost/n;
   const yearsUsed = calcRand(1,n-2);
   const accum = annual*yearsUsed;
   const m = compPick([3,6,9]);
   const depNow = annual*m/12;
   const bv = cost-accum-depNow;
-  const diff = calcRand(-4,4)*1000 || 2000;
+  const diff = calcRand(-4,4)*(1000/COMP_SCALE) || 2000;
   const price = bv+diff;
   const kind = diff>0?'売却益':'売却損';
   return {
@@ -7739,7 +7741,7 @@ function genCalcDept(){
   const h1 = calcRand(1,6)*10, h2 = calcRand(1,6)*10;
   const repRate = calcRand(2,9)*100;
   const repair = repRate*(h1+h2);
-  const cut = calcRand(30,80)*10000;
+  const cut = calcRand(30,80)*(10000/COMP_SCALE);
   const cutTotal = cut + powerRate*kw1 + repRate*h1;
   return {
     title:'部門別配賦（直接配賦法）',
@@ -7818,7 +7820,7 @@ function genCalcProcessFifo(){
   const inQ = qc - q0 + q1;
   const convIn = qc - q0*p0 + q1*p1;
   const M = um*inQ, K = uk*convIn;
-  const m0 = calcRand(1,3)*10000, k0 = calcRand(1,3)*10000;
+  const m0 = calcRand(1,3)*(10000/COMP_SCALE), k0 = calcRand(1,3)*(10000/COMP_SCALE);
   const wipM = um*q1, wipK = uk*q1*p1;
   const done = m0+k0+M+K-wipM-wipK;
   return {
@@ -7856,8 +7858,8 @@ function genCalcProcessFifo(){
 function genCalcJob(){
   const rate = calcRand(10,20)*100;
   const ohRate = calcRand(8,15)*100;
-  const prev1 = calcRand(10,30)*10000;
-  const mk = () => ({ mat:calcRand(5,20)*10000, h:calcRand(5,20)*10 });
+  const prev1 = calcRand(10,30)*(10000/COMP_SCALE);
+  const mk = () => ({ mat:calcRand(5,20)*(10000/COMP_SCALE), h:calcRand(5,20)*10 });
   const j1 = mk(), j2 = mk(), j3 = mk();
   const cost = j => j.mat + j.h*rate + j.h*ohRate;
   const c1 = prev1 + cost(j1), c2 = cost(j2), c3 = cost(j3);
@@ -7896,8 +7898,8 @@ function calcSignChoices(n, plus, minus, others){
 }
 
 function genCalcBankRecon(){
-  const adj = calcRand(30,90)*10000;
-  const t = calcRand(1,9)*10000, u = calcRand(1,9)*10000, w = calcRand(1,9)*10000, r = calcRand(1,5)*10000;
+  const adj = calcRand(30,90)*(10000/COMP_SCALE);
+  const t = calcRand(1,9)*(10000/COMP_SCALE), u = calcRand(1,9)*(10000/COMP_SCALE), w = calcRand(1,9)*(10000/COMP_SCALE), r = calcRand(1,5)*(10000/COMP_SCALE);
   const S = adj - t + u, B = adj - w - r;
   return {
     title:'銀行勘定調整表（両者区分調整法）',
@@ -8250,7 +8252,7 @@ function genCalcRevenue(){
 function genCalcConsolUpstream(){
   const share = compPick([60,70,80]);
   const [mark, ratio] = compPick([[25,'25／125'],[20,'20／120'],[10,'10／110']]);
-  const inv = (100+mark)*calcRand(2,9)*1000;
+  const inv = (100+mark)*calcRand(2,9)*(1000/COMP_SCALE);
   const unreal = inv*mark/(100+mark);
   const nci = unreal*(100-share)/100;
   return {
@@ -8297,12 +8299,12 @@ function genCalcConsolReceivable(){
 
 function genCalcConsolYear2(){
   const share = compPick([60,70,80]);
-  const cap = calcRand(3,9)*100000, re = calcRand(1,5)*100000;
+  const cap = calcRand(3,9)*(100000/COMP_SCALE), re = calcRand(1,5)*(100000/COMP_SCALE);
   const net = cap+re;
-  const g = calcRand(1,5)*10000;
+  const g = calcRand(1,5)*(10000/COMP_SCALE);
   const nci0 = net*(100-share)/100;
-  const ni = calcRand(5,20)*10000;
-  const div = calcRand(1,4)*10000;
+  const ni = calcRand(5,20)*(10000/COMP_SCALE);
+  const div = calcRand(1,4)*(10000/COMP_SCALE);
   const amort = g/10;
   const niNci = ni*(100-share)/100;
   const divNci = div*(100-share)/100;
@@ -8553,13 +8555,13 @@ function genCalcProcessGrade(){
 }
 
 function genCalcMfgReport(){
-  const m0 = calcRand(2,6)*10000, mb = calcRand(20,50)*10000, m1 = calcRand(2,6)*10000;
+  const m0 = calcRand(2,6)*(10000/COMP_SCALE), mb = calcRand(20,50)*(10000/COMP_SCALE), m1 = calcRand(2,6)*(10000/COMP_SCALE);
   const mat = m0+mb-m1;
-  const lab = calcRand(15,40)*10000, exp_ = calcRand(10,30)*10000;
+  const lab = calcRand(15,40)*(10000/COMP_SCALE), exp_ = calcRand(10,30)*(10000/COMP_SCALE);
   const total = mat+lab+exp_;
-  const w0 = calcRand(3,8)*10000, w1 = calcRand(3,8)*10000;
+  const w0 = calcRand(3,8)*(10000/COMP_SCALE), w1 = calcRand(3,8)*(10000/COMP_SCALE);
   const cogm = total+w0-w1;
-  const f0 = calcRand(3,8)*10000, f1 = calcRand(3,8)*10000;
+  const f0 = calcRand(3,8)*(10000/COMP_SCALE), f1 = calcRand(3,8)*(10000/COMP_SCALE);
   const cogs = f0+cogm-f1;
   return {
     title:'製造原価報告書と売上原価',
