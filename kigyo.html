@@ -41,6 +41,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku 
 .nav-pos{font-size:15px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
 .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:18px 18px 16px;min-width:0}
 .q-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+[hidden]{display:none!important}
+.rk{display:inline-block;min-width:18px;text-align:center;border-radius:4px;margin-right:6px;font-size:11px;color:#fff}
+.rk-A{background:var(--ng)}.rk-B{background:var(--act-bd)}.rk-C{background:var(--muted)}
 .tag{font-size:11px;font-weight:700;color:var(--primary);background:var(--primary-light);border-radius:999px;padding:2px 10px}
 .chk{font-family:inherit;font-size:13px;font-weight:700;border:1.5px solid var(--border);background:var(--card);color:var(--muted);border-radius:20px;padding:4px 12px;cursor:pointer;white-space:nowrap}
 .chk.c1{border-color:var(--act-bd);color:var(--act-fg);background:var(--act-bg)}
@@ -101,6 +104,12 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
     <button class="ctrl-btn" data-view="check" type="button">✅ チェックのみ</button>
     <button class="ctrl-btn" data-view="double" type="button">✅✅ ダブルチェックのみ</button>
   </div>
+  <div class="row" id="rankRow"><span class="lbl">ランク：</span>
+    <button class="ctrl-btn" data-rank="all" type="button">すべて</button>
+    <button class="ctrl-btn" data-rank="A" type="button">A</button>
+    <button class="ctrl-btn" data-rank="B" type="button">B</button>
+    <button class="ctrl-btn" data-rank="C" type="button">C</button>
+  </div>
 </div>
 
 <div class="check-bar gut">
@@ -123,6 +132,7 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 // 問題データは kigyo-data/*.js が QB.add() で登録する。
 // 行の形式（穴埋め）: [小分野ID, 問題文（(○○)を含む）, 正解の選択肢, 誤りの選択肢1, 誤りの選択肢2, 誤りの選択肢3, 解説, 根拠]
 // 行の形式（正誤）  : [小分野ID, 記述, 1=正しい / 0=誤り, 解説, 根拠]
+// どちらの形式も、末尾に重要度ランク（'A'・'B'・'C'）を付けることができる。
 // 選択肢の並びは問題IDから決まる（毎回同じ）。問題IDは「分野.小分野.小分野内の通し番号」なので、
 // 問題は各小分野の末尾に追加すること（途中に挿入するとチェックの記録がずれる）。
 function rng(str){let h=2166136261;for(const ch of str){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return()=>{h+=0x6D2B79F5;let t=h;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
@@ -131,10 +141,14 @@ const QB={cats:[],add(id,name,subs,rows){
   const qs=rows.map(r=>{
     n[r[0]]=(n[r[0]]||0)+1;
     const qid=`${id}.${r[0]}.${n[r[0]]}`;
+    let rk=null;if(['A','B','C'].includes(r[r.length-1])){rk=r[r.length-1];r=r.slice(0,-1);}
+    const q=(()=>{
     if(r.length===5)return{id:qid,c:id,s:r[0],q:r[1],opts:['○（正しい）','×（誤り）'],ans:r[2]?0:1,e:r[3],r:r[4]};
     const rand=rng(qid),opts=[r[2],r[3],r[4],r[5]];
     for(let i=3;i>0;i--){const j=Math.floor(rand()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
     return{id:qid,c:id,s:r[0],q:r[1],opts,ans:opts.indexOf(r[2]),e:r[6],r:r[7]};
+    })();
+    q.rk=rk;return q;
   });
   this.cats.push({id,name,subs:subs.map(([sid,sname])=>({id:sid,name:sname})),qs});
 }};
@@ -156,7 +170,7 @@ const subName=(c,s)=>catOf(c).subs.find(x=>x.id===s).name;
 const MC=CATS.flatMap(c=>c.qs);
 
 let ST={},CHK={};   // ST: {問題ID:{c,w,l}} 正答記録 / CHK: {問題ID:1|2} チェック・ダブルチェック
-let P={cat:'all',sub:'all',view:'all',idx:0,hide:false};
+let P={cat:'all',sub:'all',view:'all',rank:'all',idx:0,hide:false};
 function load(){
   try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){ST=d.st||{};CHK=d.chk||{};Object.assign(P,d.p||{});}}catch(e){}
   if(P.cat!=='all'&&!catOf(P.cat))P.cat='all';
@@ -181,6 +195,7 @@ function list(){
   let qs=scope();
   if(P.view==='check')qs=qs.filter(q=>CHK[q.id]);
   if(P.view==='double')qs=qs.filter(q=>CHK[q.id]===2);
+  if(P.rank!=='all'&&scope().some(q=>q.rk))qs=qs.filter(q=>q.rk===P.rank);
   return qs;
 }
 
@@ -197,6 +212,8 @@ function renderControls(){
       c.subs.map(s=>`<button type="button" class="ctrl-btn${P.sub===s.id?' active':''}" data-sub="${s.id}">${esc(s.name)}<small>${c.qs.filter(q=>q.s===s.id).length}</small></button>`).join('');
   }
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===P.view));
+  $('rankRow').hidden=!scope().some(q=>q.rk);
+  document.querySelectorAll('[data-rank]').forEach(b=>b.classList.toggle('active',b.dataset.rank===P.rank));
   const sc=scope();
   $('sTotal').textContent=list().length;
   $('sCheck').textContent=sc.filter(q=>CHK[q.id]).length;
@@ -217,7 +234,7 @@ function renderQ(){
   const q=qs[P.idx],ck=CHK[q.id]||0;
   $('pos').textContent=`問${P.idx+1} / ${qs.length}`;
   $('prevBtn').disabled=P.idx===0;$('nextBtn').disabled=P.idx>=qs.length-1;
-  const top=`<div class="q-top"><span class="tag">${esc(label(q))}</span><button type="button" class="chk c${ck}" id="chkBtn">${chkText(ck)}</button></div>`;
+  const top=`<div class="q-top"><span class="tag">${q.rk?`<b class="rk rk-${q.rk}">${q.rk}</b>`:''}${esc(label(q))}</span><button type="button" class="chk c${ck}" id="chkBtn">${chkText(ck)}</button></div>`;
   {
     $('card').innerHTML=top+`<div class="q-text">${esc(q.q)}</div>
       <div class="opts">${q.opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}"><span class="num">${NUM[i]}</span><span class="otext">${esc(o)}</span></button>`).join('')}</div>
@@ -266,6 +283,7 @@ function reset(){P.idx=0;renderControls();renderQ();}
 $('cats').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(!b)return;P.cat=b.dataset.cat;P.sub='all';reset();});
 $('subs').addEventListener('click',e=>{const b=e.target.closest('[data-sub]');if(!b)return;P.sub=b.dataset.sub;reset();});
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{P.view=b.dataset.view;reset();});
+document.querySelectorAll('[data-rank]').forEach(b=>b.onclick=()=>{P.rank=b.dataset.rank;reset();});
 $('catToggle').onclick=()=>{P.hide=!P.hide;save();renderControls();};
 $('prevBtn').onclick=()=>go(-1);
 $('nextBtn').onclick=()=>go(1);
