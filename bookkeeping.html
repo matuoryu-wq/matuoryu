@@ -4412,8 +4412,6 @@ function fmtQ(q){
   txt=txt.replace(/^（穴埋め[^）]*）[\s　]*/u,'');
   txt=addQBreaks(txt);
   let html=styleParens(txt);
-  const enq = q.en_q || JRNL_EN_Q[q.id];
-  if(enq && !/^1級/.test(q.chap||'')) html+=`<div class="q-en-trans">${enq}</div>`;
   return html;
 }
 
