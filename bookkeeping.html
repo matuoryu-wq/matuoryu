@@ -4495,6 +4495,7 @@ function loadExpEntry(){
   expPlaced={d:[],c:[]}; expHistory=[]; expCardIdx=0;
   document.getElementById('exp-entry-area').innerHTML=`
     ${label}
+    <button class="exp-reveal-btn" id="ans-show-btn" onclick="expShowAns()">答えを表示</button>
     <div class="exp-swipe-wrap" id="exp-sw">
     </div>
     <div class="exp-zones">
@@ -4656,11 +4657,20 @@ function expUndo(){
   renderExpCard();
 }
 
-function expCheckResult(){
+// 「答えを表示」：解かずに正解の仕訳と解説を出す（不正解として扱う）
+function expShowAns(){
+  const card=document.querySelector('#exp-sw .exp-swipe-card');
+  if(card) card.remove();
+  expCheckResult(true);
+}
+
+function expCheckResult(revealed){
   const q=expQuestions[expQIdx];
   const cards=window._expCards||[];
-  let ok=true;
+  let ok=!revealed;
   cards.forEach(acc=>{ if(expPlaced.d.includes(acc)!==(acc.side==='d')) ok=false; });
+  const showBtn=document.getElementById('ans-show-btn');
+  if(showBtn) showBtn.style.display='none';
   if(!ok) expQOk=false;
   const isLastEntry=expEntryIdx>=q.e.length-1;
   const res=document.getElementById('exp-res');
@@ -4684,7 +4694,7 @@ function expCheckResult(){
     res.innerHTML=`<div class="exp-res-hd">⭕ 正解！</div>${expJa}${checkBtn}${nextEntryBtn}`;
   } else {
     res.innerHTML=`
-      <div class="exp-res-hd">❌ 不正解</div>
+      <div class="exp-res-hd">${revealed?'📖 答え':'❌ 不正解'}</div>
       <div class="exp-res-ans">
         <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">正解の仕訳${multiLabel}</div>
         <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:start;">
@@ -5440,6 +5450,7 @@ function renderDispQuiz(){
         <div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この説明にあてはまる区分は？</div>
         <div style="font-size:16px;font-weight:700;line-height:1.7;">${item.q}</div>
       </div>
+      <button class="exp-reveal-btn" id="ans-show-btn" onclick="selectDispConcept(null,-1)">答えを表示</button>
       <div class="exp-step-choices wide" id="disp-choices">
         ${choices.map((c,i)=>`<button class="exp-step-choice-btn" onclick="selectDispConcept(this,${i})">${c}</button>`).join('')}
       </div>
@@ -5462,6 +5473,7 @@ function renderDispQuiz(){
     ${dispTabsHtml()}
     ${acctModeHtml()}
     <div class="exp-q-card" style="text-align:center;">${qHtml}</div>
+    <button class="exp-reveal-btn" id="ans-show-btn" onclick="selectAcctChoice(null,-1)">答えを表示</button>
     <div class="exp-step-choices wide" id="disp-ja-choices">
       ${choiceItems.map((c,i)=>`<button class="exp-step-choice-btn"${acctQuizReverse?' style="text-align:left;font-weight:500;line-height:1.6;"':''} onclick="selectAcctChoice(this,${i})">${acctQuizReverse?acctDescHtml(c):c.name}</button>`).join('')}
     </div>
@@ -5498,8 +5510,9 @@ function acctAnswerHtml(item){
 function selectAcctChoice(btn, i){
   const item = dispQuizDeck[dispQuizIdx];
   const choices = window._acctChoices;
-  const ok = choices[i] === item;
+  const ok = i>=0 && choices[i] === item;
   markDispChoices('disp-ja-choices', choices.indexOf(item), i);
+  const showBtn=document.getElementById('ans-show-btn'); if(showBtn) showBtn.style.display='none';
   if(ok) dispQuizScore++;
   else dispQuizWrong.push(item.no);
   const isLast = dispQuizIdx>=dispQuizDeck.length-1;
@@ -5507,7 +5520,7 @@ function selectAcctChoice(btn, i){
   res.className = `exp-result ${ok?'ok':'ng'}`;
   res.style.display = 'block';
   res.innerHTML = `
-    <div class="exp-res-hd">${ok?'⭕ 正解！':'❌ 不正解'}</div>
+    <div class="exp-res-hd">${ok?'⭕ 正解！':(i<0?'📖 答え':'❌ 不正解')}</div>
     <button class="exp-nav-btn exp-nav-next" style="width:100%;margin:10px 0;" onclick="dispQuizNext()">${isLast?'結果を見る →':'次の問題 →'}</button>
     <div class="exp-res-exp">${acctAnswerHtml(item)}</div>`;
   res.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -5517,8 +5530,9 @@ function selectDispConcept(btn, i){
   const chosen = window._dispChoices[i];
   const correct = window._dispCorrect;
   const item = dispQuizDeck[dispQuizIdx];
-  const ok = chosen === correct;
+  const ok = i>=0 && chosen === correct;
   markDispChoices('disp-choices', window._dispChoices.indexOf(correct), i);
+  const showBtn=document.getElementById('ans-show-btn'); if(showBtn) showBtn.style.display='none';
   if(ok) dispQuizScore++;
   else dispQuizWrong.push(item.no);
   const isLast = dispQuizIdx>=dispQuizDeck.length-1;
@@ -5526,7 +5540,7 @@ function selectDispConcept(btn, i){
   res.className = `exp-result ${ok?'ok':'ng'}`;
   res.style.display = 'block';
   res.innerHTML = `
-    <div class="exp-res-hd">${ok?'⭕ 正解！':'❌ 不正解'}</div>
+    <div class="exp-res-hd">${ok?'⭕ 正解！':(i<0?'📖 答え':'❌ 不正解')}</div>
     <button class="exp-nav-btn exp-nav-next" style="width:100%;margin:10px 0;" onclick="dispQuizNext()">${isLast?'結果を見る →':'次の問題 →'}</button>
     <div class="exp-res-exp">${item.reason}</div>`;
   res.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -6999,6 +7013,7 @@ function renderCompStep(){
       <div class="exp-step-progress">${dots}</div>
     </div>
     ${step.hint ? `<div class="comp-hint">💡 前の設問の答えを使う：${step.hint}</div>` : ''}
+    <button class="exp-reveal-btn" id="ans-show-btn" onclick="compShowAns()">答えを表示</button>
     <div class="exp-step-choices${isLong?' wide':''}">
       ${shuffled.map((c,i)=>`<button class="exp-step-choice-btn" onclick="selectCompChoice(this,${i})">${compFmtChoice(c)}${(typeof c==='number' && step.unit)?('　'+step.unit):''}</button>`).join('')}
     </div>`;
@@ -7011,6 +7026,7 @@ function selectCompChoice(btn, idx){
   const ok = chosen === step.ans;
   if(ok){
     if(!compQuizFirstAttemptUsed) compQuizCorrectFirstTry++;
+    const showBtn=document.getElementById('ans-show-btn'); if(showBtn) showBtn.style.display='none';
     document.querySelectorAll('#comp-step-area .exp-step-choice-btn').forEach(b=>{
       b.disabled = true;
       if(b===btn) b.classList.add('correct');
@@ -7024,6 +7040,18 @@ function selectCompChoice(btn, idx){
   }
 }
 
+// 「答えを表示」：解かずに正解と解説を出す（1回目で正解できなかった扱い）
+function compShowAns(){
+  const step = compQuizDeck[compQuizIdx].steps[compQuizStepIdx];
+  compQuizFirstAttemptUsed = true;
+  const ai = window._compChoices.indexOf(step.ans);
+  document.querySelectorAll('#comp-step-area .exp-step-choice-btn').forEach((b,i)=>{
+    b.disabled = true;
+    if(i===ai) b.classList.add('correct'); else b.style.opacity = '0.4';
+  });
+  showCompStepExplanation(true);
+}
+
 function compStmtHtml(item, step){
   if(!step.stmtKey || !item.stmt || !item.stmt[step.stmtKey]) return '';
   const entry = item.stmt[step.stmtKey];
@@ -7033,7 +7061,7 @@ function compStmtHtml(item, step){
   </div>`;
 }
 
-function showCompStepExplanation(){
+function showCompStepExplanation(revealed){
   const item = compQuizDeck[compQuizIdx];
   const step = item.steps[compQuizStepIdx];
   const isLastStepOfProblem = compQuizStepIdx >= item.steps.length - 1;
@@ -7042,8 +7070,9 @@ function showCompStepExplanation(){
   const res = document.getElementById('comp-res');
   res.className = 'exp-result ok';
   res.style.display = 'block';
+  const showBtn=document.getElementById('ans-show-btn'); if(showBtn) showBtn.style.display='none';
   res.innerHTML = `
-    <div class="exp-res-hd">⭕ 正解</div>
+    <div class="exp-res-hd">${revealed?'📖 答え':'⭕ 正解'}</div>
     ${compStmtHtml(item, step)}
     <button class="exp-nav-btn exp-nav-next" style="width:100%;margin:10px 0;" onclick="compQuizNextStep()">${nextLabel}</button>
     ${(()=>{ const c=isStepChecked(item, compQuizStepIdx); return `<div style="margin:0 0 10px;"><button id="comp-check-btn" class="exp-check-btn${c?' active':''}" onclick="toggleCompCheck()">${c?'☑ この設問はチェック済み':'☐ この設問にチェック'}</button></div>`; })()}
