@@ -5584,10 +5584,10 @@ function compRandMult(base, loMult, hiMult){
     const r5 = cands.filter(n=>n%5===0), r2 = cands.filter(n=>n%2===0);
     if(r5.length >= 2) cands = r5; else if(r2.length >= 2) cands = r2;
   }
-  return (base >= 1000 ? base/COMP_SCALE : base) * cands[Math.floor(Math.random()*cands.length)];
+  return (base >= 500 ? base/COMP_SCALE : base) * cands[Math.floor(Math.random()*cands.length)];
 }
 // 金額の桁を小さくする（1,000円以上の単位をこの数で割る）
-const COMP_SCALE = 10;
+const COMP_SCALE = 100;
 function compPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function fmtVar(n){
   return `${Math.abs(n).toLocaleString()}円（${n<0?'不利':'有利'}差異）`;
@@ -6464,8 +6464,8 @@ function genStdCost2(){
 
 // ===== StdCost-3 generator（製造間接費差異） =====
 function genStdCost3(){
-  const hendouhiRitsu = compRandMult(10, 20, 50);
-  const kiteihiRitsu = compRandMult(10, 15, 40);
+  const hendouhiRitsu = compRandMult(1, 20, 50);
+  const kiteihiRitsu = compRandMult(1, 15, 40);
   const kijunSougyoudo = compRandMult(10, 10, 25);
   const kiteihiYosan = kiteihiRitsu*kijunSougyoudo;
   const hyoujunHaifuRitsu = hendouhiRitsu+kiteihiRitsu;
@@ -6596,7 +6596,7 @@ function genCVP2(){
   const hendouSeizouhi = compRandMult(10, 5, 25);
   const taniKouken = compRandMult(10, 3, 15);
   const hanbaikakaku = hendouSeizouhi+hendouHanbaihi+taniKouken;
-  const koteiTotal = taniKouken * compRandMult(100, 3, 15);
+  const koteiTotal = taniKouken * compRandMult(10, 3, 15);
   const koteiSeizouHiritsu = compPick([0.6,0.65,0.7,0.75]);
   const koteiSeizou = Math.round(koteiTotal*koteiSeizouHiritsu);
   const koteiHankan = koteiTotal - koteiSeizou;
@@ -6738,26 +6738,26 @@ function genRenketsuSeisan(){
   return {
     title:'連結精算表（連結財務諸表の作成）',
     scenario_html:`<div class="comp-table">
-      ${row('shutoku','支配の獲得','P社は前期末にS社株式の80％を60,000円で取得した。その日のS社の純資産は、資本金50,000円、利益剰余金20,000円（土地などの評価差額はない）')}
+      ${row('shutoku','支配の獲得','P社は前期末にS社株式の80％を6,000円で取得した。その日のS社の純資産は、資本金5,000円、利益剰余金2,000円（土地などの評価差額はない）')}
       ${row('noren','のれん','10年で均等に償却する')}
-      ${row('pl','当期の個別損益計算書','P社：売上高200,000円、売上原価140,000円、受取配当金1,600円、当期純利益25,000円／S社：売上高120,000円、売上原価90,000円、当期純利益10,000円')}
-      ${row('haito','S社の配当','当期に2,000円の配当を支払った（P社は1,600円を受け取った）')}
-      ${row('naibu','グループ内取引','P社はS社に商品30,000円を販売した。S社の期末在庫には、P社が付加した利益1,000円が含まれている')}
-      ${row('saiken','債権債務','P社のS社に対する売掛金が5,000円あり、P社は期末の売掛金に2％の貸倒引当金を設定している（期首の残高はない）')}
+      ${row('pl','当期の個別損益計算書','P社：売上高20,000円、売上原価14,000円、受取配当金160円、当期純利益2,500円／S社：売上高12,000円、売上原価9,000円、当期純利益1,000円')}
+      ${row('haito','S社の配当','当期に200円の配当を支払った（P社は160円を受け取った）')}
+      ${row('naibu','グループ内取引','P社はS社に商品3,000円を販売した。S社の期末在庫には、P社が付加した利益100円が含まれている')}
+      ${row('saiken','債権債務','P社のS社に対する売掛金が500円あり、P社は期末の売掛金に2％の貸倒引当金を設定している（期首の残高はない）')}
     </div>`,
     steps:[
-      { label:'連結貸借対照表ののれん（期末）はいくらか？', ans:3600, unit:'円', relKeys:['shutoku','noren'], choices:[3600,4000,4400,3200],
-        exp:'のれん：60,000－（50,000＋20,000）×80％＝4,000。当期の償却4,000÷10年＝400。期末は4,000－400＝<strong>3,600円</strong>。' },
-      { label:'非支配株主に帰属する当期純利益はいくらか？', ans:2000, unit:'円', relKeys:['pl'], choices:[2000,8000,1600,400],
-        exp:'S社の当期純利益10,000×20％＝<strong>2,000円</strong>。未実現利益はP社（親会社）が付加したものなので、非支配株主は負担しない。' },
-      { label:'連結貸借対照表の非支配株主持分（期末）はいくらか？', ans:15600, unit:'円', relKeys:['shutoku','pl','haito'], choices:[15600,16000,14000,15200],
-        exp:'支配獲得時：70,000×20％＝14,000。＋当期純利益の配分2,000－配当の配分2,000×20％＝400。14,000＋2,000－400＝<strong>15,600円</strong>。' },
-      { label:'連結損益計算書の売上高はいくらか？', ans:290000, unit:'円', relKeys:['pl','naibu'], choices:[290000,320000,260000,289000],
-        exp:'200,000＋120,000－グループ内の売上30,000＝<strong>290,000円</strong>。' },
-      { label:'連結損益計算書の売上原価はいくらか？', ans:201000, unit:'円', relKeys:['pl','naibu'], choices:[201000,200000,230000,199000],
-        exp:'140,000＋90,000－グループ内の仕入30,000＋期末在庫の未実現利益1,000＝<strong>201,000円</strong>。未実現利益を消すと、売上原価が増える。' },
-      { label:'親会社株主に帰属する当期純利益はいくらか？', ans:30100, unit:'円', relKeys:['pl','haito','naibu','saiken','noren'], choices:[30100,30000,32100,31700],
-        exp:'P社25,000＋S社10,000＝35,000。ここから、のれん償却400、受取配当金1,600、未実現利益1,000を引き、貸倒引当金の修正100（S社への売掛金5,000×2％を取り消す）を足し、非支配株主の分2,000を引く。35,000－400－1,600－1,000＋100－2,000＝<strong>30,100円</strong>。' },
+      { label:'連結貸借対照表ののれん（期末）はいくらか？', ans:360, unit:'円', relKeys:['shutoku','noren'], choices:[360,400,440,320],
+        exp:'のれん：6,000－（5,000＋2,000）×80％＝400。当期の償却400÷10年＝40。期末は400－40＝<strong>360円</strong>。' },
+      { label:'非支配株主に帰属する当期純利益はいくらか？', ans:200, unit:'円', relKeys:['pl'], choices:[200,800,160,40],
+        exp:'S社の当期純利益1,000×20％＝<strong>200円</strong>。未実現利益はP社（親会社）が付加したものなので、非支配株主は負担しない。' },
+      { label:'連結貸借対照表の非支配株主持分（期末）はいくらか？', ans:1560, unit:'円', relKeys:['shutoku','pl','haito'], choices:[1560,1600,1400,1520],
+        exp:'支配獲得時：7,000×20％＝1,400。＋当期純利益の配分200－配当の配分200×20％＝40。1,400＋200－40＝<strong>1,560円</strong>。' },
+      { label:'連結損益計算書の売上高はいくらか？', ans:29000, unit:'円', relKeys:['pl','naibu'], choices:[29000,32000,26000,28900],
+        exp:'20,000＋12,000－グループ内の売上3,000＝<strong>29,000円</strong>。' },
+      { label:'連結損益計算書の売上原価はいくらか？', ans:20100, unit:'円', relKeys:['pl','naibu'], choices:[20100,20000,23000,19900],
+        exp:'14,000＋9,000－グループ内の仕入3,000＋期末在庫の未実現利益100＝<strong>20,100円</strong>。未実現利益を消すと、売上原価が増える。' },
+      { label:'親会社株主に帰属する当期純利益はいくらか？', ans:3010, unit:'円', relKeys:['pl','haito','naibu','saiken','noren'], choices:[3010,3000,3210,3170],
+        exp:'P社2,500＋S社1,000＝3,500。ここから、のれん償却40、受取配当金160、未実現利益100を引き、貸倒引当金の修正10（S社への売掛金500×2％を取り消す）を足し、非支配株主の分200を引く。3,500－40－160－100＋10－200＝<strong>3,010円</strong>。' },
     ]
   };
 }
@@ -7735,11 +7735,11 @@ function genCalcOverhead(){
 }
 
 function genCalcDept(){
-  const kw1 = calcRand(2,8)*100, kw2 = calcRand(2,8)*100;
+  const kw1 = calcRand(2,8)*10, kw2 = calcRand(2,8)*10;
   const powerRate = calcRand(2,9)*10;
   const power = powerRate*(kw1+kw2);
   const h1 = calcRand(1,6)*10, h2 = calcRand(1,6)*10;
-  const repRate = calcRand(2,9)*100;
+  const repRate = calcRand(2,9)*10;
   const repair = repRate*(h1+h2);
   const cut = calcRand(30,80)*(10000/COMP_SCALE);
   const cutTotal = cut + powerRate*kw1 + repRate*h1;
@@ -7767,8 +7767,8 @@ function genCalcDept(){
 }
 
 function genCalcProcessAvg(){
-  const qc = calcRand(8,15)*100;
-  const q1 = calcRand(2,5)*100;
+  const qc = calcRand(8,15)*10;
+  const q1 = calcRand(2,5)*10;
   const p1 = compPick([0.4,0.5,0.6]);
   const um = calcRand(3,9)*10;
   const uk = calcRand(4,12)*10;
@@ -7812,9 +7812,9 @@ function genCalcProcessAvg(){
 }
 
 function genCalcProcessFifo(){
-  const q0 = calcRand(1,3)*100, p0 = 0.5;
-  const qc = calcRand(8,15)*100;
-  const q1 = calcRand(2,5)*100;
+  const q0 = calcRand(1,3)*10, p0 = 0.5;
+  const qc = calcRand(8,15)*10;
+  const q1 = calcRand(2,5)*10;
   const p1 = compPick([0.4,0.6]);
   const um = calcRand(3,9)*10, uk = calcRand(4,12)*10;
   const inQ = qc - q0 + q1;
@@ -8433,7 +8433,7 @@ function genCalcDeptPredet(){
 
 function genCalcSpoilage(){
   const atEnd = Math.random()<0.5;
-  const qc = calcRand(8,15)*100, qs = calcRand(1,3)*50, q1 = calcRand(2,5)*100;
+  const qc = calcRand(8,15)*10, qs = calcRand(1,3)*5, q1 = calcRand(2,5)*10;
   const p1 = compPick([0.4,0.5,0.6]);
   const um = calcRand(3,9)*10, uk = calcRand(4,12)*10;
   const denomM = atEnd ? qc+qs+q1 : qc+q1;
@@ -8629,10 +8629,10 @@ function genCalcStdVariance(){
 }
 
 function genCalcStdPlan(){
-  const um = calcRand(3,9)*100;
+  const um = calcRand(3,9)*10;
   const qc = calcRand(8,15)*10, q1 = calcRand(2,5)*10;
   const S = um*(qc+q1);
-  const d = compPick([-1,1])*calcRand(1,5)*500;
+  const d = compPick([-1,1])*calcRand(1,5)*50;
   const A = S + d;
   const fav = A < S;
   return {
