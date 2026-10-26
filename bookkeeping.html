@@ -7087,36 +7087,40 @@ function compStmtHtml(item, step){
 }
 
 // 「○○書のどこに入るか」の問題：金額の設問に正解したあとに出す
-// 答えは、その行が属する区分（見出し）。設問の文に答えが書いてある場合や、合計・利益の行は出さない
+// 区分（見出し）の中に入る行は区分を答える。それ以外（利益・合計の行、区分のない行など）は行の名前を答える
 function compPosQuiz(item, step){
   if(!step.stmtKey || !step.stmtLines || !item.stmt || !item.stmt[step.stmtKey]) return null;
   const entry = item.stmt[step.stmtKey];
   const div = document.createElement('div'); div.innerHTML = entry.html;
   const rows = [...div.querySelectorAll('tr')];
-  const heads = rows.filter(r=>r.className==='hd').map(r=>r.cells[0].innerText.trim());
   const isBS = entry.title==='貸借対照表', isPL = /損益計算書$/.test(entry.title) && !/直接原価/.test(entry.title);
-  let ans = null;
-  for(const key of step.stmtLines){
-    const i = rows.findIndex(r=>r.dataset.line===key);
-    if(i<0 || rows[i].className==='sub') return null;
-    let hd = null;
-    for(let j=i-1;j>=0;j--){ if(rows[j].className==='hd'){ hd=rows[j].cells[0].innerText.trim(); break; } }
-    if(!hd || (!isBS && rows[i].className!=='i')) return null;
-    let a = hd;
-    if(isBS && rows[i].className==='i') a = hd+'（資産から差し引く）';
-    if(ans && ans!==a) return null;
-    ans = a;
+  const hdOf = i => { for(let j=i-1;j>=0;j--) if(rows[j].className==='hd') return rows[j].cells[0].innerText.trim(); return null; };
+  const label = i => rows[i].cells[0].innerText.trim();
+  // 行の名前：同じ名前の行が複数ある書類（株主資本等変動計算書など）は見出しを付けて区別する
+  const nameOf = i => { const l=label(i), h=hdOf(i); return (h && rows.filter(r=>r.className!=='hd' && r.cells[0].innerText.trim()===l).length>1) ? h+l : l; };
+  const idx = step.stmtLines.map(k=>rows.findIndex(r=>r.dataset.line===k));
+  if(idx.some(i=>i<0)) return null;
+  // 区分を答える形
+  const secOf = i => {
+    const r=rows[i], hd=hdOf(i);
+    if(r.className==='sub' || !hd) return null;
+    if(isBS) return r.className==='i' ? hd+'（資産から差し引く）' : hd;
+    if(isPL && r.className==='i') return hd;
+    return null;
+  };
+  const secs = idx.map(secOf);
+  if(secs.every(x=>x) && new Set(secs).size===1){
+    const ans = secs[0];
+    let pool;
+    if(isBS) pool = ['資産の部','資産の部（資産から差し引く）','負債の部','純資産の部'];
+    else pool = [ans, ...['売上原価','販売費及び一般管理費','営業外収益','営業外費用','特別利益','特別損失'].filter(x=>x!==ans && !(ans==='売上原価の内訳' && x==='売上原価'))];
+    const others = shuffleArr([...new Set(pool)].filter(x=>x!==ans)).slice(0,3);
+    return { title: entry.title, ans, choices: shuffleArr([ans, ...others]) };
   }
-  if(!ans) return null;
-  const core = ans.replace(/[【】]/g,'').replace(/（.*?）/g,'');
-  if(step.label.includes(core)) return null;
-  let pool;
-  if(isBS) pool = ['資産の部','資産の部（資産から差し引く）','負債の部','純資産の部'];
-  else if(isPL) pool = [ans, ...['売上原価','販売費及び一般管理費','営業外収益','営業外費用','特別利益','特別損失'].filter(x=>x!==ans && !(ans==='売上原価の内訳' && x==='売上原価'))];
-  else pool = heads;
-  pool = [...new Set(pool)];
-  if(pool.length<2) return null;
-  const others = shuffleArr(pool.filter(x=>x!==ans)).slice(0,3);
+  // 行の名前を答える形
+  const ans = idx.map(nameOf).join('・');
+  const pool = [...new Set(rows.map((r,i)=>i).filter(i=>rows[i].className!=='hd' && !idx.includes(i)).map(nameOf))].filter(x=>x!==ans);
+  const others = shuffleArr(pool).slice(0,3);
   return { title: entry.title, ans, choices: shuffleArr([ans, ...others]) };
 }
 
