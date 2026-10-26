@@ -7024,6 +7024,7 @@ function renderCompStep(){
   window._compChoices = shuffled;
   const isLong = shuffled.some(v=>String(compFmtChoice(v)).length>10) || typeof step.ans !== 'number';
   compQuizFirstAttemptUsed = false;
+  compPosPending = null;
   const showBtn=document.getElementById('ans-show-btn'); if(showBtn) showBtn.style.visibility='';
   area.innerHTML = `
     <div class="exp-step-header">
@@ -7065,6 +7066,7 @@ function compGoProb(i){
 
 // 「答えを表示」：解かずに正解と解説を出す（1回目で正解できなかった扱い）
 function compShowAns(){
+  if(compPosPending){ selectCompPos(null,-1); return; }
   const step = compQuizDeck[compQuizIdx].steps[compQuizStepIdx];
   compQuizFirstAttemptUsed = true;
   const ai = window._compChoices.indexOf(step.ans);
@@ -7084,7 +7086,77 @@ function compStmtHtml(item, step){
   </div>`;
 }
 
+// 「○○書のどこに入るか」の問題：金額の設問に正解したあとに出す
+// 答えは、その行が属する区分（見出し）。設問の文に答えが書いてある場合や、合計・利益の行は出さない
+function compPosQuiz(item, step){
+  if(!step.stmtKey || !step.stmtLines || !item.stmt || !item.stmt[step.stmtKey]) return null;
+  const entry = item.stmt[step.stmtKey];
+  const div = document.createElement('div'); div.innerHTML = entry.html;
+  const rows = [...div.querySelectorAll('tr')];
+  const heads = rows.filter(r=>r.className==='hd').map(r=>r.cells[0].innerText.trim());
+  const isBS = entry.title==='貸借対照表', isPL = /損益計算書$/.test(entry.title) && !/直接原価/.test(entry.title);
+  let ans = null;
+  for(const key of step.stmtLines){
+    const i = rows.findIndex(r=>r.dataset.line===key);
+    if(i<0 || rows[i].className==='sub') return null;
+    let hd = null;
+    for(let j=i-1;j>=0;j--){ if(rows[j].className==='hd'){ hd=rows[j].cells[0].innerText.trim(); break; } }
+    if(!hd || (!isBS && rows[i].className!=='i')) return null;
+    let a = hd;
+    if(isBS && rows[i].className==='i') a = hd+'（資産から差し引く）';
+    if(ans && ans!==a) return null;
+    ans = a;
+  }
+  if(!ans) return null;
+  const core = ans.replace(/[【】]/g,'').replace(/（.*?）/g,'');
+  if(step.label.includes(core)) return null;
+  let pool;
+  if(isBS) pool = ['資産の部','資産の部（資産から差し引く）','負債の部','純資産の部'];
+  else if(isPL) pool = [ans, ...['売上原価','販売費及び一般管理費','営業外収益','営業外費用','特別利益','特別損失'].filter(x=>x!==ans && !(ans==='売上原価の内訳' && x==='売上原価'))];
+  else pool = heads;
+  pool = [...new Set(pool)];
+  if(pool.length<2) return null;
+  const others = shuffleArr(pool.filter(x=>x!==ans)).slice(0,3);
+  return { title: entry.title, ans, choices: shuffleArr([ans, ...others]) };
+}
+
+let compPosPending = null;
 function showCompStepExplanation(revealed){
+  const item = compQuizDeck[compQuizIdx];
+  const step = item.steps[compQuizStepIdx];
+  const pq = compPosQuiz(item, step);
+  if(pq){
+    compPosPending = { pq, revealed };
+    const res = document.getElementById('comp-res');
+    res.className = 'exp-result ok';
+    res.style.display = 'block';
+    const b=document.getElementById('ans-show-btn'); if(b) b.style.visibility='';
+    res.innerHTML = `
+      <div class="exp-res-hd">${revealed?'📖 答え':'⭕ 正解'}</div>
+      <div class="exp-step-label" style="margin:8px 0;">続けて：${pq.title}のどこに入るか？</div>
+      <div class="exp-step-choices wide" id="comp-pos-choices">
+        ${pq.choices.map((c,i)=>`<button class="exp-step-choice-btn" onclick="selectCompPos(this,${i})">${c}</button>`).join('')}
+      </div>`;
+    res.scrollIntoView({behavior:'smooth',block:'nearest'});
+    return;
+  }
+  compStepFinal(revealed);
+}
+
+function selectCompPos(btn, i){
+  const pp = compPosPending; if(!pp) return;
+  const ok = i>=0 && pp.pq.choices[i]===pp.pq.ans;
+  if(!ok && i>=0){ btn.classList.add('wrong'); setTimeout(()=>btn.classList.remove('wrong'),500); return; }
+  const ai = pp.pq.choices.indexOf(pp.pq.ans);
+  document.querySelectorAll('#comp-pos-choices .exp-step-choice-btn').forEach((b,j)=>{
+    b.disabled = true;
+    if(j===ai) b.classList.add('correct'); else b.style.opacity = '0.4';
+  });
+  compPosPending = null;
+  setTimeout(()=>compStepFinal(pp.revealed || i<0), i<0?0:600);
+}
+
+function compStepFinal(revealed){
   const item = compQuizDeck[compQuizIdx];
   const step = item.steps[compQuizStepIdx];
   const isLastStepOfProblem = compQuizStepIdx >= item.steps.length - 1;
