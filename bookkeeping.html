@@ -516,7 +516,9 @@
     .exp-check-btn { width:100%; padding:9px 12px; border:1.5px solid var(--border); border-radius:10px; background:#fff; font-size:13px; font-weight:700; cursor:pointer; color:var(--text); margin-top:8px; text-align:center; transition:all 0.15s; }
     .exp-check-btn.active { background:#FFF3E0; border-color:#FB8C00; color:#E65100; }
 
-    .ans-row .ans-show-btn { width:auto; flex:1; margin:0 8px; }
+    .ans-row .ans-mid { flex:1; display:flex; align-items:center; gap:6px; margin:0 8px; }
+    .ans-row .ans-show-btn { width:auto; flex:1; margin:0; }
+    .ans-row .ans-info { font-size:12px; font-weight:700; color:var(--muted); white-space:nowrap; }
     .exp-reveal-btn { width:100%; padding:10px; border:none; border-radius:8px; background:#546E7A; color:#fff; font-size:13px; font-weight:700; cursor:pointer; margin-bottom:8px; }
     /* === 段階的計算ステップUI === */
     .exp-step-area { background:#fff; border-radius:12px; padding:14px; margin-top:8px; border:1.5px solid var(--border); }
@@ -4404,10 +4406,10 @@ function expNavBar(){
 }
 
 // 問題文の下の「← 前へ　答えを表示　次へ →」
-function ansRowHtml(prevJs, prevOff, showJs, nextJs, nextOff){
+function ansRowHtml(prevJs, prevOff, showJs, nextJs, nextOff, info){
   return `<div class="exp-nav-row ans-row">
     <button class="exp-nav-btn" onclick="${prevJs}"${prevOff?' disabled':''}>← 前へ</button>
-    <button class="exp-reveal-btn ans-show-btn" id="ans-show-btn" onclick="${showJs}">答えを表示</button>
+    <div class="ans-mid"><button class="exp-reveal-btn ans-show-btn" id="ans-show-btn" onclick="${showJs}">答えを表示</button>${info?`<span class="ans-info">${info}</span>`:''}</div>
     <button class="exp-nav-btn exp-nav-next" onclick="${nextJs}"${nextOff?' disabled':''}>次へ →</button>
   </div>`;
 }
@@ -4480,15 +4482,13 @@ function loadExpQ(){
 
   if(!q.e){
     main.innerHTML=`
-      ${expNavBar()}
       <div class="exp-q-card">${speakBtnHtml(q)}<div class="q-body">${fmtQ(q)}</div>${flowFigHtml(q)}</div>
       <button class="exp-reveal-btn" onclick="expRevealAns(this)">答えを見る ▼</button>
       <div class="exp-readonly-ans" id="exp-ro-ans">${q.ans_html||''}</div>`;
   } else {
     main.innerHTML=`
-      ${expNavBar()}
       <div class="exp-q-card">${speakBtnHtml(q)}<div class="q-body">${fmtQ(q)}</div>${flowFigHtml(q)}</div>
-      ${ansRowHtml(`expGoTo(${expQIdx-1})`, expQIdx===0, 'expShowAns()', `expGoTo(${expQIdx+1})`, expQIdx>=expQuestions.length-1)}
+      ${ansRowHtml(`expGoTo(${expQIdx-1})`, expQIdx===0, 'expShowAns()', `expGoTo(${expQIdx+1})`, expQIdx>=expQuestions.length-1, `問${expQIdx+1} / ${expQuestions.length}`)}
       <div class="exp-result" id="exp-res"></div>
       <div id="exp-entry-area"></div>`;
     loadExpEntry();
@@ -4525,7 +4525,6 @@ function loadExpSteps(){
   expStepIdx=0;
   const main=document.getElementById('exp-main');
   main.innerHTML=`
-    ${expNavBar()}
     <div class="exp-q-card">${speakBtnHtml(q)}<div class="q-body">${fmtQ(q)}</div>${flowFigHtml(q)}</div>
     <div id="exp-step-area" class="exp-step-area"></div>`;
   renderExpStep();
