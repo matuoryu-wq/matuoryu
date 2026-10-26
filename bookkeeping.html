@@ -516,6 +516,7 @@
     .exp-check-btn { width:100%; padding:9px 12px; border:1.5px solid var(--border); border-radius:10px; background:#fff; font-size:13px; font-weight:700; cursor:pointer; color:var(--text); margin-top:8px; text-align:center; transition:all 0.15s; }
     .exp-check-btn.active { background:#FFF3E0; border-color:#FB8C00; color:#E65100; }
 
+    .ans-row .ans-show-btn { width:auto; flex:1; margin:0 8px; }
     .exp-reveal-btn { width:100%; padding:10px; border:none; border-radius:8px; background:#546E7A; color:#fff; font-size:13px; font-weight:700; cursor:pointer; margin-bottom:8px; }
     /* === 段階的計算ステップUI === */
     .exp-step-area { background:#fff; border-radius:12px; padding:14px; margin-top:8px; border:1.5px solid var(--border); }
@@ -4402,6 +4403,16 @@ function expNavBar(){
   </div>`;
 }
 
+// 問題文の下の「← 前へ　答えを表示　次へ →」
+function ansRowHtml(prevJs, prevOff, showJs, nextJs, nextOff){
+  return `<div class="exp-nav-row ans-row">
+    <button class="exp-nav-btn" onclick="${prevJs}"${prevOff?' disabled':''}>← 前へ</button>
+    <button class="exp-reveal-btn ans-show-btn" id="ans-show-btn" onclick="${showJs}">答えを表示</button>
+    <button class="exp-nav-btn exp-nav-next" onclick="${nextJs}"${nextOff?' disabled':''}>次へ →</button>
+  </div>`;
+}
+function hideAnsShowBtn(){ const b=document.getElementById('ans-show-btn'); if(b) b.style.visibility='hidden'; }
+
 function expGoTo(i){
   if(i<0||i>=expQuestions.length) return;
   expQIdx=i; loadExpQ();
@@ -4477,6 +4488,7 @@ function loadExpQ(){
     main.innerHTML=`
       ${expNavBar()}
       <div class="exp-q-card">${speakBtnHtml(q)}<div class="q-body">${fmtQ(q)}</div>${flowFigHtml(q)}</div>
+      ${ansRowHtml(`expGoTo(${expQIdx-1})`, expQIdx===0, 'expShowAns()', `expGoTo(${expQIdx+1})`, expQIdx>=expQuestions.length-1)}
       <div class="exp-result" id="exp-res"></div>
       <div id="exp-entry-area"></div>`;
     loadExpEntry();
@@ -4492,10 +4504,10 @@ function loadExpEntry(){
   const accounts=getExpEntryAccounts(q, expEntryIdx);
   const _sh=[...accounts];for(let _i=_sh.length-1;_i>0;_i--){const _j=Math.floor(Math.random()*(_i+1));[_sh[_i],_sh[_j]]=[_sh[_j],_sh[_i]];}
   window._expCards=_sh;
+  const showBtn=document.getElementById('ans-show-btn'); if(showBtn) showBtn.style.visibility='';
   expPlaced={d:[],c:[]}; expHistory=[]; expCardIdx=0;
   document.getElementById('exp-entry-area').innerHTML=`
     ${label}
-    <button class="exp-reveal-btn" id="ans-show-btn" onclick="expShowAns()">答えを表示</button>
     <div class="exp-swipe-wrap" id="exp-sw">
     </div>
     <div class="exp-zones">
@@ -4669,8 +4681,7 @@ function expCheckResult(revealed){
   const cards=window._expCards||[];
   let ok=!revealed;
   cards.forEach(acc=>{ if(expPlaced.d.includes(acc)!==(acc.side==='d')) ok=false; });
-  const showBtn=document.getElementById('ans-show-btn');
-  if(showBtn) showBtn.style.display='none';
+  hideAnsShowBtn();
   if(!ok) expQOk=false;
   const isLastEntry=expEntryIdx>=q.e.length-1;
   const res=document.getElementById('exp-res');
@@ -5450,7 +5461,7 @@ function renderDispQuiz(){
         <div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この説明にあてはまる区分は？</div>
         <div style="font-size:16px;font-weight:700;line-height:1.7;">${item.q}</div>
       </div>
-      <button class="exp-reveal-btn" id="ans-show-btn" onclick="selectDispConcept(null,-1)">答えを表示</button>
+      ${ansRowHtml('dispQuizGo(dispQuizIdx-1)', dispQuizIdx===0, 'selectDispConcept(null,-1)', 'dispQuizNext()', false)}
       <div class="exp-step-choices wide" id="disp-choices">
         ${choices.map((c,i)=>`<button class="exp-step-choice-btn" onclick="selectDispConcept(this,${i})">${c}</button>`).join('')}
       </div>
@@ -5473,7 +5484,7 @@ function renderDispQuiz(){
     ${dispTabsHtml()}
     ${acctModeHtml()}
     <div class="exp-q-card" style="text-align:center;">${qHtml}</div>
-    <button class="exp-reveal-btn" id="ans-show-btn" onclick="selectAcctChoice(null,-1)">答えを表示</button>
+    ${ansRowHtml('dispQuizGo(dispQuizIdx-1)', dispQuizIdx===0, 'selectAcctChoice(null,-1)', 'dispQuizNext()', false)}
     <div class="exp-step-choices wide" id="disp-ja-choices">
       ${choiceItems.map((c,i)=>`<button class="exp-step-choice-btn"${acctQuizReverse?' style="text-align:left;font-weight:500;line-height:1.6;"':''} onclick="selectAcctChoice(this,${i})">${acctQuizReverse?acctDescHtml(c):c.name}</button>`).join('')}
     </div>
@@ -5512,7 +5523,7 @@ function selectAcctChoice(btn, i){
   const choices = window._acctChoices;
   const ok = i>=0 && choices[i] === item;
   markDispChoices('disp-ja-choices', choices.indexOf(item), i);
-  const showBtn=document.getElementById('ans-show-btn'); if(showBtn) showBtn.style.display='none';
+  hideAnsShowBtn();
   if(ok) dispQuizScore++;
   else dispQuizWrong.push(item.no);
   const isLast = dispQuizIdx>=dispQuizDeck.length-1;
@@ -5532,7 +5543,7 @@ function selectDispConcept(btn, i){
   const item = dispQuizDeck[dispQuizIdx];
   const ok = i>=0 && chosen === correct;
   markDispChoices('disp-choices', window._dispChoices.indexOf(correct), i);
-  const showBtn=document.getElementById('ans-show-btn'); if(showBtn) showBtn.style.display='none';
+  hideAnsShowBtn();
   if(ok) dispQuizScore++;
   else dispQuizWrong.push(item.no);
   const isLast = dispQuizIdx>=dispQuizDeck.length-1;
@@ -5544,6 +5555,12 @@ function selectDispConcept(btn, i){
     <button class="exp-nav-btn exp-nav-next" style="width:100%;margin:10px 0;" onclick="dispQuizNext()">${isLast?'結果を見る →':'次の問題 →'}</button>
     <div class="exp-res-exp">${item.reason}</div>`;
   res.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function dispQuizGo(i){
+  if(i<0) return;
+  dispQuizIdx=i;
+  renderDispQuiz();
 }
 
 function dispQuizNext(){
@@ -6974,6 +6991,7 @@ function renderCompProblem(){
       <div class="comp-title">${item.title}</div>
       <div id="comp-scenario">${item.scenario_html}</div>
     </div>
+    ${ansRowHtml(`compGoProb(${compQuizIdx-1})`, compQuizIdx===0, 'compShowAns()', `compGoProb(${compQuizIdx+1})`, false)}
     <div id="comp-step-area"></div>
     <div class="exp-result" id="comp-res"></div>`;
   compQuizStepIdx = 0;
@@ -7007,13 +7025,13 @@ function renderCompStep(){
   window._compChoices = shuffled;
   const isLong = shuffled.some(v=>String(compFmtChoice(v)).length>10) || typeof step.ans !== 'number';
   compQuizFirstAttemptUsed = false;
+  const showBtn=document.getElementById('ans-show-btn'); if(showBtn) showBtn.style.visibility='';
   area.innerHTML = `
     <div class="exp-step-header">
       <span class="exp-step-label">設問 ${compQuizStepIdx+1}/${item.steps.length}：${step.label}</span>
       <div class="exp-step-progress">${dots}</div>
     </div>
     ${step.hint ? `<div class="comp-hint">💡 前の設問の答えを使う：${step.hint}</div>` : ''}
-    <button class="exp-reveal-btn" id="ans-show-btn" onclick="compShowAns()">答えを表示</button>
     <div class="exp-step-choices${isLong?' wide':''}">
       ${shuffled.map((c,i)=>`<button class="exp-step-choice-btn" onclick="selectCompChoice(this,${i})">${compFmtChoice(c)}${(typeof c==='number' && step.unit)?('　'+step.unit):''}</button>`).join('')}
     </div>`;
@@ -7026,7 +7044,7 @@ function selectCompChoice(btn, idx){
   const ok = chosen === step.ans;
   if(ok){
     if(!compQuizFirstAttemptUsed) compQuizCorrectFirstTry++;
-    const showBtn=document.getElementById('ans-show-btn'); if(showBtn) showBtn.style.display='none';
+    hideAnsShowBtn();
     document.querySelectorAll('#comp-step-area .exp-step-choice-btn').forEach(b=>{
       b.disabled = true;
       if(b===btn) b.classList.add('correct');
@@ -7038,6 +7056,12 @@ function selectCompChoice(btn, idx){
     btn.classList.add('wrong');
     setTimeout(()=>btn.classList.remove('wrong'), 500);
   }
+}
+
+function compGoProb(i){
+  if(i<0) return;
+  compQuizIdx=i;
+  renderCompProblem();
 }
 
 // 「答えを表示」：解かずに正解と解説を出す（1回目で正解できなかった扱い）
@@ -7070,7 +7094,7 @@ function showCompStepExplanation(revealed){
   const res = document.getElementById('comp-res');
   res.className = 'exp-result ok';
   res.style.display = 'block';
-  const showBtn=document.getElementById('ans-show-btn'); if(showBtn) showBtn.style.display='none';
+  hideAnsShowBtn();
   res.innerHTML = `
     <div class="exp-res-hd">${revealed?'📖 答え':'⭕ 正解'}</div>
     ${compStmtHtml(item, step)}
