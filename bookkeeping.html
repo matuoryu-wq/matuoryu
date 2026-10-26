@@ -7036,10 +7036,10 @@ function showCompStepExplanation(){
   res.style.display = 'block';
   res.innerHTML = `
     <div class="exp-res-hd">⭕ 正解</div>
+    ${compStmtHtml(item, step)}
     <button class="exp-nav-btn exp-nav-next" style="width:100%;margin:10px 0;" onclick="compQuizNextStep()">${nextLabel}</button>
     ${(()=>{ const c=isStepChecked(item, compQuizStepIdx); return `<div style="margin:0 0 10px;"><button id="comp-check-btn" class="exp-check-btn${c?' active':''}" onclick="toggleCompCheck()">${c?'☑ この設問はチェック済み':'☐ この設問にチェック'}</button></div>`; })()}
-    <div class="exp-res-exp">${step.exp}</div>
-    ${compStmtHtml(item, step)}`;
+    <div class="exp-res-exp">${step.exp}</div>`;
   if(step.stmtKey && step.stmtLines){
     (step.stmtLines||[]).forEach(k=>{
       document.querySelectorAll(`#comp-stmt-area [data-line="${k}"]`).forEach(el=>el.classList.add('comp-hl'));
