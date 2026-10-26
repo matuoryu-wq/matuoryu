@@ -22,7 +22,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku 
 .toggle{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-size:12px;color:var(--muted);font-weight:600;background:none;border:none;font-family:inherit;padding:0}
 .toggle .arr{font-size:10px;transition:transform .2s}
 .collapsed .toggle .arr{transform:rotate(-90deg)}
-.collapsed .pills{display:none}
+.collapsed .pills,.collapsed .sub-row{display:none}
 .ctrl-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:none;cursor:pointer;font-size:13px;color:var(--text);font-weight:600;font-family:inherit;transition:all .15s}
 .ctrl-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
 .ctrl-btn.active{background:var(--act-bg);border-color:var(--act-bd);color:var(--act-fg)}
@@ -97,8 +97,8 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
   <div id="catWrap">
     <button class="toggle" id="catToggle" type="button"><span class="arr">▼</span><span id="catToggleLbl">分野を隠す</span></button>
     <div class="pills row" id="cats" style="margin-top:4px"></div>
+    <div class="row sub-row" id="subs"></div>
   </div>
-  <div class="row sub-row" id="subs"></div>
   <div class="row"><span class="lbl">表示方法：</span>
     <button class="ctrl-btn" data-view="all" type="button">全問</button>
     <button class="ctrl-btn" data-view="check" type="button">✅ チェックのみ</button>
