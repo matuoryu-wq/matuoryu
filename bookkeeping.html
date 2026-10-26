@@ -6678,12 +6678,22 @@ function compGens(){ return compMode==='calc' ? CALC_GENERATORS : compMode==='so
 let compChecked = {};
 try{ compChecked = JSON.parse(localStorage.getItem('bk_comp_checked')||'{}')||{}; }catch(e){ compChecked = {}; }
 function compKey(item){ return item.ckey || ('C:'+item.title); }
+// チェックは設問ごと（鍵＝問題の鍵＋#設問の番号）。以前の問題単位のチェックは、全設問にチェックとみなす
+function stepOrig(item, si){ return item._idx ? item._idx[si] : si; }
+function stepKey(item, si){ return compKey(item)+'#'+stepOrig(item, si); }
+function isStepChecked(item, si){ return !!(compChecked[stepKey(item, si)] || compChecked[compKey(item)]); }
 function toggleCompCheck(){
-  const k = compKey(compQuizDeck[compQuizIdx]);
+  const item = compQuizDeck[compQuizIdx], si = compQuizStepIdx, ck = compKey(item);
+  if(compChecked[ck]){ // 以前の問題単位のチェックを設問単位に分ける
+    delete compChecked[ck];
+    const n = item._total || item.steps.length;
+    for(let i=0;i<n;i++) compChecked[ck+'#'+i] = true;
+  }
+  const k = stepKey(item, si);
   if(compChecked[k]) delete compChecked[k]; else compChecked[k] = true;
   try{ localStorage.setItem('bk_comp_checked', JSON.stringify(compChecked)); }catch(e){}
   const b = document.getElementById('comp-check-btn');
-  if(b){ b.textContent = compChecked[k] ? '☑ チェック済み' : '☐ チェックをつける'; b.classList.toggle('active', !!compChecked[k]); }
+  if(b){ const c=!!compChecked[k]; b.textContent = c ? '☑ この設問はチェック済み' : '☐ この設問にチェック'; b.classList.toggle('active', c); }
 }
 // 問題ごとのチェックの鍵：総合は分野と番号、1級計算・理論は題名や問題文
 function compCkFor(key, i, fn){
@@ -6694,7 +6704,11 @@ function compAllPairs(){
   if(compMode==='sogo'){ const g=sogoGens(); return SOGO_CATS.filter(c=>c.group===sogoGroup).flatMap(c=>g[c.key].map((fn,i)=>[fn,'S:'+c.key+':'+i])); }
   return compGens()['k1-all'].map(fn=>[fn, compCkFor('k1-all',0,fn)]);
 }
-function compCheckedCount(){ return compAllPairs().filter(([,ck])=>compChecked[ck]).length; }
+function compCheckedCount(){
+  // チェックした設問の数
+  const keys = Object.keys(compChecked);
+  return compAllPairs().reduce((s,[fn,ck])=>{ if(compChecked[ck]) return s + fn().steps.length; return s + keys.filter(k=>k.startsWith(ck+'#')).length; }, 0);
+}
 function k1Gens(cats){
   const o={}; cats.forEach(c=>{ o[c.key]=c.gens; }); o['k1-all']=cats.flatMap(c=>c.gens);
   // 20問ごとの区切り（一覧の並び順のまま）
@@ -6814,7 +6828,7 @@ function renderCompCatSelect(){
       <div style="font-size:14px;font-weight:700;">${sh?'会計の処理が「なぜそうなっているか」（趣旨）を問う問題です':th?'会計学の理論（正誤・穴埋め）です':'工業簿記・原価計算と会計学の計算問題です'}</div>
       <div style="font-size:11px;color:var(--muted);margin-top:4px;">${th?'答えた後に、正しい内容と理由が表示されます':'設問ごとに一歩ずつ選んで解きます'}</div>
       <button class="sogo-all-btn" style="margin-top:10px;padding:8px 16px;font-size:13px;" onclick="launchCompCat('k1-all')">全${total}問をまとめて解く（順番はランダム）</button>
-      <div><button class="sogo-all-btn" style="margin-top:8px;padding:8px 16px;font-size:13px;background:#E65100;border-color:#E65100;" onclick="launchCompCat('chk')">✅ チェックした問題を解く（${compCheckedCount()}問）</button></div>
+      <div><button class="sogo-all-btn" style="margin-top:8px;padding:8px 16px;font-size:13px;background:#E65100;border-color:#E65100;" onclick="launchCompCat('chk')">✅ チェックした設問を解く（${compCheckedCount()}問）</button></div>
     </div>
     ${th && k1ThChunk ? `<div style="text-align:center;margin:6px 0;"><button class="sogo-all-btn" style="padding:8px 16px;font-size:13px;" onclick="launchCompCat('k1-chunk-${k1ThChunk}')">この${Math.min(20,total-(k1ThChunk-1)*20)}問をまとめて解く</button></div>` : ''}
     ${(()=>{ let no=0; const lo=th&&k1ThChunk?(k1ThChunk-1)*20:0, hi=th&&k1ThChunk?k1ThChunk*20:Infinity;
@@ -6837,7 +6851,7 @@ function renderCompCatSelect(){
     <div class="exp-q-card" style="text-align:center;">
       <div style="font-size:14px;font-weight:700;">試験の${sogoGroup==='商業簿記'?'第2問・第3問':'第4問・第5問'}の型の計算問題です</div>
       <div style="font-size:11px;color:var(--muted);margin-top:4px;">数字は毎回ランダムに変わります。前の設問の答えは、次の設問のヒントに表示されます</div>
-      <div><button class="sogo-all-btn" style="margin-top:10px;padding:8px 16px;font-size:13px;background:#E65100;border-color:#E65100;" onclick="launchCompCat('chk')">✅ チェックした問題を解く（${compCheckedCount()}問）</button></div>
+      <div><button class="sogo-all-btn" style="margin-top:10px;padding:8px 16px;font-size:13px;background:#E65100;border-color:#E65100;" onclick="launchCompCat('chk')">✅ チェックした設問を解く（${compCheckedCount()}問）</button></div>
     </div>
     ${[sogoGroup].map(gr=>`<div class="comp-sect-hd">${gr}</div>
     ${SOGO_CATS.filter(c=>c.group===gr).map(c=>`<div class="sogo-cat">
@@ -6890,15 +6904,18 @@ function launchCompCat(key, one){
   // one を指定すると、その分野の1問だけを解く（総合で問題を選んだとき）
   compQuizLastCat = key; compQuizLastOne = (one===undefined ? null : one);
   let pairs;
-  if(key==='chk'){ pairs = compAllPairs().filter(([,ck])=>compChecked[ck]); }
+  if(key==='chk'){ pairs = compAllPairs(); }
   else {
     const gens = (compMode==='calc' ? calcGensFor(key) : compGens()[key]);
     pairs = gens.map((fn,i)=>[fn, compCkFor(key,i,fn)]);
     if(compQuizLastOne!==null) pairs = [pairs[compQuizLastOne]];
   }
-  compQuizDeck = pairs.map(([fn,ck])=>{ const d=fn(); d.ckey=ck; return d; });
+  compQuizDeck = pairs.map(([fn,ck])=>{ const d=fn(); d.ckey=ck; d._total=d.steps.length; return d; });
+  if(key==='chk'){ // チェックした設問だけを残す
+    compQuizDeck = compQuizDeck.map(d=>{ const idx=d.steps.map((_,i)=>i).filter(i=>compChecked[d.ckey+'#'+i]||compChecked[d.ckey]); if(!idx.length) return null; d._idx=idx; d.steps=idx.map(i=>d.steps[i]); return d; }).filter(Boolean);
+  }
   if(key==='k1-all' || key==='chk') shuffleArr(compQuizDeck);
-  if(!compQuizDeck.length){ alert('チェックした問題はまだありません'); renderCompCatSelect(); return; }
+  if(!compQuizDeck.length){ alert('チェックした設問はまだありません'); renderCompCatSelect(); return; }
   compQuizIdx = 0;
   compQuizStepIdx = 0;
   compQuizCorrectFirstTry = 0;
@@ -7020,7 +7037,7 @@ function showCompStepExplanation(){
   res.innerHTML = `
     <div class="exp-res-hd">⭕ 正解</div>
     <button class="exp-nav-btn exp-nav-next" style="width:100%;margin:10px 0;" onclick="compQuizNextStep()">${nextLabel}</button>
-    ${isLastStepOfProblem ? (()=>{ const c=!!compChecked[compKey(item)]; return `<div style="margin:0 0 10px;"><button id="comp-check-btn" class="exp-check-btn${c?' active':''}" onclick="toggleCompCheck()">${c?'☑ チェック済み':'☐ チェックをつける'}</button></div>`; })() : ''}
+    ${(()=>{ const c=isStepChecked(item, compQuizStepIdx); return `<div style="margin:0 0 10px;"><button id="comp-check-btn" class="exp-check-btn${c?' active':''}" onclick="toggleCompCheck()">${c?'☑ この設問はチェック済み':'☐ この設問にチェック'}</button></div>`; })()}
     <div class="exp-res-exp">${step.exp}</div>
     ${compStmtHtml(item, step)}`;
   if(step.stmtKey && step.stmtLines){
