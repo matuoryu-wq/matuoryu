@@ -1258,7 +1258,7 @@ function expHtml(q){
 }
 // 1級の問題を解いているときは、英語の科目名を出さない
 function isKyu1Now(){ const q=(typeof expQuestions!=='undefined')&&expQuestions[expQIdx]; return !!(q && /^1級/.test(q.chap||'')); }
-function acctEnHtml(n){ const e=ACCT_EN[n]; return (e && !isKyu1Now())?`<span class="tag-en">(${e})</span>`:''; }
+function acctEnHtml(n){ return ''; }
 
 // ===== 一問一答（表示区分の意味）：グループ0 - 区分そのものの定義を問う =====
 const CONCEPT_DATA = [
@@ -5401,9 +5401,9 @@ function acctQAns(item){
 function acctQText(item){
   return `<div>${acctQDef(item)}</div><div style="margin-top:4px;font-weight:700;color:#1A2B3C;">${acctQAns(item)}</div>`;
 }
-// 逆向き（科目名 → 説明）の選択肢：英語名＋説明＋表示区分
+// 逆向き（科目名 → 説明）の選択肢：説明＋表示区分
 function acctDescHtml(item){
-  return `<div style="margin-bottom:4px;"><span class="acct-tag" style="background:#fff;border-color:#90A4AE;color:#37474F;">${item.en}</span></div>${acctQText(item)}`;
+  return acctQText(item);
 }
 let acctQuizReverse = false;
 function setAcctQuizReverse(on){ acctQuizReverse = on; launchDispQuiz(dispQuizTab); }
@@ -5455,10 +5455,10 @@ function renderDispQuiz(){
   const choiceItems = names.map(n => DISPLAY_DATA.find(d=>d.name===n));
   window._acctChoices = choiceItems;
   const qHtml = acctQuizReverse
-    ? `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この勘定科目の英語・説明・表示区分は？</div>
+    ? `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この勘定科目の説明・表示区分は？</div>
        <span class="acct-tag acct-tag-lg" style="font-size:18px;background:#fff;border-color:#90A4AE;color:#37474F;">${item.name}</span>`
     : `<div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px;">この勘定科目は？</div>
-       <div style="text-align:left;font-size:14px;line-height:1.8;"><div style="margin-bottom:6px;"><span class="acct-tag acct-tag-lg ${dispTagClass(item)}" style="font-size:16px;">${item.en}</span></div>${acctQText(item)}</div>`;
+       <div style="text-align:left;font-size:14px;line-height:1.8;">${acctQText(item)}</div>`;
   main.innerHTML = `
     ${dispQuizNavBar()}
     ${dispTabsHtml()}
@@ -5489,7 +5489,7 @@ function acctAnswerHtml(item){
     ...(ai['確定後']?[`<div class="acct-ai"><span class="acct-al fx">確定後</span>${acctColorize(ai['確定後'])}</div>`]:[]),
     ...(ai['例']?[`<div class="acct-ai"><span class="acct-al ex">例</span>${ai['例']}</div>`]:[]),
   ].join('');
-  return `<div style="margin-bottom:6px;"><span class="acct-tag ${dispTagClass(item)}">${item.name}${item.disp?'　※':''}</span>　<span style="font-size:12px;font-weight:700;color:#455A64;">${item.en}</span></div>
+  return `<div style="margin-bottom:6px;"><span class="acct-tag ${dispTagClass(item)}">${item.name}${item.disp?'　※':''}</span></div>
     <div>${ACCT_EXPL[item.name]||item.def}</div>
     <div class="acct-ai"><span class="acct-al ds">表示</span>${dispAnsText(item)}${item.disp?`<span style="color:var(--muted);">（表示科目：${item.disp}）</span>`:''}</div>
     ${acctSideNote(item.name)?`<div class="acct-ai"><span class="acct-al ds">残高</span>${acctSideNote(item.name)}</div>`:''}
