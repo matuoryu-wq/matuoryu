@@ -7087,7 +7087,7 @@ function compStmtHtml(item, step){
 }
 
 // 「○○書のどこに入るか」の問題：金額の設問に正解したあとに出す
-// 区分（見出し）の中に入る行は区分を答える。それ以外（利益・合計の行、区分のない行など）は行の名前を答える
+// 区分（見出し）の中に入る行は区分を答える。それ以外（利益・合計の行、区分のない行など）は、どの行の次に入るかを答える
 function compPosQuiz(item, step){
   if(!step.stmtKey || !step.stmtLines || !item.stmt || !item.stmt[step.stmtKey]) return null;
   const entry = item.stmt[step.stmtKey];
@@ -7115,13 +7115,21 @@ function compPosQuiz(item, step){
     if(isBS) pool = ['資産の部','資産の部（資産から差し引く）','負債の部','純資産の部'];
     else pool = [ans, ...['売上原価','販売費及び一般管理費','営業外収益','営業外費用','特別利益','特別損失'].filter(x=>x!==ans && !(ans==='売上原価の内訳' && x==='売上原価'))];
     const others = shuffleArr([...new Set(pool)].filter(x=>x!==ans)).slice(0,3);
-    return { title: entry.title, ans, choices: shuffleArr([ans, ...others]) };
+    return { title: entry.title, prompt: 'どこに入るか', ans, choices: shuffleArr([ans, ...others]) };
   }
-  // 行の名前を答える形
-  const ans = idx.map(nameOf).join('・');
-  const pool = [...new Set(rows.map((r,i)=>i).filter(i=>rows[i].className!=='hd' && !idx.includes(i)).map(nameOf))].filter(x=>x!==ans);
+  // どの行の次に入るかを答える形（見出しの直後なら見出しを答える）
+  const first = Math.min(...idx);
+  // 字下げしていない行（利益・合計など）は、上の字下げした内訳を飛ばして、区分の見出しや前の行の次と答える
+  const after = i => {
+    let j = i-1;
+    if(rows[i].className!=='i') while(j>=0 && rows[j].className==='i') j--;
+    if(j<0) return 'いちばん上';
+    return `「${rows[j].className==='hd' ? label(j) : nameOf(j)}」の次`;
+  };
+  const ans = after(first);
+  const pool = [...new Set(rows.map((r,i)=>i).filter(i=>!idx.includes(i)).map(after))].filter(x=>x!==ans && x!=='いちばん上');
   const others = shuffleArr(pool).slice(0,3);
-  return { title: entry.title, ans, choices: shuffleArr([ans, ...others]) };
+  return { title: entry.title, prompt: 'どの行の次に入るか', ans, choices: shuffleArr([ans, ...others]) };
 }
 
 let compPosPending = null;
@@ -7137,7 +7145,7 @@ function showCompStepExplanation(revealed){
     const b=document.getElementById('ans-show-btn'); if(b) b.style.visibility='';
     res.innerHTML = `
       <div class="exp-res-hd">${revealed?'📖 答え':'⭕ 正解'}</div>
-      <div class="exp-step-label" style="margin:8px 0;">続けて：${pq.title}のどこに入るか？</div>
+      <div class="exp-step-label" style="margin:8px 0;">続けて：${pq.title}の${pq.prompt}？</div>
       <div class="exp-step-choices wide" id="comp-pos-choices">
         ${pq.choices.map((c,i)=>`<button class="exp-step-choice-btn" onclick="selectCompPos(this,${i})">${c}</button>`).join('')}
       </div>`;
