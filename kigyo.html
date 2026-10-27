@@ -108,6 +108,7 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
     <button class="ctrl-btn" data-rank="all" type="button">すべて</button>
     <button class="ctrl-btn" data-rank="A" type="button">A</button>
     <button class="ctrl-btn" data-rank="B" type="button">B</button>
+    <button class="ctrl-btn" data-rank="AB" type="button">A＋B</button>
     <button class="ctrl-btn" data-rank="C" type="button">C</button>
   </div>
 </div>
@@ -195,7 +196,7 @@ function list(){
   let qs=scope();
   if(P.view==='check')qs=qs.filter(q=>CHK[q.id]);
   if(P.view==='double')qs=qs.filter(q=>CHK[q.id]===2);
-  if(P.rank!=='all'&&scope().some(q=>q.rk))qs=qs.filter(q=>q.rk===P.rank);
+  if(P.rank!=='all'&&scope().some(q=>q.rk))qs=qs.filter(q=>q.rk&&P.rank.includes(q.rk));
   return qs;
 }
 
