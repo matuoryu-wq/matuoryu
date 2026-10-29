@@ -6788,7 +6788,7 @@ function compCheckedCount(){
   return compAllPairs().reduce((s,[fn,ck])=>{ if(compChecked[ck]) return s + fn().steps.length; return s + keys.filter(k=>k.startsWith(ck+'#')).length; }, 0);
 }
 function k1Gens(cats){
-  const o={}; cats.forEach(c=>{ o[c.key]=c.gens; }); o['k1-all']=cats.flatMap(c=>c.gens);
+  const o={}; cats.forEach(c=>{ o[c.key]=c.gens; }); o['k1-all']=cats.flatMap(c=>c.gens); o['all-in-order']=o['k1-all'];
   // 20問ごとの区切り（一覧の並び順のまま）
   for(let i=0;i<o['k1-all'].length;i+=20) o['k1-chunk-'+(i/20+1)] = o['k1-all'].slice(i,i+20);
   return o;
@@ -7004,7 +7004,7 @@ function launchCompCat(key, one){
 
 function exitCompQuiz(){
   if(bigFilter==='riron'){ setRironTab(rironTab==='chk' ? 0 : rironTab); return; }
-  if(bigFilter==='kanjo'){ setKanjoTab(kanjoTab==='chk' ? 0 : kanjoTab); return; }
+  if(bigFilter==='kanjo'){ setKanjoTab(kanjoTab==='chk' ? 'all' : kanjoTab); return; }
   setSection(sectionFilter);
 }
 
@@ -10538,7 +10538,7 @@ function setBig(big){
   document.querySelectorAll('#sec-tabs [data-big]').forEach(b=>{ b.style.display = b.dataset.big===big ? '' : 'none'; });
   const vm=document.getElementById('view-mode-row'), wrap=document.getElementById('sec-tabs-wrap');
   if(big==='riron'){ vm.style.display='none'; setRironTab(0); return; }
-  if(big==='kanjo'){ vm.style.display='none'; setKanjoTab(0); return; }
+  if(big==='kanjo'){ vm.style.display='none'; setKanjoTab('all'); return; }
   vm.style.display = wrap.classList.contains('collapsed') ? 'none' : 'flex';
   setSection(BIG_DEFAULT[big]);
 }
@@ -10556,7 +10556,7 @@ function buildRironTabs(){
 function buildKanjoTabs(){
   const box=document.getElementById('sec-tabs');
   box.querySelectorAll('[data-big="kanjo"]').forEach(b=>b.remove());
-  const html=KANJO_CATS.map((c,i)=>`<button class="ctrl-btn" data-big="kanjo" data-ch="${i}" title="${c.group}" onclick="setKanjoTab(${i})">${c.group==='1級'?'1級 ':''}${c.label}</button>`);
+  const html=[`<button class="ctrl-btn" data-big="kanjo" data-ch="all" onclick="setKanjoTab('all')">すべて</button>`].concat(KANJO_CATS.map((c,i)=>`<button class="ctrl-btn" data-big="kanjo" data-ch="${i}" title="${c.group}" onclick="setKanjoTab(${i})">${c.group==='1級'?'1級 ':''}${c.label}</button>`));
   html.push(`<button class="ctrl-btn" data-big="kanjo" data-ch="chk" onclick="setKanjoTab('chk')">✅ チェック</button>`);
   box.insertAdjacentHTML('beforeend', html.join(''));
 }
@@ -10567,7 +10567,7 @@ function setKanjoTab(n){
   compMode = 'kanjo';
   document.getElementById('check-bar').style.display='none';
   document.getElementById('group-row').style.display='none';
-  launchCompCat(n==='chk' ? 'chk' : KANJO_CATS[n].key);
+  launchCompCat(n==='chk' ? 'chk' : n==='all' ? 'all-in-order' : KANJO_CATS[n].key);
 }
 let rironTab = 0;
 function setRironTab(n){
