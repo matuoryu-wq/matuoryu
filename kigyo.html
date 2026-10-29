@@ -49,6 +49,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku 
 .chk.c1{border-color:var(--act-bd);color:var(--act-fg);background:var(--act-bg)}
 .chk.c2{border-color:var(--ng-bd);color:var(--ng);background:var(--ng-bg)}
 .q-text{font-size:17px;line-height:1.85;margin-bottom:18px}
+.pre{white-space:pre-wrap}
+.calc{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.calc input{font-family:inherit;font-size:18px;width:180px;max-width:100%;padding:10px 12px;border-radius:10px;border:2px solid var(--border);background:var(--card);color:var(--text);text-align:right;font-variant-numeric:tabular-nums}
+.calc input:focus{outline:none;border-color:var(--primary)}
+.calc .unit{font-size:15px;font-weight:700}
 .ox{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .ox button{font-family:inherit;font-size:30px;font-weight:700;padding:14px 0;border-radius:12px;border:2px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;line-height:1}
 .ox button small{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-top:4px}
@@ -90,7 +95,7 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 <body>
 <div class="header gut">
   <h1>企業法務 一問一答</h1>
-  <p>穴埋めと正誤で答えて、解説と根拠を確認しよう</p>
+  <p>穴埋め・正誤・計算で答えて、解説と根拠を確認しよう</p>
 </div>
 
 <div class="controls gut">
@@ -108,6 +113,7 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
     <button class="ctrl-btn" data-rank="all" type="button">すべて</button>
     <button class="ctrl-btn" data-rank="A" type="button">A</button>
     <button class="ctrl-btn" data-rank="B" type="button">B</button>
+    <button class="ctrl-btn" data-rank="AB" type="button">A＋B</button>
     <button class="ctrl-btn" data-rank="C" type="button">C</button>
   </div>
 </div>
@@ -132,6 +138,7 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 // 問題データは kigyo-data/*.js が QB.add() で登録する。
 // 行の形式（穴埋め）: [小分野ID, 問題文（(○○)を含む）, 正解の選択肢, 誤りの選択肢1, 誤りの選択肢2, 誤りの選択肢3, 解説, 根拠]
 // 行の形式（正誤）  : [小分野ID, 記述, 1=正しい / 0=誤り, 解説, 根拠]
+// 行の形式（計算）  : [小分野ID, 資料と問い, 正解の数値, 単位, 解説（計算過程）, 根拠]
 // どちらの形式も、末尾に重要度ランク（'A'・'B'・'C'）を付けることができる。
 // 選択肢の並びは問題IDから決まる（毎回同じ）。問題IDは「分野.小分野.小分野内の通し番号」なので、
 // 問題は各小分野の末尾に追加すること（途中に挿入するとチェックの記録がずれる）。
@@ -143,6 +150,7 @@ const QB={cats:[],add(id,name,subs,rows){
     const qid=`${id}.${r[0]}.${n[r[0]]}`;
     let rk=null;if(['A','B','C'].includes(r[r.length-1])){rk=r[r.length-1];r=r.slice(0,-1);}
     const q=(()=>{
+    if(r.length===6)return{id:qid,c:id,s:r[0],q:r[1],calc:true,ans:r[2],unit:r[3],e:r[4],r:r[5]};
     if(r.length===5)return{id:qid,c:id,s:r[0],q:r[1],opts:['○（正しい）','×（誤り）'],ans:r[2]?0:1,e:r[3],r:r[4]};
     const rand=rng(qid),opts=[r[2],r[3],r[4],r[5]];
     for(let i=3;i>0;i--){const j=Math.floor(rand()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
@@ -195,7 +203,7 @@ function list(){
   let qs=scope();
   if(P.view==='check')qs=qs.filter(q=>CHK[q.id]);
   if(P.view==='double')qs=qs.filter(q=>CHK[q.id]===2);
-  if(P.rank!=='all'&&scope().some(q=>q.rk))qs=qs.filter(q=>q.rk===P.rank);
+  if(P.rank!=='all'&&scope().some(q=>q.rk))qs=qs.filter(q=>q.rk&&P.rank.includes(q.rk));
   return qs;
 }
 
@@ -235,7 +243,13 @@ function renderQ(){
   $('pos').textContent=`問${P.idx+1} / ${qs.length}`;
   $('prevBtn').disabled=P.idx===0;$('nextBtn').disabled=P.idx>=qs.length-1;
   const top=`<div class="q-top"><span class="tag">${q.rk?`<b class="rk rk-${q.rk}">${q.rk}</b>`:''}${esc(label(q))}</span><button type="button" class="chk c${ck}" id="chkBtn">${chkText(ck)}</button></div>`;
-  {
+  if(q.calc){
+    $('card').innerHTML=top+`<div class="q-text pre">${esc(q.q)}</div>
+      <div class="calc"><input id="calcIn" type="text" inputmode="decimal" autocomplete="off" aria-label="答え"><span class="unit">${esc(q.unit)}</span><button type="button" class="nav-btn primary" id="calcBtn">答え合わせ</button></div>
+      <div id="verdict"></div>`;
+    $('calcBtn').onclick=()=>answer($('calcIn').value);
+    $('calcIn').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();answer($('calcIn').value);}};
+  }else{
     $('card').innerHTML=top+`<div class="q-text">${esc(q.q)}</div>
       <div class="opts">${q.opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}"><span class="num">${NUM[i]}</span><span class="otext">${esc(o)}</span></button>`).join('')}</div>
       <div id="verdict"></div>`;
@@ -247,12 +261,20 @@ function renderQ(){
 function answer(v){
   if(answered)return;
   const qs=list(),q=qs[P.idx];if(!q)return;
-  if(typeof v!=='number')return;
+  if(q.calc){
+    // 全角数字・カンマ・空白を許容して数値に直す
+    const t=String(v).replace(/[０-９．－]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0)).replace(/[,，\s円万%％]/g,'');
+    if(t===''||isNaN(+t))return;
+    v=+t;
+  }else if(typeof v!=='number')return;
   answered=true;
-  const ok=v===q.ans,s=ST[q.id]||{c:0,w:0,l:0};
+  const ok=q.calc?Math.abs(v-q.ans)<1e-9:v===q.ans,s=ST[q.id]||{c:0,w:0,l:0};
   ok?s.c++:s.w++;s.l=ok?1:0;ST[q.id]=s;save();
   let body;
-  {
+  if(q.calc){
+    $('calcIn').disabled=true;$('calcBtn').disabled=true;
+    body=`<h3>${ok?'正解':'不正解'}　正答：${q.ans.toLocaleString('ja-JP')}${esc(q.unit)}</h3><p class="pre">${esc(q.e)}</p><div class="ref"><b>根拠</b>　${esc(q.r)}</div>`;
+  }else{
     document.querySelectorAll('.opt').forEach((b,i)=>{b.disabled=true;if(i===q.ans)b.classList.add('is-ans');else if(i===v)b.classList.add('is-ng');});
     body=`<h3>${ok?'正解':'不正解'}　正答：${NUM[q.ans]}　${esc(q.opts[q.ans])}</h3><p>${esc(q.e)}</p><div class="ref"><b>根拠</b>　${esc(q.r)}</div>`;
   }
@@ -288,15 +310,16 @@ $('catToggle').onclick=()=>{P.hide=!P.hide;save();renderControls();};
 $('prevBtn').onclick=()=>go(-1);
 $('nextBtn').onclick=()=>go(1);
 $('copyBtn').onclick=()=>{
-  const txt=scope().filter(q=>CHK[q.id]===2).map(q=>`【${label(q)}】${q.q}\n`+q.opts.map((o,i)=>`${NUM[i]}. ${o}`).join('\n')+`\n（正答：${NUM[q.ans]}）`).join('\n\n');
+  const txt=scope().filter(q=>CHK[q.id]===2).map(q=>`【${label(q)}】${q.q}\n`+(q.calc?`（正答：${q.ans.toLocaleString('ja-JP')}${q.unit}）`:q.opts.map((o,i)=>`${NUM[i]}. ${o}`).join('\n')+`\n（正答：${NUM[q.ans]}）`)).join('\n\n');
   const btn=$('copyBtn'),done=m=>{btn.textContent=m;setTimeout(()=>btn.textContent='📋 ダブルの問題をコピー',1500);};
   if(!txt){done('ダブルの問題はありません');return;}
   try{navigator.clipboard.writeText(txt).then(()=>done('コピーしました'),()=>done('コピーできませんでした'));}catch(e){done('コピーできませんでした');}
 };
 document.addEventListener('keydown',e=>{
   if(e.metaKey||e.ctrlKey||e.altKey)return;
+  if(e.target.tagName==='INPUT')return;
   const k=e.key.toLowerCase();
-  if(['1','2','3','4'].includes(k)){const q=list()[P.idx];if(q&&+k<=q.opts.length)answer(+k-1);}
+  if(['1','2','3','4'].includes(k)){const q=list()[P.idx];if(q&&!q.calc&&+k<=q.opts.length)answer(+k-1);}
   else if(k==='arrowright'||(k==='enter'&&answered)){if(!$('nextBtn').disabled){e.preventDefault();go(1);}}
   else if(k==='arrowleft'){if(!$('prevBtn').disabled)go(-1);}
   else if(k==='c')toggleCheck();
