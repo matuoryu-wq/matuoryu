@@ -4430,7 +4430,6 @@ function buildDeck(){
   if(checkOnly){
     const base = (checkPart && sectionFilter==='big:shogyo') ? checkPartQuestions(checkPart) : getSectionQuestions(sectionFilter);
     deck = base.filter(q=> checked[q.id]);
-    shuffleArr(deck);
     return;
   }
   let base = getSectionQuestions(sectionFilter);
@@ -5440,7 +5439,7 @@ function startDispQuiz(){
 function launchDispQuiz(tab){
   dispQuizTab = tab;
   dispQuizKind = tab === 'concept' ? 'concept' : 'account';
-  dispQuizDeck = shuffleArr(dispTabPool(tab).slice());
+  dispQuizDeck = acctCheckOnly ? dispTabPool(tab).slice() : shuffleArr(dispTabPool(tab).slice());
   dispQuizIdx = 0;
   dispQuizScore = 0;
   dispQuizWrong = [];
@@ -7027,7 +7026,7 @@ function launchCompCat(key, one){
   if(key==='chk'){ // チェックした設問だけを残す
     compQuizDeck = compQuizDeck.map(d=>{ const idx=d.steps.map((_,i)=>i).filter(i=>compChecked[d.ckey+'#'+i]||compChecked[d.ckey]); if(!idx.length) return null; d._idx=idx; d.steps=idx.map(i=>d.steps[i]); return d; }).filter(Boolean);
   }
-  if(key==='k1-all' || key==='chk') shuffleArr(compQuizDeck);
+  if(key==='k1-all') shuffleArr(compQuizDeck);
   if(!compQuizDeck.length){ alert('チェックした設問はまだありません'); renderCompCatSelect(); return; }
   compQuizIdx = 0;
   compQuizStepIdx = 0;
