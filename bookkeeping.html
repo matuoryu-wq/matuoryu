@@ -6190,9 +6190,9 @@ function genBranch1(){
 // ===== Branch-2 generator =====
 function genBranch2(){
   const markupPct = compPick([10,20,25,30]);
-  const naibuGenka = compRandMult(100, 300, 1500);
+  const naibuGenka = compRandMult(20, 15, 75);
   const naibuBaika = Math.round(naibuGenka*(100+markupPct)/100);
-  const shitenKimatsuHontenGenka = compRandMult(100, 50, Math.max(50,Math.floor(naibuGenka/100)));
+  const shitenKimatsuHontenGenka = compRandMult(20, 3, Math.max(3,Math.floor(naibuGenka/20)));
   const shitenKimatsuHonten = Math.round(shitenKimatsuHontenGenka*(100+markupPct)/100);
   const miJitsugen = shitenKimatsuHonten - shitenKimatsuHontenGenka;
   const shitenKimatsuGai = compRandMult(1000, 5, 20);
