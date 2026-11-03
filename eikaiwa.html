@@ -217,7 +217,7 @@ function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<'
 
 /* ========== 保存 ========== */
 const STORE_KEY = 'eikaiwa.v1';
-const DEF_SET = { rate: 0.95, voiceA: '', voiceB: '', voiceJa: '', autoPlay: true, showEn: true, showJa: false, mode: 'tr', hfThink: 5, hfJa: true, cat: 'all' };
+const DEF_SET = { rate: 0.9, voiceA: '', voiceB: '', voiceJa: '', autoPlay: true, showEn: true, showJa: false, mode: 'tr', hfThink: 5, hfJa: true, cat: 'all' };
 let S = { ev: {}, done: {}, wv: {}, set: Object.assign({}, DEF_SET) };
 try {
   const raw = localStorage.getItem(STORE_KEY);
@@ -238,16 +238,34 @@ if (!TTS) document.getElementById('nosupport').style.display = 'block';
 let VOICES = [];
 function loadVoices() { if (!TTS) return; VOICES = speechSynthesis.getVoices(); if (curTab === 'settings') renderSettings(); }
 if (TTS) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
-const enVoices = () => VOICES.filter(v => /^en([-_]|$)/i.test(v.lang));
-const jaVoices = () => VOICES.filter(v => /^ja/i.test(v.lang));
+// 声の品質スコア（効果音的な声・旧式の合成音は除外し、高品質な声を優先）
+const BAD_VOICE = /\b(Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Deranged|Good News|Hysterical|Jester|Junior|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Fred|Ralph|Kathy|Princess|Pipe Organ|Eddy|Flo|Grandma|Grandpa|Reed|Rocko|Sandy|Shelley|eSpeak)\b/i;
+const GOOD_VOICE = /\b(Samantha|Ava|Allison|Susan|Tom|Zoe|Nicky|Evan|Nathan|Joelle|Noelle|Aaron|Daniel|Serena|Kate|Oliver|Karen|Moira|Tessa|Jenny|Aria|Guy|Michelle|Christopher|Eric|Emma|Brian|Andrew|Ana|Libby|Ryan|Sonia|Natasha|William)\b/i;
+function voiceScore(v) {
+  const n = v.name; let s = 0;
+  if (BAD_VOICE.test(n)) return -1000;
+  if (/Natural|Neural/i.test(n)) s += 100;           // Edge等の自然音声
+  if (/Premium/i.test(n)) s += 95;                   // iPhone/Macの高品質音声
+  if (/Enhanced|Siri/i.test(n)) s += 80;
+  if (/^Google/i.test(n)) s += 70;                   // Chrome/Androidの音声
+  if (GOOD_VOICE.test(n)) s += 50;
+  if (/Online/i.test(n)) s += 20;
+  if (/Compact/i.test(n)) s -= 30;
+  if (/en[-_]US/i.test(v.lang)) s += 8; else if (/en[-_]GB/i.test(v.lang)) s += 5;
+  if (v.localService === false) s += 3;
+  return s;
+}
+const byScore = list => list.filter(v => voiceScore(v) > -1000).sort((a, b) => voiceScore(b) - voiceScore(a));
+const enVoices = () => byScore(VOICES.filter(v => /^en([-_]|$)/i.test(v.lang)));
+const jaVoices = () => byScore(VOICES.filter(v => /^ja/i.test(v.lang)));
 function voiceFor(w) {
   const list = w === 'ja' ? jaVoices() : enVoices();
   const name = S.set['voice' + (w === 'ja' ? 'Ja' : w)];
   const v = list.find(v => v.name === name); if (v) return v;
-  if (w === 'ja') return list[0] || null;
-  const us = list.filter(v => /en[-_]US/i.test(v.lang));
-  const pool = us.length >= 2 ? us : list;
-  return w === 'A' ? (pool[0] || null) : (pool[1] || pool[0] || null);
+  if (!list.length) return null;
+  if (w === 'ja' || w === 'A') return list[0];
+  // Bは、Aと違う声のうち一番良いもの（なるべく同等の品質）
+  return list.find(x => x.name !== list[0].name) || list[0];
 }
 const keep = [];
 function speak(text, w) {
@@ -789,7 +807,7 @@ function renderSettings() {
   const ev = enVoices(), jv = jaVoices();
   const opts = (list, w) => {
     const cur = voiceFor(w);
-    return list.length ? list.map(v => `<option value="${esc(v.name)}" ${cur && cur.name === v.name ? 'selected' : ''}>${esc(v.name)}（${esc(v.lang)}）</option>`).join('') : '<option value="">（音声が見つかりません）</option>';
+    return list.length ? list.map((v, i) => `<option value="${esc(v.name)}" ${cur && cur.name === v.name ? 'selected' : ''}>${i < 3 ? '★ ' : ''}${esc(v.name)}（${esc(v.lang)}）</option>`).join('') : '<option value="">（音声が見つかりません）</option>';
   };
   el.innerHTML = `<div class="card"><div class="card-title">音声</div>
     <div class="form-group"><label>話す速さ：<span id="rateV">${S.set.rate.toFixed(2)}</span> 倍</label>
@@ -797,7 +815,11 @@ function renderSettings() {
     <div class="form-group"><label>Aの声</label><div class="row" style="flex-wrap:nowrap"><select id="sVA">${opts(ev, 'A')}</select><button class="btn btn-outline btn-sm" id="tA">試聴</button></div></div>
     <div class="form-group"><label>Bの声</label><div class="row" style="flex-wrap:nowrap"><select id="sVB">${opts(ev, 'B')}</select><button class="btn btn-outline btn-sm" id="tB">試聴</button></div></div>
     <div class="form-group"><label>日本語の声（ハンズフリーで訳を読み上げるとき）</label><div class="row" style="flex-wrap:nowrap"><select id="sVJ">${opts(jv, 'ja')}</select><button class="btn btn-outline btn-sm" id="tJ">試聴</button></div></div>
-    <div class="legend">選べる声は端末とブラウザによって異なります。AとBに違う声を選ぶと聞き分けやすくなります。</div></div>
+    <div class="legend">声は聞き取りやすい順に並んでいて、一番上が自動で選ばれます。端末とブラウザによって選べる声が異なります。</div>
+    <div class="warn" style="margin-top:10px;margin-bottom:0"><b>もっと自然な声にするには</b><br>
+    ・<b>iPhone／iPad</b>：設定 → アクセシビリティ → 読み上げコンテンツ → 声 → 英語 →「Ava」「Zoe」「Evan」などの<b>（プレミアム）</b>や<b>（拡張）</b>をダウンロード → このページを開き直して上の欄で選択<br>
+    ・<b>Android</b>：設定 → システム → 言語と入力 → テキスト読み上げ →「Google音声サービス」の英語（米国）の音声データをインストール<br>
+    ・<b>パソコン</b>：<b>Microsoft Edge</b>で開くと、非常に自然な「Natural」音声が使えます</div></div>
   <div class="card"><div class="card-title">ハンズフリー</div>
     <div class="form-group"><label>考える時間（秒）</label><input type="number" id="sThink" min="1" max="20" value="${S.set.hfThink}"></div>
     <label class="checkline"><input type="checkbox" id="sHfJa" ${S.set.hfJa ? 'checked' : ''}>自分の番に日本語訳を読み上げる</label>
