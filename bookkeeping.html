@@ -580,6 +580,8 @@
     .fs2 .tk { display:flex; gap:6px; margin:4px 0; line-height:1.6; }
     .fs2 .sp { flex:0 0 1.2em; font-weight:700; } .fs2 .sp.iv { color:#2E75B6; } .fs2 .sp.ca { color:#C00000; } .fs2 .tx { flex:1; }
     .fs2 details { margin:8px 0; } .fs2 summary { cursor:pointer; font-weight:700; color:#1F4E79; padding:6px 0; }
+    .fs2-kind { display:inline-block; font-size:11px; font-weight:700; color:#fff; background:#1F4E79; border-radius:4px; padding:0 8px; margin-bottom:6px; }
+    .fs2-done { margin:6px 0; }
     .fs2-ch-btn { display:flex; justify-content:space-between; align-items:center; gap:8px; width:100%; text-align:left; padding:10px 12px; margin:6px 0; border-radius:10px; border:1.5px solid var(--border); background:#fff; font-size:14px; font-weight:700; color:var(--text); cursor:pointer; }
     .fs2-ch-btn small { font-weight:400; color:var(--muted); font-size:11px; display:block; }
     </style>
@@ -6953,37 +6955,49 @@ function fs2Show(btn){
   c.querySelectorAll('.ans,.talk').forEach(e=>e.classList.add('show'));
   btn.remove();
 }
-function fs2Open(i){
-  const c=FS2_DATA[i], main=document.getElementById('exp-main');
-  let n=0;
-  const calc=c.C.map(([q,a,tk])=>fs2Card(++n,q,a,tk)).join('');
-  const know=c.K.map(([q,a,tk])=>fs2Card(++n,q,a,tk)).join('');
-  const prev=FS2_DATA.findIndex((x,j)=>j<i&&x.grp===c.grp)>=0?FS2_DATA.map((x,j)=>j).filter(j=>j<i&&FS2_DATA[j].grp===c.grp).pop():-1;
-  const next=FS2_DATA.findIndex((x,j)=>j>i&&x.grp===c.grp);
+let fs2C=0, fs2Q=0;
+function fs2Items(c){
+  return [...c.C.map(x=>['計算',...x]), ...c.K.map(x=>['知識',...x]), ...c.E.map(e=>['まとめの会話','','',e])];
+}
+function fs2Open(i){ fs2C=i; fs2Q=0; fs2Render(); }
+function fs2Go(d){ const n=fs2Items(FS2_DATA[fs2C]).length; fs2Q=Math.max(0,Math.min(n-1,fs2Q+d)); fs2Render(); }
+function fs2Render(){
+  const c=FS2_DATA[fs2C], main=document.getElementById('exp-main'), items=fs2Items(c), n=items.length, i=fs2Q;
+  const [kind,q0,a,tk]=items[i];
+  let q=q0, jr='';
+  const k=q.indexOf('<div class="jh">');
+  if(k>=0){ jr=q.slice(k); q=q.slice(0,k); }
+  const no=kind==='まとめの会話'?'':(kind==='計算'?i+1:i+1);
+  const card = kind==='まとめの会話'
+    ? `<div class="fs2-card"><div class="fs2-kind">まとめの会話</div>${tk}</div>`
+    : `<div class="fs2-card"><div class="fs2-kind">${kind}</div><div><span class="qn">${no}</span>${q}</div>
+       <button class="fs2-show" onclick="fs2Show(this)">答えを表示</button>
+       <div class="ans">${a}${jr}</div>${tk?`<div class="talk">${tk}</div>`:''}</div>`;
+  const nav = `<div class="exp-nav-row">
+      <button class="exp-nav-btn" onclick="fs2Go(-1)" ${i===0?'disabled style="opacity:.4"':''}>← 前へ</button>
+      <span class="exp-nav-info">${i+1} / ${n}</span>
+      <button class="exp-nav-btn" onclick="fs2Go(1)" ${i===n-1?'disabled style="opacity:.4"':''}>次へ →</button>
+    </div>`;
+  const tables = kind==='計算'
+    ? `<div class="fs2-box"><div class="cap">${c.cap}</div><div class="fs2-scroll">${c.blank}</div>
+        <details class="fs2-done"><summary>完成した表（答え）を見る</summary><div class="fs2-scroll">${c.done}</div></details>
+        <div class="fs2-scroll" style="margin-top:6px;">${c.mat}</div></div>`
+    : `<details><summary>資料と表を見る</summary><div class="fs2-box"><div class="cap">${c.cap}</div><div class="fs2-scroll">${c.done}</div><div class="fs2-scroll" style="margin-top:6px;">${c.mat}</div></div></details>`;
+  const next = FS2_DATA.findIndex((x,j)=>j>fs2C&&x.grp===c.grp);
   main.innerHTML = `
     <div class="exp-nav-row">
       <button class="exp-nav-btn" onclick="fs2Menu()">← 章の一覧</button>
-      <span class="exp-nav-info">第${i+1}章</span>
+      <span class="exp-nav-info" style="font-size:12px;">第${fs2C+1}章　${c.t}</span>
       <button class="exp-nav-btn" onclick="exitCompQuiz()">✕ 終了</button>
     </div>
     <div class="fs2">
-      <div class="fs2-hd"><span>第${i+1}章　${c.t}</span><span class="fs2-rk fs2-rk${c.rank}">章のランク ${c.rank}</span></div>
-      <div class="fs2-box">
-        <div class="fs2-scroll">${c.mat}</div>
-        <div class="cap">${c.cap}</div>
-        <div class="fs2-scroll">${c.blank}</div>
-      </div>
-      <div class="fs2-sect">計算</div>${calc}
-      <details><summary>完成した表（計算の答え）を見る</summary><div class="cap">${c.cap}</div><div class="fs2-scroll">${c.done}</div></details>
-      <div class="fs2-sect">知識</div>${know}
-      ${c.E.length?`<div class="fs2-sect">まとめの会話</div>${c.E.map(e=>`<div class="fs2-card">${e}</div>`).join('')}`:''}
-      <div class="exp-nav-row" style="margin-top:12px;">
-        ${prev>=0?`<button class="exp-nav-btn" onclick="fs2Open(${prev})">← 前の章</button>`:'<span></span>'}
-        <button class="exp-nav-btn" onclick="fs2Menu()">章の一覧</button>
-        ${next>=0?`<button class="exp-nav-btn" onclick="fs2Open(${next})">次の章 →</button>`:'<span></span>'}
-      </div>
+      ${nav}
+      ${card}
+      ${nav}
+      ${i===n-1&&next>=0?`<div style="text-align:center;margin:6px 0 10px;"><button class="fs2-show" onclick="fs2Open(${next})">次の章へ →</button></div>`:''}
+      ${tables}
     </div>`;
-  document.getElementById('exp-panel').scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('exp-panel').scrollIntoView({block:'start'});
 }
 
 let _sogoGens = null;
