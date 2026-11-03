@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英会話トレーニング</title>
+<style>
+:root{--primary:#1F3A5F;--primary-hover:#16283F;--primary-light:#EAF0F7;--success:#2F7D5B;--success-light:#EAF6F0;--success-border:#8FCBAF;--warning:#B07A2E;--warning-light:#FBF3E7;--warning-border:#E4B96A;--danger:#B0362E;--danger-light:#FDECEA;--danger-border:#E79892;--border:#D8DEE6;--bg:#F1F4F8;--card:#FFFFFF;--text:#1A2433;--text-muted:#5B6B80;--radius:10px;--shadow:0 1px 4px rgba(20,40,70,.10);--mark:#FFF1B8;--mark-seen:#FFD9A8}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh;padding-bottom:40px}
+button{font-family:inherit}
+.header{background:linear-gradient(135deg,#101E33,#1F3A5F);color:#fff;padding:14px 20px;text-align:center}
+.header h1{font-size:19px;font-weight:700}.header p{font-size:11.5px;opacity:.82;margin-top:3px}
+.tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:10}
+.tab-btn{flex:1 0 auto;padding:12px 10px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-muted);border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-light)}
+.container{max-width:760px;margin:0 auto;padding:14px 12px}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+.card-title{font-size:14.5px;font-weight:700;margin-bottom:10px}
+.muted{color:var(--text-muted);font-size:12px}
+.btn{padding:9px 14px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;line-height:1.3}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover)}
+.btn-outline{background:#fff;border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.btn-ok{background:var(--success);color:#fff}.btn-mid{background:var(--warning);color:#fff}.btn-ng{background:var(--danger);color:#fff}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:6px}
+.btn.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{padding:6px 12px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--text-muted)}
+.chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.badge{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:20px;white-space:nowrap}
+.badge-done{background:var(--success-light);color:var(--success);border:1px solid var(--success-border)}
+.badge-todo{background:#EEF1F5;color:var(--text-muted);border:1px solid var(--border)}
+.badge-weak{background:var(--danger-light);color:var(--danger);border:1px solid var(--danger-border)}
+.badge-cat{background:var(--primary-light);color:var(--primary)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--primary-light);border-radius:8px;padding:8px;text-align:center}
+.stat b{display:block;font-size:19px;color:var(--primary)}
+.stat span{font-size:11px;color:var(--text-muted)}
+.cat-title{font-size:13px;font-weight:700;color:var(--primary);margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+.cat-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.series{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
+.series-head{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:#F7F9FC;border-bottom:1px solid var(--border);gap:8px}
+.series-head b{font-size:13.5px}
+.dlg{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #EEF1F5;cursor:pointer}
+.dlg:last-child{border-bottom:none}
+.dlg:hover{background:var(--primary-light)}
+.dlg .t{font-weight:700;font-size:13.5px}
+.dlg .m{font-size:11.5px;color:var(--text-muted)}
+.dlg .no{display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--primary);color:#fff;font-size:11px;align-items:center;justify-content:center;margin-right:6px;flex:0 0 auto}
+/* practice */
+.p-head .crumb{font-size:11.5px;color:var(--text-muted)}
+.p-head h2{font-size:17px;margin:2px 0 10px}
+.ctrl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.ctrl .lbl{font-size:11.5px;font-weight:700;color:var(--text-muted);margin-right:2px}
+.seg{display:inline-flex;border:1.5px solid var(--border);border-radius:8px;overflow:hidden}
+.seg button{border:none;background:#fff;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text-muted)}
+.seg button.on{background:var(--primary);color:#fff}
+.log{display:flex;flex-direction:column;gap:10px;margin:12px 0 0;padding-bottom:8px}
+.b{max-width:88%;border-radius:12px;padding:9px 12px;border:1px solid var(--border);background:#fff;box-shadow:var(--shadow)}
+.b.partner{align-self:flex-start;border-top-left-radius:3px}
+.b.mine{align-self:flex-end;background:var(--primary-light);border-color:#B9CBE0;border-top-right-radius:3px}
+.b.prompt{background:#FFFBEF;border:2px solid var(--warning-border)}
+.b.playing{outline:3px solid #7FA6D6}
+.b .who{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:3px}
+.b .who .sp{flex:1}
+.b .en{font-size:15.5px;line-height:1.5}
+.b .ja{font-size:12.5px;color:var(--text-muted);margin-top:3px}
+.b .jabig{font-size:15.5px;font-weight:600}
+.b .hint{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--primary);margin-top:6px;word-break:break-word}
+.b .seenhint{font-size:11.5px;color:#9A5B12;margin-top:5px}
+.icon-btn{border:none;background:none;cursor:pointer;font-size:14px;padding:0 3px;color:var(--primary)}
+.log.hide-en .partner .en{filter:blur(6px);cursor:pointer;user-select:none}
+.log.hide-en .partner.peek .en{filter:none}
+.partner .ja{display:none}
+.log.show-ja .partner .ja,.partner.peekja .ja{display:block}
+mark{background:var(--mark);border-radius:3px;padding:0 1px;color:inherit}
+mark.seen{background:var(--mark-seen)}
+.res{font-size:11px;font-weight:700;padding:0 6px;border-radius:10px}
+.res0{background:var(--success-light);color:var(--success)}.res1{background:var(--warning-light);color:var(--warning)}.res2{background:var(--danger-light);color:var(--danger)}
+.act{position:sticky;bottom:0;background:rgba(241,244,248,.96);backdrop-filter:blur(4px);padding:10px 0 12px;margin-top:8px;border-top:1px solid var(--border);z-index:5}
+.act .row{justify-content:center}
+.act .btn{min-width:84px}
+.countdown{font-size:22px;font-weight:700;color:var(--warning);text-align:center}
+.finish{text-align:center}
+.finish h3{font-size:16px;margin-bottom:6px}
+/* review */
+.flash .ctx{font-size:12.5px;color:var(--text-muted);border-left:3px solid var(--border);padding-left:8px;margin-bottom:10px}
+.flash .ctx .en{font-size:14px;color:var(--text)}
+.flash .q{font-size:17px;font-weight:700;margin:6px 0}
+.flash .a{font-size:17px;margin-top:10px;padding:10px;background:var(--primary-light);border-radius:8px}
+.flash .src{font-size:11px;color:var(--text-muted);margin-bottom:8px}
+.weak-item{padding:8px 0;border-bottom:1px solid #EEF1F5;font-size:13px}
+.weak-item:last-child{border-bottom:none}
+/* keys */
+.key-row{display:flex;gap:8px;align-items:baseline;padding:6px 0;border-bottom:1px solid #EEF1F5}
+.key-row:last-child{border-bottom:none}
+.key-row .k{font-weight:700;min-width:44%}
+.key-row .j{flex:1;color:var(--text-muted);font-size:12.5px}
+/* settings */
+.form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+label{font-size:12px;font-weight:600;color:var(--text-muted)}
+select,input[type=number]{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13.5px;background:#fff;color:var(--text);font-family:inherit}
+input[type=range]{width:100%}
+.checkline{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px}
+.checkline input{width:17px;height:17px}
+.warn{background:var(--warning-light);border:1px solid var(--warning-border);color:#7A5416;border-radius:8px;padding:9px 12px;font-size:12.5px;margin-bottom:12px}
+.legend{font-size:11.5px;color:var(--text-muted);margin-top:6px}
+/* words */
+.blank{display:inline-block;background:#1A2433;color:transparent;border-radius:2px;cursor:pointer;padding:0 1px;min-width:1.2em}
+.blank.open{background:#FDECEA;color:var(--danger);font-weight:700}
+.syn{font-size:11px;color:var(--text-muted)}
+.wtable{width:100%;border-collapse:collapse;font-size:13px}
+.wtable td{border-bottom:1px solid #EEF1F5;padding:7px 4px;vertical-align:top}
+.wtable .n{color:var(--text-muted);font-size:11px;width:30px;white-space:nowrap}
+.wtable .wj{width:38%}
+.wtable .we{font-size:14px}
+.wtable .wa{display:none;font-size:12px;color:var(--success);margin-top:3px}
+.wtable tr.open .wa{display:block}
+.star{color:#E08A1E;font-size:12px}
+.wcard .wja{font-size:17px;font-weight:700;margin:6px 0 10px}
+.wcard .wen{font-size:18px;line-height:1.7}
+.wcard .wans{margin-top:10px;padding:10px;background:var(--success-light);border-radius:8px;font-size:15px}
+@media(max-width:520px){.wtable tr{display:block;padding:6px 0;border-bottom:1px solid #EEF1F5}.wtable td{display:block;border:none;padding:1px 2px;width:auto!important}.wtable .n{display:inline}}
+@media(max-width:520px){.b{max-width:94%}.stats{gap:6px}.key-row{flex-direction:column;gap:0}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>英会話トレーニング</h1>
+  <p>相手の英語を聞いて、日本語訳を見ながら自分で英語にして答える練習</p>
+</div>
+<div class="tabs">
+  <button class="tab-btn active" data-tab="list">会話</button>
+  <button class="tab-btn" data-tab="review">復習カード</button>
+  <button class="tab-btn" data-tab="words">単語テスト</button>
+  <button class="tab-btn" data-tab="keys">表現集</button>
+  <button class="tab-btn" data-tab="settings">設定</button>
+</div>
+<div class="container">
+  <div id="nosupport" class="warn" style="display:none">このブラウザは音声読み上げに対応していません。Chrome・Safari・Edgeの最新版をご利用ください（文字だけでも練習できます）。</div>
+  <div class="panel active" id="p-list"></div>
+  <div class="panel" id="p-practice"></div>
+  <div class="panel" id="p-review"></div>
+  <div class="panel" id="p-words"></div>
+  <div class="panel" id="p-keys"></div>
+  <div class="panel" id="p-settings"></div>
+</div>
+
+<script src="eikaiwa/1-daily.js"></script>
+<script src="eikaiwa/2-travel.js"></script>
+<script src="eikaiwa/3-shopping.js"></script>
+<script src="eikaiwa/4-life.js"></script>
+<script src="eikaiwa/5-business.js"></script>
+<script src="eikaiwa/6-legal.js"></script>
+<script src="eikaiwa/words.js"></script>
+<script>
+(function(){
+'use strict';
+/* ========== データ準備 ========== */
+const DATA = window.EK_DATA || [];
+const DIALOGS = [], SERIES = [], BYID = {};
+DATA.forEach(s => {
+  const ser = { cat: s.cat, name: s.series, keys: s.keys || [], dialogs: [] };
+  SERIES.push(ser);
+  s.dialogs.forEach((d, i) => {
+    d.cat = s.cat; d.ser = ser; d.no = i + 1; d.order = DIALOGS.length; d.def = d.def || 'B';
+    DIALOGS.push(d); ser.dialogs.push(d); BYID[d.id] = d;
+  });
+});
+const CATS = [...new Set(SERIES.map(s => s.cat))];
+const NUM = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨'];
+
+// 重要表現：単語境界つきで検索
+const KEYS = [];
+SERIES.forEach(ser => ser.keys.forEach(([en, ja]) => {
+  const lc = en.toLowerCase();
+  if (!KEYS.some(k => k.lc === lc)) KEYS.push({ en, ja, lc, ser, first: Infinity, count: 0 });
+}));
+const isWordCh = c => /[a-z0-9']/i.test(c || '');
+function findAll(lcText, lcKey) {
+  const out = []; let i = lcText.indexOf(lcKey);
+  while (i >= 0) {
+    const e = i + lcKey.length;
+    const okL = !isWordCh(lcKey[0]) || !isWordCh(lcText[i - 1]);
+    const okR = !isWordCh(lcKey[lcKey.length - 1]) || !isWordCh(lcText[e]);
+    if (okL && okR) out.push([i, e]);
+    i = lcText.indexOf(lcKey, i + 1);
+  }
+  return out;
+}
+DIALOGS.forEach(d => {
+  const txt = d.lines.map(l => l[1].toLowerCase()).join('\n');
+  KEYS.forEach(k => { if (findAll(txt, k.lc).length) { k.count++; if (d.order < k.first) k.first = d.order; } });
+});
+const KEYS_LONG = KEYS.slice().sort((a, b) => b.lc.length - a.lc.length);
+function keysIn(text) {
+  const lc = text.toLowerCase(); const ranges = [];
+  KEYS_LONG.forEach(k => findAll(lc, k.lc).forEach(([s, e]) => {
+    if (!ranges.some(r => s < r[1] && e > r[0])) ranges.push([s, e, k]);
+  }));
+  return ranges.sort((a, b) => a[0] - b[0]);
+}
+function hl(text, order) {
+  let out = '', p = 0;
+  keysIn(text).forEach(([s, e, k]) => {
+    out += esc(text.slice(p, s)) + `<mark class="${k.first < order ? 'seen' : ''}" title="${esc(k.ja)}">${esc(text.slice(s, e))}</mark>`;
+    p = e;
+  });
+  return out + esc(text.slice(p));
+}
+function seenKeys(text, order) { return keysIn(text).map(r => r[2]).filter(k => k.first < order); }
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+/* ========== 保存 ========== */
+const STORE_KEY = 'eikaiwa.v1';
+const DEF_SET = { rate: 0.9, voiceA: '', voiceB: '', voiceJa: '', autoPlay: true, showEn: true, showJa: false, mode: 'tr', hfThink: 5, hfJa: true, cat: 'all' };
+let S = { ev: {}, done: {}, wv: {}, set: Object.assign({}, DEF_SET) };
+try {
+  const raw = localStorage.getItem(STORE_KEY);
+  if (raw) { const o = JSON.parse(raw); S.ev = o.ev || {}; S.done = o.done || {}; S.wv = o.wv || {}; S.set = Object.assign({}, DEF_SET, o.set || {}); }
+} catch (e) {}
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch (e) {} }
+const lk = (d, i) => d.id + ':' + i;
+function record(d, i, r) {
+  const k = lk(d, i); const o = S.ev[k] || { n: 0 };
+  o.r = r; o.n++; o.t = Date.now(); S.ev[k] = o; save();
+}
+const isWeak = k => S.ev[k] && S.ev[k].r >= 1;
+
+/* ========== 音声 ========== */
+let curTab = 'list';
+const TTS = 'speechSynthesis' in window;
+if (!TTS) document.getElementById('nosupport').style.display = 'block';
+let VOICES = [];
+function loadVoices() { if (!TTS) return; VOICES = speechSynthesis.getVoices(); if (curTab === 'settings') renderSettings(); }
+if (TTS) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+// 声の品質スコア（効果音的な声・旧式の合成音は除外し、高品質な声を優先）
+const BAD_VOICE = /\b(Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Deranged|Good News|Hysterical|Jester|Junior|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Fred|Ralph|Kathy|Princess|Pipe Organ|Eddy|Flo|Grandma|Grandpa|Reed|Rocko|Sandy|Shelley|eSpeak)\b/i;
+const GOOD_VOICE = /\b(Samantha|Ava|Allison|Susan|Tom|Zoe|Nicky|Evan|Nathan|Joelle|Noelle|Aaron|Daniel|Serena|Kate|Oliver|Karen|Moira|Tessa|Jenny|Aria|Guy|Michelle|Christopher|Eric|Emma|Brian|Andrew|Ana|Libby|Ryan|Sonia|Natasha|William)\b/i;
+function voiceScore(v) {
+  const n = v.name; let s = 0;
+  if (BAD_VOICE.test(n)) return -1000;
+  if (/Natural|Neural/i.test(n)) s += 100;           // Edge等の自然音声
+  if (/Premium/i.test(n)) s += 95;                   // iPhone/Macの高品質音声
+  if (/Enhanced|Siri/i.test(n)) s += 80;
+  if (/^Google/i.test(n)) s += 70;                   // Chrome/Androidの音声
+  if (GOOD_VOICE.test(n)) s += 50;
+  if (/Online/i.test(n)) s += 20;
+  if (/Compact/i.test(n)) s -= 30;
+  if (/en[-_]US/i.test(v.lang)) s += 8; else if (/en[-_]GB/i.test(v.lang)) s += 5;
+  if (v.localService === false) s += 3;
+  return s;
+}
+const byScore = list => list.filter(v => voiceScore(v) > -1000).sort((a, b) => voiceScore(b) - voiceScore(a));
+const enVoices = () => byScore(VOICES.filter(v => /^en([-_]|$)/i.test(v.lang)));
+const jaVoices = () => byScore(VOICES.filter(v => /^ja/i.test(v.lang)));
+function voiceFor(w) {
+  const list = w === 'ja' ? jaVoices() : enVoices();
+  const name = S.set['voice' + (w === 'ja' ? 'Ja' : w)];
+  const v = list.find(v => v.name === name); if (v) return v;
+  if (!list.length) return null;
+  if (w === 'ja' || w === 'A') return list[0];
+  // Bは、Aと違う声のうち一番良いもの（なるべく同等の品質）
+  return list.find(x => x.name !== list[0].name) || list[0];
+}
+const keep = [];
+function speak(text, w) {
+  return new Promise(res => {
+    if (!TTS) { res(); return; }
+    const u = new SpeechSynthesisUtterance(text);
+    const v = voiceFor(w);
+    if (v) { u.voice = v; u.lang = v.lang; } else u.lang = w === 'ja' ? 'ja-JP' : 'en-US';
+    u.rate = w === 'ja' ? 1.05 : S.set.rate;
+    let done = false;
+    const fin = () => { if (done) return; done = true; clearTimeout(t); res(); };
+    u.onend = fin; u.onerror = fin;
+    const t = setTimeout(fin, 3000 + text.length * (w === 'ja' ? 260 : 120) / u.rate);
+    keep.push(u); if (keep.length > 8) keep.shift();
+    speechSynthesis.speak(u);
+  });
+}
+function stopSpeech() { if (TTS) try { speechSynthesis.cancel(); } catch (e) {} }
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function say(text, w) { stopSpeech(); setTimeout(() => speak(text, w), 60); }
+
+/* ========== タブ ========== */
+document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => showTab(b.dataset.tab === 'list' && P && P.open ? 'practice' : b.dataset.tab));
+const SCROLL = {};
+function showTab(t, fresh) {
+  SCROLL[curTab] = window.scrollY;
+  if (curTab === 'practice' && t !== 'practice') pausePractice();
+  else stopSpeech();
+  curTab = t;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === t || (t === 'practice' && b.dataset.tab === 'list')));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'p-' + t));
+  if (t === 'list') renderList();
+  if (t === 'review' && !document.getElementById('p-review').innerHTML) renderReviewHome();
+  if (t === 'keys') renderKeys();
+  if (t === 'words' && !document.getElementById('p-words').innerHTML) renderWords();
+  if (t === 'settings') renderSettings();
+  if (t === 'practice' && !fresh && P && P.needResume) { P.needResume = false; restartAt(P.idx); }
+  window.scrollTo(0, fresh ? 0 : (SCROLL[t] || 0));
+}
+// 練習中に他のタブへ移るとき：音声だけ止めて、戻ったら同じ場所から再開
+function pausePractice() {
+  stopSpeech();
+  if (!P) return;
+  if (P.busy || P.hf || P.listening) {
+    TOKEN++; P.hf = false; P.listening = false; P.needResume = true;
+    setHFBtn();
+    const b = document.getElementById('pAll'); if (b) { b.textContent = '▶ 全文を聞く'; b.classList.remove('on'); }
+  }
+}
+let TOKEN = 0;
+function stopAll() { TOKEN++; stopSpeech(); if (P) { P.hf = false; P.listening = false; } }
+
+/* ========== 一覧 ========== */
+function catFilterChips(cur, onPick) {
+  const wrap = document.createElement('div'); wrap.className = 'chips';
+  ['all', ...CATS].forEach(c => {
+    const b = document.createElement('button'); b.className = 'chip' + (cur === c ? ' on' : '');
+    b.textContent = c === 'all' ? 'すべて' : c; b.onclick = () => onPick(c); wrap.appendChild(b);
+  });
+  return wrap;
+}
+function renderList() {
+  const el = document.getElementById('p-list'); el.innerHTML = '';
+  const doneDlg = DIALOGS.filter(d => S.done[d.id + ':A'] || S.done[d.id + ':B']).length;
+  const doneRole = DIALOGS.reduce((a, d) => a + (S.done[d.id + ':A'] ? 1 : 0) + (S.done[d.id + ':B'] ? 1 : 0), 0);
+  el.insertAdjacentHTML('beforeend', `<div class="card"><div class="stats" style="grid-template-columns:repeat(2,1fr)">
+    <div class="stat"><b>${doneDlg}<small style="font-size:12px">/${DIALOGS.length}</small></b><span>練習した会話</span></div>
+    <div class="stat"><b>${doneRole}<small style="font-size:12px">/${DIALOGS.length * 2}</small></b><span>役別（A・B）</span></div></div>
+    <div class="legend">会話を選ぶと練習が始まります。役（A／B）は練習画面で切り替えられます。</div></div>`);
+  el.appendChild(catFilterChips(S.set.cat, c => { S.set.cat = c; save(); renderList(); }));
+  CATS.filter(c => S.set.cat === 'all' || S.set.cat === c).forEach(cat => {
+    el.insertAdjacentHTML('beforeend', `<div class="cat-title">${esc(cat)}</div>`);
+    SERIES.filter(s => s.cat === cat).forEach(ser => {
+      const box = document.createElement('div'); box.className = 'series';
+      const multi = ser.dialogs.length > 1;
+      box.innerHTML = `<div class="series-head"><b>${esc(ser.name)}</b>${multi ? '<button class="btn btn-outline btn-sm">シリーズ通し ▶</button>' : ''}</div>`;
+      if (multi) box.querySelector('button').onclick = () => openPractice(ser.dialogs[0].id, null, true);
+      ser.dialogs.forEach(d => {
+        const row = document.createElement('div'); row.className = 'dlg';
+        row.innerHTML = `<div style="display:flex;align-items:flex-start"><span class="no">${d.no}</span><div><div class="t">${esc(d.title)}</div><div class="m">A：${esc(d.A)}／B：${esc(d.B)}</div></div></div>
+          <div class="row" style="flex:0 0 auto;gap:4px;justify-content:flex-end">
+          ${['A', 'B'].map(r => `<span class="badge ${S.done[d.id + ':' + r] ? 'badge-done' : 'badge-todo'}">${r}${S.done[d.id + ':' + r] ? '済' : ''}</span>`).join('')}</div>`;
+        row.onclick = () => openPractice(d.id);
+        box.appendChild(row);
+      });
+      el.appendChild(box);
+    });
+  });
+}
+
+/* ========== 練習 ========== */
+let P = null;
+function nextDialog(d) { return DIALOGS[d.order + 1] || null; }
+function openPractice(id, me, seriesRun) {
+  stopAll();
+  const d = BYID[id]; if (!d) return;
+  const keepRun = seriesRun === undefined ? (P && P.seriesRun && P.d.ser === d.ser) : seriesRun;
+  P = { d, me: me || d.def, idx: 0, hint: 0, hf: false, listening: false, busy: false, open: true, seriesRun: !!keepRun };
+  showTab('practice', true);
+  renderPracticeShell();
+  run();
+}
+const nameOf = (d, s) => s === 'A' ? d.A : d.B;
+function renderPracticeShell() {
+  const d = P.d, el = document.getElementById('p-practice');
+  el.innerHTML = `<div class="card p-head">
+    <div class="row" style="justify-content:space-between"><button class="btn btn-outline btn-sm" id="pBack">← 一覧</button>
+      ${P.seriesRun ? `<span class="badge badge-cat">シリーズ通し ${d.no}/${d.ser.dialogs.length}</span>` : ''}</div>
+    <div class="crumb" style="margin-top:8px">${esc(d.cat)} › ${esc(d.ser.name)} ${NUM[d.no - 1] || d.no}</div>
+    <h2>${esc(d.title)}</h2>
+    <div class="ctrl"><span class="lbl">あなたの役</span><div class="seg" id="pRole">
+      ${['A', 'B'].map(r => `<button data-r="${r}" class="${P.me === r ? 'on' : ''}">${r}：${esc(nameOf(d, r))}</button>`).join('')}</div></div>
+    <div class="ctrl"><span class="lbl">練習方法</span><div class="seg" id="pMode">
+      <button data-m="tr" class="${S.set.mode === 'tr' ? 'on' : ''}">英訳して答える</button>
+      <button data-m="sh" class="${S.set.mode === 'sh' ? 'on' : ''}">シャドーイング</button></div></div>
+    <div class="ctrl"><span class="lbl">相手</span>
+      <button class="btn btn-outline btn-sm ${S.set.showEn ? 'on' : ''}" id="pEn">英文</button>
+      <button class="btn btn-outline btn-sm ${S.set.showJa ? 'on' : ''}" id="pJa">訳</button>
+      <button class="btn btn-outline btn-sm ${S.set.autoPlay ? 'on' : ''}" id="pAuto">自動再生</button></div>
+    <div class="ctrl">
+      <button class="btn btn-outline btn-sm" id="pHF">🎧 ハンズフリー</button>
+      <button class="btn btn-outline btn-sm" id="pAll">▶ 全文を聞く</button>
+      <button class="btn btn-outline btn-sm" id="pRestart">↺ 最初から</button></div>
+    <div class="legend"><mark>黄色</mark>＝重要表現　<mark class="seen">オレンジ</mark>＝前の会話で出た表現（復習）</div>
+  </div>
+  <div class="log" id="log"></div>
+  <div class="act" id="act"></div>`;
+  document.getElementById('pBack').onclick = () => { stopAll(); P.open = false; showTab('list'); };
+  el.querySelectorAll('#pRole button').forEach(b => b.onclick = () => openPractice(d.id, b.dataset.r, P.seriesRun));
+  el.querySelectorAll('#pMode button').forEach(b => b.onclick = () => {
+    S.set.mode = b.dataset.m; save();
+    el.querySelectorAll('#pMode button').forEach(x => x.classList.toggle('on', x === b));
+    if (!P.hf && !P.listening) restartAt(P.idx);
+  });
+  const tog = (id, key, fn) => document.getElementById(id).onclick = e => { S.set[key] = !S.set[key]; save(); e.currentTarget.classList.toggle('on', S.set[key]); fn && fn(); };
+  tog('pEn', 'showEn', applyLogClass); tog('pJa', 'showJa', applyLogClass); tog('pAuto', 'autoPlay');
+  document.getElementById('pHF').onclick = () => P.hf ? stopHF() : handsFree();
+  document.getElementById('pAll').onclick = () => P.listening ? stopListenAll() : listenAll();
+  document.getElementById('pRestart').onclick = () => openPractice(d.id, P.me, P.seriesRun);
+  applyLogClass();
+}
+function applyLogClass() {
+  const log = document.getElementById('log'); if (!log) return;
+  log.classList.toggle('hide-en', !S.set.showEn);
+  log.classList.toggle('show-ja', S.set.showJa);
+}
+// 吹き出し生成  state: done | prompt | reveal
+function bubble(i, state) {
+  const d = P.d, l = d.lines[i], mine = l[0] === P.me;
+  const div = document.createElement('div');
+  div.dataset.i = i;
+  const play = `<button class="icon-btn" data-play title="再生">▶</button>`;
+  if (!mine) {
+    div.className = 'b partner';
+    div.innerHTML = `<div class="who"><span>${l[0]}：${esc(nameOf(d, l[0]))}</span><span class="sp"></span>${play}<button class="icon-btn" data-ja title="訳を表示" style="font-size:11px">訳</button></div>
+      <div class="en">${hl(l[1], d.order)}</div><div class="ja">${esc(l[2])}</div>`;
+    div.querySelector('.en').onclick = () => div.classList.toggle('peek');
+    div.querySelector('[data-ja]').onclick = () => div.classList.toggle('peekja');
+  } else if (state === 'prompt') {
+    div.className = 'b mine prompt'; div.id = 'cur';
+    const sk = seenKeys(l[1], d.order);
+    div.innerHTML = `<div class="who"><span>あなたの番（${l[0]}：${esc(nameOf(d, l[0]))}）</span></div>
+      <div class="jabig">${esc(l[2])}</div>
+      ${sk.length ? `<div class="seenhint">★ 既出表現を使います：${sk.map(k => '「' + esc(k.ja) + '」').join(' ')}</div>` : ''}
+      <div class="hint" id="hint"></div>`;
+  } else {
+    div.className = 'b mine' + (state === 'reveal' ? ' prompt' : '');
+    if (state === 'reveal') div.id = 'cur';
+    div.innerHTML = `<div class="who"><span>あなた（${l[0]}：${esc(nameOf(d, l[0]))}）</span><span class="sp"></span>${play}</div>
+      <div class="en">${hl(l[1], d.order)}</div><div class="ja">${esc(l[2])}</div>`;
+  }
+  div.querySelector('[data-play]') && (div.querySelector('[data-play]').onclick = e => { e.stopPropagation(); say(l[1], l[0]); });
+  return div;
+}
+function logEl() { return document.getElementById('log'); }
+function append(i, state) {
+  const b = bubble(i, state); logEl().appendChild(b);
+  b.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  return b;
+}
+function replaceCur(i, state) {
+  const old = document.getElementById('cur'); const b = bubble(i, state);
+  if (old) old.replaceWith(b); else logEl().appendChild(b);
+  b.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function act(html) { const a = document.getElementById('act'); if (a) a.innerHTML = html; return a; }
+function restartAt(idx) {
+  // idx より前を表示し直して、idx から再開
+  TOKEN++; stopSpeech();
+  logEl().innerHTML = '';
+  for (let i = 0; i < idx; i++) logEl().appendChild(bubble(i, 'done'));
+  P.idx = idx; run({ quiet: true });
+}
+async function run(opt) {
+  opt = opt || {};
+  const tk = ++TOKEN; const d = P.d; P.hint = 0;
+  act(''); P.busy = true;
+  await sleep(80);
+  if (tk !== TOKEN) return;
+  while (P.idx < d.lines.length && d.lines[P.idx][0] !== P.me) {
+    append(P.idx, 'done');
+    act(`<div class="row"><button class="btn btn-outline" id="aSkip">スキップ ▶▶</button></div>`);
+    document.getElementById('aSkip').onclick = () => stopSpeech();
+    if (S.set.autoPlay && !opt.quiet) { await speak(d.lines[P.idx][1], d.lines[P.idx][0]); await sleep(250); }
+    if (tk !== TOKEN) return;
+    P.idx++;
+  }
+  P.busy = false;
+  if (P.idx >= d.lines.length) { finish(); return; }
+  append(P.idx, 'prompt');
+  if (S.set.mode === 'sh') { reveal(); return; }
+  act(`<div class="row">${prevBtn()}<button class="btn btn-outline" id="aHint">ヒント</button><button class="btn btn-primary" id="aShow">答えを見る</button>${nextBtn()}</div>`);
+  bindNav();
+  document.getElementById('aHint').onclick = showHint;
+  document.getElementById('aShow').onclick = reveal;
+}
+// 前へ：ひとつ前の自分の番へ戻る／次へ：次へ進む
+function prevMine(from) { for (let j = from - 1; j >= 0; j--) if (P.d.lines[j][0] === P.me) return j; return -1; }
+function prevBtn() { return `<button class="btn btn-outline" id="aPrev" ${prevMine(P.idx) < 0 ? 'disabled' : ''}>◀ 前へ</button>`; }
+function nextBtn() { return `<button class="btn btn-primary" id="aNext">次へ ▶</button>`; }
+function goPrev() { const j = prevMine(P.idx); if (j >= 0) restartAt(j); }
+function goNext() { stopSpeech(); replaceCur(P.idx, 'done'); P.idx++; run(); }
+function bindNav() {
+  const a = document.getElementById('aPrev'); if (a) a.onclick = goPrev;
+  const b = document.getElementById('aNext'); if (b) b.onclick = goNext;
+}
+function showHint() {
+  const en = P.d.lines[P.idx][1]; const w = en.split(/\s+/);
+  P.hint++; const n = Math.min(w.length, P.hint * 2);
+  const masked = w.slice(n).map(x => x.replace(/[A-Za-z0-9]/g, '_'));
+  document.getElementById('hint').textContent = w.slice(0, n).concat(masked).join(' ');
+  if (n >= w.length) reveal();
+}
+function reveal() {
+  const d = P.d, l = d.lines[P.idx];
+  replaceCur(P.idx, 'reveal');
+  say(l[1], l[0]);
+  act(`${S.set.mode === 'sh' ? '<div class="muted" style="text-align:center;margin-bottom:6px">音声に続けて声に出して言ってみましょう</div>' : ''}
+    <div class="row">${prevBtn()}<button class="btn btn-outline" id="aRe">▶ もう一度</button>${nextBtn()}</div>`);
+  document.getElementById('aRe').onclick = () => say(l[1], l[0]);
+  bindNav();
+}
+function finish() {
+  const d = P.d; stopSpeech();
+  S.done[d.id + ':' + P.me] = true; save();
+  const nx = nextDialog(d);
+  const inSeries = nx && nx.ser === d.ser;
+  const other = P.me === 'A' ? 'B' : 'A';
+  const box = document.createElement('div'); box.className = 'card finish';
+  box.innerHTML = `<h3>おつかれさまでした</h3>
+    <div class="row" style="justify-content:center">
+      <button class="btn btn-outline" id="fSwap">役を交代（${other}）</button>
+      <button class="btn btn-outline" id="fAgain">もう一度</button>
+      ${nx ? `<button class="btn btn-primary" id="fNext">${inSeries ? 'シリーズの次へ' : '次の会話'} ▶</button>` : ''}
+    </div>
+    ${P.seriesRun && !inSeries ? '<div class="muted" style="margin-top:8px">シリーズ通しが終わりました。</div>' : ''}`;
+  logEl().appendChild(box); box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  act(`<div class="row">${prevBtn()}<button class="btn btn-outline" id="fList">一覧へ戻る</button></div>`);
+  bindNav();
+  document.getElementById('fList').onclick = () => { P.open = false; showTab('list'); };
+  document.getElementById('fSwap').onclick = () => openPractice(d.id, other, P.seriesRun);
+  document.getElementById('fAgain').onclick = () => openPractice(d.id, P.me, P.seriesRun);
+  if (nx) document.getElementById('fNext').onclick = () => openPractice(nx.id, null, P.seriesRun && inSeries);
+}
+
+/* ハンズフリー：相手→日本語訳→考える時間→模範英文 を自動で */
+function setHFBtn() {
+  const b = document.getElementById('pHF'); if (b) { b.textContent = P.hf ? '■ ハンズフリー停止' : '🎧 ハンズフリー'; b.classList.toggle('on', P.hf); }
+}
+async function handsFree() {
+  if (P.listening) stopListenAll();
+  stopSpeech(); const tk = ++TOKEN; P.hf = true; setHFBtn();
+  const cur = document.getElementById('cur'); if (cur) cur.remove();
+  if (P.idx >= P.d.lines.length) { P.idx = 0; logEl().innerHTML = ''; }
+  act(`<div class="countdown" id="cd">再生中…</div><div class="row" style="margin-top:6px"><button class="btn btn-outline" id="hStop">■ 停止</button></div>`);
+  document.getElementById('hStop').onclick = stopHF;
+  const cd = t => { const c = document.getElementById('cd'); if (c) c.textContent = t; };
+  const d = P.d;
+  await sleep(120);
+  if (tk !== TOKEN) return;
+  while (P.idx < d.lines.length) {
+    const l = d.lines[P.idx];
+    if (l[0] !== P.me) {
+      cd('相手'); append(P.idx, 'done'); await speak(l[1], l[0]);
+    } else {
+      cd('あなたの番'); append(P.idx, 'prompt');
+      if (S.set.hfJa) { await speak(l[2], 'ja'); }
+      for (let s = S.set.hfThink; s > 0; s--) { if (tk !== TOKEN) return; cd('考える… ' + s); await sleep(1000); }
+      if (tk !== TOKEN) return;
+      cd('模範解答'); replaceCur(P.idx, 'reveal'); await speak(l[1], l[0]);
+      if (tk !== TOKEN) return;
+      replaceCur(P.idx, 'done');
+    }
+    if (tk !== TOKEN) return;
+    await sleep(700);
+    if (tk !== TOKEN) return;
+    P.idx++;
+  }
+  P.hf = false; setHFBtn(); finish();
+}
+function stopHF() { P.hf = false; setHFBtn(); restartAt(P.idx); }
+
+/* 全文を聞く */
+async function listenAll() {
+  if (P.hf) { P.hf = false; setHFBtn(); }
+  stopSpeech(); const tk = ++TOKEN; P.listening = true;
+  const b = document.getElementById('pAll'); b.textContent = '■ 停止'; b.classList.add('on');
+  const d = P.d; const log = logEl(); log.innerHTML = '';
+  const saveMe = P.me;
+  act(`<div class="row"><button class="btn btn-outline" id="lStop">■ 停止して練習に戻る</button></div>`);
+  document.getElementById('lStop').onclick = stopListenAll;
+  d.lines.forEach((l, i) => log.appendChild(bubble(i, 'done')));
+  await sleep(120);
+  for (let i = 0; i < d.lines.length; i++) {
+    if (tk !== TOKEN) return;
+    const el = log.children[i]; el.classList.add('playing'); el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    await speak(d.lines[i][1], d.lines[i][0]);
+    el.classList.remove('playing');
+    if (tk !== TOKEN) return;
+    await sleep(350);
+  }
+  if (tk === TOKEN && P.me === saveMe) stopListenAll();
+}
+function stopListenAll() {
+  P.listening = false;
+  const b = document.getElementById('pAll'); if (b) { b.textContent = '▶ 全文を聞く'; b.classList.remove('on'); }
+  restartAt(P.idx);
+}
+
+/* ========== 復習カード ========== */
+let R = null;
+function renderReviewHome() {
+  R = null;
+  const el = document.getElementById('p-review');
+  const rs = Object.assign({ cat: 'all' }, S.set.rv || {});
+  el.innerHTML = `<div class="card"><div class="card-title">復習カード</div>
+    <div class="muted" style="margin-bottom:10px">会話の中の文をランダムに1文ずつ出題します。日本語訳を見て英語で言い、答えを確認してください（両方の役の文が出ます）。</div>
+    <div id="rCats"></div>
+    <div class="row" style="margin-top:6px"><button class="btn btn-primary" id="rStart">開始（20問）</button></div></div>`;
+  el.querySelector('#rCats').appendChild(catFilterChips(rs.cat, c => { rs.cat = c; S.set.rv = rs; save(); renderReviewHome(); }));
+  el.querySelector('#rStart').onclick = () => startReview(rs);
+}
+function startReview(rs) {
+  let pool = [];
+  DIALOGS.forEach(d => { if (rs.cat !== 'all' && d.cat !== rs.cat) return; d.lines.forEach((l, i) => pool.push([d, i])); });
+  if (!pool.length) { alert('対象の文がありません。'); return; }
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  R = { q: pool.slice(0, 20), n: 0 };
+  showCard();
+}
+function showCard() {
+  const el = document.getElementById('p-review');
+  if (R.n >= R.q.length) {
+    el.innerHTML = `<div class="card finish"><h3>復習おわり</h3><div class="row" style="justify-content:center">
+      <button class="btn btn-outline" id="rPrevE">◀ 前へ</button><button class="btn btn-primary" id="rBack">戻る</button></div></div>`;
+    el.querySelector('#rPrevE').onclick = () => { R.n = R.q.length - 1; showCard(); };
+    el.querySelector('#rBack').onclick = renderReviewHome; return;
+  }
+  const [d, i] = R.q[R.n]; const l = d.lines[i]; const prev = i > 0 ? d.lines[i - 1] : null;
+  const sk = seenKeys(l[1], d.order + 1);
+  el.innerHTML = `<div class="card flash">
+    <div class="row" style="justify-content:space-between"><span class="src">${esc(d.cat)} › ${esc(d.ser.name)} › ${esc(d.title)}</span><span class="badge badge-cat">${R.n + 1} / ${R.q.length}</span></div>
+    ${prev ? `<div class="ctx">相手（${esc(nameOf(d, prev[0]))}）：<div class="en">${esc(prev[1])} <button class="icon-btn" id="cPrev">▶</button></div></div>` : '<div class="ctx">（会話の最初のセリフ）</div>'}
+    <div class="muted">あなた（${esc(nameOf(d, l[0]))}）として英語で：</div>
+    <div class="q">${esc(l[2])}</div>
+    ${sk.length ? `<div class="seenhint" style="font-size:12px;color:#9A5B12">★ 使う表現：${sk.map(k => '「' + esc(k.ja) + '」').join(' ')}</div>` : ''}
+    <div class="hint" id="cHint" style="font-family:ui-monospace,Menlo,monospace;color:var(--primary);margin-top:6px"></div>
+    <div id="cAns"></div>
+    <div class="row" style="margin-top:12px;justify-content:center">
+      <button class="btn btn-outline" id="cPrevB" ${R.n === 0 ? 'disabled' : ''}>◀ 前へ</button><button class="btn btn-outline" id="cHintB">ヒント</button><button class="btn btn-outline" id="cShow">答えを見る</button><button class="btn btn-primary" id="cNextB">次へ ▶</button></div>
+    <div class="row" style="margin-top:10px;justify-content:center"><button class="btn btn-outline btn-sm" id="cQuit">終了</button></div></div>`;
+  if (prev) { el.querySelector('#cPrev').onclick = () => say(prev[1], prev[0]); if (S.set.autoPlay) say(prev[1], prev[0]); }
+  el.querySelector('#cQuit').onclick = renderReviewHome;
+  el.querySelector('#cPrevB').onclick = () => { if (R.n > 0) { R.n--; stopSpeech(); showCard(); } };
+  el.querySelector('#cNextB').onclick = () => { R.n++; stopSpeech(); showCard(); };
+  let h = 0;
+  el.querySelector('#cHintB').onclick = () => {
+    const w = l[1].split(/\s+/); h++; const n = Math.min(w.length, h * 2);
+    el.querySelector('#cHint').textContent = w.slice(0, n).concat(w.slice(n).map(x => x.replace(/[A-Za-z0-9]/g, '_'))).join(' ');
+  };
+  el.querySelector('#cShow').onclick = () => {
+    el.querySelector('#cAns').innerHTML = `<div class="a">${hl(l[1], d.order + 1)} <button class="icon-btn" id="cRe">▶</button></div>`;
+    el.querySelector('#cRe').onclick = () => say(l[1], l[0]);
+    say(l[1], l[0]);
+  };
+}
+
+
+/* ========== 単語テスト ========== */
+const WD = window.EK_WORDS || { sections: [], rows: [] };
+const wCnt = {}; WD.rows.forEach((r, i) => { r.i = i; r.k = wCnt[r[0]] = (wCnt[r[0]] || 0) + 1; });
+let W = null;
+function wEn(en, open) {
+  return en.split(/(\[\[.*?\]\])/).map(seg => {
+    const m = seg.match(/^\[\[(.*)\]\]$/);
+    if (m) return `<span class="blank${open ? ' open' : ''}">${esc(m[1])}</span>`;
+    return esc(seg).replace(/\(([^)]*)\)/g, '<span class="syn">($1)</span>');
+  }).join('');
+}
+const wSpeech = en => en.replace(/\[\[|\]\]/g, '').replace(/\([^)]*\)/g, '').replace(/\s+/g, ' ').trim();
+function wFiltered(ws) {
+  return WD.rows.filter(r => (ws.sec === 'all' || r[0] === +ws.sec) &&
+    (ws.f !== 'star' || r[5]));
+}
+function renderWords() {
+  W = null;
+  const el = document.getElementById('p-words');
+  const ws = Object.assign({ sec: 'all', f: 'all', rng: 0, ord: 'seq', mode: 'list' }, S.set.ws || {});
+  if (ws.f === 'weak') ws.f = 'all';
+  S.set.ws = ws;
+  const list = wFiltered(ws);
+  const blocks = Math.ceil(list.length / 50);
+  if (ws.rng > blocks) ws.rng = 0;
+  const starN = WD.rows.filter(r => r[5]).length;
+  el.innerHTML = `<div class="card"><div class="card-title">単語テスト（全${WD.rows.length}語）</div>
+    <div class="muted" style="margin-bottom:10px">日本語訳と英文を見て、黒く隠れた部分を答えます。黒い部分をタップすると答えが出ます。</div>
+    <div id="wSec"></div>
+    <div class="ctrl"><span class="lbl">対象</span><div class="seg" id="wF">
+      <button data-v="all">すべて</button><button data-v="star">★マーカー（${starN}）</button></div></div>
+    <div class="ctrl"><span class="lbl">範囲</span><select id="wRng" style="width:auto">
+      <option value="0">すべて（${list.length}語）</option>
+      ${Array.from({ length: blocks }, (_, b) => `<option value="${b + 1}">${b * 50 + 1}〜${Math.min(list.length, b * 50 + 50)}</option>`).join('')}</select></div>
+    <div class="ctrl"><span class="lbl">順番</span><div class="seg" id="wO"><button data-v="seq">順番通り</button><button data-v="rnd">ランダム</button></div></div>
+    <div class="ctrl"><span class="lbl">形式</span><div class="seg" id="wM"><button data-v="list">一覧</button><button data-v="card">1問ずつテスト</button></div></div>
+    <div class="row" style="margin-top:12px"><button class="btn btn-primary" id="wGo">開始</button></div></div>
+    <div id="wBody"></div>`;
+  const secs = el.querySelector('#wSec');
+  const chips = document.createElement('div'); chips.className = 'chips';
+  [['all', 'すべて'], ...WD.sections.map((s, i) => [String(i), s])].forEach(([v, t]) => {
+    const b = document.createElement('button'); b.className = 'chip' + (String(ws.sec) === v ? ' on' : ''); b.textContent = t;
+    b.onclick = () => { ws.sec = v; ws.rng = 0; save(); renderWords(); }; chips.appendChild(b);
+  });
+  secs.appendChild(chips);
+  const seg = (id, key) => el.querySelectorAll(`#${id} button`).forEach(b => {
+    b.classList.toggle('on', ws[key] === b.dataset.v);
+    b.onclick = () => { ws[key] = b.dataset.v; if (key === 'f') ws.rng = 0; save(); renderWords(); };
+  });
+  seg('wF', 'f'); seg('wO', 'ord'); seg('wM', 'mode');
+  const rs = el.querySelector('#wRng'); rs.value = String(ws.rng);
+  rs.onchange = () => { ws.rng = +rs.value; save(); };
+  el.querySelector('#wGo').onclick = () => {
+    let q = wFiltered(ws);
+    if (ws.rng) q = q.slice((ws.rng - 1) * 50, ws.rng * 50);
+    if (!q.length) { alert('対象の単語がありません。'); return; }
+    if (ws.ord === 'rnd') for (let i = q.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [q[i], q[j]] = [q[j], q[i]]; }
+    W = { q, n: 0 };
+    ws.mode === 'list' ? wList() : wCard();
+  };
+}
+function wList() {
+  const body = document.getElementById('wBody');
+  body.innerHTML = `<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px">
+    <span class="muted">${W.q.length}語　黒い部分をタップで表示／行の「答え」で単語と意味</span>
+    <span class="row"><button class="btn btn-outline btn-sm" id="wAllO">すべて表示</button><button class="btn btn-outline btn-sm" id="wAllC">すべて隠す</button></span></div>
+    <table class="wtable"><tbody>${W.q.map(r => `<tr data-i="${r.i}">
+      <td class="n">${r.k}${r[5] ? ' <span class="star">★</span>' : ''}</td>
+      <td class="wj">${esc(r[1])}</td>
+      <td class="we">${wEn(r[2], false)} <button class="icon-btn" data-p title="再生">▶</button> <button class="btn btn-outline btn-sm" data-a>答え</button>
+        <div class="wa">${r[3] ? `<b>${esc(r[3])}</b>　${esc(r[4])}` : '（黒い部分の熟語）'}</div></td></tr>`).join('')}</tbody></table></div>`;
+  body.querySelectorAll('.blank').forEach(b => b.onclick = () => b.classList.toggle('open'));
+  body.querySelectorAll('tr').forEach(tr => {
+    const r = WD.rows[+tr.dataset.i];
+    tr.querySelector('[data-p]').onclick = () => say(wSpeech(r[2]), 'A');
+    tr.querySelector('[data-a]').onclick = () => {
+      const open = !tr.classList.contains('open'); tr.classList.toggle('open', open);
+      tr.querySelectorAll('.blank').forEach(b => b.classList.toggle('open', open));
+      if (open) say(wSpeech(r[2]), 'A');
+    };
+  });
+  document.getElementById('wAllO').onclick = () => body.querySelectorAll('.blank').forEach(b => b.classList.add('open'));
+  document.getElementById('wAllC').onclick = () => { body.querySelectorAll('.blank').forEach(b => b.classList.remove('open')); body.querySelectorAll('tr').forEach(t => t.classList.remove('open')); };
+  body.scrollIntoView({ behavior: 'smooth' });
+}
+function wCard() {
+  const body = document.getElementById('wBody');
+  if (W.n >= W.q.length) {
+    body.innerHTML = `<div class="card finish"><h3>テストおわり</h3><div class="row" style="justify-content:center">
+      <button class="btn btn-outline" id="wPrevE">◀ 前へ</button><button class="btn btn-primary" id="wAgain">最初から</button></div></div>`;
+    document.getElementById('wPrevE').onclick = () => { W.n = W.q.length - 1; wCard(); };
+    document.getElementById('wAgain').onclick = () => { W.n = 0; wCard(); };
+    body.scrollIntoView({ behavior: 'smooth' }); return;
+  }
+  const r = W.q[W.n];
+  body.innerHTML = `<div class="card wcard">
+    <div class="row" style="justify-content:space-between"><span class="src muted">${esc(WD.sections[r[0]])}　No.${r.k}${r[5] ? ' <span class="star">★</span>' : ''}</span><span class="badge badge-cat">${W.n + 1} / ${W.q.length}</span></div>
+    <div class="wja">${esc(r[1])}</div>
+    <div class="wen">${wEn(r[2], false)}</div>
+    <div id="wAns"></div>
+    <div class="row" style="margin-top:14px;justify-content:center">
+      <button class="btn btn-outline" id="wPrev" ${W.n === 0 ? 'disabled' : ''}>◀ 前へ</button><button class="btn btn-outline" id="wShow">答えを見る</button><button class="btn btn-primary" id="wNext">次へ ▶</button></div>
+    <div class="row" style="margin-top:10px;justify-content:center"><button class="btn btn-outline btn-sm" id="wQuit">終了</button></div></div>`;
+  body.querySelectorAll('.blank').forEach(b => b.onclick = () => b.classList.toggle('open'));
+  document.getElementById('wQuit').onclick = () => { W.n = W.q.length; wCard(); };
+  document.getElementById('wPrev').onclick = () => { if (W.n > 0) { W.n--; stopSpeech(); wCard(); } };
+  document.getElementById('wNext').onclick = () => { W.n++; stopSpeech(); wCard(); };
+  document.getElementById('wShow').onclick = () => {
+    body.querySelectorAll('.blank').forEach(b => b.classList.add('open'));
+    document.getElementById('wAns').innerHTML = `<div class="wans">${r[3] ? `<b>${esc(r[3])}</b>　${esc(r[4])}` : '黒い部分が答えです'} <button class="icon-btn" id="wRe">▶</button></div>`;
+    document.getElementById('wRe').onclick = () => say(wSpeech(r[2]), 'A');
+    say(wSpeech(r[2]), 'A');
+  };
+  body.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ========== 表現集 ========== */
+function renderKeys() {
+  const el = document.getElementById('p-keys'); el.innerHTML = '';
+  const kc = S.set.kcat || 'all';
+  el.insertAdjacentHTML('beforeend', `<div class="card"><div class="card-title">重要表現</div><div class="muted">シリーズごとに繰り返し出てくる表現です。「登場」は、その表現が出てくる会話の数です（シリーズをまたいで数えます）。</div></div>`);
+  el.appendChild(catFilterChips(kc, c => { S.set.kcat = c; save(); renderKeys(); }));
+  SERIES.filter(s => kc === 'all' || s.cat === kc).forEach(ser => {
+    const box = document.createElement('div'); box.className = 'card';
+    box.innerHTML = `<div class="card-title"><span class="badge badge-cat">${esc(ser.cat)}</span> ${esc(ser.name)}</div>`;
+    ser.keys.forEach(([en, ja]) => {
+      const k = KEYS.find(x => x.lc === en.toLowerCase());
+      const row = document.createElement('div'); row.className = 'key-row';
+      row.innerHTML = `<div class="k">${esc(en)} <button class="icon-btn">▶</button></div><div class="j">${esc(ja)}　<span class="badge badge-todo">登場 ${k ? k.count : 0}</span></div>`;
+      row.querySelector('button').onclick = () => say(en, 'A');
+      box.appendChild(row);
+    });
+    el.appendChild(box);
+  });
+}
+
+/* ========== 設定 ========== */
+function renderSettings() {
+  const el = document.getElementById('p-settings');
+  const ev = enVoices(), jv = jaVoices();
+  const opts = (list, w) => {
+    const cur = voiceFor(w);
+    return list.length ? list.map((v, i) => `<option value="${esc(v.name)}" ${cur && cur.name === v.name ? 'selected' : ''}>${i < 3 ? '★ ' : ''}${esc(v.name)}（${esc(v.lang)}）</option>`).join('') : '<option value="">（音声が見つかりません）</option>';
+  };
+  el.innerHTML = `<div class="card"><div class="card-title">音声</div>
+    <div class="form-group"><label>話す速さ：<span id="rateV">${S.set.rate.toFixed(2)}</span> 倍</label>
+      <input type="range" id="sRate" min="0.6" max="1.3" step="0.05" value="${S.set.rate}"></div>
+    <div class="form-group"><label>Aの声</label><div class="row" style="flex-wrap:nowrap"><select id="sVA">${opts(ev, 'A')}</select><button class="btn btn-outline btn-sm" id="tA">試聴</button></div></div>
+    <div class="form-group"><label>Bの声</label><div class="row" style="flex-wrap:nowrap"><select id="sVB">${opts(ev, 'B')}</select><button class="btn btn-outline btn-sm" id="tB">試聴</button></div></div>
+    <div class="form-group"><label>日本語の声（ハンズフリーで訳を読み上げるとき）</label><div class="row" style="flex-wrap:nowrap"><select id="sVJ">${opts(jv, 'ja')}</select><button class="btn btn-outline btn-sm" id="tJ">試聴</button></div></div>
+    <div class="legend">声は聞き取りやすい順に並んでいて、一番上が自動で選ばれます。端末とブラウザによって選べる声が異なります。</div>
+    <div class="warn" style="margin-top:10px;margin-bottom:0"><b>もっと自然な声にするには</b><br>
+    ・<b>iPhone／iPad</b>：設定 → アクセシビリティ → 読み上げコンテンツ → 声 → 英語 →「Ava」「Zoe」「Evan」などの<b>（プレミアム）</b>や<b>（拡張）</b>をダウンロード → このページを開き直して上の欄で選択<br>
+    ・<b>Android</b>：設定 → システム → 言語と入力 → テキスト読み上げ →「Google音声サービス」の英語（米国）の音声データをインストール<br>
+    ・<b>パソコン</b>：<b>Microsoft Edge</b>で開くと、非常に自然な「Natural」音声が使えます</div></div>
+  <div class="card"><div class="card-title">ハンズフリー</div>
+    <div class="form-group"><label>考える時間（秒）</label><input type="number" id="sThink" min="1" max="20" value="${S.set.hfThink}"></div>
+    <label class="checkline"><input type="checkbox" id="sHfJa" ${S.set.hfJa ? 'checked' : ''}>自分の番に日本語訳を読み上げる</label>
+    <div class="legend">相手の英語 → 日本語訳 → 考える時間 → 模範の英語、の順に自動で進みます。画面を消すと止まる端末があります。</div></div>
+  <div class="card"><div class="card-title">記録</div>
+    <div class="muted" style="margin-bottom:8px">練習の記録（済マーク）と設定は、この端末のブラウザ内にだけ保存されます。</div>
+    <button class="btn btn-outline" id="sReset" style="color:var(--danger);border-color:var(--danger-border)">記録をすべて消去</button></div>`;
+  el.querySelector('#sRate').oninput = e => { S.set.rate = +e.target.value; el.querySelector('#rateV').textContent = S.set.rate.toFixed(2); save(); };
+  el.querySelector('#sVA').onchange = e => { S.set.voiceA = e.target.value; save(); };
+  el.querySelector('#sVB').onchange = e => { S.set.voiceB = e.target.value; save(); };
+  el.querySelector('#sVJ').onchange = e => { S.set.voiceJa = e.target.value; save(); };
+  el.querySelector('#tA').onclick = () => say("Hi, I'm speaker A. Nice to meet you.", 'A');
+  el.querySelector('#tB').onclick = () => say("And I'm speaker B. How's it going?", 'B');
+  el.querySelector('#tJ').onclick = () => say('日本語の読み上げテストです。', 'ja');
+  el.querySelector('#sThink').onchange = e => { S.set.hfThink = Math.max(1, Math.min(20, +e.target.value || 5)); save(); };
+  el.querySelector('#sHfJa').onchange = e => { S.set.hfJa = e.target.checked; save(); };
+  el.querySelector('#sReset').onclick = () => { if (confirm('練習の記録をすべて消去します。よろしいですか？')) { S.ev = {}; S.done = {}; S.wv = {}; save(); alert('消去しました。'); } };
+}
+
+renderList();
+})();
+</script>
+</body>
+</html>
