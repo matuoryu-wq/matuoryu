@@ -191,3 +191,66 @@ EK_DATA.push({
     ]}
   ]
 });
+
+EK_DATA.push({
+  cat: "日常会話", series: "おすすめを話す",
+  keys: [
+    ["You should", "〜するといいよ／ぜひ〜して"],
+    ["check out", "（場所などに）行ってみる"],
+    ["worth it", "〜する価値がある"],
+    ["Sounds awesome", "いいね！"],
+    ["I hear you", "わかるよ"],
+    ["Tell me more", "もっと教えて"]
+  ],
+  dialogs: [
+    { id: "rec-1", title: "おすすめのレストラン", A: "友人（アレックス）", B: "あなた", def: "B", lines: [
+      ["A", "Hey, how've you been? What's new with you?", "よう、元気？最近どう？"],
+      ["B", "I'm good—just dealing with life and all the busy stuff.", "元気だよ。毎日いろいろ忙しくしてるだけ。"],
+      ["A", "I hear you. I've been swamped too—busy as a bee.", "わかる。俺もバタバタで、てんてこ舞いだよ。"],
+      ["B", "Same here. But I'm hanging in there.", "こっちも同じ。でもなんとか頑張ってるよ。"],
+      ["A", "Oh, by the way, I found a great restaurant—The Green Fork. The food's unbelievably fresh.", "そうそう、この前いいレストランを見つけたんだ。「グリーンフォーク」って店で、料理がびっくりするくらい新鮮でさ。"],
+      ["B", "Sounds awesome! What did you have? Tell me more—is it my kind of place?", "いいね！何食べたの？詳しく教えて。僕好みの店かな？"],
+      ["A", "I had the grilled salmon—fresh from the sea—and their mashed potatoes were creamy perfection.", "サーモンのグリルを食べたよ。獲れたてって感じで、マッシュポテトもクリーミーで最高だった。"],
+      ["B", "That sounds like a proper meal. Were the portions big?", "ちゃんとした食事って感じだね。量は多かった？"],
+      ["A", "Just the right amount. I felt full but not stuffed.", "ちょうどいい量。お腹いっぱいだけど、苦しくはならなかった。"],
+      ["B", "Nice. How about dessert? Was it worth it?", "いいね。デザートはどう？食べる価値あった？"],
+      ["A", "Absolutely. The molten lava cake was amazing—warm and gooey inside. You've gotta try it.", "もちろん。フォンダンショコラが絶品で、温かくて中がトロトロ。絶対食べてみて。"],
+      ["B", "Now you've got me hungry. Where is this place again? I'm in.", "聞いてたらお腹すいてきた。で、どこにあるんだっけ？行くよ。"],
+      ["A", "The Green Fork—don't forget. You'll love it, trust me.", "「グリーンフォーク」だよ。忘れないで。絶対気に入るから。"],
+      ["B", "Got it. So, how's work? Got any time to relax?", "了解。ところで仕事はどう？ゆっくりする時間はある？"],
+      ["A", "Not really—it's been a grind. Meetings and projects all day long.", "あんまり。忙殺されてるよ。一日中、会議とプロジェクトだらけ。"],
+      ["B", "I know the feeling. Are you getting any time off on the weekends?", "その気持ちわかる。週末は少しは休めてる？"],
+      ["A", "Not much. But I did get away to the mountains last weekend.", "あまり。でも先週末は山に出かけてきたよ。"],
+      ["B", "That sounds great—fresh air, hiking trails? I could really use that. Maybe I'll join you next time.", "いいね。空気がきれいで、ハイキングコースもあって？そういうの本当に必要だな。次は一緒に行こうかな。"],
+      ["A", "You should—it was perfect. No work, just peace and quiet.", "ぜひ。最高だったよ。仕事なし、静かでのんびり。"],
+      ["B", "I could definitely use a break like that. Let's plan it—no more excuses.", "そういう休み、本当に必要だよ。計画しよう、もう言い訳なしで。"],
+      ["A", "Exactly. Work hard, have fun, and don't forget to take a break.", "そのとおり。しっかり働いて、楽しんで、休むのも忘れずにね。"],
+      ["B", "Agreed. Let's make it happen soon.", "賛成。近いうちに実現させよう。"],
+      ["A", "Sounds like a plan. Take care, and I'll see you soon.", "決まりだね。元気でね、また近いうちに。"],
+      ["B", "Will do. Don't work too hard, and let's catch up again soon.", "そうするよ。働きすぎないようにね。また近いうちに話そう。"]
+    ]},
+    { id: "rec-2", title: "日本に来た旅行者と話す", A: "あなた", B: "旅行者（ジェイク）", def: "A", lines: [
+      ["A", "Hi, nice to meet you! What's your name? Is this your first time in Japan?", "こんにちは、はじめまして！お名前は？日本は初めてですか？"],
+      ["B", "Oh, hey! I'm Jake. Yeah, it's my first time. I got here last week—time just flew!", "あ、どうも！ジェイクです。うん、初めてだよ。先週来たばかりなんだけど、あっという間だった！"],
+      ["A", "That's cool! So, where are you from?", "いいですね！どちらから来たんですか？"],
+      ["B", "I'm from California—near L.A. The weather's nice pretty much every day.", "カリフォルニアだよ。L.A.の近く。ほぼ毎日天気がいいんだ。"],
+      ["A", "Nice! So, how's Japan so far?", "いいなあ！で、日本はここまでどうですか？"],
+      ["B", "It's been great so far. The food, the trains, the vibe—I love it all!", "今のところ最高だよ。食べ物も電車も雰囲気も、全部大好き！"],
+      ["A", "Glad to hear that! Are you studying Japanese too, or just winging it?", "それはよかった！日本語も勉強してるんですか？それとも、なんとかなるさって感じ？"],
+      ["B", "Kind of. I'm picking up words here and there, but honestly, half the time I have no idea what's going on.", "少しはね。あちこちで単語を覚えてるけど、正直、半分くらいは何が起きてるのかさっぱりだよ。"],
+      ["A", "No worries! You'll pick it up soon, I bet.", "大丈夫！すぐに覚えられますよ、きっと。"],
+      ["B", "Thanks, I'll try! It's been a wild ride, but people here have been really helpful.", "ありがとう、頑張るよ！毎日ドタバタだけど、こっちの人たちがすごく助けてくれるんだ。"],
+      ["A", "So, have you done any sightseeing yet?", "それで、観光はもうしました？"],
+      ["B", "A little! I saw Tokyo Tower last night, but there's so much to see, I don't know where to start.", "少しだけ！昨日の夜に東京タワーを見たんだけど、見るものが多すぎて、どこから行けばいいかわからないよ。"],
+      ["A", "You should check out Kyoto, too. The temples and shrines are amazing.", "京都にも行ってみるべきですよ。お寺や神社がすごいんです。"],
+      ["B", "Oh yeah? Is it far? What's it like there?", "そうなの？遠い？どんな感じのところ？"],
+      ["A", "It's a little over two hours by bullet train. It's really peaceful, with an old-school feel. And the Golden Pavilion? It's unreal!", "新幹線で2時間ちょっとです。すごく落ち着いていて、昔ながらの雰囲気があります。それに金閣寺！信じられないくらいきれいですよ。"],
+      ["B", "Sounds awesome! What about places near Tokyo? Any cool spots I should check out?", "すごそう！東京の近くはどう？行くべきいい場所ある？"],
+      ["A", "For sure! Try Asakusa for history, and Shibuya for the modern side of Tokyo.", "もちろん！歴史を感じるなら浅草、今どきの東京なら渋谷がおすすめです。"],
+      ["B", "Asakusa sounds nice. And Shibuya—that's the place with all the neon lights and big screens, right?", "浅草はよさそうだね。渋谷って、ネオンや大きなスクリーンがたくさんあるところだよね？"],
+      ["A", "Exactly! Plus, there's Harajuku for fashion and sweets. It's totally worth it.", "そのとおり！それに、ファッションとスイーツなら原宿。絶対行く価値ありますよ。"],
+      ["B", "Got it! I can't wait to check them all out. Thanks for the tips!", "わかった！全部回るのが楽しみだよ。いろいろ教えてくれてありがとう！"],
+      ["A", "Anytime! Enjoy your stay!", "どういたしまして！日本を楽しんでくださいね！"]
+    ]}
+  ]
+});

@@ -170,6 +170,22 @@ EK_DATA.push({
       ["B", "Great. And where's the platform?", "よかった。ホームはどこですか？"],
       ["A", "Go straight, and it's on your right, down the stairs.", "まっすぐ行って、右側の階段を下りたところです。"],
       ["B", "Thanks a lot!", "どうもありがとう！"]
+    ]},
+    { id: "dir-4", title: "自由の女神への行き方", A: "あなた（旅行者）", B: "通行人", def: "A", lines: [
+      ["A", "Excuse me, how can I get to the Statue of Liberty by subway?", "すみません、地下鉄で自由の女神に行くにはどうすればいいですか？"],
+      ["B", "Sure! First, take the 1 train downtown.", "いいですよ！まず、1番線のダウンタウン方面に乗ってください。"],
+      ["A", "The 1 train? Can I get it from Times Square?", "1番線ですか？タイムズスクエアから乗れますか？"],
+      ["B", "Yes, Times Square is fine.", "ええ、タイムズスクエアで大丈夫です。"],
+      ["A", "Got it. Where do I get off? I don't want to miss my stop.", "わかりました。どこで降りればいいですか？乗り過ごしたくないので。"],
+      ["B", "Ride it all the way to South Ferry. It's the last stop, so you can't miss it.", "サウスフェリーまで乗ってください。終点なので、乗り過ごす心配はありませんよ。"],
+      ["A", "South Ferry—then what? Do I need to take another train?", "サウスフェリーですね。そのあとは？また電車に乗る必要がありますか？"],
+      ["B", "No, from there you take a ferry. It'll take you right to Liberty Island.", "いいえ、そこからはフェリーです。リバティ島まで直接行けますよ。"],
+      ["A", "Do I have to pay for the ferry?", "フェリーは有料ですか？"],
+      ["B", "Yes, but it's definitely worth it. The ferry leaves from Battery Park, right next to the station.", "ええ、でも絶対にその価値はあります。フェリーは駅のすぐそばのバッテリーパークから出ています。"],
+      ["A", "Battery Park, okay. Anything else I should know before I go?", "バッテリーパークですね。行く前に、ほかに知っておいた方がいいことはありますか？"],
+      ["B", "Just enjoy the view and keep an eye on your stuff. The skyline from the ferry is amazing.", "景色を楽しんで、持ち物には気をつけてください。フェリーから見るスカイラインは最高ですよ。"],
+      ["A", "Thanks a lot. You've been really helpful!", "ありがとうございます。本当に助かりました！"],
+      ["B", "Anytime. Enjoy the Statue, and take care!", "どういたしまして。自由の女神を楽しんで、気をつけて！"]
     ]}
   ]
 });
@@ -226,6 +242,36 @@ EK_DATA.push({
       ["A", "Absolutely. And the dessert is on the house, because of the mistake earlier.", "もちろんです。それと、先ほどの間違いのお詫びにデザートはサービスです。"],
       ["B", "Oh, that's really kind of you. Thank you.", "まあ、ご親切にありがとうございます。"],
       ["A", "My pleasure. Thanks for coming in!", "どういたしまして。ご来店ありがとうございました！"]
+    ]},
+    { id: "rest-4", title: "ファストフード店で注文", A: "店員", B: "あなた（客）", def: "B", lines: [
+      ["A", "Hello! Welcome to Burger Haven. How are you today?", "こんにちは！バーガーヘイブンへようこそ。ご機嫌いかがですか？"],
+      ["B", "I'm doing great, thanks! It's a beautiful day today, isn't it?", "元気です、ありがとう！今日はいい天気ですね。"],
+      ["A", "Yes, it's perfect for a walk in the park. Are you out enjoying the weather?", "ええ、公園を散歩するには最高ですね。お天気を楽しみに出かけているところですか？"],
+      ["B", "Yeah, I was just about to go to the park. It's too bad my girlfriend couldn't make it today.", "ええ、ちょうど公園に行くところなんです。今日は彼女が来られなくて残念ですけど。"],
+      ["A", "Oh, that's too bad. Maybe next time!", "それは残念ですね。次は一緒に来られるといいですね！"],
+      ["B", "I hope so!", "そうだといいです！"],
+      ["A", "What can I get for you today?", "ご注文は何になさいますか？"],
+      ["B", "I'll have a cheeseburger with fries, please.", "チーズバーガーとポテトをお願いします。"],
+      ["A", "Would you like that for here or to go?", "店内でお召し上がりですか、お持ち帰りですか？"],
+      ["B", "To go, please.", "持ち帰りでお願いします。"],
+      ["A", "Got it! Would you like to swap the fries for something else, like a side salad?", "かしこまりました！ポテトをサイドサラダなど、ほかのものに変えることもできますが、いかがですか？"],
+      ["B", "Yeah, I'll get a side salad instead of fries.", "はい、ポテトの代わりにサイドサラダにします。"],
+      ["A", "Great choice! What kind of dressing would you like? We have ranch, Caesar, and vinaigrette.", "いいですね！ドレッシングはどうなさいますか？ランチ、シーザー、ビネグレットがあります。"],
+      ["B", "I'll go with Caesar.", "シーザーでお願いします。"],
+      ["A", "Perfect! And would you like a drink with your meal?", "かしこまりました！お飲み物はいかがですか？"],
+      ["B", "Yes, I'll have a medium Coke.", "はい、コーラのMサイズをお願いします。"],
+      ["A", "Regular or diet?", "普通のものとダイエット、どちらにしますか？"],
+      ["B", "Regular, thanks.", "普通のでお願いします。"],
+      ["A", "Would you like to add a dessert? We have chocolate chip cookies and apple pies.", "デザートはいかがですか？チョコチップクッキーとアップルパイがあります。"],
+      ["B", "I'll take a chocolate chip cookie, please.", "チョコチップクッキーをお願いします。"],
+      ["A", "Great! Your total is $12.75. Will that be cash or card?", "ありがとうございます！合計12ドル75セントです。現金とカード、どちらになさいますか？"],
+      ["B", "Card, please.", "カードでお願いします。"],
+      ["A", "Please tap your card here.", "こちらにカードをかざしてください。"],
+      ["B", "Done. Thanks!", "できました。どうも！"],
+      ["A", "You're welcome! Your order will be ready shortly. Please have a seat, and we'll call your name when it's ready.", "ありがとうございます！すぐにご用意しますので、お掛けになってお待ちください。できましたらお名前でお呼びします。"],
+      ["B", "Thanks! By the way, could you tell me how to get to the nearest subway station?", "ありがとう！ところで、一番近い地下鉄の駅への行き方を教えてもらえますか？"],
+      ["A", "Sure! Just go straight down this street, take the first left, and the station will be on your right.", "もちろんです！この通りをまっすぐ行って、最初の角を左に曲がると、駅は右側にありますよ。"],
+      ["B", "Thanks so much!", "本当にありがとう！"]
     ]}
   ]
 });
