@@ -166,6 +166,19 @@ EK_DATA.push({
       ["A", "That sounds reasonable. Could you also include free maintenance for the first year?", "それは妥当ですね。初年度の無料メンテナンスもつけてもらえますか？"],
       ["B", "I think that's doable. I'll confirm both points and get back to you by Friday.", "それは可能だと思います。両方の点を確認して、金曜までにお返事します。"],
       ["A", "Great. I look forward to hearing from you.", "よかった。ご連絡をお待ちしています。"]
+    ]},
+    { id: "mtg-4", title: "会議のまとめ", A: "上司（マイク）", B: "あなた", def: "B", lines: [
+      ["A", "We're almost out of time. Could you sum up what we've decided?", "そろそろ時間だ。決まったことをまとめてもらえる？"],
+      ["B", "Sure. First, we'll shift part of the budget to online ads.", "はい。まず、予算の一部をオンライン広告に回します。"],
+      ["A", "Right. And what about the product launch?", "そうだね。それと、製品の発売は？"],
+      ["B", "We'll do a soft launch in April and a full launch in June.", "4月に先行発売、6月に本格発売を行います。"],
+      ["A", "Good. Who's going to handle the customer feedback?", "よし。お客さんの意見への対応は誰がやる？"],
+      ["B", "I think we should ask Paul's team. They have the most experience.", "ポールのチームにお願いすべきだと思います。一番経験がありますから。"],
+      ["A", "That's a good point. I'll talk to him this afternoon.", "いい指摘だね。今日の午後に彼と話すよ。"],
+      ["B", "Thank you. What if we meet again next Friday to check our progress?", "ありがとうございます。来週の金曜にもう一度集まって、進み具合を確認するのはどうでしょう？"],
+      ["A", "Sounds good. Could you send out the minutes today?", "いいね。議事録を今日中に送ってもらえる？"],
+      ["B", "Of course. If anything's unclear, I'll get back to you.", "もちろんです。不明な点があれば、またご連絡します。"],
+      ["A", "Great. Thanks, everyone. Good meeting.", "よし。みんなありがとう。いい会議だった。"]
     ]}
   ]
 });
