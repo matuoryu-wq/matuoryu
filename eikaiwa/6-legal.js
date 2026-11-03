@@ -1,0 +1,100 @@
+// 法律相談（外国人の依頼者と日本の弁護士）
+// ※法的内容は学習用の簡略化した説明です。実務での正確性は別途ご確認ください。
+window.EK_DATA = window.EK_DATA || [];
+
+EK_DATA.push({
+  cat: "法律相談", series: "法律相談",
+  keys: [
+    ["Let me explain", "ご説明します"],
+    ["I'm sorry to hear that", "それは大変でしたね"],
+    ["the right to", "〜する権利"],
+    ["It depends on", "〜によります"],
+    ["Please keep", "〜を保管してください"],
+    ["That's a relief", "安心しました"],
+    ["What happens next", "この後はどうなりますか？"],
+    ["Do you have any evidence", "証拠はありますか？"]
+  ],
+  dialogs: [
+    { id: "law-1", title: "初回相談の受付", A: "相談者（ジョンソンさん）", B: "あなた（弁護士）", def: "B", lines: [
+      ["A", "Hi, I have an appointment for a consultation at two. My name is Sarah Johnson.", "こんにちは、2時に相談の予約をしているサラ・ジョンソンです。"],
+      ["B", "Thank you for coming, Ms. Johnson. I'm Sato, the lawyer you'll be speaking with today.", "お越しいただきありがとうございます、ジョンソンさん。本日担当する弁護士の佐藤です。"],
+      ["A", "Nice to meet you. I'm a bit nervous. I've never talked to a lawyer before.", "はじめまして。少し緊張しています。弁護士と話すのは初めてなので。"],
+      ["B", "That's completely understandable. Before we start, let me explain a few things.", "当然のことだと思います。始める前に、いくつかご説明させてください。"],
+      ["A", "Okay.", "はい。"],
+      ["B", "The consultation fee is 5,500 yen for every thirty minutes, including tax.", "相談料は30分ごとに税込5,500円です。"],
+      ["A", "Got it. Will everything I say be kept confidential?", "わかりました。私が話すことは秘密にしてもらえますか？"],
+      ["B", "Absolutely. Lawyers have a strict duty of confidentiality. Nothing you tell me will be shared without your permission.", "もちろんです。弁護士には厳格な守秘義務があります。お話しいただいたことを、あなたの許可なく誰かに伝えることはありません。"],
+      ["A", "That's a relief.", "安心しました。"],
+      ["B", "Also, may I ask the name of the other party? We need to check for conflicts of interest.", "それと、相手方のお名前を伺えますか？利益相反がないか確認する必要があるんです。"],
+      ["A", "It's my employer, a company called Northstar Japan.", "私の勤務先で、ノーススター・ジャパンという会社です。"],
+      ["B", "Thank you... We have no connection with them, so we can go ahead.", "ありがとうございます。…当事務所とは関係がありませんので、このまま進められます。"],
+      ["A", "Great. And if I decide to hire you, how much would it cost?", "よかった。もし依頼することにしたら、費用はいくらかかりますか？"],
+      ["B", "There are two main fees: a retainer when you hire us, and a success fee based on the result.", "主に2つあります。ご依頼時の着手金と、結果に応じた報酬金です。"],
+      ["A", "Are there any other costs?", "他に費用はかかりますか？"],
+      ["B", "Just out-of-pocket expenses, like court filing fees and postage. I'll give you a written estimate before you decide.", "裁判所に納める手数料や郵便代などの実費だけです。ご判断の前に、書面で見積もりをお渡しします。"],
+      ["A", "Thank you. That's very clear.", "ありがとうございます。とてもわかりやすいです。"],
+      ["B", "Good. Then let's talk about what happened.", "よかった。では、何があったのかお聞かせください。"]
+    ]},
+    { id: "law-2", title: "解雇の相談", A: "相談者（ミラーさん）", B: "あなた（弁護士）", def: "B", lines: [
+      ["A", "I was fired last week. My boss just told me not to come in anymore.", "先週解雇されました。上司にもう来なくていいと言われただけなんです。"],
+      ["B", "I'm sorry to hear that. Did they give you a reason?", "それは大変でしたね。理由は説明されましたか？"],
+      ["A", "He said my performance wasn't good enough, but nobody ever warned me.", "成績が十分じゃないと言われましたが、注意されたことは一度もありません。"],
+      ["B", "In Japan, it's actually quite difficult for a company to dismiss an employee.", "日本では、実は会社が従業員を解雇するのはかなり難しいんです。"],
+      ["A", "Really?", "本当ですか？"],
+      ["B", "Yes. A dismissal is invalid unless there are objectively reasonable grounds and it's considered socially appropriate.", "はい。客観的に合理的な理由があり、社会通念上相当と認められなければ、解雇は無効です。"],
+      ["A", "So I might be able to get my job back?", "じゃあ職場に戻れるかもしれないということですか？"],
+      ["B", "It's possible. But many cases end with a settlement payment instead. Do you want to go back?", "可能性はあります。ただ、代わりに解決金を受け取って終わる事件も多いです。戻りたいですか？"],
+      ["A", "Honestly, not really. But I want to be treated fairly.", "正直、あまり戻りたくありません。でも公平に扱われたいです。"],
+      ["B", "Understood. Did they give you thirty days' notice, or pay in lieu of notice?", "わかりました。30日前の予告か、解雇予告手当の支払いはありましたか？"],
+      ["A", "No, nothing.", "いいえ、何も。"],
+      ["B", "That's another problem. First, let's ask the company for a written statement of the reasons for your dismissal. They're required to provide one.", "それも問題ですね。まず、会社に解雇理由証明書を請求しましょう。会社には交付する義務があります。"],
+      ["A", "Okay. Also, I often worked late, but I was never paid overtime.", "わかりました。それと、よく残業していたのに、残業代をもらったことがないんです。"],
+      ["B", "We can claim that too. Unpaid wages can generally be claimed for up to three years.", "それも請求できます。未払いの賃金は、原則として3年分までさかのぼって請求できます。"],
+      ["A", "How can I prove how much I worked?", "どれだけ働いたかをどうやって証明すればいいですか？"],
+      ["B", "Time cards, emails, computer logs, or even a diary can help. Please keep everything you can.", "タイムカード、メール、パソコンのログ、日記でも役に立ちます。できるだけすべて保管してください。"],
+      ["A", "What happens next?", "この後はどうなりますか？"],
+      ["B", "We'll start by negotiating with the company. If that fails, we can file for labor tribunal proceedings, which are usually faster than a lawsuit.", "まず会社と交渉します。それがうまくいかなければ、通常は訴訟より早い労働審判を申し立てられます。"]
+    ]},
+    { id: "law-3", title: "離婚相談", A: "相談者（ブラウンさん）", B: "あなた（弁護士）", def: "B", lines: [
+      ["A", "I want to get a divorce, but my husband won't agree.", "離婚したいのですが、夫が同意してくれません。"],
+      ["B", "I see. In Japan, if both spouses agree, you can divorce simply by submitting a form to the city office.", "なるほど。日本では、夫婦双方が合意していれば、役所に届出を出すだけで離婚できます。"],
+      ["A", "But he refuses. What can I do?", "でも彼は拒否しています。どうすればいいですか？"],
+      ["B", "Then the next step is mediation at the family court. A mediator helps you both try to reach an agreement.", "その場合、次は家庭裁判所での調停です。調停委員が合意に向けた話し合いを手伝います。"],
+      ["A", "And if that doesn't work?", "それでもうまくいかなかったら？"],
+      ["B", "Then you can file a divorce lawsuit. But in a lawsuit, you need legal grounds for divorce, such as a long separation.", "その場合は離婚訴訟を起こせます。ただ、訴訟では、長期間の別居などの法律上の離婚原因が必要です。"],
+      ["A", "We've been living apart for about a year. Is that enough?", "1年ほど別居しています。それで十分ですか？"],
+      ["B", "It depends on the circumstances, so I can't say for sure yet. Let's look at the details.", "事情によるので、まだはっきりとは言えません。詳しく見ていきましょう。"],
+      ["A", "Okay. My biggest concern is my daughter. She's six.", "わかりました。一番心配なのは娘のことです。6歳なんです。"],
+      ["B", "Of course. Under the new law, parents can choose joint custody after divorce, but if you can't agree, the court will decide.", "もちろんです。新しい法律では、離婚後の共同親権を選ぶこともできますが、合意できなければ裁判所が決めます。"],
+      ["A", "What about child support?", "養育費はどうなりますか？"],
+      ["B", "It's usually calculated based on both parents' incomes, using a standard table the courts use.", "通常は、裁判所が使う算定表を使って、両親の収入をもとに計算します。"],
+      ["A", "And our house and savings?", "家や貯金はどうなりますか？"],
+      ["B", "Property acquired during the marriage is generally divided equally. That's called division of property.", "婚姻中に築いた財産は、原則として半分ずつに分けます。これを財産分与といいます。"],
+      ["A", "Can I also claim compensation? He had an affair.", "慰謝料も請求できますか？夫は浮気をしていました。"],
+      ["B", "Yes, if we can prove it. Do you have any evidence, like messages or photos?", "はい、証明できれば。メッセージや写真などの証拠はありますか？"],
+      ["A", "I have some screenshots of his messages.", "彼のメッセージのスクリーンショットが何枚かあります。"],
+      ["B", "That's helpful. Please keep everything, don't delete anything, and bring copies next time.", "それは役に立ちます。すべて保管して何も消さずに、次回コピーを持ってきてください。"]
+    ]},
+    { id: "law-4", title: "刑事事件の接見", A: "被疑者（テイラーさん）", B: "あなた（弁護士）", def: "B", lines: [
+      ["B", "Mr. Taylor? I'm your lawyer. My name is Sato.", "テイラーさんですか？あなたの弁護士の佐藤です。"],
+      ["A", "Thank God you're here. I don't understand what's going on.", "来てくれてよかった。何が起きているのかわからないんです。"],
+      ["B", "Don't worry. Anything you tell me here stays between us. The police can't listen in.", "心配しないでください。ここで話すことは私たちの間だけのことです。警察は立ち会えません。"],
+      ["A", "Okay. They say I hit someone at a bar, but I was just defending myself.", "わかりました。バーで人を殴ったと言われていますが、自分の身を守っただけなんです。"],
+      ["B", "I see. We'll talk about that in detail. But first, let me explain your rights.", "なるほど。それは後で詳しく話しましょう。でもまず、あなたの権利を説明させてください。"],
+      ["A", "Please.", "お願いします。"],
+      ["B", "You have the right to remain silent. You don't have to answer any questions you don't want to.", "あなたには黙秘権があります。答えたくない質問には答える必要はありません。"],
+      ["A", "Won't that make me look guilty?", "そうすると有罪っぽく見えませんか？"],
+      ["B", "It's your legal right. Until we've talked things through, it may be safer not to say much.", "それは法律上の権利です。私たちが話し合うまでは、あまり話さない方が安全かもしれません。"],
+      ["A", "They also want me to sign a statement.", "供述調書にサインしろとも言われています。"],
+      ["B", "Don't sign anything unless it's exactly what you said. You can ask them to correct it, or refuse to sign.", "自分の言ったとおりでなければ、何にもサインしないでください。訂正を求めることも、サインを拒否することもできます。"],
+      ["A", "How long will I be kept here?", "どのくらいここに留め置かれるんですか？"],
+      ["B", "The prosecutor can ask the court to detain you for up to ten days, and that can be extended for another ten.", "検察官は裁判所に最大10日間の勾留を請求でき、さらに10日間延長されることがあります。"],
+      ["A", "Twenty days? I'll lose my job!", "20日？仕事を失ってしまいます！"],
+      ["B", "I'll do everything I can to get you released as soon as possible. Is there anyone you'd like me to contact?", "できるだけ早く釈放されるよう全力を尽くします。誰か連絡してほしい人はいますか？"],
+      ["A", "Yes, please call my wife. She must be worried sick.", "はい、妻に電話してください。すごく心配しているはずです。"],
+      ["B", "I will. Also, you can ask for an interpreter during questioning. Do you need one?", "そうします。それと、取調べでは通訳を求めることができます。必要ですか？"],
+      ["A", "My Japanese isn't good enough for this, so yes, please.", "この話をするほど日本語は上手くないので、お願いします。"],
+      ["B", "Okay. I'll make sure they arrange one. I'll come back tomorrow.", "わかりました。手配されるよう確認します。明日また来ます。"]
+    ]}
+  ]
+});
