@@ -566,6 +566,13 @@
     .fs2 .ln:before { content:'・'; }
     .fs2 .ln.nt { color:#555; } .fs2 .ln.nt:before { content:'※'; }
     .fs2 .fml { display:inline-block; width:100%; color:#1F4E79; margin-top:2px; }
+    .fs2-mc { margin-top:10px; display:flex; flex-direction:column; gap:6px; }
+    .fs2-mr { display:flex; flex-wrap:wrap; align-items:center; gap:5px; }
+    .fs2-ml { font-weight:800; color:#1F4E79; min-width:1.4em; }
+    .fs2-ch { padding:5px 10px; font-size:13.5px; border:1.5px solid #B0BEC5; border-radius:8px; background:#fff; color:#222; cursor:pointer; }
+    .fs2-ch:disabled { cursor:default; opacity:.6; }
+    .fs2-ch.ok { background:#C8E6C9; border-color:#2E7D32; color:#1B5E20; font-weight:800; opacity:1; }
+    .fs2-ch.ng { background:#FFCDD2; border-color:#C62828; color:#B71C1C; text-decoration:line-through; opacity:1; }
     .fs2-show { margin-top:8px; padding:6px 14px; font-size:13px; font-weight:700; border-radius:8px; border:1.5px solid #1F4E79; background:#E8F0FA; color:#1F4E79; cursor:pointer; }
     .fs2 .ans, .fs2 .talk { display:none; }
     .fs2 .ans.show, .fs2 .talk.show { display:block; }
@@ -6954,6 +6961,72 @@ function fs2Card(n,q,a,tk){
     <button class="fs2-show" onclick="fs2Show(this)">答えを表示</button>
     <div class="ans">${a}${jr}</div>${tk?`<div class="talk">${tk}</div>`:''}</div>`;
 }
+const FS2_OPP=[['有利','不利'],['借方','貸方'],['増加','減少'],['加算','減算'],['定額法','定率法'],['直接法','間接法'],['先入先出法','平均法'],['直接配賦法','相互配賦法'],['ダウンストリーム','アップストリーム'],['シングル・プラン','パーシャル・プラン'],['未渡小切手','未取付小切手'],['前払費用','前受収益'],['未払費用','未収収益'],['変動費','固定費'],['流動資産','流動負債'],['特別利益','特別損失'],['営業外収益','営業外費用'],['期首商品棚卸高','期末商品棚卸高'],['期首仕掛品棚卸高','期末仕掛品棚卸高'],['前期繰越','次期繰越'],['契約資産','契約負債'],['リース資産','リース債務'],['棚卸減耗損','商品評価損'],['価格差異','数量差異'],['予算差異','操業度差異'],['標準原価','実際原価']];
+function fs2Parse(a){
+  const out=[]; let n=0;
+  a.split('<br>').forEach(l=>{
+    const m=l.match(/^\s*([①-⑳])?\s*<b>(.*?)<\/b>(.*)$/); if(!m) return;
+    const k=m[1]? m[1].charCodeAt(0)-0x2460 : n; n=k+1;
+    out[k]={v:m[2].replace(/<[^>]+>/g,''), ex:m[3]};
+  });
+  return out;
+}
+function fs2Hash(s){ let h=2166136261; for(const ch of s){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); } return h>>>0; }
+function fs2Rnd(seed){ let s=seed||1; return ()=>{ s^=s<<13; s^=s>>>17; s^=s<<5; return (s>>>0)/4294967296; }; }
+let _fs2Pool=null;
+function fs2Pools(){
+  if(_fs2Pool) return _fs2Pool;
+  const g={nouns:new Set()}; const ch={};
+  FS2_DATA.forEach(c=>{ const p={num:{},nouns:new Set()}; ch[c.t]=p;
+    [...c.C,...c.K].forEach(it=>fs2Parse(it[1]).forEach(b=>{ if(!b) return; const m=b.v.match(/^(△?)([\d,\.]+)(.*)$/);
+      if(m){ (p.num[m[3]]=p.num[m[3]]||new Set()).add(b.v); } else { p.nouns.add(b.v); g.nouns.add(b.v); } })); });
+  return _fs2Pool={g,ch};
+}
+function fs2Fmt(x,dec){ return dec? String(Math.round(x*10)/10) : Math.round(x).toLocaleString('en-US'); }
+function fs2Choices(c, qi, bi, blanks){
+  const ans=blanks[bi].v, rnd=fs2Rnd(fs2Hash(c.t+'|'+qi+'|'+bi)), P=fs2Pools(), cp=P.ch[c.t];
+  const set=new Set([ans]); const add=x=>{ if(set.size<4 && x && !set.has(x)) set.add(x); };
+  const shuf=a=>{ a=[...a]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+  const m=ans.match(/^(△?)([\d,\.]+)(.*)$/);
+  if(m){
+    const sg=m[1], unit=m[3], val=parseFloat(m[2].replace(/,/g,'')), dec=m[2].includes('.');
+    const mk=x=>{ if(!(x>0)) return null; return sg+fs2Fmt(x,dec)+unit; };
+    const near=arr=>arr.map(s=>{ const mm=s.match(/^(△?)([\d,\.]+)(.*)$/); return mm&&mm[3]===unit? [s,Math.abs(Math.log((parseFloat(mm[2].replace(/,/g,''))||1e-9)/(val||1e-9)))] : null; }).filter(Boolean).sort((a,b)=>a[1]-b[1]).map(x=>x[0]);
+    // 解説の式に出てくる数字（計算途中の値）
+    const exn=(blanks[bi].ex.replace(/<[^>]+>/g,'').match(/[\d,]+(\.\d+)?/g)||[]).map(s=>parseFloat(s.replace(/,/g,''))).filter(x=>x>0&&x!==val&&Math.abs(Math.log(x/val))<2.5);
+    shuf(exn).slice(0,2).forEach(x=>add(mk(x)));
+    if(sg) add(fs2Fmt(val,dec)+unit);
+    near(blanks.filter((b,j)=>b&&j!==bi).map(b=>b.v)).filter(s=>s.startsWith('△')===!!sg).slice(0,1).forEach(add);
+    near(shuf([...(cp.num[unit]||[])])).filter(s=>s.startsWith('△')===!!sg).slice(0,6).forEach(x=>{ if(rnd()<0.5) add(x); });
+    const vs=shuf([val*2,val/2,val+10,val-10,val*1.1,val*0.9,val+5,val-5,val+1,val-1,val*1.5]);
+    vs.forEach(x=>add(mk(x)));
+  } else {
+    FS2_OPP.forEach(([x,y])=>{ if(ans===x) add(y); if(ans===y) add(x); });
+    const tail=s=>s.replace(/（.*?）/g,'');
+    const last2=tail(ans).slice(-2), last1=tail(ans).slice(-1);
+    const nz=s=>s.replace(/（.*?）|した|の|直接|など/g,'');
+    const ok=s=>!/^[0-9△]/.test(s) && !s.includes(ans) && !ans.includes(s) && nz(s)!==nz(ans);
+    const pick=(arr,f)=>shuf([...arr].filter(s=>ok(s)&&f(tail(s)))).forEach(add);
+    pick(cp.nouns,s=>s.slice(-2)===last2); pick(P.g.nouns,s=>s.slice(-2)===last2);
+    pick(cp.nouns,s=>s.slice(-1)===last1); pick(P.g.nouns,s=>s.slice(-1)===last1);
+    pick(cp.nouns,()=>true); pick(P.g.nouns,()=>true);
+  }
+  return shuf([...set]);
+}
+function fs2Mc(c, qi, a, q){
+  const blanks=fs2Parse(a); if(!blanks.length) return '';
+  const lab=/（[①-⑳]）/.test(q);
+  return `<div class="fs2-mc">${blanks.map((b,bi)=>b?`<div class="fs2-mr" data-a="${b.v.replace(/"/g,'&quot;')}">${lab?`<span class="fs2-ml">${String.fromCharCode(0x2460+bi)}</span>`:''}${fs2Choices(c,qi,bi,blanks).map(x=>`<button class="fs2-ch" onclick="fs2Pick(this)">${x}</button>`).join('')}</div>`:'').join('')}</div>`;
+}
+function fs2Pick(btn){
+  const row=btn.closest('.fs2-mr'); if(row.classList.contains('done')) return;
+  row.classList.add('done');
+  const a=row.dataset.a;
+  row.querySelectorAll('.fs2-ch').forEach(b=>{ b.disabled=true; if(b.textContent===a) b.classList.add('ok'); });
+  if(btn.textContent!==a) btn.classList.add('ng');
+  const card=btn.closest('.fs2-card');
+  if(![...card.querySelectorAll('.fs2-mr')].some(r=>!r.classList.contains('done'))){ const s=card.querySelector('.fs2-show'); if(s) fs2Show(s); }
+}
 function fs2Show(btn){
   const c=btn.closest('.fs2-card');
   c.querySelectorAll('.ans,.talk').forEach(e=>e.classList.add('show'));
@@ -6975,6 +7048,7 @@ function fs2Render(){
   const card = kind==='まとめの会話'
     ? `<div class="fs2-card"><div class="fs2-kind">まとめの会話</div>${tk}</div>`
     : `<div class="fs2-card"><div class="fs2-kind">${kind}</div><div><span class="qn">${no}</span>${q}</div>
+       ${fs2Mc(c, kind+i, a, q)}
        <button class="fs2-show" onclick="fs2Show(this)">答えを表示</button>
        <div class="ans">${a}${jr}</div>${tk?`<div class="talk">${tk}</div>`:''}</div>`;
   const nav = `<div class="exp-nav-row">
