@@ -464,6 +464,7 @@ async function run(opt) {
   const tk = ++TOKEN; const d = P.d; P.hint = 0;
   act(''); P.busy = true;
   await sleep(80);
+  if (tk !== TOKEN) return;
   while (P.idx < d.lines.length && d.lines[P.idx][0] !== P.me) {
     append(P.idx, 'done');
     act(`<div class="row"><button class="btn btn-outline" id="aSkip">スキップ ▶▶</button></div>`);
@@ -544,6 +545,7 @@ async function handsFree() {
   const cd = t => { const c = document.getElementById('cd'); if (c) c.textContent = t; };
   const d = P.d;
   await sleep(120);
+  if (tk !== TOKEN) return;
   while (P.idx < d.lines.length) {
     const l = d.lines[P.idx];
     if (l[0] !== P.me) {
