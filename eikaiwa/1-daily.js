@@ -59,6 +59,21 @@ EK_DATA.push({
       ["B", "Definitely. Let me give you my new number.", "ぜひ。新しい番号を教えるね。"],
       ["A", "Perfect. I'd better get going, but I'll text you.", "ばっちり。もう行かなきゃだけど、メッセージ送るね。"],
       ["B", "Great. Catch you later!", "いいね。またね！"]
+    ]},
+    { id: "chat-4", title: "パーティーで初対面", A: "パーティーの参加者（ジェイク）", B: "あなた（ケン）", def: "B", lines: [
+      ["A", "Hi there! I don't think we've met. I'm Jake.", "こんにちは！初めてですよね。ジェイクです。"],
+      ["B", "Nice to meet you, Jake. I'm Ken. How's it going?", "はじめまして、ジェイク。ケンです。調子はどう？"],
+      ["A", "Pretty good, thanks. So, how do you know Lisa?", "いい感じだよ、ありがとう。それで、リサとはどういう知り合い？"],
+      ["B", "We used to work together. What about you?", "前に一緒に働いてたんだ。そっちは？"],
+      ["A", "We're neighbors. She's always throwing parties like this.", "近所なんだ。彼女はいつもこういうパーティーを開いてるよ。"],
+      ["B", "Sounds like she's a great host. The food is amazing.", "いいホストみたいだね。料理がすごくおいしい。"],
+      ["A", "I know, right? She made everything herself.", "だよね。全部自分で作ったんだって。"],
+      ["B", "Can you believe that? I can barely make toast.", "信じられる？僕なんてトーストもろくに焼けないよ。"],
+      ["A", "Ha, same here. So, what do you do?", "はは、僕も。それで、仕事は何してるの？"],
+      ["B", "I'm a lawyer. It's not as exciting as it sounds, though.", "弁護士だよ。思われてるほど華やかじゃないけどね。"],
+      ["A", "Are you kidding? That sounds really interesting.", "冗談でしょ？すごく面白そうだよ。"],
+      ["B", "It has its moments. Anyway, I'd better get another drink. Can I get you one?", "たまにはね。さて、飲み物をもう一杯取ってくるよ。君の分も持ってこようか？"],
+      ["A", "I'm good, thanks. Catch you later!", "大丈夫、ありがとう。またあとで！"]
     ]}
   ]
 });

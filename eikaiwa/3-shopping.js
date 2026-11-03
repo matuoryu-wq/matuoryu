@@ -105,6 +105,21 @@ EK_DATA.push({
       ["A", "Yes, a one-year warranty. You can extend it to three years for an extra 30 dollars.", "はい、1年保証です。30ドル追加で3年に延長できます。"],
       ["B", "Hmm, I'll think about the extended warranty. But I'll take this one.", "うーん、延長保証は考えます。でもこれにします。"],
       ["A", "Great choice. I'll get you a new one from the back.", "いい選択です。奥から新品をお持ちします。"]
+    ]},
+    { id: "store-4", title: "プレゼントを選ぶ", A: "店員", B: "あなた（客）", def: "B", lines: [
+      ["A", "Hi there. Are you looking for anything in particular?", "いらっしゃいませ。何か特にお探しですか？"],
+      ["B", "Yes, I'm looking for a birthday present for my sister.", "はい、妹の誕生日プレゼントを探しています。"],
+      ["A", "How nice! Do you have anything in mind?", "素敵ですね！何かお考えのものはありますか？"],
+      ["B", "Not really. She loves cooking, though.", "特には。でも料理が大好きなんです。"],
+      ["A", "Then how about this cookbook? It just came out, and it's really popular.", "それならこのレシピ本はいかがですか？出たばかりで、とても人気です。"],
+      ["B", "Hmm, she already has a lot of cookbooks. Do you have any kitchen tools?", "うーん、レシピ本はもうたくさん持っているんです。キッチン用品はありますか？"],
+      ["A", "Sure. These knives are made in Japan. They're very sharp and easy to take care of.", "ございます。こちらの包丁は日本製です。とてもよく切れて、手入れも簡単ですよ。"],
+      ["B", "What's the difference between these two?", "この2つの違いは何ですか？"],
+      ["A", "This one is stainless steel, and that one is carbon steel. The carbon one is sharper, but it can rust.", "こちらはステンレスで、そちらは炭素鋼です。炭素鋼の方がよく切れますが、さびることがあります。"],
+      ["B", "I'll go with the stainless one. Does it come with a case?", "ステンレスの方にします。ケースはついていますか？"],
+      ["A", "Yes, it does. Would you like it gift-wrapped?", "はい、ついています。ギフト用に包装しますか？"],
+      ["B", "Yes, please. And could I get a gift receipt, just in case?", "はい、お願いします。それと、念のためギフトレシートをもらえますか？"],
+      ["A", "Of course. It'll just take a few minutes.", "もちろんです。数分でご用意します。"]
     ]}
   ]
 });
