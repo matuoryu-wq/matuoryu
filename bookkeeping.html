@@ -7035,11 +7035,25 @@ function fs2Show(btn){
   c.querySelectorAll('.ans,.talk').forEach(e=>e.classList.add('show'));
   btn.remove();
 }
-let fs2C=0, fs2Q=0;
+let fs2C=0, fs2Q=0, fs2M='計算';
 function fs2Items(c){
-  return [...c.C.map(x=>['計算',...x]), ...c.K.map(x=>['知識',...x]), ...c.E.map(e=>['まとめの会話','','',e])];
+  return fs2M==='計算' ? c.C.map(x=>['計算',...x]) : [...c.K.map(x=>['知識',...x]), ...c.E.map(e=>['まとめの会話','','',e])];
 }
-function fs2Open(i){ fs2C=i; fs2Q=0; fs2Render(); }
+function fs2Open(i){
+  fs2C=i; const c=FS2_DATA[i], main=document.getElementById('exp-main');
+  main.innerHTML = `
+    <div class="exp-nav-row">
+      <button class="exp-nav-btn" onclick="fs2Menu()">← 章の一覧</button>
+      <span class="exp-nav-info" style="font-size:12px;">第${i+1}章　${c.t}</span>
+      <button class="exp-nav-btn" onclick="exitCompQuiz()">✕ 終了</button>
+    </div>
+    <div class="fs2">
+      <button class="fs2-ch-btn" onclick="fs2Start(${i},'計算')"><span>計算<small>${c.C.length}問（資料と表を見ながら空欄を埋める）</small></span></button>
+      <button class="fs2-ch-btn" onclick="fs2Start(${i},'知識')"><span>知識<small>${c.K.length}問${c.E.length?'＋まとめの会話'+c.E.length:''}</small></span></button>
+    </div>`;
+  document.getElementById('exp-panel').scrollIntoView({block:'start'});
+}
+function fs2Start(i,m){ fs2C=i; fs2M=m; fs2Q=0; fs2Render(); }
 function fs2Go(d){ const n=fs2Items(FS2_DATA[fs2C]).length; fs2Q=Math.max(0,Math.min(n-1,fs2Q+d)); fs2Render(); }
 function fs2Render(){
   const c=FS2_DATA[fs2C], main=document.getElementById('exp-main'), items=fs2Items(c), n=items.length, i=fs2Q;
@@ -7066,15 +7080,15 @@ function fs2Render(){
   const next = FS2_DATA.findIndex((x,j)=>j>fs2C&&x.grp===c.grp);
   main.innerHTML = `
     <div class="exp-nav-row">
-      <button class="exp-nav-btn" onclick="fs2Menu()">← 章の一覧</button>
-      <span class="exp-nav-info" style="font-size:12px;">第${fs2C+1}章　${c.t}</span>
+      <button class="exp-nav-btn" onclick="fs2Open(fs2C)">← 戻る</button>
+      <span class="exp-nav-info" style="font-size:12px;">第${fs2C+1}章　${c.t}・${fs2M}</span>
       <button class="exp-nav-btn" onclick="exitCompQuiz()">✕ 終了</button>
     </div>
     <div class="fs2">
       ${nav}
       ${card}
       ${nav}
-      ${i===n-1&&next>=0?`<div style="text-align:center;margin:6px 0 10px;"><button class="fs2-show" onclick="fs2Open(${next})">次の章へ →</button></div>`:''}
+      ${i===n-1&&next>=0?`<div style="text-align:center;margin:6px 0 10px;"><button class="fs2-show" onclick="fs2Start(${next},fs2M)">次の章の${fs2M}へ →</button></div>`:''}
       ${tables}
     </div>`;
   if(kind==='計算') fs2Mark(c, i, q);
