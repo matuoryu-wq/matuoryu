@@ -194,6 +194,8 @@
       </div>
       <div class="doc-box">📄 必要書類: 診療報酬明細書（各医療機関の右下「上記金額」欄）、領収書 ／ ⚠️ 整骨院通院は医師の指示・同意書が必要</div>
       <div class="ins-box">🏥 保険: 自賠責傷害限度120万円（治療費・休業損害・慰謝料等の合計上限）。健康保険での受診も可能。整骨院等への任意保険一括払いには注意が必要。</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-chiryohi', calcItemChiryohi())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-chiryohi" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -203,6 +205,8 @@
         <div class="input-wrap"><input type="number" id="i-nyuindays" placeholder="例：30" min="0"><span class="unit">日</span></div>
       </div>
       <div class="bk-formula" style="margin-top:8px">入院雑費 ＝ 入院日数 × 1,500円（弁護士基準）</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-zappi', calcItemZappi())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-zappi" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -245,6 +249,8 @@
       </div>
       <div class="doc-box">📄 必要書類: 交通費領収書（公共交通）、通院記録（通院日の確認） ／ 自家用車は距離計算のため領収書不要</div>
       <div class="ins-box">🏥 タクシーは原則実費だが、身体障害・公共交通不便地域等、必要性が認められる場合に限る。</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-kotsuhi', calcItemKotsuhi())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-kotsuhi" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -303,6 +309,8 @@
       </div>
       <div class="doc-box">📄 必要書類: 【給与所得者】休業損害証明書（勤務先作成）・給与明細書3ヶ月分・源泉徴収票 ／ 【自営業者】確定申告書（所得金額①欄＋青色申告特別控除④）・通帳コピー ／ 【主婦・主夫】戸籍謄本・住民票</div>
       <div class="ins-box">🏥 保険: 自賠責傷害限度120万円内（治療費等と合算）。会社の傷害保険との損益相殺は原則なし（受け取っても請求額から引かれない）。</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-kyugyo', calcItemKyugyo())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-kyugyo" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -320,6 +328,8 @@
       <div class="bk-formula" style="margin-top:8px">付添費 ＝ 入院付添日数 × 6,500円 ＋ 通院付添日数 × 3,300円（近親者付添・弁護士基準）<br>職業的付添人（ヘルパー等）は実費相当</div>
       <div class="doc-box" style="margin-top:10px">📄 必要書類: 医師の付添必要性証明書・診断書（入院）、付添の事実を示す記録（通院）</div>
       <div class="ins-box">🏥 保険: 自賠責傷害120万円の範囲内。付添の必要性が医学的に認められることが条件。</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-fusoi', calcItemFusoihi())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-fusoi" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -350,6 +360,10 @@
           <label>実通院日数（実際に通院した日数・任意）</label>
           <div class="input-wrap"><input type="number" id="i-jitsu-tsuin-days" placeholder="例：40" min="0" onchange="updateJitsuTsuinNote()"><span class="unit">日</span></div>
         </div>
+        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;background:#F7F0E8;border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+          <input type="checkbox" id="i-apply-jitsu-rule" style="margin-top:3px" onchange="updateJitsuTsuinNote()">
+          <label for="i-apply-jitsu-rule" style="font-size:12px;font-weight:600;color:var(--text);cursor:pointer">実通院日数の倍数ルールを適用して通院期間を短縮する（適用は、通院が不規則・長期にわたる等の例外的なケースに限られます。通常はチェック不要です）</label>
+        </div>
         <div class="note" style="margin-top:2px;margin-bottom:10px" id="jitsu-tsuin-note"><span class="note-icon">ℹ️</span></div>
       </div>
       <div class="formula-header">
@@ -359,6 +373,8 @@
       </div>
       <div class="doc-box">📄 必要書類: 自賠責診断書（入院日数・通院期間・症状固定日）、診療報酬明細書（通院日○印で実日数確認）</div>
       <div class="ins-box">🏥 保険: 自賠責傷害限度120万円（治療費・休業損害・慰謝料の合計上限）。超過分は任意保険へ請求。入院給付金（生命保険）は損益相殺の対象外。</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-isharyo', calcItemIsharyo())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-isharyo" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -380,6 +396,8 @@
       <div class="bk-formula">車両損害合計 ＝ 修理費 ＋ 評価損 ＋ 代車費用</div>
       <div class="doc-box" style="margin-top:10px">📄 必要書類: 修理明細書・見積書・車両価値の証明（中古車査定書等）</div>
       <div class="ins-box">🏥 保険: 対物賠償（相手任意保険）または車両保険から補償。物的損害は自賠責の対象外。</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-sharyo', calcItemSharyo())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-sharyo" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -399,6 +417,8 @@
         <div class="input-wrap"><input type="number" id="i-cost-koi-shindan" placeholder="例：0.5" min="0" step="0.1"><span class="unit">万円</span></div>
       </div>
       <div class="doc-box" style="margin-top:10px">📄 必要書類: 各証明書・診断書の領収書</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-cost', calcItemCost())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-cost" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card" id="card-弁護士費用">
@@ -472,6 +492,8 @@
         </div>
       </div>
       <div id="s-grade-display" class="bk-formula"></div>
+      <button class="btn-secondary" onclick="renderItemResult('result-koiisharyo', calcItemKoiIsharyo())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-koiisharyo" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -502,6 +524,8 @@
         </div>
       </div>
       <div id="s-leibniz-display" class="bk-formula">ライプニッツ係数: — （年齢を入力すると自動表示）</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-koiisshitsu', calcItemKoiIsshitsu())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-koiisshitsu" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div id="kaigo-section" style="display:none">
@@ -518,6 +542,8 @@
           </div>
         </div>
         <div class="bk-formula">将来介護費 ＝ 日額 × 365日 × ライプニッツ係数（平均余命年数）</div>
+        <button class="btn-secondary" onclick="renderItemResult('result-kaigo', calcItemKaigo())" style="margin-top:10px">この項目を計算する</button>
+        <div id="result-kaigo" class="breakdown" style="display:none;margin-top:10px"></div>
       </div>
     </div>
 
@@ -536,6 +562,8 @@
       <div class="bk-formula" style="margin-top:4px">将来治療費 ＝ 年額 × ライプニッツ係数（想定年数）</div>
       <div class="doc-box" style="margin-top:10px">📄 必要書類: 医師の意見書・診断書（将来治療の必要性・期間の見込み）</div>
       <div class="ins-box">🏥 保険: 将来分は自賠責の対象外。任意保険への請求が必要。</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-futuretreat', calcItemFutureTreat())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-futuretreat" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -547,6 +575,8 @@
       <div class="bk-formula">器具装具費 ＝ 実費（買い替えサイクルを考慮したライプニッツ係数は別途検討）</div>
       <div class="doc-box" style="margin-top:10px">📄 必要書類: 医師の必要性証明書・領収書・見積書</div>
       <div class="ins-box">🏥 保険: 自賠責後遺障害限度額の範囲で請求。任意保険への追加請求が必要な場合も。</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-kigu', calcItemKigu())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-kigu" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -558,6 +588,8 @@
       <div class="bk-formula">家屋・自動車改造費 ＝ 実費</div>
       <div class="doc-box" style="margin-top:10px">📄 必要書類: 医師の意見書（必要性）・リフォーム業者の見積書・領収書</div>
       <div class="ins-box">🏥 保険: 将来分は任意保険へ。住宅改修と自動車改造は別途計上。</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-kaoku', calcItemKaoku())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-kaoku" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
   </div><!-- end #section-sequela -->
 
@@ -597,6 +629,8 @@
         </div>
       </div>
       <div id="d-leibniz-display" class="bk-formula">就労可能年数・ライプニッツ係数: 年齢を入力すると自動表示</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-deathisshitsu', calcItemDeathIsshitsu())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-deathisshitsu" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -610,6 +644,8 @@
         </select>
       </div>
       <div class="bk-desc" style="margin-top:8px">弁護士基準の死亡慰謝料（本人分＋遺族固有分を含む合計）を自動表示します。</div>
+      <button class="btn-secondary" onclick="renderItemResult('result-deathisharyo', calcItemDeathIsharyo())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-deathisharyo" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -618,6 +654,8 @@
         <label>実費（万円）— 弁護士基準の目安: 150万円。実費が150万未満の場合は実費を計上。</label>
         <div class="input-wrap"><input type="number" id="d-sosai" placeholder="150" min="0"><span class="unit">万円</span></div>
       </div>
+      <button class="btn-secondary" onclick="renderItemResult('result-sosai', calcItemSosai())" style="margin-top:10px">この項目を計算する</button>
+      <div id="result-sosai" class="breakdown" style="display:none;margin-top:10px"></div>
     </div>
   </div><!-- end #section-death -->
 
@@ -1404,15 +1442,18 @@ function updateJitsuTsuinNote(){
   const noteEl = document.getElementById('jitsu-tsuin-note');
   if(!noteEl) return;
   const injType = v('i-injury-type');
+  const applyEl = document.getElementById('i-apply-jitsu-rule');
+  const applyRule = applyEl && applyEl.checked;
   let text;
   if(currentBook==='midori'){
-    text = '緑本（大阪基準）では、実通院期間（始期〜終期の日数）と実通院日数を3.5倍した日数を比較し、少ない方を通院期間として計算します。不規則・長期の通院の場合に用います。空欄の場合は入力した通院期間（日数）をそのまま使用します。';
+    text = '緑本（大阪基準）では、実通院期間（始期〜終期の日数）と実通院日数を3.5倍した日数を比較し、少ない方を通院期間とすることがあります。不規則・長期の通院の場合に例外的に用いるルールのため、既定では適用せず、入力した通院期間（日数）をそのまま使用します。';
   } else {
     const isLight = injType==='light';
     text = isLight
-      ? '赤い本（東京基準）のむちうち症等（別表Ⅱ）では、通院が長期にわたる場合、実際に通院した日数の3倍程度を通院期間の目安とすることがあります。空欄の場合は入力した通院期間（日数）をそのまま使用します。'
-      : '赤い本（東京基準）の通常・重傷（別表Ⅰ）では、通院が長期にわたる場合、通院頻度をふまえ実通院日数の3.5倍を通院期間の目安とすることがあります。空欄の場合は入力した通院期間（日数）をそのまま使用します。';
+      ? '赤い本（東京基準）のむちうち症等（別表Ⅱ）では、通院が長期にわたる場合、実際に通院した日数の3倍程度を通院期間の目安とすることがあります。例外的なルールのため、既定では適用せず、入力した通院期間（日数）をそのまま使用します。'
+      : '赤い本（東京基準）の通常・重傷（別表Ⅰ）では、通院が長期にわたる場合、通院頻度をふまえ実通院日数の3.5倍を通院期間の目安とすることがあります。例外的なルールのため、既定では適用せず、入力した通院期間（日数）をそのまま使用します。';
   }
+  text += applyRule ? '（現在：適用する設定です）' : '（現在：適用しない設定です）';
   noteEl.innerHTML = '<span class="note-icon">ℹ️</span>' + text;
 }
 
@@ -1896,15 +1937,23 @@ function updateDeathFields(){
 // ============================================================
 // CALCULATION
 // ============================================================
-function calcAll(){
-  const fault = nv('c-fault');
-  const paid = nv('c-paid');
-  let items = [];
-  let totalMan = 0;
-  let html = '';
-  let errors = [];
+function renderItemResult(targetId, item){
+  const el = document.getElementById(targetId);
+  if(!el) return;
+  el.style.display = 'block';
+  el.innerHTML = `
+    <div class="bk-row">
+      <span class="bk-key">${item.label}</span>
+      <span class="bk-val">${fmtMan(item.val)}</span>
+    </div>
+    ${item.desc ? `<div class="bk-desc">${item.desc}</div>` : ''}
+    <div class="bk-formula">${item.formula.includes('<br>') ? '計算の手順:<br>' : '計算式: '}${item.formula}</div>
+  `;
+  el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
 
-  // --- 治療費 ---
+// --- 治療費 ---
+function calcItemChiryohi(){
   const treatMonthlyMode = document.getElementById('treat-monthly-mode').style.display!=='none';
   let chiryohi = 0;
   if(treatMonthlyMode){
@@ -1915,18 +1964,22 @@ function calcAll(){
   } else {
     chiryohi = nv('i-chiryohi');
   }
-  items.push({label:'治療費', val:chiryohi,
+  return {label:'治療費', val:chiryohi,
     desc:'病院や整骨院に実際に支払った治療費です。領収書の金額をそのまま合計します。',
-    formula:`実費の合計 ＝ ${fmtMan(chiryohi)}`});
+    formula:`実費の合計 ＝ ${fmtMan(chiryohi)}`};
+}
 
-  // --- 入院雑費 ---
+// --- 入院雑費 ---
+function calcItemZappi(){
   const nyuindays = nv('i-nyuindays');
   const zappi = nyuindays * 1500 / 10000;
-  items.push({label:'入院雑費', val:zappi,
+  return {label:'入院雑費', val:zappi,
     desc:'入院中に必要な洗面用具・栄養費などの細かい出費を、1日あたり1,500円として計算したものです。',
-    formula:`入院日数 ${nyuindays}日 × 1,500円 ＝ ${Math.round(zappi*10000).toLocaleString()}円 ＝ ${fmtMan(zappi)}`});
+    formula:`入院日数 ${nyuindays}日 × 1,500円 ＝ ${Math.round(zappi*10000).toLocaleString()}円 ＝ ${fmtMan(zappi)}`};
+}
 
-  // --- 通院交通費 ---
+// --- 通院交通費 ---
+function calcItemKotsuhi(){
   const kotsuCalcMode = document.getElementById('kotsu-calc-mode').style.display!=='none';
   let kotsuhi = 0, kotsuFormula = '';
   if(kotsuCalcMode){
@@ -1937,11 +1990,13 @@ function calcAll(){
     kotsuhi = nv('i-kotsuhi');
     kotsuFormula = `実費の合計 ＝ ${fmtMan(kotsuhi)}`;
   }
-  items.push({label:'通院交通費', val:kotsuhi,
+  return {label:'通院交通費', val:kotsuhi,
     desc:'病院に通うためにかかった電車代・バス代・ガソリン代などの交通費です。',
-    formula:kotsuFormula});
+    formula:kotsuFormula};
+}
 
-  // --- 休業損害 ---
+// --- 休業損害 ---
+function calcItemKyugyo(){
   let kyugyo = 0;
   let kyugyoFormula = '', kyugyoDesc = '';
   const job = v('i-job');
@@ -1972,12 +2027,15 @@ function calcAll(){
     kyugyoDesc = '休業による損害額を、金額を直接入力したものです。';
     kyugyoFormula = `入力した金額 ＝ ${fmtMan(kyugyo)}`;
   }
-  items.push({label:'休業損害', val:kyugyo, desc:kyugyoDesc, formula:kyugyoFormula});
+  return {label:'休業損害', val:kyugyo, desc:kyugyoDesc, formula:kyugyoFormula};
+}
 
-  // --- 入通院慰謝料 ---
+// --- 入通院慰謝料 ---
+function calcItemIsharyo(){
   const injType = v('i-injury-type');
   const tsuinDaysVal = nv('i-tsuin-days');
   const isharyoNyuinDays = nv('i-isharyo-nyuindays');
+  const applyJitsuRule = document.getElementById('i-apply-jitsu-rule') && document.getElementById('i-apply-jitsu-rule').checked;
   let isharyo, typeName;
   const isharyoContext = [];
   let isharyoBody = '';
@@ -1986,14 +2044,17 @@ function calcAll(){
     const jitsuDays = nv('i-jitsu-tsuin-days');
     let effectiveTsuinDays = tsuinDaysVal;
     isharyoContext.push(`傷病区分：${injType==='severe'?'重傷':'通常'}（緑本・${injType==='severe'?'重傷用':'通常用'}の表を使用）`);
-    if(jitsuDays > 0){
+    if(jitsuDays > 0 && applyJitsuRule){
       const capDays = jitsuDays * 3.5;
       effectiveTsuinDays = Math.min(tsuinDaysVal, capDays);
       isharyoContext.push('');
-      isharyoContext.push(`実通院日数のルール（緑本）`);
+      isharyoContext.push(`実通院日数のルール（緑本・適用あり）`);
       isharyoContext.push(`実通院${jitsuDays}日 × 3.5 ＝ ${capDays}日`);
       isharyoContext.push(`通院期間（実日数）＝ ${tsuinDaysVal}日`);
       isharyoContext.push(`少ない方の${effectiveTsuinDays}日を通院期間とします`);
+    } else if(jitsuDays > 0 && !applyJitsuRule){
+      isharyoContext.push('');
+      isharyoContext.push(`実通院日数のルールは適用していません（通院期間${tsuinDaysVal}日をそのまま使用。適用する場合は入力欄下のチェックを入れてください）`);
     }
     const muchiuchi = document.getElementById('i-muchiuchi') && document.getElementById('i-muchiuchi').checked;
     const tbl = injType==='severe' ? GREEN_ISHARYO_SEVERE : GREEN_ISHARYO_NORMAL;
@@ -2013,15 +2074,18 @@ function calcAll(){
     const jitsuDaysAka = nv('i-jitsu-tsuin-days');
     let effectiveTsuinDaysAka = tsuinDaysVal;
     isharyoContext.push(`傷病区分：${isLight?'軽傷':'重傷'}（赤い本・${isLight?'軽傷用（別表Ⅱ）':'重傷用（別表Ⅰ）'}の表を使用）`);
-    if(jitsuDaysAka > 0){
+    if(jitsuDaysAka > 0 && applyJitsuRule){
       const multiplier = isLight ? 3 : 3.5;
       const capDaysAka = jitsuDaysAka * multiplier;
       effectiveTsuinDaysAka = Math.min(tsuinDaysVal, capDaysAka);
       isharyoContext.push('');
-      isharyoContext.push(`実通院日数のルール（赤い本・${isLight?'軽傷は3倍':'重傷は3.5倍'}）`);
+      isharyoContext.push(`実通院日数のルール（赤い本・${isLight?'軽傷は3倍':'重傷は3.5倍'}・適用あり）`);
       isharyoContext.push(`実通院${jitsuDaysAka}日 × ${multiplier} ＝ ${capDaysAka}日`);
       isharyoContext.push(`通院期間（実日数）＝ ${tsuinDaysVal}日`);
       isharyoContext.push(`少ない方の${effectiveTsuinDaysAka}日を通院期間とします`);
+    } else if(jitsuDaysAka > 0 && !applyJitsuRule){
+      isharyoContext.push('');
+      isharyoContext.push(`実通院日数のルールは適用していません（通院期間${tsuinDaysVal}日をそのまま使用。適用する場合は入力欄下のチェックを入れてください）`);
     }
     const tbl = isLight ? ISHARYO_LIGHT : ISHARYO_HEAVY;
     const detail = lookupIsharyoDetailed(effectiveTsuinDaysAka, isharyoNyuinDays, tbl, 15, 15);
@@ -2031,128 +2095,189 @@ function calcAll(){
   }
 
   const isharyoFormula = [...isharyoContext, '', isharyoBody].join('<br>');
-  items.push({label:'入通院慰謝料', val:isharyo,
+  return {label:'入通院慰謝料', val:isharyo,
     desc:'入院や通院をしたこと自体で受けた精神的なつらさへの補償です。入院期間と通院期間の長さの組み合わせを、あらかじめ決められた金額表（今回は' + (currentBook==='midori'?'緑本（大阪基準）':'赤い本（東京基準）') + '）に当てはめて金額を求めます。期間が長いほど金額は増えますが、増え方は次第に緩やかになります。',
-    formula:isharyoFormula});
+    formula:isharyoFormula};
+}
 
-  // --- 付添費 ---
+// --- 付添費 ---
+function calcItemFusoihi(){
   const fusoiNyuin = nv('i-fusoi-nyuin');
   const fusoiTsuin = nv('i-fusoi-tsuin');
   const fusoiVal = fusoiNyuin * 6500 / 10000 + fusoiTsuin * 3300 / 10000;
-  if(fusoiVal > 0){
-    items.push({label:'付添費', val:fusoiVal,
-      desc:'家族などが付き添って看病・通院サポートをしたことへの補償です。入院に付き添った日数と通院に付き添った日数、それぞれに決まった日額をかけて合計します。',
-      formula:`入院付添 ${fusoiNyuin}日 × 6,500円 ＋ 通院付添 ${fusoiTsuin}日 × 3,300円 ＝ ${fmtMan(fusoiVal)}`});
-  }
+  return {label:'付添費', val:fusoiVal,
+    desc:'家族などが付き添って看病・通院サポートをしたことへの補償です。入院に付き添った日数と通院に付き添った日数、それぞれに決まった日額をかけて合計します。',
+    formula:`入院付添 ${fusoiNyuin}日 × 6,500円 ＋ 通院付添 ${fusoiTsuin}日 × 3,300円 ＝ ${fmtMan(fusoiVal)}`};
+}
 
-  // --- 車両損害・代車費用 ---
+// --- 車両損害・代車費用 ---
+function calcItemSharyo(){
   const sharyoRepair = nv('i-sharyo-repair');
   const sharyoEval = nv('i-sharyo-eval');
   const sharyoDasha = nv('i-sharyo-dasha');
   const sharyoTotal = sharyoRepair + sharyoEval + sharyoDasha;
-  if(sharyoTotal > 0){
-    items.push({label:'車両損害・代車費用', val:sharyoTotal,
-      desc:'事故で壊れた車を直すための修理費、修理しても残ってしまう価値の下落分（評価損）、修理中に借りた代車の費用を合計したものです。',
-      formula:`修理費 ${fmtMan(sharyoRepair)} ＋ 評価損 ${fmtMan(sharyoEval)} ＋ 代車費用 ${fmtMan(sharyoDasha)} ＝ ${fmtMan(sharyoTotal)}`});
-  }
+  return {label:'車両損害・代車費用', val:sharyoTotal,
+    desc:'事故で壊れた車を直すための修理費、修理しても残ってしまう価値の下落分（評価損）、修理中に借りた代車の費用を合計したものです。',
+    formula:`修理費 ${fmtMan(sharyoRepair)} ＋ 評価損 ${fmtMan(sharyoEval)} ＋ 代車費用 ${fmtMan(sharyoDasha)} ＝ ${fmtMan(sharyoTotal)}`};
+}
 
-  // --- 損害賠償関係費用 ---
+// --- 損害賠償関係費用 ---
+function calcItemCost(){
   const costShindan = nv('i-cost-shindan');
   const costShomei = nv('i-cost-shomei');
   const costKoiShindan = nv('i-cost-koi-shindan');
   const costTotal = costShindan + costShomei + costKoiShindan;
-  if(costTotal > 0){
-    items.push({label:'損害賠償関係費用', val:costTotal,
-      desc:'賠償請求に必要な診断書や交通事故証明書などを取り寄せるためにかかった費用です。',
-      formula:`診断書 ${fmtMan(costShindan)} ＋ 証明書 ${fmtMan(costShomei)} ＋ 後遺障害診断書 ${fmtMan(costKoiShindan)} ＝ ${fmtMan(costTotal)}`});
+  return {label:'損害賠償関係費用', val:costTotal,
+    desc:'賠償請求に必要な診断書や交通事故証明書などを取り寄せるためにかかった費用です。',
+    formula:`診断書 ${fmtMan(costShindan)} ＋ 証明書 ${fmtMan(costShomei)} ＋ 後遺障害診断書 ${fmtMan(costKoiShindan)} ＝ ${fmtMan(costTotal)}`};
+}
+
+// --- 後遺障害慰謝料 ---
+function calcItemKoiIsharyo(){
+  const grade = v('s-grade');
+  const std = v('s-standard');
+  const gradeData = KOI_ISHARYO[grade];
+  const koiIsh = getKoiAmount(grade, std);
+  const koiBookLabel = std==='bengoshi' ? (currentBook==='midori'?'弁護士・緑本':'弁護士・赤い本') : '自賠責';
+  return {label:`後遺障害慰謝料（${gradeData.label}・${koiBookLabel}基準）`, val:koiIsh,
+    desc:'治療を続けても完全には治らず、後遺症が残ってしまったことへの精神的な補償です。後遺障害の重さ（等級）ごとに金額があらかじめ決められています。',
+    formula:`${gradeData.label}の${koiBookLabel}基準の金額 ＝ ${fmtMan(koiIsh)}`};
+}
+
+// --- 後遺障害逸失利益 ---
+function calcItemKoiIsshitsu(){
+  const sIncome = nv('s-income');
+  const sAge = nv('s-age');
+  const lossRate = nv('s-loss-rate');
+  const years = Math.min(49, Math.max(0, 67-sAge));
+  const lz = getLeibniz(years);
+  const koiIsshitsu = sIncome * (lossRate/100) * lz;
+  return {label:'後遺障害逸失利益', val:koiIsshitsu,
+    desc:'後遺症のせいで将来の仕事の能力が下がり、本来もらえたはずの収入が減ってしまう分の補償です。「1年間の収入 × 能力が落ちた割合 × 将来分をいまの価値に割り引く係数（ライプニッツ係数）」で計算します。',
+    formula:`年収 ${fmtMan(sIncome)} × 労働能力喪失率 ${lossRate}% × ライプニッツ係数 ${lz}（${years}年分） ＝ ${fmtMan(koiIsshitsu)}`};
+}
+
+// --- 将来介護費 ---
+function calcItemKaigo(){
+  const daily = nv('s-kaigo-daily');
+  const kaigoYears = nv('s-kaigo-years');
+  const kaigoLz = getLeibniz(kaigoYears);
+  const kaigoHi = (daily * 365 / 10000) * kaigoLz;
+  return {label:'将来介護費', val:kaigoHi,
+    desc:'後遺症が重く、将来にわたって介護が必要な場合の費用です。1日あたりの介護費用に1年分の日数（365日）と、将来分をいまの価値に割り引く係数をかけて計算します。',
+    formula:`日額 ${daily.toLocaleString()}円 × 365日 × ライプニッツ係数 ${kaigoLz}（${kaigoYears}年分） ＝ ${fmtMan(kaigoHi)}`};
+}
+
+// --- 将来治療費 ---
+function calcItemFutureTreat(){
+  const futureTreatAnnual = nv('s-future-treat-annual');
+  const futureTreatYears = nv('s-future-treat-years');
+  if(!(futureTreatAnnual > 0 && futureTreatYears > 0)){
+    return {label:'将来治療費', val:0,
+      desc:'将来も治療（通院・リハビリなど）を続ける必要がある場合に見込まれる治療費です。1年あたりの見込み額に、将来分をいまの価値に割り引く係数をかけて計算します。',
+      formula:'年額・想定年数の両方を入力してください'};
   }
+  const ftLz = getLeibniz(futureTreatYears);
+  const futureTreat = futureTreatAnnual * ftLz;
+  return {label:'将来治療費', val:futureTreat,
+    desc:'将来も治療（通院・リハビリなど）を続ける必要がある場合に見込まれる治療費です。1年あたりの見込み額に、将来分をいまの価値に割り引く係数をかけて計算します。',
+    formula:`年額 ${fmtMan(futureTreatAnnual)} × ライプニッツ係数 ${ftLz}（${futureTreatYears}年分） ＝ ${fmtMan(futureTreat)}`};
+}
+
+// --- 器具装具費 ---
+function calcItemKigu(){
+  const kiguVal = nv('s-kigu');
+  return {label:'器具装具費', val:kiguVal,
+    desc:'義足・車椅子・コルセットなど、後遺症のために必要になった器具・装具の購入費用です。',
+    formula:`実費の合計 ＝ ${fmtMan(kiguVal)}`};
+}
+
+// --- 家屋・自動車改造費 ---
+function calcItemKaoku(){
+  const kaokuVal = nv('s-kaoku');
+  return {label:'家屋・自動車改造費', val:kaokuVal,
+    desc:'後遺症があっても生活できるよう、自宅や車をバリアフリーに改造する費用です。',
+    formula:`実費の合計 ＝ ${fmtMan(kaokuVal)}`};
+}
+
+// --- 死亡逸失利益 ---
+function calcItemDeathIsshitsu(){
+  const dAge = nv('d-age');
+  const dIncome = nv('d-income');
+  const dFamily = v('d-family');
+  const dLossRate = SEIKATSU_KOJO[dFamily]||50;
+  const dYears = Math.min(49,Math.max(0,67-dAge));
+  const dLz = getLeibniz(dYears);
+  const deathIsshitsu = dIncome * (1-dLossRate/100) * dLz;
+  return {label:'死亡逸失利益', val:deathIsshitsu,
+    desc:'亡くなったことにより、将来得られるはずだった収入がなくなってしまった分の補償です。「1年間の収入 ×（1−生活費として使うはずだった割合）× 将来分をいまの価値に割り引く係数」で計算します。',
+    formula:`年収 ${fmtMan(dIncome)} × (1−生活費控除率${dLossRate}%) × ライプニッツ係数 ${dLz}（${dYears}年分） ＝ ${fmtMan(deathIsshitsu)}`};
+}
+
+// --- 死亡慰謝料 ---
+function calcItemDeathIsharyo(){
+  const dPos = v('d-position');
+  const deathIsh = DEATH_ISHARYO[dPos]||2000;
+  const dPosName = dPos==='pillar'?'一家の支柱':dPos==='spouse'?'母親・配偶者':'独身・子供・幼児等';
+  return {label:`死亡慰謝料（${dPosName}）`, val:deathIsh,
+    desc:'亡くなったことに対する、本人と遺族の精神的な苦痛への補償をまとめた金額です。被害者の家庭内での立場によって金額の目安が決まっています。',
+    formula:`${dPosName}の弁護士基準の金額 ＝ ${fmtMan(deathIsh)}`};
+}
+
+// --- 葬祭費 ---
+function calcItemSosai(){
+  const actualSosai = nv('d-sosai')||150;
+  const sosai = Math.min(actualSosai, 150);
+  return {label:'葬祭費', val:sosai,
+    desc:'葬儀にかかった実際の費用です。弁護士基準では150万円が上限の目安とされ、実費がそれより少ない場合は実費で計算します。',
+    formula:`実費 ${fmtMan(actualSosai)}（上限150万円） ＝ ${fmtMan(sosai)}`};
+}
+
+function calcAll(){
+  const fault = nv('c-fault');
+  const paid = nv('c-paid');
+  let items = [];
+
+  items.push(calcItemChiryohi());
+  items.push(calcItemZappi());
+  items.push(calcItemKotsuhi());
+  items.push(calcItemKyugyo());
+  items.push(calcItemIsharyo());
+
+  const fusoi = calcItemFusoihi();
+  if(fusoi.val > 0) items.push(fusoi);
+
+  const sharyo = calcItemSharyo();
+  if(sharyo.val > 0) items.push(sharyo);
+
+  const cost = calcItemCost();
+  if(cost.val > 0) items.push(cost);
 
   // 後遺障害あり
-  let koiIsh = 0, koiIsshitsu = 0, kaigoHi = 0;
   if(currentCase==='sequela'){
     const grade = v('s-grade');
-    const std = v('s-standard');
-    const gradeData = KOI_ISHARYO[grade];
-    koiIsh = getKoiAmount(grade, std);
-    const koiBookLabel = std==='bengoshi' ? (currentBook==='midori'?'弁護士・緑本':'弁護士・赤い本') : '自賠責';
-    items.push({label:`後遺障害慰謝料（${gradeData.label}・${koiBookLabel}基準）`, val:koiIsh,
-      desc:'治療を続けても完全には治らず、後遺症が残ってしまったことへの精神的な補償です。後遺障害の重さ（等級）ごとに金額があらかじめ決められています。',
-      formula:`${gradeData.label}の${koiBookLabel}基準の金額 ＝ ${fmtMan(koiIsh)}`});
-
-    const sIncome = nv('s-income');
-    const sAge = nv('s-age');
-    const lossRate = nv('s-loss-rate');
-    const years = Math.min(49, Math.max(0, 67-sAge));
-    const lz = getLeibniz(years);
-    koiIsshitsu = sIncome * (lossRate/100) * lz;
-    items.push({label:'後遺障害逸失利益', val:koiIsshitsu,
-      desc:'後遺症のせいで将来の仕事の能力が下がり、本来もらえたはずの収入が減ってしまう分の補償です。「1年間の収入 × 能力が落ちた割合 × 将来分をいまの価値に割り引く係数（ライプニッツ係数）」で計算します。',
-      formula:`年収 ${fmtMan(sIncome)} × 労働能力喪失率 ${lossRate}% × ライプニッツ係数 ${lz}（${years}年分） ＝ ${fmtMan(koiIsshitsu)}`});
+    items.push(calcItemKoiIsharyo());
+    items.push(calcItemKoiIsshitsu());
 
     if(grade==='kaigo1'||grade==='kaigo2'){
-      const daily = nv('s-kaigo-daily');
-      const kaigoYears = nv('s-kaigo-years');
-      const kaigoLz = getLeibniz(kaigoYears);
-      kaigoHi = (daily * 365 / 10000) * kaigoLz;
-      items.push({label:'将来介護費', val:kaigoHi,
-        desc:'後遺症が重く、将来にわたって介護が必要な場合の費用です。1日あたりの介護費用に1年分の日数（365日）と、将来分をいまの価値に割り引く係数をかけて計算します。',
-        formula:`日額 ${daily.toLocaleString()}円 × 365日 × ライプニッツ係数 ${kaigoLz}（${kaigoYears}年分） ＝ ${fmtMan(kaigoHi)}`});
+      items.push(calcItemKaigo());
     }
 
-    // 将来治療費
-    const futureTreatAnnual = nv('s-future-treat-annual');
-    const futureTreatYears = nv('s-future-treat-years');
-    if(futureTreatAnnual > 0 && futureTreatYears > 0){
-      const ftLz = getLeibniz(futureTreatYears);
-      const futureTreat = futureTreatAnnual * ftLz;
-      items.push({label:'将来治療費', val:futureTreat,
-        desc:'将来も治療（通院・リハビリなど）を続ける必要がある場合に見込まれる治療費です。1年あたりの見込み額に、将来分をいまの価値に割り引く係数をかけて計算します。',
-        formula:`年額 ${fmtMan(futureTreatAnnual)} × ライプニッツ係数 ${ftLz}（${futureTreatYears}年分） ＝ ${fmtMan(futureTreat)}`});
-    }
+    const ft = calcItemFutureTreat();
+    if(ft.val > 0) items.push(ft);
 
-    // 器具装具費
-    const kiguVal = nv('s-kigu');
-    if(kiguVal > 0){
-      items.push({label:'器具装具費', val:kiguVal,
-        desc:'義足・車椅子・コルセットなど、後遺症のために必要になった器具・装具の購入費用です。',
-        formula:`実費の合計 ＝ ${fmtMan(kiguVal)}`});
-    }
+    const kigu = calcItemKigu();
+    if(kigu.val > 0) items.push(kigu);
 
-    // 家屋・自動車改造費
-    const kaokuVal = nv('s-kaoku');
-    if(kaokuVal > 0){
-      items.push({label:'家屋・自動車改造費', val:kaokuVal,
-        desc:'後遺症があっても生活できるよう、自宅や車をバリアフリーに改造する費用です。',
-        formula:`実費の合計 ＝ ${fmtMan(kaokuVal)}`});
-    }
+    const kaoku = calcItemKaoku();
+    if(kaoku.val > 0) items.push(kaoku);
   }
 
   // 死亡事故
-  let deathIsshitsu = 0, deathIsh = 0, sosai = 0;
   if(currentCase==='death'){
-    const dAge = nv('d-age');
-    const dIncome = nv('d-income');
-    const dFamily = v('d-family');
-    const dLossRate = SEIKATSU_KOJO[dFamily]||50;
-    const dYears = Math.min(49,Math.max(0,67-dAge));
-    const dLz = getLeibniz(dYears);
-    deathIsshitsu = dIncome * (1-dLossRate/100) * dLz;
-    items.push({label:'死亡逸失利益', val:deathIsshitsu,
-      desc:'亡くなったことにより、将来得られるはずだった収入がなくなってしまった分の補償です。「1年間の収入 ×（1−生活費として使うはずだった割合）× 将来分をいまの価値に割り引く係数」で計算します。',
-      formula:`年収 ${fmtMan(dIncome)} × (1−生活費控除率${dLossRate}%) × ライプニッツ係数 ${dLz}（${dYears}年分） ＝ ${fmtMan(deathIsshitsu)}`});
-
-    const dPos = v('d-position');
-    deathIsh = DEATH_ISHARYO[dPos]||2000;
-    const dPosName = dPos==='pillar'?'一家の支柱':dPos==='spouse'?'母親・配偶者':'独身・子供・幼児等';
-    items.push({label:`死亡慰謝料（${dPosName}）`, val:deathIsh,
-      desc:'亡くなったことに対する、本人と遺族の精神的な苦痛への補償をまとめた金額です。被害者の家庭内での立場によって金額の目安が決まっています。',
-      formula:`${dPosName}の弁護士基準の金額 ＝ ${fmtMan(deathIsh)}`});
-
-    sosai = Math.min(nv('d-sosai')||150, 150);
-    const actualSosai = nv('d-sosai')||150;
-    items.push({label:'葬祭費', val:Math.min(actualSosai,150),
-      desc:'葬儀にかかった実際の費用です。弁護士基準では150万円が上限の目安とされ、実費がそれより少ない場合は実費で計算します。',
-      formula:`実費 ${fmtMan(actualSosai)}（上限150万円） ＝ ${fmtMan(Math.min(actualSosai,150))}`});
+    items.push(calcItemDeathIsshitsu());
+    items.push(calcItemDeathIsharyo());
+    items.push(calcItemSosai());
   }
 
   // 合計
@@ -2222,7 +2347,7 @@ function calcAll(){
     ? `自賠責保険限度額（死亡）: ${limit}万円`
     : `自賠責保険限度額（傷害）: ${limit}万円`;
 
-  html = `
+  const html = `
     <div class="result-box">
       <div class="result-label">最終請求額（過失相殺・既払控除後）</div>
       <div class="result-amount">${fmtMan(finalAmt)}</div>
