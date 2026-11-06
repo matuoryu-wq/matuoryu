@@ -582,7 +582,6 @@ function yusekiBreakdownHtml(yk,annFull){
   return `<div class="breakdown"><div class="breakdown-title">有責配偶者による減額</div>
     ${D('不貞など別居の原因を作った配偶者からの婚姻費用の請求は、自身の生活費部分については権利の濫用として認められないのが実務の扱いです。もっとも子に責任はないため、子の監護費用に相当する部分は認められます。そこで養育費相当額をもって婚姻費用とします。')}
     <div class="bk-row"><span class="bk-key">減額前の婚姻費用（年額）</span><span class="bk-val" style="color:var(--text-muted)">${fmtMan(annFull)}</span></div>
-    ${yk.corr?`<div class="bk-row"><span class="bk-key">権利者の基礎収入の補正</span><span class="bk-val">${fmtMan(yk.bOrig)}→${fmtMan(yk.b)}</span></div>${D('権利者の基礎収入が義務者を上回るため、養育費相当額の算定では義務者と同額として計算しています。')}`:''}
     <div class="bk-row" style="margin-top:6px"><span class="bk-key">子の生活費（c）</span><span class="bk-val">${fmtMan(yk.c)}</span></div>
     <div class="bk-row"><span class="bk-key">義務者の負担額</span><span class="bk-val">${fmtMan(yk.y1)}</span></div>
     ${split?`<div class="bk-row"><span class="bk-key">権利者の負担額（相殺分）</span><span class="bk-val" style="color:#7c3aed">−${fmtMan(yk.y2)}</span></div>`:''}
@@ -859,7 +858,6 @@ function legalKonin(d){
     t+='　もっとも、権利者は不貞行為により本件別居を招いた有責配偶者であるところ、自ら婚姻関係を破綻させておきながら自身の生活費の分担を求めることは、権利の濫用として許されないというべきである。\n';
     t+='　他方、子には何らの責任もないから、子の監護に要する費用については、権利者の有責性にかかわらず義務者がこれを分担すべきである。\n';
     t+='　そこで、本件において認められるべき婚姻費用は、子の監護費用に相当する額、すなわち養育費相当額を上限とすべきである。\n';
-    if(yk.corr)t+=`　なお、権利者の基礎収入（${manLegal(yk.bOrig)}）が義務者を上回るため、養育費相当額の算定においては義務者と同額の${manLegal(yk.b)}として計算する。\n`;
     t+=`　権利者が監護する子に割り当てられるべき生活費は${manLegal(yk.c)}であり、これを双方の基礎収入の比に応じて按分すると、義務者が分担すべき額は年額${manLegal(yk.y1)}となる。\n`;
     if(yk.c2>0)t+=`　他方、義務者が監護する子について権利者が分担すべき額は年額${manLegal(yk.y2)}であるから、これを控除する。\n`;
     if(yk.applied){
@@ -932,9 +930,7 @@ function calcKonin(){
   const yuseki=isYuseki();
   let yk=null,annFull=ann;
   if(yuseki){
-    let bY=b;const corrY=bY>ap;if(corrY)bY=ap;
-    yk=calcYouikuAnnual(ap,bY,cs,obCs,beta);
-    yk.corr=corrY;yk.bOrig=b;yk.b=bY;
+    yk=calcYouikuAnnual(ap,b,cs,obCs,beta);
     // 有責配偶者の法理は請求できる範囲を狭めるものだから、満額を超えることはない。
     // 養育費相当額が満額を上回る場合は、権利者自身の生活費分がそもそも含まれて
     // いないということなので、減額は生じない。
@@ -1003,7 +999,7 @@ function calcKonin(){
 // ⑧ Updated calcYouiku with ob-child and res-other support
 // 養育費の書面用文章
 function legalYouiku(d){
-  const{ob,ee,obType,eeType,a,b,bOrig,corr,ap,otherCS,otherAges,ages,cs,
+  const{ob,ee,obType,eeType,a,b,ap,otherCS,otherAges,ages,cs,
         obChildAges,obCs,hasResOther,resOtherAges,beta,c,c2,y1,y2,ann,mon,housing,monFinal}=d;
   const split=obCs>0;
   let t='第1 養育費について\n\n';
@@ -1015,7 +1011,6 @@ function legalYouiku(d){
   t+='2 基礎収入\n';
   t+='(1) 義務者\n　'+baseIncomeLegal('義務者',ob,obType)+'\n';
   t+='(2) 権利者\n　'+baseIncomeLegal('権利者',ee,eeType)+'\n';
-  if(corr)t+=`　もっとも、権利者の基礎収入（${manLegal(bOrig)}）が義務者の基礎収入を上回るため、権利者の基礎収入は義務者と同額の${manLegal(b)}として算定する。\n`;
   if(otherCS.amount>0){
     t+='(3) 他の子に対する養育費の控除\n';
     t+=`　義務者は、権利者との間の子以外の子（${agesLegal(otherAges)}）を養育しておらず、その養育費として年額${manLegal(otherCS.amount)}を支払っているから、これを義務者の基礎収入から控除するのが相当である。\n`;
@@ -1068,7 +1063,7 @@ function calcYouiku(){
   if(!ages.length)return showErr('y-result','(元)夫婦間の子の年齢を1人以上入力してください。');
   const ob=calcBaseIncome(v('y-ob-type'),obSal,nv('y-ob-business'),nv('y-ob-insurance'),selfAddback('y-ob'));
   const ee=calcBaseIncome(v('y-ee-type'),nv('y-ee-salary')||0,nv('y-ee-business'),nv('y-ee-insurance'),selfAddback('y-ee'));
-  const a=ob.baseIncome;let b=ee.baseIncome;const corr=b>a;const bOrig=b;if(corr)b=a;
+  const a=ob.baseIncome,b=ee.baseIncome;
 
   // 非同居・養育費払いの他の子
   const otherCS=calcOtherCS(a,nv('y-other-parent-income'),getOtherAges('y'));
@@ -1147,7 +1142,7 @@ function calcYouiku(){
   const resultFormula=splitCustody
     ?`義務者の負担額 − 権利者の負担額<br>${fmtMan(y1)}−${fmtMan(y2)}=${fmtMan(ann)}`
     :`c×a÷(a+b)<br>${fmtMan(c)}×${fmtMan(ap)}÷(${fmtMan(ap)}+${fmtMan(b)})=${fmtMan(ann)}`;
-  const html=`<div class="result-box ${monFinal<=0?'warning':''}"><div class="result-label">月額養育費（目安）${housing?'<span style="font-size:11px;font-weight:600">（住居費控除後）</span>':''}</div><div class="result-amount">${monFinal<=0?'0円':fmtEn(monFinal)}</div><div class="result-sub">年額：${monFinal<=0?'0円':fmtEn(monFinal*12)}${monFinal<=0&&housing?'<br>※住居費の控除により養育費は0円となります':''}${housing?`<br>控除前：${fmtEn(mon)}／月`:''}</div></div>${corr?`<div class="note"><span class="note-icon">⚠️</span>権利者の基礎収入(${fmtMan(bOrig)})が義務者を上回るため、b=${fmtMan(a)}として計算しています。</div>`:''} ${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}${corr?'<br>→補正後: '+fmtMan(b):''}</div>${otherHtml}${betaHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div>${D('各子の年齢に応じた生活費の指数を合計します。0〜14歳は62、15歳以上は85です。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}${obChildHtml}${cSection}<div class="bk-row" style="margin-top:6px"><span class="bk-key">養育費（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D(splitCustody?'義務者が負担すべき額から、権利者が負担すべき額を差し引いた差額が、実際に授受される養育費です。':'子の生活費（c）を、義務者と権利者の基礎収入の比率で按分した結果が、義務者が支払うべき養育費です。収入の多い義務者がより多く負担する仕組みです。')}<div class="bk-formula">${resultFormula}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>${housingBreakdownHtml(housing,'養育費',mon,monFinal)}${legalBlockHtml('y-legal',legalYouiku({ob,ee,obType:v('y-ob-type'),eeType:v('y-ee-type'),a,b,bOrig,corr,ap,otherCS,otherAges:getOtherAges('y'),ages,cs,obChildAges,obCs,hasResOther,resOtherAges,beta,c,c2,y1,y2,ann,mon,housing,monFinal}))}`;
+  const html=`<div class="result-box ${monFinal<=0?'warning':''}"><div class="result-label">月額養育費（目安）${housing?'<span style="font-size:11px;font-weight:600">（住居費控除後）</span>':''}</div><div class="result-amount">${monFinal<=0?'0円':fmtEn(monFinal)}</div><div class="result-sub">年額：${monFinal<=0?'0円':fmtEn(monFinal*12)}${monFinal<=0&&housing?'<br>※住居費の控除により養育費は0円となります':''}${housing?`<br>控除前：${fmtEn(mon)}／月`:''}</div></div>${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}</div>${otherHtml}${betaHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div>${D('各子の年齢に応じた生活費の指数を合計します。0〜14歳は62、15歳以上は85です。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}${obChildHtml}${cSection}<div class="bk-row" style="margin-top:6px"><span class="bk-key">養育費（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D(splitCustody?'義務者が負担すべき額から、権利者が負担すべき額を差し引いた差額が、実際に授受される養育費です。':'子の生活費（c）を、義務者と権利者の基礎収入の比率で按分した結果が、義務者が支払うべき養育費です。収入の多い義務者がより多く負担する仕組みです。')}<div class="bk-formula">${resultFormula}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>${housingBreakdownHtml(housing,'養育費',mon,monFinal)}${legalBlockHtml('y-legal',legalYouiku({ob,ee,obType:v('y-ob-type'),eeType:v('y-ee-type'),a,b,ap,otherCS,otherAges:getOtherAges('y'),ages,cs,obChildAges,obCs,hasResOther,resOtherAges,beta,c,c2,y1,y2,ann,mon,housing,monFinal}))}`;
   const yNote=`<div class="note" style="margin-top:10px"><span class="note-icon">💡</span><span>通常は離婚前の<strong>婚姻費用</strong>の方が多くなりますが、離婚後の養育費に<strong>児童扶養手当</strong>を加えると実質的に多くなることもあります。<br><a onclick="switchTabByName('break')" style="color:var(--primary);cursor:pointer;font-weight:700;text-decoration:underline">→ 児童扶養手当タブで確認する</a></span></div>`;
   const el=document.getElementById('y-result');el.innerHTML=html+yNote;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
   const brYEl=document.getElementById('br-youiku');if(brYEl)brYEl.value=Math.round(Math.max(0,monFinal)*10)/10;
