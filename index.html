@@ -843,7 +843,9 @@ function calcKonin(){
 
   let ann;
   if(hasResOther){
-    ann=ap*(100+cs)/(200+cs+beta)+b*(100+cs)/(200+cs)-b;
+    // 婚外子は権利者に扶養義務がないため、義務者の収入のみβを含む世帯で按分する。
+    // β=0 とすると (ap+b)×ei÷(ei+oi)−b に一致する。
+    ann=ap*ei/(ei+oi+beta)+b*ei/(ei+oi)-b;
   }else{
     ann=(ap+b)*ei/(ei+oi)-b;
   }
@@ -859,7 +861,7 @@ function calcKonin(){
   // ① Formula with a (not a')
   let fmlEq,fmlVars;
   if(hasResOther){
-    fmlEq=`婚姻費用（年額）＝ a × (100+α) ÷ (200+α+β) + b × (100+α) ÷ (200+α) − b`;
+    fmlEq=`婚姻費用（年額）＝ a × 権利者側指数 ÷ (権利者側指数+義務者側指数+β) + b × 権利者側指数 ÷ (権利者側指数+義務者側指数) − b`;
     fmlVars=`a ＝ 義務者の基礎収入${aLabel} ／ b ＝ 権利者の基礎収入<br>α ＝ 権利者と同居する子の生活費指数合計 ／ β ＝ 義務者が養育する婚外子の修正生活費指数合計`;
   }else{
     fmlEq=`婚姻費用（年額）＝ (a + b) × 権利者側指数 ÷ (権利者側指数 + 義務者側指数) − b`;
@@ -888,7 +890,7 @@ function calcKonin(){
   // Build result formula lines
   let resultFormula='';
   if(hasResOther){
-    resultFormula=`a×(100+α)÷(200+α+β) + b×(100+α)÷(200+α) − b<br>${fmtMan(ap)}×(100+${cs})÷(200+${cs}+${beta.toFixed(3)}) + ${fmtMan(b)}×(100+${cs})÷(200+${cs}) − ${fmtMan(b)}<br>=${fmtMan(ann)}`;
+    resultFormula=`a×権利者側指数÷(権利者側指数+義務者側指数+β) + b×権利者側指数÷(権利者側指数+義務者側指数) − b<br>${fmtMan(ap)}×${ei}÷(${ei}+${oi}+${beta.toFixed(3)}) + ${fmtMan(b)}×${ei}÷(${ei}+${oi}) − ${fmtMan(b)}<br>=${fmtMan(ann)}`;
   }else{
     resultFormula=`(a+b)×権利者側指数÷(権利者側指数+義務者側指数)−b<br>(${fmtMan(ap)}+${fmtMan(b)})×${ei}÷(${ei}+${oi})−${fmtMan(b)}<br>=${fmtMan((ap+b)*ei/(ei+oi))}−${fmtMan(b)}=${fmtMan(ann)}`;
   }
@@ -910,10 +912,13 @@ function calcKonin(){
 // 養育費の書面用文章
 function legalYouiku(d){
   const{ob,ee,obType,eeType,a,b,bOrig,corr,ap,otherCS,otherAges,ages,cs,
-        obChildAges,obCs,hasResOther,resOtherAges,beta,c,ann,mon,housing,monFinal}=d;
+        obChildAges,obCs,hasResOther,resOtherAges,beta,c,c2,y1,y2,ann,mon,housing,monFinal}=d;
+  const split=obCs>0;
   let t='第1 養育費について\n\n';
   t+='1 算定の方法\n';
-  t+='　養育費の額は、いわゆる改定標準算定方式（司法研修所編「養育費，婚姻費用の算定に関する実証的研究」）により、義務者の基礎収入から子に割り当てられるべき生活費を算出した上、これを双方の基礎収入の比に応じて按分して算出するのが相当である。\n\n';
+  t+='　養育費の額は、いわゆる改定標準算定方式（司法研修所編「養育費，婚姻費用の算定に関する実証的研究」）により、義務者の基礎収入から子に割り当てられるべき生活費を算出した上、これを双方の基礎収入の比に応じて按分して算出するのが相当である。\n';
+  if(split)t+='　本件では当事者双方が子を監護しているところ、権利者もまた義務者が監護する子について養育費を分担すべき立場にあるから、双方の分担額をそれぞれ算定した上、これを相殺した差額をもって授受されるべき養育費とするのが相当である。\n';
+  t+='\n';
 
   t+='2 基礎収入\n';
   t+='(1) 義務者\n　'+baseIncomeLegal('義務者',ob,obType)+'\n';
@@ -929,19 +934,29 @@ function legalYouiku(d){
   t+='3 生活費指数\n';
   t+='　改定標準算定方式における子の生活費指数は、0歳から14歳までが62、15歳以上が85である。\n';
   t+=`　権利者と同居する子は${agesLegal(ages)}であるから、その生活費指数の合計は${cs}である。\n`;
-  if(obCs>0)t+=`　また、義務者は${agesLegal(obChildAges)}の子と同居してこれを養育しており、その生活費指数の合計は${obCs}であるから、これも義務者の負担として考慮する。\n`;
+  if(split)t+=`　他方、義務者が監護する子は${agesLegal(obChildAges)}であるから、その生活費指数の合計は${obCs}である。\n`;
   if(hasResOther)t+=`　さらに、義務者は権利者との間の子以外の子（${agesLegal(resOtherAges)}）と同居してこれを養育しているところ、この子については義務者と他方の親の基礎収入の比に応じて按分した修正生活費指数（合計${beta.toFixed(2)}）により考慮するのが相当である。\n`;
   t+='\n';
 
   t+='4 養育費の額\n';
-  if(hasResOther){
-    t+=`　以上によれば、義務者が分担すべき養育費の年額は、次のとおり${manLegal(ann)}となる。\n`;
-    t+=`　${manLegal(ap)}×${cs}÷(100${obCs>0?'＋'+obCs:''}＋${cs}＋${beta.toFixed(2)})＝${manLegal(ann)}\n`;
-  }else{
-    t+=`　まず、子に割り当てられるべき生活費は、義務者の基礎収入に子の生活費指数の割合を乗じて、次のとおり${manLegal(c)}となる。\n`;
-    t+=`　${manLegal(ap)}×${cs}÷(100${obCs>0?'＋'+obCs:''}＋${cs})＝${manLegal(c)}\n`;
-    t+=`　これを双方の基礎収入の比に応じて按分すると、義務者が分担すべき養育費の年額は、次のとおり${manLegal(ann)}となる。\n`;
-    t+=`　${manLegal(c)}×${manLegal(ap)}÷(${manLegal(ap)}＋${manLegal(b)})＝${manLegal(ann)}\n`;
+  t+=`(1) 義務者が分担すべき額\n`;
+  t+=`　権利者が監護する子に割り当てられるべき生活費は、義務者の基礎収入に当該子の生活費指数の割合を乗じて、次のとおり${manLegal(c)}となる。\n`;
+  t+=`　${manLegal(ap)}×${cs}÷(100＋${cs}${hasResOther?'＋'+beta.toFixed(2):''})＝${manLegal(c)}\n`;
+  t+=`　これを双方の基礎収入の比に応じて按分すると、義務者が分担すべき額は年額${manLegal(y1)}となる。\n`;
+  t+=`　${manLegal(c)}×${manLegal(ap)}÷(${manLegal(ap)}＋${manLegal(b)})＝${manLegal(y1)}\n`;
+  if(split){
+    t+=`(2) 権利者が分担すべき額\n`;
+    t+=`　同様に、義務者が監護する子に割り当てられるべき生活費は、権利者の基礎収入を基礎として次のとおり${manLegal(c2)}となる。\n`;
+    t+=`　${manLegal(b)}×${obCs}÷(100＋${obCs})＝${manLegal(c2)}\n`;
+    t+=`　これを双方の基礎収入の比に応じて按分すると、権利者が分担すべき額は年額${manLegal(y2)}となる。\n`;
+    t+=`　${manLegal(c2)}×${manLegal(b)}÷(${manLegal(ap)}＋${manLegal(b)})＝${manLegal(y2)}\n`;
+    t+=`(3) 相殺\n`;
+    t+=`　上記(1)から(2)を控除すると、義務者が支払うべき養育費の年額は${manLegal(ann)}となる。\n`;
+    t+=`　${manLegal(y1)}－${manLegal(y2)}＝${manLegal(ann)}\n`;
+  }
+  if(ann<0){
+    t+=`　もっとも、上記のとおり差額は負の値となるから、義務者が権利者に対して支払うべき養育費は生じず、かえって権利者が義務者に対し月額${yenLegal(Math.abs(mon)*10000)}を支払うべき関係となる。\n\n`;
+    return t;
   }
   t+=`　これを月額に換算すると、${yenLegal(mon*10000)}となる（${manLegal(ann)}÷12）。\n\n`;
 
@@ -993,15 +1008,16 @@ function calcYouiku(){
   // ② Conditional a label
   const aLabel=otherCS.amount>0?'（他の子への養育費控除後）':'';
 
-  let c,ann;
-  if(hasResOther){
-    // 同居婚外子あり: 養育費 = ap × α / (100 + obCs + α + β)
-    ann=ap*cs/(100+obCs+cs+beta);
-    c=null;
-  }else{
-    c=ap*cs/(100+obCs+cs);
-    ann=c*ap/(ap+b);
-  }
+  // 子が双方に分属する場合、権利者も義務者と同居する子について分担義務を負う。
+  // そこで双方向に算定して相殺する。
+  // 義務者→権利者（権利者と同居する子について）
+  //   婚外子は義務者が扶養するため、義務者世帯の指数にβを加える。
+  const c=ap*cs/(100+cs+beta);
+  const y1=(ap+b)>0?c*ap/(ap+b):0;
+  // 権利者→義務者（義務者と同居する夫婦間の子について）
+  const c2=obCs>0?b*obCs/(100+obCs):0;
+  const y2=(ap+b)>0?c2*b/(ap+b):0;
+  const ann=y1-y2;
   const mon=ann/12;
 
   // 住居費控除（算定結果から標準的住居関係費を上限に控除）
@@ -1009,17 +1025,16 @@ function calcYouiku(){
   const monFinal=mon-(housing?housing.deduction/10000:0);
 
   // ① Formula with a (not a')
-  let fmlEq1,fmlEq2,fmlVars;
-  if(hasResOther){
-    fmlEq1=`① β（婚外子の修正指数）＝ 子の指数 × a ÷ (a + Z)`;
-    fmlEq2=`② 養育費（年額）＝ a × α ÷ (100${obCs>0?' + γ':''} + α + β)`;
-    fmlVars=`a ＝ 義務者の基礎収入${aLabel} ／ Z ＝ 婚外子の他方の親の基礎収入<br>α ＝ 子の生活費指数合計 ／ β ＝ 婚外子の修正生活費指数合計`+(obCs>0?` ／ γ ＝ 義務者と同居する子の指数合計`:'');
-  }else{
-    fmlEq1=`① 子の生活費 c ＝ a × 子の指数合計 ÷ (100${obCs>0?' + γ':''} + 子の指数合計)`;
-    fmlEq2=`② 養育費（年額）＝ c × a ÷ (a + b)`;
-    fmlVars=`a ＝ 義務者の基礎収入${aLabel} ／ b ＝ 権利者の基礎収入<br>子の指数合計 ＝ 各子の生活費指数の合計（0〜14歳=62、15歳以上=85）`+(obCs>0?` ／ γ ＝ 義務者と同居する子の指数合計`:'');
-  }
-  const fml=`<div class="formula-header"><div class="fh-title">養育費の計算式（標準算定方式）</div><div class="fh-eq">${fmlEq1}</div><div class="fh-eq">${fmlEq2}</div><div class="fh-vars">${fmlVars}</div></div>`;
+  const splitCustody=obCs>0;
+  const fmlEq1=`① 子の生活費 c ＝ a × α ÷ (100 + α${hasResOther?' + β':''})`;
+  const fmlEq2=`② 義務者の負担額 ＝ c × a ÷ (a + b)`;
+  const fmlEq3=splitCustody?`③ 権利者の負担額 ＝ (b × γ ÷ (100 + γ)) × b ÷ (a + b)`:'';
+  const fmlEq4=splitCustody?`④ 養育費（年額）＝ ② − ③（相殺）`:'';
+  const fmlVars=`a ＝ 義務者の基礎収入${aLabel} ／ b ＝ 権利者の基礎収入<br>α ＝ 権利者と同居する子の生活費指数合計`
+    +(splitCustody?` ／ γ ＝ 義務者と同居する子の生活費指数合計`:'')
+    +(hasResOther?` ／ β ＝ 義務者が養育する婚外子の修正生活費指数合計`:'')
+    +`<br>子の生活費指数は0〜14歳=62、15歳以上=85`;
+  const fml=`<div class="formula-header"><div class="fh-title">養育費の計算式（標準算定方式）</div><div class="fh-eq">${fmlEq1}</div><div class="fh-eq">${fmlEq2}</div>${fmlEq3?`<div class="fh-eq">${fmlEq3}</div>`:''}${fmlEq4?`<div class="fh-eq">${fmlEq4}</div>`:''}<div class="fh-vars">${fmlVars}</div></div>`;
 
   // Build otherHtml
   let otherHtml='';
@@ -1040,16 +1055,13 @@ function calcYouiku(){
   }
 
   // Build result formula and c-section
-  let cSection='';
-  let resultFormula='';
-  if(hasResOther){
-    resultFormula=`a×α÷(100${obCs>0?'+γ':''}+α+β)<br>${fmtMan(ap)}×${cs}÷(100${obCs>0?'+'+obCs:''}+${cs}+${beta.toFixed(3)})=${fmtMan(ann)}`;
-  }else{
-    cSection=`<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の生活費（c）</span><span class="bk-val">${fmtMan(c)}</span></div>${D('義務者・権利者双方の生活費の中から、子に必要な生活費の総額を取り出した金額です。義務者の基礎収入に子の指数の比率を掛けて算出します。'+(obCs>0?'義務者と同居する子がいる場合、その分も分母に加えて按分するため、金額が小さくなります。':''))}<div class="bk-formula">a×子の指数÷(100${obCs>0?'+γ':''}+子の指数)<br>${fmtMan(ap)}×${cs}÷(100${obCs>0?'+'+obCs:''}+${cs})=${fmtMan(c)}</div>`;
-    resultFormula=`c×a÷(a+b)<br>${fmtMan(c)}×${fmtMan(ap)}÷(${fmtMan(ap)}+${fmtMan(b)})=${fmtMan(ann)}`;
-  }
-
-  const html=`<div class="result-box ${monFinal<=0?'warning':''}"><div class="result-label">月額養育費（目安）${housing?'<span style="font-size:11px;font-weight:600">（住居費控除後）</span>':''}</div><div class="result-amount">${monFinal<=0?'0円':fmtEn(monFinal)}</div><div class="result-sub">年額：${monFinal<=0?'0円':fmtEn(monFinal*12)}${monFinal<=0&&housing?'<br>※住居費の控除により養育費は0円となります':''}${housing?`<br>控除前：${fmtEn(mon)}／月`:''}</div></div>${corr?`<div class="note"><span class="note-icon">⚠️</span>権利者の基礎収入(${fmtMan(bOrig)})が義務者を上回るため、b=${fmtMan(a)}として計算しています。</div>`:''} ${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}${corr?'<br>→補正後: '+fmtMan(b):''}</div>${otherHtml}${betaHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div>${D('各子の年齢に応じた生活費の指数を合計します。0〜14歳は62、15歳以上は85です。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}${obChildHtml}${cSection}<div class="bk-row" style="margin-top:6px"><span class="bk-key">養育費（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D(hasResOther?'義務者の基礎収入（a）に子の指数（α）の比率を掛け、婚外子の修正指数（β）を考慮して按分した結果が義務者の支払うべき養育費です。':'子の生活費（c）を、義務者と権利者の基礎収入の比率で按分した結果が、義務者が支払うべき養育費です。収入の多い義務者がより多く負担する仕組みです。')}<div class="bk-formula">${resultFormula}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>${housingBreakdownHtml(housing,'養育費',mon,monFinal)}${legalBlockHtml('y-legal',legalYouiku({ob,ee,obType:v('y-ob-type'),eeType:v('y-ee-type'),a,b,bOrig,corr,ap,otherCS,otherAges:getOtherAges('y'),ages,cs,obChildAges,obCs,hasResOther,resOtherAges,beta,c,ann,mon,housing,monFinal}))}`;
+  const cSection=`<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の生活費（c）</span><span class="bk-val">${fmtMan(c)}</span></div>${D('権利者と同居する子に割り当てられるべき生活費です。義務者の基礎収入に子の指数の比率を掛けて算出します。')}<div class="bk-formula">a×α÷(100+α${hasResOther?'+β':''})<br>${fmtMan(ap)}×${cs}÷(100+${cs}${hasResOther?'+'+beta.toFixed(3):''})=${fmtMan(c)}</div>`
+    +`<div class="bk-row" style="margin-top:6px"><span class="bk-key">義務者の負担額</span><span class="bk-val">${fmtMan(y1)}</span></div>${D('子の生活費を双方の基礎収入の比で按分した、義務者が負担すべき額です。')}<div class="bk-formula">${fmtMan(c)}×${fmtMan(ap)}÷(${fmtMan(ap)}+${fmtMan(b)})=${fmtMan(y1)}</div>`
+    +(splitCustody?`<div class="bk-row" style="margin-top:6px;background:#f5f0ff;padding:5px 8px;border-radius:5px"><span class="bk-key">権利者の負担額（相殺分）</span><span class="bk-val" style="color:#7c3aed">−${fmtMan(y2)}</span></div>${D('義務者と同居する子については、権利者が養育費を負担すべき立場になります。実務ではこれを算定して相殺するため、その額を差し引きます。')}<div class="bk-formula">子の生活費: ${fmtMan(b)}×${obCs}÷(100+${obCs})=${fmtMan(c2)}<br>権利者の負担額: ${fmtMan(c2)}×${fmtMan(b)}÷(${fmtMan(ap)}+${fmtMan(b)})=${fmtMan(y2)}</div>`:'');
+  const resultFormula=splitCustody
+    ?`義務者の負担額 − 権利者の負担額<br>${fmtMan(y1)}−${fmtMan(y2)}=${fmtMan(ann)}`
+    :`c×a÷(a+b)<br>${fmtMan(c)}×${fmtMan(ap)}÷(${fmtMan(ap)}+${fmtMan(b)})=${fmtMan(ann)}`;
+  const html=`<div class="result-box ${monFinal<=0?'warning':''}"><div class="result-label">月額養育費（目安）${housing?'<span style="font-size:11px;font-weight:600">（住居費控除後）</span>':''}</div><div class="result-amount">${monFinal<=0?'0円':fmtEn(monFinal)}</div><div class="result-sub">年額：${monFinal<=0?'0円':fmtEn(monFinal*12)}${monFinal<=0&&housing?'<br>※住居費の控除により養育費は0円となります':''}${housing?`<br>控除前：${fmtEn(mon)}／月`:''}</div></div>${corr?`<div class="note"><span class="note-icon">⚠️</span>権利者の基礎収入(${fmtMan(bOrig)})が義務者を上回るため、b=${fmtMan(a)}として計算しています。</div>`:''} ${fml}<div class="breakdown"><div class="breakdown-title">計算内訳</div><div class="bk-row"><span class="bk-key">義務者の基礎収入（a）</span><span class="bk-val">${fmtMan(a)}</span></div>${D('義務者の年収から税金・社会保険料・職業関連費用などを差し引いた、家族の生活費に使える金額です。')}<div class="bk-formula">${ob.steps.join('<br>')}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">権利者の基礎収入（b）</span><span class="bk-val">${fmtMan(b)}</span></div>${D('権利者についても同じ方法で算出した、生活費に使える金額です。')}<div class="bk-formula">${ee.steps.join('<br>')}${corr?'<br>→補正後: '+fmtMan(b):''}</div>${otherHtml}${betaHtml}<div class="bk-row" style="margin-top:6px"><span class="bk-key">子の指数合計</span><span class="bk-val">${cs}</span></div>${D('各子の年齢に応じた生活費の指数を合計します。0〜14歳は62、15歳以上は85です。')}${ages.length?'<div class="bk-formula">'+ages.map((ag,i)=>`第${i+1}子(${ag}歳):指数${childIndex(ag)}`).join('<br>')+'</div>':''}${obChildHtml}${cSection}<div class="bk-row" style="margin-top:6px"><span class="bk-key">養育費（年額）</span><span class="bk-val">${fmtMan(ann)}</span></div>${D(splitCustody?'義務者が負担すべき額から、権利者が負担すべき額を差し引いた差額が、実際に授受される養育費です。':'子の生活費（c）を、義務者と権利者の基礎収入の比率で按分した結果が、義務者が支払うべき養育費です。収入の多い義務者がより多く負担する仕組みです。')}<div class="bk-formula">${resultFormula}</div><div class="bk-row" style="margin-top:6px"><span class="bk-key">月額（年額÷12）</span><span class="bk-val">${fmtMan(mon)}</span></div></div>${housingBreakdownHtml(housing,'養育費',mon,monFinal)}${legalBlockHtml('y-legal',legalYouiku({ob,ee,obType:v('y-ob-type'),eeType:v('y-ee-type'),a,b,bOrig,corr,ap,otherCS,otherAges:getOtherAges('y'),ages,cs,obChildAges,obCs,hasResOther,resOtherAges,beta,c,c2,y1,y2,ann,mon,housing,monFinal}))}`;
   const yNote=`<div class="note" style="margin-top:10px"><span class="note-icon">💡</span><span>通常は離婚前の<strong>婚姻費用</strong>の方が多くなりますが、離婚後の養育費に<strong>児童扶養手当</strong>を加えると実質的に多くなることもあります。<br><a onclick="switchTabByName('break')" style="color:var(--primary);cursor:pointer;font-weight:700;text-decoration:underline">→ 児童扶養手当タブで確認する</a></span></div>`;
   const el=document.getElementById('y-result');el.innerHTML=html+yNote;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
   const brYEl=document.getElementById('br-youiku');if(brYEl)brYEl.value=Math.round(Math.max(0,monFinal)*10)/10;
