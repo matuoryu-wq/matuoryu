@@ -537,6 +537,42 @@
     .exp-step-choice-btn:disabled { cursor:default; }
     .exp-steps-done { text-align:center; padding:10px 10px 6px; font-size:15px; font-weight:800; color:#2E7D32; }
 
+
+    /* ===== 過去問 ===== */
+    .kako .kq-tabs { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 10px; }
+    .kako .kq-tab { border:1.5px solid #1F4E79; background:#fff; color:#1F4E79; border-radius:16px; padding:5px 12px; font-size:13px; font-weight:700; cursor:pointer; }
+    .kako .kq-tab.on { background:#1F4E79; color:#fff; }
+    .kako .kq-tab .sc { font-weight:400; font-size:11px; margin-left:4px; }
+    .kako .kprob { background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:12px; font-size:14px; line-height:1.65; overflow-x:auto; }
+    .kako .kprob table { border-collapse:collapse; font-size:13px; margin:4px 0; }
+    .kako .kprob table td, .kako .kprob table th { border:1px solid #BFBFBF; padding:2px 6px; white-space:nowrap; }
+    .kako .kprob table th { background:#E8EEF5; color:#1F4E79; font-weight:700; }
+    .kako .kprob td.r, .kako .kprob th.r { text-align:right; }
+    .kako .kprob table.nob td { border:none; padding:1px 8px 1px 0; }
+    .kako .kopts { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:2px 10px; font-size:13px; color:#333; margin:4px 0 6px; }
+    .kako .kjr { width:100%; border-collapse:collapse; font-size:13px; margin:4px 0; }
+    .kako .kjr th { background:#E8EEF5; color:#1F4E79; font-size:12px; padding:2px 4px; border:1px solid #D0D7E0; }
+    .kako .kjr td { border:1px solid #D0D7E0; padding:2px; }
+    .kako select, .kako input.kin { font-size:14px; padding:3px 4px; border:1.5px solid #9FB3C8; border-radius:6px; background:#FFFDF2; max-width:100%; }
+    .kako input.kin { width:7.5em; text-align:right; }
+    .kako input.kin.w { width:100%; min-width:6em; }
+    .kako .kjr select { width:100%; }
+    .kako .kjr input.kin { width:100%; }
+    .kako .ok { background:#C8E6C9 !important; border-color:#2E7D32 !important; }
+    .kako .ng { background:#FFCDD2 !important; border-color:#C62828 !important; }
+    .kako .kcor { display:block; font-size:11.5px; color:#C62828; font-weight:700; }
+    .kako .kpart { border-top:1px dashed #CBD5E0; padding-top:8px; margin-top:8px; }
+    .kako .kpart:first-child { border-top:none; margin-top:0; padding-top:0; }
+    .kako .kbtns { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
+    .kako .kbtn { border:1.5px solid #1F4E79; background:#1F4E79; color:#fff; border-radius:8px; padding:7px 14px; font-size:13.5px; font-weight:700; cursor:pointer; }
+    .kako .kbtn.sub { background:#E8F0FA; color:#1F4E79; }
+    .kako .kscore { font-size:15px; font-weight:800; color:#1F4E79; margin:6px 0; }
+    .kako .kex { display:none; margin-top:8px; padding:8px 10px; background:#FFF8E1; border-radius:8px; border:1px solid #F0D58C; font-size:13.5px; line-height:1.65; }
+    .kako .kex.show { display:block; }
+    .kako .kex .talk { display:block; }
+    .kako .kres { background:#fff; border:2px solid #1F4E79; border-radius:12px; padding:12px; margin:10px 0; }
+    .kako .kres .big { font-size:22px; font-weight:900; }
+    .kako .pass { color:#2E7D32; } .kako .fail { color:#C62828; }
     /* ===== 総合（財務諸表を読む） ===== */
     .fs2 { font-size:14px; line-height:1.7; }
     .fs2 .cap { font-weight:700; margin:10px 0 4px; font-size:13px; color:var(--text); }
@@ -626,6 +662,7 @@
       <button class="big-btn" data-big="kyu1" onclick="setBig('kyu1')">1級</button>
       <button class="big-btn" data-big="riron" onclick="setBig('riron')">理論</button>
       <button class="big-btn" data-big="kanjo" onclick="setBig('kanjo')">勘定科目</button>
+      <button class="big-btn" data-big="kako" onclick="setBig('kako')">過去問</button>
     </div>
     <div class="sec-tabs" id="sec-tabs">
       <button class="ctrl-btn grp-btn" data-big="shogyo" data-sec="big:shogyo" title="商業簿記のすべて" onclick="setSection('big:shogyo')">すべて</button>
@@ -1360,7 +1397,7 @@ function toggleSecTabs(){
   const collapsed = wrap.classList.toggle('collapsed');
   label.textContent = collapsed ? '分野を表示' : '分野を隠す';
   // 分野と一緒に「表示方法」も隠す
-  document.getElementById('view-mode-row').style.display = (collapsed || bigFilter==='riron' || bigFilter==='kanjo') ? 'none' : 'flex';
+  document.getElementById('view-mode-row').style.display = (collapsed || bigFilter==='riron' || bigFilter==='kanjo' || bigFilter==='kako') ? 'none' : 'flex';
 }
 
 
@@ -7279,6 +7316,7 @@ function launchCompCat(key, one){
 function exitCompQuiz(){
   if(bigFilter==='riron'){ setRironTab(rironTab==='chk' ? 0 : rironTab); return; }
   if(bigFilter==='kanjo'){ setKanjoTab(kanjoTab==='chk' ? 'all' : kanjoTab); return; }
+  if(bigFilter==='kako'){ kakoMenu(); return; }
   setSection(sectionFilter);
 }
 
@@ -10801,6 +10839,151 @@ const KANJO_CATS = buildKanjoCats();
 
 
 
+
+// ===================== 過去問 =====================
+const KAKO = [{"t": "第1回", "Q": [{"n": 1, "pts": 20, "short": "仕訳", "intro": "下記の各取引について仕訳しなさい。ただし、勘定科目は、設問ごとに最も適当と思われるものを選び、答案用紙の（　）の中に記号で解答すること。", "parts": [{"kind": "jr", "pts": 4, "q": "1．かねて得意先振出しの額面 ￥400,000 の約束手形を取引銀行で割り引いていたが、当該手形が満期日に支払拒絶となり、取引銀行から償還請求を受けた。そこで、手形の額面金額に満期日以後の延滞利息 ￥600 と償還請求にともなうその他の費用 ￥400 を加えた金額について小切手を振り出して取引銀行に支払うとともに、取引銀行に小切手で支払った金額すべてを手形の振出人である得意先に対して償還請求した。", "opts": ["ア．当座預金", "イ．受取手形", "ウ．売掛金", "エ．仮払金", "オ．不渡手形", "カ．支払利息", "キ．支払手数料", "ク．手形売却損"], "ans": [["オ", 401000, "ア", 401000]], "rows": 4, "ex": "不渡手形＝額面400,000＋延滞利息600＋その他の費用400＝<b>401,000<\/b>。得意先に請求できる金額すべてを不渡手形にする。", "tk": [["投", "利息や費用は、費用にしないんですか？"], ["会", "==得意先に償還請求する金額に含めるので、まとめて**不渡手形**にします==。後で得意先から回収できる権利だからです。"], ["投", "不渡手形はどこに表示されますか？"], ["会", "回収の見込みが1年以内かどうかで、流動資産か投資その他の資産になります。回収できなければ貸倒れの処理をします。"]]}, {"kind": "jr", "pts": 4, "q": "2．当期の期首に、火災により建物（取得原価 ￥900,000、減価償却累計額 ￥250,000、間接法で記帳）が全焼した。なお、この建物には総額 ￥900,000 の火災保険を掛けていたので、保険会社に保険金の支払いを請求した。", "opts": ["ア．未収入金", "イ．前払保険料", "ウ．未決算", "エ．建物", "オ．建物減価償却累計額", "カ．保険差益", "キ．火災損失", "ク．固定資産除却損"], "ans": [["オ", 250000, "エ", 900000], ["ウ", 650000, null, null]], "rows": 4, "ex": "期首なので当期の減価償却費はない。帳簿価額＝900,000−250,000＝<b>650,000<\/b>を、保険金額が確定するまで<b>未決算<\/b>にしておく。", "tk": [["投", "保険金は900,000円なのに、650,000円なんですか？"], ["会", "==保険金の額がまだ決まっていないので、焼けた建物の**帳簿価額**だけを**未決算**にします==。"], ["投", "保険金が決まったら？"], ["会", "未決算と保険金の差額を、保険金の方が多ければ保険差益、少なければ火災損失にします。"]]}, {"kind": "jr", "pts": 4, "q": "3．日本商工株式会社から商品 ￥300,000 を仕入れ、代金のうち ￥200,000 は手許にある得意先振出しの額面 ￥200,000 の約束手形を裏書譲渡し、残額は掛けとした。なお、商品売買取引については、商品の販売のつど売上原価勘定に振り替える方法を用いて記帳を行っている。", "opts": ["ア．受取手形", "イ．売掛金", "ウ．商品", "エ．繰越商品", "オ．支払手形", "カ．買掛金", "キ．仕入", "ク．売上原価"], "ans": [["ウ", 300000, "ア", 200000], [null, null, "カ", 100000]], "rows": 4, "ex": "売上原価対立法では、仕入れた商品は<b>商品<\/b>勘定で処理する。他人振出しの手形の裏書譲渡は受取手形の減少。", "tk": [["投", "仕入勘定を使わないんですか？"], ["会", "==販売のつど売上原価に振り替える方法（**売上原価対立法**）では、仕入れたときは**商品**勘定を増やします==。売ったときに、その原価を商品から売上原価に移します。"]]}, {"kind": "jr", "pts": 4, "q": "4．定時株主総会において、繰越利益剰余金の処分が次のように決定された。<br>　① 利益準備金：会社法が定める金額　② 配当金：￥3,000,000　③ 別途積立金：￥500,000<br>なお、純資産の各勘定の残高は、資本金 ￥40,000,000、資本準備金 ￥7,800,000、その他資本剰余金 ￥300,000、利益準備金 ￥2,000,000、別途積立金 ￥1,100,000、繰越利益剰余金 ￥5,600,000 である。", "opts": ["ア．未払配当金", "イ．資本金", "ウ．資本準備金", "エ．その他資本剰余金", "オ．利益準備金", "カ．別途積立金", "キ．繰越利益剰余金", "ク．損益"], "ans": [["キ", 3700000, "オ", 200000], [null, null, "ア", 3000000], [null, null, "カ", 500000]], "rows": 4, "ex": "① 配当額×1/10＝300,000<br>② 資本金×1/4−（資本準備金＋利益準備金）＝10,000,000−（7,800,000＋2,000,000）＝200,000<br>少ない方の<b>200,000<\/b>を利益準備金に積み立てる。繰越利益剰余金の減少＝200,000＋3,000,000＋500,000＝<b>3,700,000<\/b>", "tk": [["投", "配当の10分の1を積むのではないんですか？"], ["会", "==準備金の合計が資本金の4分の1に達するまでしか積みません==。この会社はあと200,000円で達するので、200,000円だけです。"], ["投", "配当金はまだ払っていないんですね。"], ["会", "はい。決議の時点では払う義務が決まっただけなので、**未払配当金**という負債にします。"]]}, {"kind": "jr", "pts": 4, "q": "5．当社の横浜支店は、他社に商品 ￥100,000 を販売し、代金のうち ￥60,000 は当社の神戸支店振出しの約束手形で受け取り、残額は掛けとした。横浜支店の仕訳を行う。なお、当社は本店集中計算制度を採用して記帳を行っている。", "opts": ["ア．受取手形", "イ．売掛金", "ウ．未収入金", "エ．支払手形", "オ．売上", "カ．損益", "キ．本店", "ク．神戸支店"], "ans": [["キ", 60000, "オ", 100000], ["イ", 40000, null, null]], "rows": 4, "ex": "他社が持っていた神戸支店振出しの手形を受け取った。<b>本店集中計算制度<\/b>では支店同士の取引も本店を経由したとみなすので、横浜支店は相手を<b>本店<\/b>とする。", "tk": [["投", "神戸支店の手形なのに、なぜ本店なんですか？"], ["会", "==本店集中計算制度では、支店同士の取引はすべて本店と取引したことにして記帳します==。横浜支店は本店に対する債権（本店勘定の借方）を持つことになります。"], ["投", "会社全体で見ると？"], ["会", "自社が振り出した手形が戻ってきたので、支払手形が消えるだけです。本支店を合わせると本店勘定と支店勘定は相殺されます。"]]}]}, {"n": 2, "pts": 20, "short": "株主資本等変動計算書", "intro": "次に示した日商株式会社の［資料］にもとづいて、下の各問に答えなさい。当会計期間はＸ1年4月1日からＸ2年3月31日までの1年間である。<br><br>\n［資料］<br>\n１．Ｘ1年3月31日の決算にあたって作成した貸借対照表における純資産の部の各科目の金額は次のとおりであった。なお、この時点における発行済株式総数は 100,000 株である。<br>\n<table class=\"nob\"><tr><td>資本金<\/td><td class=\"r\">￥23,000,000<\/td><td>資本準備金<\/td><td class=\"r\">￥4,600,000<\/td><td>その他資本剰余金<\/td><td class=\"r\">￥1,150,000<\/td><\/tr><tr><td>利益準備金<\/td><td class=\"r\">￥1,090,000<\/td><td>別途積立金<\/td><td class=\"r\">￥650,000<\/td><td>繰越利益剰余金<\/td><td class=\"r\">￥1,940,000<\/td><\/tr><\/table>\n２．Ｘ1年6月27日に定時株主総会を開催し、剰余金の配当および処分を次のように決定した。<br>\n　① 株主への配当金について、繰越利益剰余金を財源として1株につき ￥8 の配当を行う。<br>\n　② 上記の配当に伴う利益準備金の計上は、会社法の定めによる。<br>\n　③ 繰越利益剰余金を処分し、別途積立金 ￥100,000 を積み立てる。<br>\n３．Ｘ1年11月1日、新株 10,000 株を1株につき ￥480 で発行し、全額の払込みを受け、払込金は当座預金とした。なお、会社法が定める最低限度額を資本金に計上した。<br>\n４．Ｘ2年1月31日、Ａ社を吸収合併し、同社の諸資産（時価総額 ￥18,400,000）および諸負債（時価総額 ￥8,050,000）を引き継ぐとともに、合併の対価として新株 22,000 株（1株当りの時価は ￥500）を同社の株主へ交付した。なお、新株の交付に伴う純資産（株主資本）の増加額のうち ￥6,000,000 を資本金に計上し、残額はその他資本剰余金として計上した。<br>\n５．Ｘ2年3月31日に決算を行い、当期純利益 ￥2,700,000 を計上した。<br><br>\n<b>問1<\/b>　答案用紙の株主資本等変動計算書の空欄に適切な金額を答えなさい。なお、純資産の部の各科目が減少している場合は、金額の前に△を付して示すこと。<b>単位は千円<\/b>である。<br>\n<b>問2<\/b>　上記［資料］4の取引において計上されるのが、<b>のれん<\/b>か<b>負ののれん発生益<\/b>のいずれかを答えるとともに、その金額を答えなさい。", "parts": [{"kind": "fill", "pts": 16, "q": "", "form": "<div style=\"overflow-x:auto\"><b>株主資本等変動計算書<\/b>（自Ｘ1年4月1日 至Ｘ2年3月31日、単位：千円）<table class=\"\"><tr><th><\/th><th>資本金<\/th><th>資本準備金<\/th><th>その他資本剰余金<\/th><th>資本剰余金合計<\/th><th>利益準備金<\/th><th>別途積立金<\/th><th>繰越利益剰余金<\/th><th>利益剰余金合計<\/th><th>株主資本合計<\/th><\/tr><tr><td>当期首残高<\/td><td class=\"r\">23,000<\/td><td class=\"r\">4,600<\/td><td class=\"r\">1,150<\/td><td class=\"r\">5,750<\/td><td class=\"r\">1,090<\/td><td class=\"r\">650<\/td><td class=\"r\">1,940<\/td><td class=\"r\">3,680<\/td><td class=\"r\">32,430<\/td><\/tr><tr><td>剰余金の配当<\/td><td><\/td><td><\/td><td><\/td><td><\/td><td class=\"r\">[[s1]]<\/td><td><\/td><td class=\"r\">[[s2]]<\/td><td class=\"r\">[[s3]]<\/td><td class=\"r\">[[s4]]<\/td><\/tr><tr><td>別途積立金の積立<\/td><td><\/td><td><\/td><td><\/td><td><\/td><td><\/td><td class=\"r\">[[s5]]<\/td><td class=\"r\">[[s6]]<\/td><td class=\"r\">0<\/td><td class=\"r\">0<\/td><\/tr><tr><td>新株の発行<\/td><td class=\"r\">[[s7]]<\/td><td class=\"r\">[[s8]]<\/td><td><\/td><td class=\"r\">[[s9]]<\/td><td><\/td><td><\/td><td><\/td><td><\/td><td class=\"r\">[[s10]]<\/td><\/tr><tr><td>吸収合併<\/td><td class=\"r\">[[s11]]<\/td><td><\/td><td class=\"r\">[[s12]]<\/td><td class=\"r\">[[s13]]<\/td><td><\/td><td><\/td><td><\/td><td><\/td><td class=\"r\">[[s14]]<\/td><\/tr><tr><td>当期純利益<\/td><td><\/td><td><\/td><td><\/td><td><\/td><td><\/td><td><\/td><td class=\"r\">[[s15]]<\/td><td class=\"r\">[[s16]]<\/td><td class=\"r\">[[s17]]<\/td><\/tr><tr><td>当期変動額合計<\/td><td class=\"r\">[[s18]]<\/td><td class=\"r\">[[s19]]<\/td><td class=\"r\">[[s20]]<\/td><td class=\"r\">[[s21]]<\/td><td class=\"r\">[[s22]]<\/td><td class=\"r\">[[s23]]<\/td><td class=\"r\">[[s24]]<\/td><td class=\"r\">[[s25]]<\/td><td class=\"r\">[[s26]]<\/td><\/tr><tr><td>当期末残高<\/td><td class=\"r\">[[s27]]<\/td><td class=\"r\">[[s28]]<\/td><td class=\"r\">[[s29]]<\/td><td class=\"r\">[[s30]]<\/td><td class=\"r\">[[s31]]<\/td><td class=\"r\">[[s32]]<\/td><td class=\"r\">[[s33]]<\/td><td class=\"r\">[[s34]]<\/td><td class=\"r\">[[s35]]<\/td><\/tr><\/table><\/div>", "ans": {"s1": 60, "s2": -860, "s3": -800, "s4": -800, "s5": 100, "s6": -100, "s7": 2400, "s8": 2400, "s9": 2400, "s10": 4800, "s11": 6000, "s12": 5000, "s13": 5000, "s14": 11000, "s15": 2700, "s16": 2700, "s17": 2700, "s18": 8400, "s19": 2400, "s20": 5000, "s21": 7400, "s22": 60, "s23": 100, "s24": 1740, "s25": 1900, "s26": 17700, "s27": 31400, "s28": 7000, "s29": 6150, "s30": 13150, "s31": 1150, "s32": 750, "s33": 3680, "s34": 5580, "s35": 50130}, "ex": "<b>剰余金の配当<\/b>：配当額 100,000株×8＝800千円。利益準備金は「800×1/10＝80」と「23,000×1/4−（4,600＋1,090）＝60」の少ない方の<b>60<\/b>。繰越利益剰余金＝△（800＋60）＝<b>△860<\/b><br>\n<b>新株の発行<\/b>：10,000株×480＝4,800千円。最低限度額は払込額の2分の1なので、資本金<b>2,400<\/b>・資本準備金<b>2,400<\/b><br>\n<b>吸収合併<\/b>：22,000株×500＝11,000千円。資本金6,000、その他資本剰余金<b>5,000<\/b><br>\n<b>当期変動額合計<\/b>は各行の合計、<b>当期末残高<\/b>＝当期首残高＋当期変動額合計", "tk": [["投", "配当800千円なのに、繰越利益剰余金が860千円減るのはなぜですか？"], ["会", "==配当そのものの800千円に加えて、**利益準備金**に積み立てる60千円も繰越利益剰余金から移すからです==。"], ["投", "積立額はなぜ80千円ではなく60千円なんですか？"], ["会", "==資本準備金と利益準備金の合計が資本金の4分の1に達するまで==でよいからです。23,000の4分の1は5,750で、今は5,690なので、あと60で足ります。"], ["投", "新株の半分を資本準備金にできるのは？"], ["会", "会社法で、払込額の==2分の1までは資本金にしなくてよい==と決まっているからです。「最低限度額を資本金に」とあれば、半分ずつです。"]], "jr": [["繰越利益剰余金", 860000, "未払配当金", 800000], ["", "", "利益準備金", 60000], ["繰越利益剰余金", 100000, "別途積立金", 100000], ["当座預金", 4800000, "資本金", 2400000], ["", "", "資本準備金", 2400000], ["諸資産", 18400000, "諸負債", 8050000], ["のれん", 650000, "資本金", 6000000], ["", "", "その他資本剰余金", 5000000]]}, {"kind": "fill", "pts": 4, "q": "", "form": "計上されるのは [[k1]] で、金額は ￥ [[k2]]", "ans": {"k1": "のれん", "k2": 650000}, "ex": "受け入れた純資産＝18,400,000−8,050,000＝10,350,000。交付した株式の時価＝22,000株×500＝11,000,000。多く払った<b>650,000<\/b>が<b>のれん<\/b>。", "tk": [["投", "のれんか負ののれんかは、どう見分けますか？"], ["会", "==払った対価が受け入れた純資産（時価）より多ければ**のれん**、少なければ**負ののれん発生益**==です。今回は650,000円多く払っています。"]], "sel": {"k1": ["のれん", "負ののれん発生益"]}}]}, {"n": 3, "pts": 20, "short": "決算整理後残高試算表", "intro": "次に示した日商株式会社の［資料Ⅰ］、［資料Ⅱ］および［資料Ⅲ］にもとづいて、問に答えなさい。なお、会計期間は20X1年4月1日から20X2年3月31日までの1年間である。<br><br>\n［資料Ⅰ］決算整理前残高試算表（20X2年3月31日、単位：円）<table class=\"\"><tr><th>借方<\/th><th>勘定科目<\/th><th>貸方<\/th><\/tr><tr><td class=\"r\">1,421,100<\/td><td>現金預金<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">1,543,500<\/td><td>受取手形<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">3,481,500<\/td><td>売掛金<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">1,900,000<\/td><td>繰越商品<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">100,000<\/td><td>仮払法人税等<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">12,000,000<\/td><td>建物<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">3,000,000<\/td><td>備品<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">10,000,000<\/td><td>土地<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">1,800,000<\/td><td>ソフトウェア仮勘定<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">1,952,000<\/td><td>満期保有目的債券<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">27,000<\/td><td>繰延税金資産<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\"><\/td><td>支払手形<\/td><td class=\"r\">1,476,500<\/td><\/tr><tr><td class=\"r\"><\/td><td>買掛金<\/td><td class=\"r\">1,936,000<\/td><\/tr><tr><td class=\"r\"><\/td><td>長期借入金<\/td><td class=\"r\">3,000,000<\/td><\/tr><tr><td class=\"r\"><\/td><td>貸倒引当金<\/td><td class=\"r\">98,000<\/td><\/tr><tr><td class=\"r\"><\/td><td>建物減価償却累計額<\/td><td class=\"r\">3,600,000<\/td><\/tr><tr><td class=\"r\"><\/td><td>備品減価償却累計額<\/td><td class=\"r\">1,312,500<\/td><\/tr><tr><td class=\"r\"><\/td><td>資本金<\/td><td class=\"r\">20,000,000<\/td><\/tr><tr><td class=\"r\"><\/td><td>利益準備金<\/td><td class=\"r\">950,000<\/td><\/tr><tr><td class=\"r\"><\/td><td>繰越利益剰余金<\/td><td class=\"r\">2,649,525<\/td><\/tr><tr><td class=\"r\"><\/td><td>売上<\/td><td class=\"r\">18,697,225<\/td><\/tr><tr><td class=\"r\"><\/td><td>有価証券利息<\/td><td class=\"r\">24,000<\/td><\/tr><tr><td class=\"r\">11,325,500<\/td><td>仕入<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">4,918,150<\/td><td>給料<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">30,000<\/td><td>支払利息<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">245,000<\/td><td>支払リース料<\/td><td class=\"r\"><\/td><\/tr><tr><td class=\"r\">53,743,750<\/td><td><\/td><td class=\"r\">53,743,750<\/td><\/tr><\/table>\n［資料Ⅱ］未処理事項<br>\n1．売掛金 ￥78,000 が貸倒れたが、未記帳のままであった。なお、このうち ￥22,000 は当期分であり、残額は前期分であった。<br>\n2．以前に社内利用目的のソフトウェアの開発を契約総額 ￥1,800,000 で外部に依頼し、すでに全額を普通預金口座から支払っていたが、完成し8月1日から使用開始していたにもかかわらず、未記帳のままであった。<br><br>\n［資料Ⅲ］決算整理事項<br>\n1．受取手形と売掛金の期末残高に対して2％の貸倒れを見積もる。貸倒引当金は差額補充法によって設定する。<br>\n2．商品の期末棚卸高は次のとおりである。なお、棚卸減耗損は原価性がなく、商品評価損は売上原価として処理する。また、総勘定元帳上においては、売上原価は仕入勘定において計算する。<br>\n　　帳簿棚卸数量：2,100 個、実地棚卸数量：2,052 個<br>　　帳簿価額 ＠￥900、正味売却価額 ＠￥870<br>\n3．有形固定資産の減価償却は次のとおり行う。<br>\n　　建物：定額法、残存価額は取得原価の10％、耐用年数は30年<br>　　備品：200％定率法、耐用年数は8年<br>\n4．ソフトウェアについて定額法により償却する。このソフトウェアの利用可能期間は3年と見積もっている。なお、当該費用は月割計算する。<br>\n5．買掛金のうち ￥540,000 は、5,000 ドルの外貨建債務である。決算日の為替相場は1ドル ￥110 である。<br>\n6．満期保有目的債券は、20X0年4月1日に他社が発行した社債（額面総額 ￥2,000,000、利率年1.2％、償還日は20X5年3月31日）を額面＠￥100 につき＠￥97 の価額で取得したものである。満期保有目的債券の評価は、償却原価法（定額法）により行っている。<br>\n7．20X0年12月1日に、リース会社と以下の条件で備品のオペレーティング・リース取引によるリース契約を結んでいる。<br>\n　　リース期間：3年、リース料：年額 ￥210,000（毎年12月1日、6月1日の半年払い）<br>\n8．法人税、住民税および事業税の課税見込額は ￥220,125 である。なお、減価償却費について、税効果会計上の一時差異として、以下のとおり損金算入限度超過額があった。前期・当期とも法定実効税率は25％である。<br>\n　　期首 ￥108,000、期末 ￥124,500<br><br>\n<b>問1<\/b>　答案用紙の決算整理後残高試算表を完成しなさい。<br><b>問2<\/b>　当期純利益または当期純損失の金額を答えなさい。なお、当期純損失の場合は金額の頭に△を付すこと。", "parts": [{"kind": "fill", "pts": 16, "q": "", "form": "<b>決算整理後残高試算表<\/b>（20X2年3月31日、単位：円）<table class=\"\"><tr><th>借方<\/th><th>勘定科目<\/th><th>貸方<\/th><\/tr><tr><td class=\"r\">[[t1]]<\/td><td>現金預金<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t2]]<\/td><td>受取手形<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t3]]<\/td><td>売掛金<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t4]]<\/td><td>繰越商品<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t5]]<\/td><td>前払リース料<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t6]]<\/td><td>建物<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t7]]<\/td><td>備品<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t8]]<\/td><td>土地<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t9]]<\/td><td>ソフトウェア<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t10]]<\/td><td>満期保有目的債券<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t11]]<\/td><td>繰延税金資産<\/td><td><\/td><\/tr><tr><td><\/td><td>支払手形<\/td><td class=\"r\">[[t12]]<\/td><\/tr><tr><td><\/td><td>買掛金<\/td><td class=\"r\">[[t13]]<\/td><\/tr><tr><td><\/td><td>未払法人税等<\/td><td class=\"r\">[[t14]]<\/td><\/tr><tr><td><\/td><td>長期借入金<\/td><td class=\"r\">[[t15]]<\/td><\/tr><tr><td><\/td><td>貸倒引当金<\/td><td class=\"r\">[[t16]]<\/td><\/tr><tr><td><\/td><td>建物減価償却累計額<\/td><td class=\"r\">[[t17]]<\/td><\/tr><tr><td><\/td><td>備品減価償却累計額<\/td><td class=\"r\">[[t18]]<\/td><\/tr><tr><td><\/td><td>資本金<\/td><td class=\"r\">[[t19]]<\/td><\/tr><tr><td><\/td><td>利益準備金<\/td><td class=\"r\">[[t20]]<\/td><\/tr><tr><td><\/td><td>繰越利益剰余金<\/td><td class=\"r\">[[t21]]<\/td><\/tr><tr><td><\/td><td>売上<\/td><td class=\"r\">[[t22]]<\/td><\/tr><tr><td><\/td><td>有価証券利息<\/td><td class=\"r\">[[t23]]<\/td><\/tr><tr><td><\/td><td>法人税等調整額<\/td><td class=\"r\">[[t24]]<\/td><\/tr><tr><td class=\"r\">[[t25]]<\/td><td>仕入<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t26]]<\/td><td>給料<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t27]]<\/td><td>支払利息<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t28]]<\/td><td>支払リース料<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t29]]<\/td><td>貸倒損失<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t30]]<\/td><td>貸倒引当金繰入<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t31]]<\/td><td>棚卸減耗損<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t32]]<\/td><td>減価償却費<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t33]]<\/td><td>ソフトウェア償却<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t34]]<\/td><td>為替差損益<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t35]]<\/td><td>法人税、住民税及び事業税<\/td><td><\/td><\/tr><tr><td class=\"r\">[[t36]]<\/td><td>合計<\/td><td class=\"r\">[[t37]]<\/td><\/tr><\/table>", "ans": {"t1": 1421100, "t2": 1543500, "t3": 3403500, "t4": 1785240, "t5": 35000, "t6": 12000000, "t7": 3000000, "t8": 10000000, "t9": 1400000, "t10": 1964000, "t11": 31125, "t12": 1476500, "t13": 1946000, "t14": 120125, "t15": 3000000, "t16": 98940, "t17": 3960000, "t18": 1734375, "t19": 20000000, "t20": 950000, "t21": 2649525, "t22": 18697225, "t23": 36000, "t24": 4125, "t25": 11397060, "t26": 4918150, "t27": 30000, "t28": 210000, "t29": 22000, "t30": 56940, "t31": 43200, "t32": 781875, "t33": 400000, "t34": 10000, "t35": 220125, "t36": 54672815, "t37": 54672815}, "ex": "<b>未処理1<\/b>：当期分22,000は貸倒損失、前期分56,000は貸倒引当金を取り崩す。売掛金＝3,481,500−78,000＝<b>3,403,500<\/b><br>\n<b>未処理2<\/b>：ソフトウェア仮勘定1,800,000をソフトウェアに振り替える。<br>\n<b>決算1<\/b>：（1,543,500＋3,403,500）×2％＝<b>98,940<\/b>。残高＝98,000−56,000＝42,000なので、繰入額＝<b>56,940<\/b><br>\n<b>決算2<\/b>：帳簿棚卸高＝2,100×900＝1,890,000。棚卸減耗損＝（2,100−2,052）×900＝<b>43,200<\/b>。商品評価損＝2,052×（900−870）＝61,560（仕入に振り替える）。繰越商品＝2,052×870＝<b>1,785,240<\/b><br>\n仕入＝11,325,500＋1,900,000−1,890,000＋61,560＝<b>11,397,060<\/b><br>\n<b>決算3<\/b>：建物＝12,000,000×0.9÷30＝360,000。備品＝（3,000,000−1,312,500）×0.25＝421,875。減価償却費＝<b>781,875<\/b><br>\n<b>決算4<\/b>：1,800,000÷36か月×8か月（8月〜3月）＝<b>400,000<\/b>。ソフトウェア＝1,400,000<br>\n<b>決算5<\/b>：5,000ドル×110＝550,000。買掛金が10,000増え、為替差損益（差損）<b>10,000<\/b><br>\n<b>決算6<\/b>：取得価額＝2,000,000×97/100＝1,940,000。償却額＝60,000÷5年＝12,000。債券＝<b>1,964,000<\/b>、有価証券利息＝24,000＋12,000＝<b>36,000<\/b><br>\n<b>決算7<\/b>：12月1日に払った105,000のうち、4月・5月の2か月分35,000を<b>前払リース料<\/b>にする。支払リース料＝245,000−35,000＝<b>210,000<\/b>（期首の再振替35,000を含んでいた）<br>\n<b>決算8<\/b>：未払法人税等＝220,125−100,000＝<b>120,125<\/b>。繰延税金資産＝124,500×25％＝<b>31,125<\/b>（4,125増加）、法人税等調整額は貸方<b>4,125<\/b>", "tk": [["投", "支払リース料が245,000円もあるのは、なぜですか？"], ["会", "==前期末に前払いにした2か月分35,000円を、期首に費用に戻しているからです==。当期に払った210,000円と合わせて245,000円になっています。"], ["投", "そこから、また35,000円を前払いにするんですね。"], ["会", "はい。12月1日に払った半年分のうち、4月・5月の分は翌期のものなので、**前払リース料**にします。"], ["投", "商品評価損は、なぜ残高試算表に出てこないんですか？"], ["会", "==「売上原価として処理し、売上原価は仕入勘定で計算する」ので、商品評価損を仕入に振り替える==からです。原価性のない棚卸減耗損は、仕入に入れずにそのまま残ります。"], ["投", "税効果は、増えた分だけ処理するんですね。"], ["会", "そうです。==一時差異が108,000円から124,500円に16,500円増えたので、その25%の4,125円だけ**繰延税金資産**を増やします==。"]], "jr": [["貸倒損失", 22000, "売掛金", 78000], ["貸倒引当金", 56000, "", ""], ["ソフトウェア", 1800000, "ソフトウェア仮勘定", 1800000], ["貸倒引当金繰入", 56940, "貸倒引当金", 56940], ["仕入", 1900000, "繰越商品", 1900000], ["繰越商品", 1890000, "仕入", 1890000], ["棚卸減耗損", 43200, "繰越商品", 104760], ["商品評価損", 61560, "", ""], ["仕入", 61560, "商品評価損", 61560], ["減価償却費", 781875, "建物減価償却累計額", 360000], ["", "", "備品減価償却累計額", 421875], ["ソフトウェア償却", 400000, "ソフトウェア", 400000], ["為替差損益", 10000, "買掛金", 10000], ["満期保有目的債券", 12000, "有価証券利息", 12000], ["前払リース料", 35000, "支払リース料", 35000], ["法人税、住民税及び事業税", 220125, "仮払法人税等", 100000], ["", "", "未払法人税等", 120125], ["繰延税金資産", 4125, "法人税等調整額", 4125]]}, {"kind": "fill", "pts": 4, "q": "", "form": "当期純利益（または当期純損失）：￥ [[k1]]", "ans": {"k1": 648000}, "ex": "収益合計＝売上18,697,225＋有価証券利息36,000＝18,733,225<br>費用合計＝仕入から法人税等までの合計18,089,350−法人税等調整額4,125＝18,085,225<br>当期純利益＝18,733,225−18,085,225＝<b>648,000<\/b><br>（検算：税引前当期純利益864,000×25％＝216,000＝220,125−4,125）", "tk": [["投", "税金が税引前当期純利益のちょうど25%になっていますね。"], ["会", "==税効果会計を適用すると、法人税等と法人税等調整額の合計が、税引前当期純利益×法定実効税率に近づきます==。この問題ではぴったり一致するので、検算に使えます。"]]}]}, {"n": 4, "pts": 28, "short": "仕訳・標準原価計算", "intro": "⑴ 下記の各取引について仕訳しなさい。ただし、勘定科目は、設問ごとに最も適当と思われるものを選び、答案用紙の（　）の中に記号で解答すること。", "parts": [{"kind": "jr", "pts": 4, "q": "⑴ 1．材料 2,400,000 円の購入に際して、購入代価の5％を材料副費として予定配賦している。材料副費の実際発生額は 130,000 円であったので、予定配賦額との差額を材料副費差異勘定に振り替える。", "opts": ["ア．材料", "イ．材料副費差異", "ウ．材料副費", "エ．仕掛品", "オ．買掛金", "カ．製造間接費"], "ans": [["イ", 10000, "ウ", 10000]], "rows": 2, "ex": "予定配賦額＝2,400,000×5％＝120,000。実際130,000との差額<b>10,000<\/b>は不利差異なので、材料副費差異を借方に。", "tk": [["投", "材料副費というのは？"], ["会", "==材料の購入にかかった運賃や検収などの付随費用==です。実際額が分かるまで時間がかかるので、購入代価の5%で**予定配賦**しています。"], ["投", "差異が借方なのは？"], ["会", "==実際の方が多かった不利差異だから==です。材料副費勘定の借方に実際額130,000、貸方に予定配賦額120,000が入っていて、残った10,000を差異に移します。"]]}, {"kind": "jr", "pts": 4, "q": "⑴ 2．当月の賃金の消費額を計上する。直接工の作業時間報告書によれば、直接作業時間は 1,760 時間、間接作業時間は 50 時間であった。当工場において適用される直接工の予定賃率は、1時間当たり 1,400 円である。", "opts": ["ア．賃金・給料", "イ．現金", "ウ．製造間接費", "エ．仕掛品", "オ．賃率差異", "カ．製品"], "ans": [["エ", 2464000, "ア", 2534000], ["ウ", 70000, null, null]], "rows": 2, "ex": "直接作業：1,760×1,400＝<b>2,464,000<\/b>（仕掛品）、間接作業：50×1,400＝<b>70,000<\/b>（製造間接費）", "tk": [["投", "直接工の賃金でも、製造間接費になるんですか？"], ["会", "==直接作業時間の分だけが**直接労務費**で、間接作業の分は**間接労務費**==です。どの製品のための作業か分からないからです。"]]}, {"kind": "jr", "pts": 4, "q": "⑴ 3．外注加工賃の支払高をもって消費高を計上する。外注業者から加工品を受け入れ、請求書によると外注加工賃は 500,000 円であった。なお、素材 2,500,000 円を無償で外注業者に引き渡していた。", "opts": ["ア．材料", "イ．買掛金", "ウ．製品", "エ．仕掛品", "オ．賃金・給料", "カ．製造間接費"], "ans": [["エ", 500000, "イ", 500000]], "rows": 2, "ex": "外注加工賃は特定の製品のためにかかる<b>直接経費<\/b>なので仕掛品。素材を無償で渡したときは、出庫時に仕掛品に振り替え済み（または材料のまま）で、ここでは仕訳しない。", "tk": [["投", "素材2,500,000円は、仕訳しないんですか？"], ["会", "==無償支給の素材は、渡したときに普通の出庫と同じ処理をしている==ので、ここでは外注加工賃だけを計上します。"], ["投", "外注加工賃は直接経費なんですね。"], ["会", "はい。==どの製品の加工か明らかなので、仕掛品に直接入れます==。"]]}, {"kind": "fill", "pts": 4, "q": "⑵ ニッショウ金属では、原価計算方式として標準原価計算を採用している。標準原価差異は月ごとに損益計算に反映させており、その全額を売上原価に賦課する。次の［資料］にもとづいて、下記の問に答えなさい。<br><br>\n［資料］<br>1．製品1個当たりの標準原価\n<table class=\"nob\"><tr><td>直接材料費<\/td><td>1,400円／kg × 1.5kg<\/td><td class=\"r\">2,100円<\/td><\/tr><tr><td>加工費<\/td><td>1,500円／時間 × 0.6時間<\/td><td class=\"r\">900円<\/td><\/tr><tr><td><\/td><td><\/td><td class=\"r\"><b>3,000円<\/b><\/td><\/tr><\/table>\n2．当月の生産・販売実績\n<table class=\"nob\"><tr><td>月初仕掛品<\/td><td class=\"r\">0個<\/td><td style=\"padding-left:20px\">月初製品<\/td><td class=\"r\">350個<\/td><\/tr><tr><td>当月着手<\/td><td class=\"r\">2,500<\/td><td style=\"padding-left:20px\">完成品<\/td><td class=\"r\">2,250<\/td><\/tr><tr><td>合計<\/td><td class=\"r\">2,500個<\/td><td style=\"padding-left:20px\">合計<\/td><td class=\"r\">2,600個<\/td><\/tr><tr><td>月末仕掛品<\/td><td class=\"r\">250（40％）<\/td><td style=\"padding-left:20px\">月末製品<\/td><td class=\"r\">300<\/td><\/tr><tr><td>完成品<\/td><td class=\"r\">2,250個<\/td><td style=\"padding-left:20px\">販売品<\/td><td class=\"r\">2,300個<\/td><\/tr><\/table>\n（注）材料はすべて工程の始点で投入している。（　）内は加工費の進捗度である。<br>\n3．当月の原価実績<br>　製造費用　直接材料費 5,391,000円　加工費 2,198,000円<br>　販売費及び一般管理費 1,829,000円<br><br>\n<b>問1<\/b>　月末仕掛品の標準原価を計算しなさい。<br><b>問2<\/b>　答案用紙の月次損益計算書を完成させなさい。", "form": "月末仕掛品の標準原価：[[k1]] 円", "ans": {"k1": 615000}, "ex": "直接材料費＝2,100×250個＝525,000、加工費＝900×250個×40％＝90,000、合計<b>615,000<\/b>", "tk": [["投", "加工費だけ40%を掛けるのは？"], ["会", "==材料は始点で全部入れているので個数そのまま、加工費は進み具合（**加工進捗度**）の分だけかかっている==と考えるからです。"]]}, {"kind": "fill", "pts": 12, "q": "", "form": "<b>月次損益計算書<\/b>（一部、単位：円）<table class=\"\"><tr><td>Ⅱ 売上原価<\/td><td><\/td><td><\/td><\/tr><tr><td>　1 月初製品棚卸高<\/td><td class=\"r\">[[p1]]<\/td><td><\/td><\/tr><tr><td>　2 当月製品製造原価<\/td><td class=\"r\">[[p2]]<\/td><td><\/td><\/tr><tr><td>　　合計<\/td><td class=\"r\">[[p3]]<\/td><td><\/td><\/tr><tr><td>　3 月末製品棚卸高<\/td><td class=\"r\">[[p4]]<\/td><td><\/td><\/tr><tr><td>　　差引<\/td><td class=\"r\">[[p5]]<\/td><td><\/td><\/tr><tr><td>　4 標準原価差異<\/td><td class=\"r\">[[p6]]<\/td><td class=\"r\">[[p7]]<\/td><\/tr><tr><td>Ⅲ 販売費及び一般管理費<\/td><td><\/td><td class=\"r\">[[p8]]<\/td><\/tr><\/table>", "ans": {"p1": 1050000, "p2": 6750000, "p3": 7800000, "p4": 900000, "p5": 6900000, "p6": 224000, "p7": 7124000, "p8": 1829000}, "ex": "月初製品＝350×3,000＝1,050,000、当月製品製造原価＝2,250×3,000＝6,750,000、月末製品＝300×3,000＝900,000<br>\n標準原価差異：直接材料費の標準＝2,500個×2,100＝5,250,000、実際5,391,000で<b>141,000<\/b>の不利。加工費の標準＝（2,250＋250×40％）×900＝2,115,000、実際2,198,000で<b>83,000<\/b>の不利。合計<b>224,000<\/b>の不利差異を売上原価に加える。<br>売上原価＝6,900,000＋224,000＝<b>7,124,000<\/b>", "tk": [["投", "差異は、なぜ売上原価に足すんですか？"], ["会", "==製品は標準原価で動かしているので、実際との差（**標準原価差異**）を最後に売上原価で調整します==。不利差異は実際が多かった分なので足し、有利差異なら引きます。"], ["投", "加工費の標準は2,250個分ではないんですか？"], ["会", "==当月に加工したのは、完成品2,250個と月末仕掛品の100個分（250×40%）で、計2,350個分==です。差異は当月の作業量で比べます。"]]}]}, {"n": 5, "pts": 12, "short": "CVP分析", "intro": "衣料品の製造から小売までを手がけるＡアンドＢ社では、現在、次期の利益計画を策定中である。次期には有力ファッションブランドＸアンドＹ社の市場参入が計画されており、競争の激化が懸念される。次の［資料］は、当期の実績をもとに作成された利益計画の基礎資料である。下記の［会話文］の（①）～（④）に入る数値を計算しなさい。<br><br>\n［資料］<table class=\"nob\"><tr><td>平均販売単価<\/td><td class=\"r\">2,500円／個<\/td><\/tr><tr><td>単位当たり変動費<\/td><td><\/td><\/tr><tr><td>　変動売上原価<\/td><td class=\"r\">950円／個<\/td><\/tr><tr><td>　変動販売費<\/td><td class=\"r\">150円／個<\/td><\/tr><tr><td>固定費<\/td><td><\/td><\/tr><tr><td>　固定製造原価<\/td><td class=\"r\">11,700,000円<\/td><\/tr><tr><td>　固定販売費<\/td><td class=\"r\">24,500,000円<\/td><\/tr><tr><td>　一般管理費<\/td><td class=\"r\">5,800,000円<\/td><\/tr><\/table>\n［会話文］<br>\n社　長：経理部長、利益計画について説明してください。<br>\n経理部長：はい。こちらの資料をもとに分析しますと、損益分岐点販売数量は（①）個になります。また、当期と同じ営業利益 7,000,000 円を達成するために必要な販売数量は（②）個です。<br>\n社　長：わかりました。しかし、ＸアンドＹの参入を考えると、当期と同じ営業利益を達成するのは厳しいのではないでしょうか。<br>\n経理部長：おっしゃるとおりです。マーケットリサーチを依頼した日商総研によれば、（②）個の販売数量に対して10％減の販売数量が予想されます。この販売数量で計算しますと、営業利益は（③）円となります。<br>\n社　長：うーん。何とか販売数量を確保したいですね。値下げで対抗するのはどうでしょうか。平均販売単価を10％引き下げれば、販売数量（②）個に届くのではないでしょうか。<br>\n経理部長：それはあまり得策とは言えません。仮に販売数量（②）個を達成したとしても、平均販売単価を10％引き下げますと、（④）円の営業損失が出てしまいます。<br>\n社　長：そうなんですね。先代の社長が安易な値下げはよくないと言っていたのは、このことですね。ここは目先の利益にとらわれず、当社らしい商品開発を強化して競争力を向上させましょう。", "parts": [{"kind": "fill", "pts": 12, "q": "", "form": "①　[[k1]] 個<br>②　[[k2]] 個<br>③　[[k3]] 円<br>④　[[k4]] 円", "ans": {"k1": 30000, "k2": 35000, "k3": 2100000, "k4": 1750000}, "ex": "1個当たり貢献利益＝2,500−（950＋150）＝1,400、固定費＝11,700,000＋24,500,000＋5,800,000＝42,000,000<br>\n① 42,000,000÷1,400＝<b>30,000個<\/b><br>② （42,000,000＋7,000,000）÷1,400＝<b>35,000個<\/b><br>\n③ 35,000×0.9＝31,500個、31,500×1,400−42,000,000＝<b>2,100,000円<\/b><br>\n④ 販売単価2,250、貢献利益＝2,250−1,100＝1,150。35,000×1,150−42,000,000＝△1,750,000、営業損失<b>1,750,000円<\/b>", "tk": [["投", "10%の値下げで、なぜ赤字にまでなるんですか？"], ["会", "==変動費は値下げしても減らないので、値下げ額の250円がそのまま**貢献利益**から消えます==。1個1,400円が1,150円になり、約18%も減ります。"], ["投", "数量が10%減るより、値下げの方が痛いんですね。"], ["会", "そうです。==数量減は貢献利益を10%減らすだけですが、10%の値下げは貢献利益を約18%減らします==。だから安易な値下げはよくないのです。"]]}]}]}];
+let kakoR=0, kakoQ=0;
+const KAKO_ST = {}; // 回ごとの入力と採点結果（ページ内のみ）
+function kakoKey(r){ return 'kako_best_'+r; }
+function kakoBest(r){ try{ const v=localStorage.getItem(kakoKey(r)); return v==null?null:+v; }catch(e){ return null; } }
+function kakoSaveBest(r,s){ try{ const b=kakoBest(r); if(b==null||s>b) localStorage.setItem(kakoKey(r),String(s)); }catch(e){} }
+function buildKakoTabs(){
+  const box=document.getElementById('sec-tabs');
+  box.querySelectorAll('[data-big="kako"]').forEach(b=>b.remove());
+  box.insertAdjacentHTML('beforeend', KAKO.map((x,i)=>`<button class="ctrl-btn" data-big="kako" data-ch="${i}" onclick="setKakoTab(${i})">${x.t}</button>`).join(''));
+}
+function setKakoTab(r){
+  document.querySelectorAll('#sec-tabs [data-big="kako"]').forEach(b=>b.classList.toggle('active', String(b.dataset.ch)===String(r)));
+  compMode='kako';
+  document.getElementById('check-bar').style.display='none';
+  document.getElementById('group-row').style.display='none';
+  kakoR=r; kakoQ=0; kakoRender();
+}
+function kakoMenu(){
+  compMode='kako';
+  document.getElementById('check-bar').style.display='none';
+  document.getElementById('group-row').style.display='none';
+  const main=document.getElementById('exp-main');
+  main.innerHTML=`<div class="kako fs2"><div class="exp-q-card" style="text-align:center;"><div style="font-size:14px;font-weight:700;">日商簿記2級 過去問（ネット試験サンプル問題）</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px;">第1問〜第5問、100点満点・70点で合格。問ごとに採点すると、答えと解説（仕訳・計算・会話）が表示されます</div></div>
+    ${KAKO.map((x,i)=>{ const b=kakoBest(i); return `<button class="fs2-ch-btn" style="width:100%" onclick="setKakoTab(${i})"><span>${x.t}<small>${x.Q.map(q=>'第'+q.n+'問 '+(q.short||'')).join('／')}</small></span><span class="fs2-rk ${b==null?'':(b>=70?'fs2-rkA':'fs2-rkC')}">${b==null?'未受験':'最高 '+b+'点'}</span></button>`; }).join('')}</div>`;
+}
+function kakoFmt(v){ if(typeof v!=='number') return v; const s=Math.abs(v).toLocaleString('en-US'); return v<0?'△'+s:s; }
+function kakoParse(s){
+  if(s==null) return null; s=String(s).trim().replace(/[，,円\s]/g,'').replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/．/g,'.');
+  if(s==='') return null;
+  let neg=false; if(/^[△▲\-−ー－]/.test(s)){ neg=true; s=s.slice(1); }
+  const n=Number(s); if(isNaN(n)) return NaN; return neg?-n:n;
+}
+function kakoTalk(tk){
+  if(!tk||!tk.length) return '';
+  const f=t=>t.replace(/==(.+?)==/g,'<span class="mk">$1</span>').replace(/\*\*(.+?)\*\*/g,'<span class="tm">$1</span>');
+  return `<div class="talk">${tk.map(([s,t])=>`<div class="tk"><span class="sp ${s==='投'?'iv':'ca'}">${s}</span><span class="tx">${f(t)}</span></div>`).join('')}</div>`;
+}
+function kakoJrTable(rows){
+  return `<table class="jr"><tr><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr>${rows.map(r=>`<tr><td>${r[0]||''}</td><td class="ja">${r[1]!=null&&r[1]!==''?kakoFmt(r[1]):''}</td><td>${r[2]||''}</td><td class="ja">${r[3]!=null&&r[3]!==''?kakoFmt(r[3]):''}</td></tr>`).join('')}</table>`;
+}
+function kakoOptName(p,code){ const o=p.opts.find(x=>x.startsWith(code)); return o?o.replace(/^.．/,''):code; }
+function kakoPartHTML(r,qi,pi,p){
+  const id=`k${r}_${qi}_${pi}`;
+  let body='';
+  if(p.kind==='jr'){
+    const opt=`<option value=""></option>`+p.opts.map(o=>`<option value="${o[0]}">${o}</option>`).join('');
+    const n=p.rows||4;
+    body=`<div>${p.q}</div><div class="kopts">${p.opts.map(o=>`<span>${o}</span>`).join('')}</div>
+      <table class="kjr"><tr><th style="width:30%">借方科目</th><th style="width:20%">金額</th><th style="width:30%">貸方科目</th><th style="width:20%">金額</th></tr>
+      ${Array.from({length:n},(_,i)=>`<tr><td><select data-k="${id}_d${i}">${opt}</select></td><td><input class="kin" inputmode="numeric" data-k="${id}_da${i}"></td><td><select data-k="${id}_c${i}">${opt}</select></td><td><input class="kin" inputmode="numeric" data-k="${id}_ca${i}"></td></tr>`).join('')}</table>`;
+  } else {
+    body=(p.q?`<div>${p.q}</div>`:'')+p.form.replace(/\[\[([\w]+)\]\]/g,(m,k)=>{
+      const a=p.ans[k];
+      if(p.sel&&p.sel[k]) return `<select data-k="${id}_${k}"><option value=""></option>${p.sel[k].map(o=>`<option>${o}</option>`).join('')}</select>`;
+      return `<input class="kin${p.wide?' w':''}" inputmode="decimal" data-k="${id}_${k}">`;
+    });
+  }
+  const ex=(p.ex||'')+(p.jr?`<div class="jh">仕訳</div>`+kakoJrTable(p.jr):'')+kakoTalk(p.tk);
+  return `<div class="kpart" id="${id}">${body}<div class="kpts" style="font-size:12px;color:var(--muted)"></div><div class="kex">${p.ans_html||''}${ex}</div></div>`;
+}
+function kakoRender(){
+  const X=KAKO[kakoR], Q=X.Q[kakoQ], st=KAKO_ST[kakoR]||(KAKO_ST[kakoR]={v:{},sc:{}});
+  const main=document.getElementById('exp-main');
+  const tabs=X.Q.map((q,i)=>`<button class="kq-tab${i===kakoQ?' on':''}" onclick="kakoGo(${i})">第${q.n}問<span class="sc">${st.sc[i]!=null?st.sc[i]+'/'+q.pts:q.pts+'点'}</span></button>`).join('');
+  main.innerHTML=`<div class="kako fs2">
+    <div class="exp-nav-row"><button class="exp-nav-btn" onclick="kakoMenu()">← 回の一覧</button><span class="exp-nav-info">${X.t}</span><button class="exp-nav-btn" onclick="exitCompQuiz()">✕ 終了</button></div>
+    <div class="kq-tabs">${tabs}<button class="kq-tab" onclick="kakoTotal()">合計</button></div>
+    <div class="kprob"><div style="font-weight:800;margin-bottom:4px;">第${Q.n}問（${Q.pts}点）</div>${Q.intro||''}
+      ${Q.parts.map((p,pi)=>kakoPartHTML(kakoR,kakoQ,pi,p)).join('')}
+      <div class="kbtns"><button class="kbtn" onclick="kakoGrade()">この問を採点する</button><button class="kbtn sub" onclick="kakoShowEx()">答えと解説だけ見る</button></div>
+      <div class="kscore" id="kscore"></div>
+    </div>
+    <div class="kbtns">${kakoQ>0?`<button class="kbtn sub" onclick="kakoGo(${kakoQ-1})">← 第${X.Q[kakoQ-1].n}問</button>`:''}${kakoQ<X.Q.length-1?`<button class="kbtn sub" onclick="kakoGo(${kakoQ+1})">第${X.Q[kakoQ+1].n}問 →</button>`:`<button class="kbtn" onclick="kakoTotal()">合計点を見る</button>`}</div>
+  </div>`;
+  main.querySelectorAll('[data-k]').forEach(el=>{ if(st.v[el.dataset.k]!=null) el.value=st.v[el.dataset.k]; el.addEventListener('input',()=>{ st.v[el.dataset.k]=el.value; }); el.addEventListener('change',()=>{ st.v[el.dataset.k]=el.value; }); });
+  if(st.sc[kakoQ]!=null) kakoGrade(true);
+  document.getElementById('exp-panel').scrollIntoView({block:'start'});
+}
+function kakoGo(i){ kakoQ=i; kakoRender(); }
+function kakoShowEx(){ document.querySelectorAll('.kako .kex').forEach(e=>e.classList.add('show')); }
+function kakoGradeJr(id,p){
+  const n=p.rows||4, mine={d:{},c:{}}, want={d:{},c:{}};
+  const add=(o,k,v)=>{ o[k]=(o[k]||0)+v; };
+  for(let i=0;i<n;i++){
+    const g=k=>document.querySelector(`[data-k="${id}_${k}${i}"]`);
+    const d=g('d').value, da=kakoParse(g('da').value), c=g('c').value, ca=kakoParse(g('ca').value);
+    if(d) add(mine.d,d,da||0); if(c) add(mine.c,c,ca||0);
+  }
+  p.ans.forEach(r=>{ if(r[0]) add(want.d,r[0],r[1]); if(r[2]) add(want.c,r[2],r[3]); });
+  const eq=(a,b)=>{ const ka=Object.keys(a).filter(k=>a[k]), kb=Object.keys(b); return ka.length===kb.length && kb.every(k=>Math.abs((a[k]||0)-b[k])<0.5); };
+  const ok=eq(mine.d,want.d)&&eq(mine.c,want.c);
+  document.querySelectorAll(`#${id} .kjr select, #${id} .kjr input`).forEach(e=>{ e.classList.remove('ok','ng'); if(e.value) e.classList.add(ok?'ok':'ng'); });
+  const cor=`<div class="jh">正解</div>`+kakoJrTable(p.ans.map(r=>[r[0]?r[0]+'．'+kakoOptName(p,r[0]):'',r[1],r[2]?r[2]+'．'+kakoOptName(p,r[2]):'',r[3]]));
+  return [ok?p.pts:0,cor];
+}
+function kakoGradeFill(id,p){
+  const ks=Object.keys(p.ans); let good=0;
+  ks.forEach(k=>{
+    const el=document.querySelector(`[data-k="${id}_${k}"]`); if(!el) return;
+    const a=p.ans[k]; let ok;
+    if(typeof a==='number'){ const v=kakoParse(el.value); ok = v!=null && !isNaN(v) && Math.abs(v-a)<1e-6; }
+    else ok = el.value.trim()===String(a);
+    el.classList.remove('ok','ng'); el.classList.add(ok?'ok':'ng');
+    const old=el.parentNode.querySelector(`.kcor[data-for="${k}"]`); if(old) old.remove();
+    if(!ok) el.insertAdjacentHTML('afterend',`<span class="kcor" data-for="${k}">${kakoFmt(a)}</span>`);
+    if(ok) good++;
+  });
+  const w=p.w||null; // 配点の重み
+  let sc;
+  if(w){ sc=ks.reduce((s,k,i)=>{ const el=document.querySelector(`[data-k="${id}_${k}"]`); return s+(el&&el.classList.contains('ok')?(w[k]||0):0); },0); }
+  else sc=Math.round(p.pts*good/ks.length);
+  return [sc,''];
+}
+function kakoGrade(silent){
+  const X=KAKO[kakoR], Q=X.Q[kakoQ], st=KAKO_ST[kakoR]; let tot=0;
+  Q.parts.forEach((p,pi)=>{
+    const id=`k${kakoR}_${kakoQ}_${pi}`, box=document.getElementById(id);
+    const [s,cor]= p.kind==='jr' ? kakoGradeJr(id,p) : kakoGradeFill(id,p);
+    tot+=s;
+    box.querySelector('.kpts').textContent=`${s} / ${p.pts}点`;
+    const ex=box.querySelector('.kex'); const c=ex.querySelector('.kcorr'); if(c) c.remove();
+    if(cor) ex.insertAdjacentHTML('afterbegin',`<div class="kcorr">${cor}</div>`);
+    ex.classList.add('show');
+  });
+  st.sc[kakoQ]=tot;
+  document.getElementById('kscore').textContent=`第${Q.n}問：${tot} / ${Q.pts}点`;
+  const tab=document.querySelectorAll('.kako .kq-tab')[kakoQ]; if(tab) tab.querySelector('.sc').textContent=tot+'/'+Q.pts;
+  if(!silent){ const all=X.Q.every((q,i)=>st.sc[i]!=null); if(all) kakoSaveBest(kakoR, X.Q.reduce((s,q,i)=>s+st.sc[i],0)); }
+}
+function kakoTotal(){
+  const X=KAKO[kakoR], st=KAKO_ST[kakoR]||(KAKO_ST[kakoR]={v:{},sc:{}});
+  const done=X.Q.filter((q,i)=>st.sc[i]!=null).length, tot=X.Q.reduce((s,q,i)=>s+(st.sc[i]||0),0);
+  const main=document.getElementById('exp-main');
+  main.innerHTML=`<div class="kako fs2"><div class="exp-nav-row"><button class="exp-nav-btn" onclick="kakoMenu()">← 回の一覧</button><span class="exp-nav-info">${X.t}</span><button class="exp-nav-btn" onclick="exitCompQuiz()">✕ 終了</button></div>
+    <div class="kres"><div class="big ${tot>=70?'pass':'fail'}">${tot} / 100点　${done<X.Q.length?'（未採点の問あり）':tot>=70?'合格':'不合格'}</div>
+    <table style="margin-top:8px;font-size:14px;">${X.Q.map((q,i)=>`<tr><td style="padding:2px 10px 2px 0">第${q.n}問</td><td style="text-align:right">${st.sc[i]!=null?st.sc[i]:'－'} / ${q.pts}</td><td style="padding-left:10px"><button class="kbtn sub" style="padding:3px 10px" onclick="kakoGo(${i})">開く</button></td></tr>`).join('')}</table></div>
+    <div class="kbtns"><button class="kbtn sub" onclick="kakoReset()">入力を消して最初から解き直す</button></div></div>`;
+  if(done===X.Q.length) kakoSaveBest(kakoR,tot);
+}
+function kakoReset(){ KAKO_ST[kakoR]={v:{},sc:{}}; kakoQ=0; kakoRender(); }
+
 // 大枠（商業簿記・工業簿記・応用・総合・1級）を切り替え、その大枠の分野だけを表示する
 let bigFilter = 'shogyo';
 const BIG_DEFAULT = {shogyo:'big:shogyo', kogyo:'big:kogyo', kyu1:'chap:1級'};
@@ -10809,10 +10992,12 @@ function setBig(big){
   document.querySelectorAll('.big-btn').forEach(b=>b.classList.toggle('active', b.dataset.big===big));
   if(big==='riron') buildRironTabs();
   if(big==='kanjo') buildKanjoTabs();
+  if(big==='kako') buildKakoTabs();
   document.querySelectorAll('#sec-tabs [data-big]').forEach(b=>{ b.style.display = b.dataset.big===big ? '' : 'none'; });
   const vm=document.getElementById('view-mode-row'), wrap=document.getElementById('sec-tabs-wrap');
   if(big==='riron'){ vm.style.display='none'; setRironTab(0); return; }
   if(big==='kanjo'){ vm.style.display='none'; setKanjoTab('all'); return; }
+  if(big==='kako'){ vm.style.display='none'; kakoMenu(); return; }
   vm.style.display = wrap.classList.contains('collapsed') ? 'none' : 'flex';
   setSection(BIG_DEFAULT[big]);
 }
