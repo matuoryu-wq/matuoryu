@@ -7325,12 +7325,12 @@ function fs2Render(){
         <details class="fs2-done"><summary>完成した表（答え）を見る</summary><div class="fs2-scroll">${P.done}</div></details></div>`
     : `<details><summary>資料と表を見る</summary>${(c.parts||[c]).map(P=>`<div class="fs2-box"><div class="fs2-scroll">${P.mat}</div><div class="cap">${P.cap}</div><div class="fs2-scroll">${P.done}</div></div>`).join('')}</details>`;
   const next = FS2_DATA.findIndex((x,j)=>j>fs2C&&x.grp===c.grp);
-  // 過去問タブの計算は、資料→問題→答案用紙の順に並べる
+  // 過去問タブの計算は、問題→資料→答案用紙の順に並べる
   const kakoCalc = c.grp==='過去問' && kind==='計算';
   const body = kakoCalc
-    ? `<div class="fs2-box kk" id="fs2-tb"><div class="fs2-scroll">${P.mat}</div></div>
-      ${nav}
+    ? `${nav}
       ${card}
+      <div class="fs2-box kk" id="fs2-tb"><div class="fs2-scroll">${P.mat}</div></div>
       <div class="fs2-box" id="fs2-tb2"><div class="cap">${P.cap}</div><div class="fs2-scroll">${P.blank}</div>
         <details class="fs2-done"><summary>完成した表（答え）を見る</summary><div class="fs2-scroll">${P.done}</div></details></div>
       ${nav}
