@@ -88,6 +88,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku 
 .after{display:flex;justify-content:flex-end;margin-top:12px}
 .empty{text-align:center;color:var(--muted);padding:40px 10px;font-size:14px}
 .note{font-size:11px;color:var(--warn-fg);background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:10px;padding:8px 12px;line-height:1.6}
+
+/* 租税法テキスト（押すと答えが出る穴埋め） */
+.zt-nav{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.zt-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:10px;margin-bottom:6px}
+.zt-tools .hint{flex:1;min-width:140px}
+.zt h2{font-size:18px;color:var(--primary);border-left:5px solid var(--primary);padding:2px 0 2px 10px;margin:4px 0 12px;line-height:1.5}
+.zt h3{font-size:15.5px;margin:20px 0 8px;padding-bottom:4px;border-bottom:1.5px solid var(--border);line-height:1.5}
+.zt p{font-size:15px;line-height:1.95;margin:0 0 8px}
+.zt ul{margin:0 0 10px 1.2em}
+.zt li{font-size:15px;line-height:1.9;margin-bottom:3px}
+.zt li.sub{list-style:circle;margin-left:1.2em}
+.zt b.em{color:var(--ng)}
+.zt .tw{overflow-x:auto;margin:6px 0 12px;-webkit-overflow-scrolling:touch}
+.zt table{border-collapse:collapse;width:100%;font-size:13.5px;line-height:1.7;min-width:440px}
+.zt th{background:var(--primary);color:var(--on-primary);text-align:left;padding:6px 8px;font-weight:700}
+.zt td{border-bottom:1px solid var(--border);padding:6px 8px;vertical-align:top}
+.zt tr:nth-child(even) td{background:var(--primary-light)}
+.zt .bx{border:1.5px solid var(--border);border-radius:10px;margin:10px 0 14px;overflow:hidden}
+.zt .bx>.bh{font-size:13px;font-weight:700;padding:6px 12px;color:#fff;background:var(--muted)}
+.zt .bx>.bb{padding:10px 12px 4px}
+.zt .bx .bb p,.zt .bx .bb li{font-size:14.5px}
+.zt .k-計算{border-color:var(--ok-bd)}.zt .k-計算>.bh{background:var(--ok)}
+.zt .k-判例{border-color:#B39DDB}.zt .k-判例>.bh{background:#6A1B9A}
+.zt .k-注意{border-color:var(--ng-bd)}.zt .k-注意>.bh{background:var(--ng)}
+.zt .k-ポイント{border-color:var(--warn-bd)}.zt .k-ポイント>.bh{background:#C28A1E}
+.zt .k-条文{border-color:var(--border)}.zt .k-条文>.bh{background:#546E7A}
+.zt .k-事例{border-color:var(--act-bd)}.zt .k-事例>.bh{background:var(--act-bd)}
+.bk{font:inherit;font-weight:700;display:inline;border:none;border-bottom:2px solid var(--act-bd);background:var(--act-bg);color:transparent;border-radius:4px;padding:0 4px;margin:0 1px;cursor:pointer;line-height:inherit;white-space:normal;text-align:left}
+.bk.open{color:var(--act-fg);background:var(--act-bg)}
+.bk:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
+.zt-foot{display:flex;justify-content:space-between;gap:10px;margin-top:18px;border-top:1px solid var(--border);padding-top:12px}
 button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -104,7 +135,11 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
     <div class="pills row" id="cats" style="margin-top:4px"></div>
     <div class="row sub-row" id="subs"></div>
   </div>
-  <div class="row"><span class="lbl">表示方法：</span>
+  <div class="row" id="zRow" hidden><span class="lbl">租税法の使い方：</span>
+    <button class="ctrl-btn" data-zm="q" type="button">問題を解く</button>
+    <button class="ctrl-btn" data-zm="t" type="button">テキストを読む（押すと答え）</button>
+  </div>
+  <div class="row" id="viewRow"><span class="lbl">表示方法：</span>
     <button class="ctrl-btn" data-view="all" type="button">全問</button>
     <button class="ctrl-btn" data-view="check" type="button">✅ チェックのみ</button>
     <button class="ctrl-btn" data-view="double" type="button">✅✅ ダブルチェックのみ</button>
@@ -118,7 +153,7 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
   </div>
 </div>
 
-<div class="check-bar gut">
+<div class="check-bar gut" id="checkBar">
   <span>問題数：<strong id="sTotal" style="color:var(--primary)">0</strong>問</span>
   <span>チェック：<strong id="sCheck" style="color:var(--act-fg)">0</strong>問</span>
   <span>ダブル：<strong id="sDouble" style="color:var(--ng)">0</strong>問</span>
@@ -126,7 +161,7 @@ button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 </div>
 
 <div class="main gut">
-  <div class="nav-row">
+  <div class="nav-row" id="navRow">
     <button class="nav-btn" id="prevBtn" type="button">← 前へ</button>
     <span class="nav-pos" id="pos"></span>
     <button class="nav-btn primary" id="nextBtn" type="button">次の問題 →</button>
@@ -171,6 +206,11 @@ const QB={cats:[],add(id,name,subs,rows){
 <script src="kigyo-data/kansa.js"></script>
 <script src="kigyo-data/zei.js"></script>
 <script>
+// 租税法テキスト：ZT.add(章番号, 章名, [{id, t:節名, b:本文}]) で登録する
+const ZT={chs:[],add(n,t,secs){this.chs.push({n,t,secs});}};
+</script>
+<script src="kigyo-data/zei-text.js"></script>
+<script>
 const CATS=QB.cats,KEY='kigyo-quiz-v3';
 const catOf=id=>CATS.find(c=>c.id===id);
 const subName=(c,s)=>catOf(c).subs.find(x=>x.id===s).name;
@@ -208,6 +248,10 @@ function list(){
 }
 
 function renderControls(){
+  $('zRow').hidden=P.cat!=='zei';
+  document.querySelectorAll('[data-zm]').forEach(b=>b.classList.toggle('active',b.dataset.zm===(P.zm||'q')));
+  const zt=P.cat==='zei'&&P.zm==='t';
+  ['viewRow','checkBar','navRow'].forEach(id=>$(id).hidden=zt);
   $('catWrap').classList.toggle('collapsed',P.hide);
   $('catToggleLbl').textContent=P.hide?'分野を表示':'分野を隠す';
   const all=MC;
@@ -220,7 +264,7 @@ function renderControls(){
       c.subs.map(s=>`<button type="button" class="ctrl-btn${P.sub===s.id?' active':''}" data-sub="${s.id}">${esc(s.name)}<small>${c.qs.filter(q=>q.s===s.id).length}</small></button>`).join('');
   }
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===P.view));
-  $('rankRow').hidden=!scope().some(q=>q.rk);
+  $('rankRow').hidden=zt||!scope().some(q=>q.rk);
   document.querySelectorAll('[data-rank]').forEach(b=>b.classList.toggle('active',b.dataset.rank===P.rank));
   const sc=scope();
   $('sTotal').textContent=list().length;
@@ -231,6 +275,7 @@ function renderControls(){
 let answered=false;
 const chkText=v=>v===2?'✅✅ ダブル':v===1?'✅ チェック':'☐ チェック';
 function renderQ(){
+  if(ztMode()){renderZT();return;}
   const qs=list();
   answered=false;
   if(!qs.length){
@@ -317,6 +362,7 @@ $('copyBtn').onclick=()=>{
 };
 document.addEventListener('keydown',e=>{
   if(e.metaKey||e.ctrlKey||e.altKey)return;
+  if(ztMode())return;
   if(e.target.tagName==='INPUT')return;
   const k=e.key.toLowerCase();
   if(['1','2','3','4'].includes(k)){const q=list()[P.idx];if(q&&!q.calc&&+k<=q.opts.length)answer(+k-1);}
@@ -324,6 +370,76 @@ document.addEventListener('keydown',e=>{
   else if(k==='arrowleft'){if(!$('prevBtn').disabled)go(-1);}
   else if(k==='c')toggleCheck();
 });
+
+// ===== 租税法テキスト（押すと答えが出る穴埋め） =====
+const ZS=ZT.chs.flatMap(ch=>ch.secs.map(sec=>({...sec,ch})));
+let ztOpen=false; // 「すべて表示」の状態
+function ztInline(t){
+  let h=esc(t).replace(/\*\*([^*]+)\*\*/g,'<b class="em">$1</b>');
+  return h.replace(/\{\{([^}]+)\}\}/g,(m,a)=>`<button type="button" class="bk${ztOpen?' open':''}" aria-label="空欄（押すと答え）">${a}</button>`);
+}
+function ztBody(src){
+  const L=src.split('\n');let h='',i=0;
+  const para=l=>`<p>${ztInline(l)}</p>`;
+  function block(lines){
+    let o='',ul=null;
+    const flush=()=>{if(ul!==null){o+=`<ul>${ul}</ul>`;ul=null;}};
+    for(let j=0;j<lines.length;j++){
+      const l=lines[j];
+      if(!l.trim()){flush();continue;}
+      if(l.startsWith('## ')){flush();o+=`<h3>${ztInline(l.slice(3))}</h3>`;continue;}
+      if(/^\s*- /.test(l)){const sub=/^\s{2,}- /.test(l);ul=(ul||'')+`<li${sub?' class="sub"':''}>${ztInline(l.replace(/^\s*- /,''))}</li>`;continue;}
+      if(l.startsWith('|')){
+        flush();const rows=[];
+        while(j<lines.length&&lines[j].startsWith('|')){rows.push(lines[j].replace(/^\||\|\s*$/g,'').split('|').map(c=>c.trim()));j++;}
+        j--;
+        o+=`<div class="tw"><table><thead><tr>${rows[0].map(c=>`<th>${ztInline(c)}</th>`).join('')}</tr></thead><tbody>${rows.slice(1).map(r=>`<tr>${r.map(c=>`<td>${ztInline(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+        continue;
+      }
+      flush();o+=para(l);
+    }
+    flush();return o;
+  }
+  while(i<L.length){
+    const l=L[i];
+    const m=l.match(/^:::(\S+)\s*(.*)$/);
+    if(m){
+      const inner=[];i++;
+      while(i<L.length&&L[i].trim()!==':::'){inner.push(L[i]);i++;}
+      i++;
+      h+=`<div class="bx k-${esc(m[1])}"><div class="bh">${esc(m[1])}${m[2]?'　'+ztInline(m[2]):''}</div><div class="bb">${block(inner)}</div></div>`;
+      continue;
+    }
+    const chunk=[];
+    while(i<L.length&&!/^:::\S/.test(L[i])){chunk.push(L[i]);i++;}
+    h+=block(chunk);
+  }
+  return h;
+}
+function renderZT(){
+  if(!ZS.length){$('card').innerHTML='<div class="empty">テキストはまだありません。</div>';return;}
+  P.zs=Math.min(Math.max(P.zs||0,0),ZS.length-1);
+  const sec=ZS[P.zs],ch=sec.ch;
+  const chPills=ZT.chs.map(c=>`<button type="button" class="ctrl-btn${c===ch?' active':''}" data-zc="${c.n}">第${c.n}章</button>`).join('');
+  const secPills=ch.secs.map(x=>`<button type="button" class="ctrl-btn${x.id===sec.id?' active':''}" data-zsid="${esc(x.id)}">${esc(x.id.endsWith('-0')?'導入':x.id)}</button>`).join('');
+  const prev=ZS[P.zs-1],next=ZS[P.zs+1];
+  $('card').innerHTML=`<div class="zt-nav"><div class="row"><span class="lbl">章：</span>${chPills}</div><div class="row"><span class="lbl">節：</span>${secPills}</div></div>
+    <div class="zt-tools"><span class="hint">色の付いた空欄を押すと用語が出ます。もう一度押すと隠れます。</span>
+      <button type="button" class="ctrl-btn" id="ztAll">${ztOpen?'すべて隠す':'すべて表示'}</button></div>
+    <div class="zt"><h2>第${ch.n}章　${esc(ch.t)}<br><span style="font-size:15px">${esc(sec.id.endsWith('-0')?'導入':sec.id)}　${esc(sec.t)}</span></h2>${ztBody(sec.b)}</div>
+    <div class="zt-foot"><button type="button" class="nav-btn" id="ztPrev"${prev?'':' disabled'}>← 前の節</button><button type="button" class="nav-btn primary" id="ztNext"${next?'':' disabled'}>次の節 →</button></div>`;
+  $('ztAll').onclick=()=>{ztOpen=!ztOpen;document.querySelectorAll('.bk').forEach(b=>b.classList.toggle('open',ztOpen));$('ztAll').textContent=ztOpen?'すべて隠す':'すべて表示';};
+  const move=d=>{P.zs+=d;ztOpen=false;renderZT();window.scrollTo({top:$('card').getBoundingClientRect().top+window.scrollY-12});};
+  $('ztPrev').onclick=()=>move(-1);$('ztNext').onclick=()=>move(1);
+  save();
+}
+$('card').addEventListener('click',e=>{
+  const b=e.target.closest('.bk');if(b){b.classList.toggle('open');return;}
+  const c=e.target.closest('[data-zc]');if(c){P.zs=ZS.findIndex(x=>x.ch.n===+c.dataset.zc);ztOpen=false;renderZT();return;}
+  const s=e.target.closest('[data-zsid]');if(s){P.zs=ZS.findIndex(x=>x.id===s.dataset.zsid);ztOpen=false;renderZT();}
+});
+const ztMode=()=>P.cat==='zei'&&P.zm==='t';
+document.querySelectorAll('[data-zm]').forEach(b=>b.onclick=()=>{P.zm=b.dataset.zm;reset();});
 
 load();renderControls();renderQ();
 </script>
