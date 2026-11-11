@@ -100,8 +100,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku 
 .zt li{font-size:15px;line-height:1.9;margin-bottom:3px}
 .zt li.sub{list-style:circle;margin-left:1.2em}
 .zt b.em{color:var(--ng)}
-.zt .tw{overflow-x:auto;margin:6px 0 12px;-webkit-overflow-scrolling:touch}
-.zt table{border-collapse:collapse;width:100%;font-size:13.5px;line-height:1.7;min-width:440px}
+.zt .tw{margin:6px 0 14px}
+.zt table{border-collapse:collapse;width:100%;table-layout:fixed;font-size:14px;line-height:1.75}
+.zt td,.zt th{overflow-wrap:anywhere;word-break:normal}
+.zt td:first-child{width:36%;font-weight:600}
+@media (max-width:520px){.zt table,.zt thead,.zt tbody,.zt tr,.zt th,.zt td{display:block;width:auto!important}.zt thead{display:none}.zt tr{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}.zt tr:nth-child(even) td{background:none}.zt td{border-bottom:none;padding:6px 10px}.zt td:first-child{background:var(--primary-light)!important;color:var(--primary)}}
 .zt th{background:var(--primary);color:var(--on-primary);text-align:left;padding:6px 8px;font-weight:700}
 .zt td{border-bottom:1px solid var(--border);padding:6px 8px;vertical-align:top}
 .zt tr:nth-child(even) td{background:var(--primary-light)}
