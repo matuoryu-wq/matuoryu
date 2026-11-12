@@ -118,7 +118,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku 
 .zt .k-ポイント{border-color:var(--warn-bd)}.zt .k-ポイント>.bh{background:#C28A1E}
 .zt .k-条文{border-color:var(--border)}.zt .k-条文>.bh{background:#546E7A}
 .zt .k-事例{border-color:var(--act-bd)}.zt .k-事例>.bh{background:var(--act-bd)}
-.bk{font:inherit;font-weight:700;display:inline;border:none;border-bottom:2px solid var(--act-bd);background:var(--act-bg);color:transparent;border-radius:4px;padding:0 4px;margin:0 1px;cursor:pointer;line-height:inherit;white-space:normal;text-align:left}
+.bk{touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;font:inherit;font-weight:700;display:inline;border:none;border-bottom:2px solid var(--act-bd);background:var(--act-bg);color:transparent;border-radius:4px;padding:0 4px;margin:0 1px;cursor:pointer;line-height:inherit;white-space:normal;text-align:left}
 .bk.open{color:var(--act-fg);background:var(--act-bg)}
 .bk:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
 .zt-foot{display:flex;justify-content:space-between;gap:10px;margin-top:18px;border-top:1px solid var(--border);padding-top:12px}
@@ -212,9 +212,21 @@ const QB={cats:[],add(id,name,subs,rows){
 // 租税法テキスト：ZT.add(章番号, 章名, [{id, t:節名, b:本文}]) で登録する
 const ZT={chs:[],add(n,t,secs){this.chs.push({n,t,secs});}};
 </script>
-<script src="kigyo-data/zei-text.js"></script>
-<script src="kigyo-data/zei-text-02.js"></script>
-<script src="kigyo-data/zei-text-03.js"></script>
+<script src="kigyo-data/zei-text.js?v=2"></script>
+<script src="kigyo-data/zei-text-02.js?v=2"></script>
+<script src="kigyo-data/zei-text-03.js?v=2"></script>
+<script src="kigyo-data/zei-text-04.js?v=2"></script>
+<script src="kigyo-data/zei-text-05.js?v=2"></script>
+<script src="kigyo-data/zei-text-06.js?v=2"></script>
+<script src="kigyo-data/zei-text-07.js?v=2"></script>
+<script src="kigyo-data/zei-text-08.js?v=2"></script>
+<script src="kigyo-data/zei-text-09.js?v=2"></script>
+<script src="kigyo-data/zei-text-10.js?v=2"></script>
+<script src="kigyo-data/zei-text-11.js?v=2"></script>
+<script src="kigyo-data/zei-text-12.js?v=2"></script>
+<script src="kigyo-data/zei-text-13.js?v=2"></script>
+<script src="kigyo-data/zei-text-14.js?v=2"></script>
+<script src="kigyo-data/zei-text-14b.js?v=2"></script>
 <script>
 const CATS=QB.cats,KEY='kigyo-quiz-v3';
 const catOf=id=>CATS.find(c=>c.id===id);
