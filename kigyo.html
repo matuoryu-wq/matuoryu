@@ -104,7 +104,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','Hiragino Kaku 
 .zt table{border-collapse:collapse;width:100%;table-layout:fixed;font-size:14px;line-height:1.75}
 .zt td,.zt th{overflow-wrap:anywhere;word-break:normal}
 .zt td:first-child{width:36%;font-weight:600}
-@media (max-width:520px){.zt table,.zt thead,.zt tbody,.zt tr,.zt th,.zt td{display:block;width:auto!important}.zt thead{display:none}.zt tr{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}.zt tr:nth-child(even) td{background:none}.zt td{border-bottom:none;padding:6px 10px}.zt td:first-child{background:var(--primary-light)!important;color:var(--primary)}}
+@media (max-width:520px){.zt table{font-size:13px;line-height:1.65}.zt td,.zt th{padding:5px 6px}.zt td:first-child{width:34%}}
+.zt .tw{border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.zt-fig{margin:10px 0 16px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:6px 6px 4px}.zt-fig img{display:block;width:100%;height:auto}.zt-fig figcaption{font-size:12.5px;color:#555;text-align:center;margin-top:4px;line-height:1.5}.zt-fig a{display:block}
 .zt th{background:var(--primary);color:var(--on-primary);text-align:left;padding:6px 8px;font-weight:700}
 .zt td{border-bottom:1px solid var(--border);padding:6px 8px;vertical-align:top}
 .zt tr:nth-child(even) td{background:var(--primary-light)}
@@ -212,21 +214,21 @@ const QB={cats:[],add(id,name,subs,rows){
 // 租税法テキスト：ZT.add(章番号, 章名, [{id, t:節名, b:本文}]) で登録する
 const ZT={chs:[],add(n,t,secs){this.chs.push({n,t,secs});}};
 </script>
-<script src="kigyo-data/zei-text.js?v=2"></script>
-<script src="kigyo-data/zei-text-02.js?v=2"></script>
-<script src="kigyo-data/zei-text-03.js?v=2"></script>
-<script src="kigyo-data/zei-text-04.js?v=2"></script>
-<script src="kigyo-data/zei-text-05.js?v=2"></script>
-<script src="kigyo-data/zei-text-06.js?v=2"></script>
-<script src="kigyo-data/zei-text-07.js?v=2"></script>
-<script src="kigyo-data/zei-text-08.js?v=2"></script>
-<script src="kigyo-data/zei-text-09.js?v=2"></script>
-<script src="kigyo-data/zei-text-10.js?v=2"></script>
-<script src="kigyo-data/zei-text-11.js?v=2"></script>
-<script src="kigyo-data/zei-text-12.js?v=2"></script>
-<script src="kigyo-data/zei-text-13.js?v=2"></script>
-<script src="kigyo-data/zei-text-14.js?v=2"></script>
-<script src="kigyo-data/zei-text-14b.js?v=2"></script>
+<script src="kigyo-data/zei-text.js?v=3"></script>
+<script src="kigyo-data/zei-text-02.js?v=3"></script>
+<script src="kigyo-data/zei-text-03.js?v=3"></script>
+<script src="kigyo-data/zei-text-04.js?v=3"></script>
+<script src="kigyo-data/zei-text-05.js?v=3"></script>
+<script src="kigyo-data/zei-text-06.js?v=3"></script>
+<script src="kigyo-data/zei-text-07.js?v=3"></script>
+<script src="kigyo-data/zei-text-08.js?v=3"></script>
+<script src="kigyo-data/zei-text-09.js?v=3"></script>
+<script src="kigyo-data/zei-text-10.js?v=3"></script>
+<script src="kigyo-data/zei-text-11.js?v=3"></script>
+<script src="kigyo-data/zei-text-12.js?v=3"></script>
+<script src="kigyo-data/zei-text-13.js?v=3"></script>
+<script src="kigyo-data/zei-text-14.js?v=3"></script>
+<script src="kigyo-data/zei-text-14b.js?v=3"></script>
 <script>
 const CATS=QB.cats,KEY='kigyo-quiz-v3';
 const catOf=id=>CATS.find(c=>c.id===id);
@@ -405,6 +407,7 @@ function ztBody(src){
       const l=lines[j];
       if(!l.trim()){flush();continue;}
       if(l.startsWith('## ')){flush();o+=`<h3>${ztInline(l.slice(3))}</h3>`;continue;}
+      if(l.startsWith('@図 ')){flush();const mm=l.slice(3).match(/^(\S+)\s*(.*)$/);const u=`kigyo-data/zei-fig/${mm[1]}.webp`;o+=`<figure class="zt-fig"><a href="${u}" target="_blank" rel="noopener"><img src="${u}" loading="lazy" alt="${esc(mm[2])}"></a><figcaption>図　${esc(mm[2])}（タップで拡大）</figcaption></figure>`;continue;}
       if(/^\s*- /.test(l)){const sub=/^\s{2,}- /.test(l);ul=(ul||'')+`<li${sub?' class="sub"':''}>${ztInline(l.replace(/^\s*- /,''))}</li>`;continue;}
       if(l.startsWith('|')){
         flush();const rows=[];
