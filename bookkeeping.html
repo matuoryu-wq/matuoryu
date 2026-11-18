@@ -7527,9 +7527,10 @@ function fs2Show(btn){
 }
 let fs2C=0, fs2Q=0, fs2M='計算';
 function fs2Items(c){
+  if(fs2M==='計算' && c.grp==='過去問') return [...c.C.map(x=>['計算',...x]), ...(c.MAP?[['全体の地図',c.MAP,'','']]:[])];   // 過去問は講座を最後に
   return fs2M==='計算' ? [...(c.MAP?[['全体の地図',c.MAP,'','']]:[]), ...c.C.map(x=>['計算',...x])] : [...c.K.map(x=>['知識',...x]), ...c.E.map(e=>['まとめの会話','','',e])];
 }
-function kakoGo(i){ fs2C=i; fs2M='計算'; const it=fs2Items(FS2_DATA[i]); fs2Q=(it[0]&&it[0][0]==='全体の地図'&&it.length>1)?1:0; fs2Render(); }
+function kakoGo(i){ fs2C=i; fs2M='計算'; fs2Q=0; fs2Render(); }
 function fs2Open(i){
   if(FS2_DATA[i].grp==='過去問'){ kakoR=FS2_DATA[i].kr; kakoGo(i); return; }
   fs2C=i; const c=FS2_DATA[i], main=document.getElementById('exp-main');
@@ -7556,7 +7557,7 @@ function fs2Render(){
   const off=(items[0]&&items[0][0]==='全体の地図')?1:0;
   const no=kind==='まとめの会話'?'':(kind==='計算'?i+1-off:i+1);
   const card = kind==='全体の地図'
-    ? `<div class="fs2-card mp2-card">${q0}<div style="text-align:center;margin-top:14px;"><button class="fs2-show mp-start" onclick="fs2Go(1)">問題を解き始める →</button></div></div>`
+    ? `<div class="fs2-card mp2-card">${q0}${c.grp==='過去問'?'':'<div style="text-align:center;margin-top:14px;"><button class="fs2-show mp-start" onclick="fs2Go(1)">問題を解き始める →</button></div>'}</div>`
     : kind==='まとめの会話'
     ? `<div class="fs2-card"><div class="fs2-kind">まとめの会話</div>${tk}</div>`
     : `<div class="fs2-card" data-ls="${fs2Letters(q).join('')}"><div class="fs2-kind">${kind}</div><div><span class="qn">${no}</span>${(c.grp==='過去問'&&q.includes('<div class="fs2-qbox'))?q.replace('<div class="fs2-qbox',fs2Mc(c, kind+i, a, q)+'<div class="fs2-qbox'):q}</div>
