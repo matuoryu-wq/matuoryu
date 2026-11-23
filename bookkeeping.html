@@ -837,7 +837,7 @@
     .fs2 .bl.fs2-hlb { background:#FFB300 !important; outline:3px solid #D84315 !important; outline-offset:-3px; color:#000; font-weight:900; }
     .fs2-ch-btn { display:flex; justify-content:space-between; align-items:center; gap:8px; width:100%; text-align:left; padding:10px 12px; margin:6px 0; border-radius:10px; border:1.5px solid var(--border); background:#fff; font-size:14px; font-weight:700; color:var(--text); cursor:pointer; }
     .fs2-ch-btn small { font-weight:400; color:var(--muted); font-size:11px; display:block; }
-    .fs2 .gf-why{font-size:13.5px;line-height:1.65;margin:6px 4px 0;padding:6px 8px;background:#F6F8EE;border-left:4px solid #8DB255;border-radius:4px;color:#333}.fs2 .gf-why b{color:#1d2733;font-weight:800}</style>
+    .fs2 .gf-why{font-size:13.5px;line-height:1.65;margin:6px 4px 0;padding:6px 8px;background:#F6F8EE;border-left:4px solid #8DB255;border-radius:4px;color:#333}.fs2 .gf-why b{color:#1d2733;font-weight:800}.fs2 #fs2-tb2:not(.fs2-all) .fs2-xh{display:none}.fs2 #fs2-tb2.fs2-all tr.fs2-gap{display:none}.fs2 tr.fs2-gap td{text-align:center!important;color:#888;padding:0;line-height:1.2;background:#fafafa}.fs2 .fs2-allbtn{display:block;margin:4px 0 8px;padding:5px 10px;font-size:13px;border:1px solid #9fb3c8;border-radius:8px;background:#f3f7fb;color:#1F4E79;font-weight:700}</style>
 </head>
 <body>
 
@@ -7453,6 +7453,37 @@ function fs2Record(card, j){
   const t=FS2_DATA[fs2C].t; (fs2Filled[t]=fs2Filled[t]||{})[L]=bl[j].v.replace(/(千円|円)$/,'');
   fs2ApplyFill();
 }
+function fs2Excerpt(){
+  const tb=document.getElementById('fs2-tb2'); if(!tb) return;
+  const card=document.querySelector('#exp-main .fs2-card');
+  const fl=card&&card.querySelector('.fs2-fl');
+  const Ls=new Set([...(fl?fl.dataset.f:''), ...((card&&card.dataset.ls)||'')]);
+  const has=el=>{ const t=el.textContent; for(const L of Ls){ if(t.includes('（'+L+'）')) return true; } return [...el.querySelectorAll('.bl')].some(td=>Ls.has(td.dataset.l)); };
+  const N=2; let any=false;
+  [...tb.querySelectorAll('.fs2-scroll')].filter(e=>!e.closest('details')&&!e.querySelector('.fs2-scroll')).forEach(sc=>{
+    const tables=[...sc.querySelectorAll(':scope > table')];
+    if(!tables.length){ if(has(sc)) any=true; else sc.classList.add('fs2-xh'); return; }
+    // 表の前の見出し（前の表の後ろから、この表の前まで）を1つにまとめる
+    tables.forEach(t=>{
+      const pre=[]; let n=t.previousSibling; while(n && !(n.nodeType===1 && n.tagName==='TABLE')){ pre.unshift(n); n=n.previousSibling; }
+      let w=null; if(pre.length){ w=document.createElement('span'); w.className='fs2-ttl'; t.before(w); pre.forEach(x=>w.appendChild(x)); }
+      const rows=[...t.rows], hit=rows.map(r=>has(r));
+      if(!hit.some(Boolean)){ t.classList.add('fs2-xh'); if(w) w.classList.add('fs2-xh'); return; }
+      any=true;
+      const keep=rows.map((r,k)=>r.querySelector('th')&&!r.querySelector('td') || hit.slice(Math.max(0,k-N),k+N+1).some(Boolean));
+      let gap=false;
+      rows.forEach((r,k)=>{ if(keep[k]){ gap=false; return; } r.classList.add('fs2-xh');
+        if(!gap){ gap=true; const g=document.createElement('tr'); g.className='fs2-gap'; g.innerHTML=`<td colspan="${Math.max(...rows.map(x=>x.cells.length))}">⋮</td>`; r.before(g); } });
+    });
+    // 表の後ろの文（「問2 …（シ）円」など）は、今の問の欄があるときだけ見せる
+    let n=tables[tables.length-1].nextSibling; const post=[]; while(n){ post.push(n); n=n.nextSibling; }
+    if(post.length){ const w=document.createElement('span'); w.className='fs2-ttl'; sc.appendChild(w); post.forEach(x=>w.appendChild(x)); if(has(w)) any=true; else w.classList.add('fs2-xh'); }
+  });
+  const btn=document.createElement('button'); btn.className='fs2-allbtn';
+  const set=on=>{ tb.classList.toggle('fs2-all',on); btn.textContent=on?'答案用紙を抜粋に戻す':(any?'答案用紙の全体を見る':'答案用紙を見る'); };
+  btn.onclick=()=>set(!tb.classList.contains('fs2-all'));
+  const cap=tb.querySelector(':scope > .cap'); (cap||tb.firstChild).after(btn); set(false);
+}
 function fs2ApplyFill(){
   const f=fs2Filled[FS2_DATA[fs2C].t]||{}; const tb=document.getElementById('fs2-tb2'); if(!tb) return;
   tb.querySelectorAll('.bl').forEach(td=>{ if(td.closest('details')) return;
@@ -7604,7 +7635,7 @@ function fs2Render(){
     </div>`;
   fs2Fit();
   if(c.grp==='過去問' && kind==='計算'){ fs2NumWrap(); }
-  if(kakoCalc) fs2ApplyFill();
+  if(kakoCalc){ fs2ApplyFill(); fs2Excerpt(); }
   if(kind==='計算') fs2Mark(c, i-off, q);
   const qt=kakoCalc&&fs2JumpQ&&document.getElementById('fs2-qtop');
   fs2JumpQ=false;
