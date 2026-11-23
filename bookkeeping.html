@@ -2451,79 +2451,79 @@ const ALL = [
     q:'Ｘ社は前期に発生した過去勤務費用（退職給付水準の引き上げによるもの）240,000円を、平均残存勤務期間8年にわたって定額法で費用処理している。<mark class="q-expense">当期の償却額を費用計上し</mark>、<mark class="q-liability">同額を退職給付引当金に繰り入れる</mark>仕訳を示しなさい（個別財務諸表上の処理）。',
     en_q:"Company X amortizes past service cost of ¥240,000 (from a benefit-level increase) that arose last period straight-line over an average remaining service period of 8 years. Record this period's amortization in the separate financial statements.",
     e:[{d:[['退職給付費用',30000]], c:[['退職給付引当金',30000]]}],
-    exp:'過去勤務費用（退職金規程の改定などにより生じる退職給付債務の変動額）も、数理計算上の差異と同様に、個別財務諸表では発生時に全額を費用処理せず、平均残存勤務期間等の一定の年数で規則的に償却します。まるで大きな制度変更のコストを何年かに分けて少しずつ吸収していくようなイメージで、240,000円÷8年＝30,000円を当期の「退職給付費用」に追加します。'
+    exp:'<div class="xp-c">個別では、過去勤務費用を<b>決めた年数で少しずつ<mark class="ptm">退職給付費用</mark>にします</b>。</div><p class="xp-w">給付の引上げで増えた債務240,000円を8年で割り、30,000円を毎年の費用にして引当金に繰り入れます。</p><div class="xp-m"><b>間違えやすい点</b>　発生した年に全額を費用にしないこと。</div>'
   },
   { id:819, calc:'', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'<mark class="q-liability">Ｘ社の年金資産の実際運用収益が期待運用収益を60,000円上回り、数理計算上の差異（有利差異）60,000円が発生した</mark>。連結財務諸表上、<mark class="q-eq-rx">この差異を即時に「退職給付に係る調整累計額」として認識する</mark>仕訳を示しなさい（税効果は考慮しない）。',
     en_q:"Company X's actual return on plan assets exceeded the expected return by ¥60,000, generating a favorable actuarial difference of ¥60,000. On consolidation, record the entry immediately recognizing this difference in accumulated remeasurements of defined benefit plans, ignoring tax effects.",
     e:[{d:[['退職給付引当金',60000]], c:[['退職給付に係る調整累計額',60000]]}],
-    exp:'運用が予想以上にうまくいった場合（実際運用収益＞期待運用収益）は、有利差異として、退職給付債務と年金資産の差額（＝会社の負担）を減らす方向に働きます。まるで積立投資が予想以上に値上がりして、将来の負担が軽くなったようなイメージで、連結財務諸表上は即時に認識するため、「退職給付引当金」（負債）を減額し、相手科目として純資産の部「退職給付に係る調整累計額」を増額します。不利差異のケース（別問参照）とは、借方・貸方が逆になる点を確認しましょう。'
+    exp:'<div class="xp-c">連結では、有利な数理計算上の差異を<b>すぐに認識</b>し、<mark class="ptm">退職給付に係る調整累計額</mark>を増やします。</div><p class="xp-w">運用が期待より60,000円多かったので積立不足が減り、退職給付引当金を減らします。その分だけ純資産が増えます。</p><div class="xp-m"><b>間違えやすい点</b>　不利な差異のときと借方・貸方が逆になります。</div>'
   },
   { id:820, calc:'', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'Ｘ社は退職金規程を改定し、退職給付水準を引き上げた。この結果、<mark class="q-liability">退職給付債務が350,000円増加した（過去勤務費用の発生、不利差異）</mark>。連結財務諸表上、<mark class="q-eq-rx">この全額を即時に認識する</mark>仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Company X amended its retirement benefit plan, raising benefit levels. This increased the retirement benefit obligation by ¥350,000 (an unfavorable past service cost). On consolidation, record the entry immediately recognizing this full amount, ignoring tax effects.',
     e:[{d:[['退職給付に係る調整累計額',350000]], c:[['退職給付引当金',350000]]}],
-    exp:'退職給付水準の「引き上げ」による過去勤務費用は、退職給付債務を増やす方向（会社にとって不利）に働きます。まるで従業員への待遇改善によって将来の負担が重くなったようなイメージで、連結財務諸表上は即時にＢ／Ｓへ反映するため、「退職給付引当金」（負債）を増額し、相手科目として純資産の部の「退職給付に係る調整累計額」を減額します。水準を引き下げた場合（別問参照）とは正反対の方向に動きます。'
+    exp:'<div class="xp-c">連結では、給付の引上げで増えた債務を<b>すぐに認識</b>し、<mark class="ptm">退職給付に係る調整累計額</mark>を減らします。</div><p class="xp-w">将来払う額が350,000円増えたので負債を増やし、その分だけ純資産を減らします。</p><div class="xp-m"><b>間違えやすい点</b>　引上げは不利、引下げは有利。向きを逆にしないこと。</div>'
   },
   { id:821, calc:'150,000＋60,000＝210,000円', level:2, cat:'退職給付', chap:'1級：退職給付会計',
     q:'Ｘ社の期首退職給付債務は3,000,000円であった。<mark class="q-expense">当期の勤務費用150,000円・利息費用60,000円が発生した</mark>場合の、退職給付債務の増加を認識する仕訳を示しなさい（<mark class="q-liability">退職給付引当金の増加として処理する</mark>）。',
     en_q:"Company X's opening retirement benefit obligation was ¥3,000,000. This period, service cost of ¥150,000 and interest cost of ¥60,000 arose. Record the entry recognizing the increase in the retirement benefit obligation.",
     e:[{d:[['退職給付費用',210000]], c:[['退職給付引当金',210000]]}],
-    exp:'退職給付債務は、期首残高に「勤務費用」（当期の労働により新たに発生した義務）と「利息費用」（割引計算により時の経過で増える現在価値相当額）を加えて増加していきます。まるで借金の残高に、新たに借りた分と利子が上乗せされていくようなイメージで、150,000円＋60,000円＝210,000円が当期の増加分です。これは個別財務諸表上、「退職給付費用」（費用）と「退職給付引当金」（負債）の両方を増やす仕訳として処理されます。'
+    exp:'<div class="xp-c">退職給付債務は、<b>勤務費用と利息費用の分だけ増え</b>、その合計が<mark class="ptm">退職給付費用</mark>です。</div><p class="xp-w">1年働いた分の勤務費用150,000円と、時間がたって増える利息費用60,000円で、合計210,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　期首の債務3,000,000円を費用にしないこと。増えた分だけです。</div>'
   },
   { id:822, calc:'', level:2, cat:'退職給付', chap:'1級：退職給付会計',
     q:'Ｘ社の年金資産について、期首残高2,000,000円に対し、<mark class="q-expense">期待運用収益40,000円が発生した</mark>。<mark class="q-liability">年金資産の増加（退職給付引当金の減少）を認識する</mark>仕訳を示しなさい。',
     en_q:"Company X's plan assets had an opening balance of ¥2,000,000, and expected return on plan assets of ¥40,000 arose. Record the entry recognizing the increase in plan assets (a decrease in the retirement benefit obligation).",
     e:[{d:[['退職給付引当金',40000]], c:[['退職給付費用',40000]]}],
-    exp:'年金資産は、外部の年金基金で運用されている資産で、増えるほど会社の正味の負担（退職給付債務－年金資産＝退職給付引当金）が減ります。まるで積立投資が値上がりして、将来の必要資金が少なく済むようなイメージで、期待運用収益（予定利率などから見積もった運用による増加分）40,000円が生じた分だけ、退職給付引当金を減額し、退職給付費用も同額減額します（退職給付費用の計算式で期待運用収益がマイナス項目だったことを思い出しましょう）。'
+    exp:'<div class="xp-c">年金資産の期待運用収益は、<b>退職給付引当金を減らし、退職給付費用も減らします</b>。</div><p class="xp-w">年金資産が増えると、会社が負担すべき積立不足が40,000円減るからです。</p><div class="xp-m"><b>間違えやすい点</b>　運用収益を収益の科目にしないこと。退職給付費用のマイナスです。</div>'
   },
   { id:823, calc:'', level:2, cat:'退職給付', chap:'1級：退職給付会計',
     q:'Ｘ社は確定拠出年金制度を採用しており、当期の<mark class="q-expense">掛金80,000円を</mark>、<mark class="q-asset">現金で外部の年金基金に拠出した</mark>。仕訳を示しなさい。',
     en_q:'Company X uses a defined contribution pension plan and contributed ¥80,000 cash to an external pension fund this period. Record the entry.',
     e:[{d:[['退職給付費用',80000]], c:[['現金',80000]]}],
-    exp:'確定拠出年金制度（DC）は、会社が一定額の掛金を外部に拠出すれば、それ以降の運用リスクを会社が負わない制度です（確定給付制度ＤＢとは異なり、将来の給付額を会社が保証しません）。まるで積立NISAの口座に毎月入金するだけで、その後の運用成績は加入者次第、というイメージで、複雑な退職給付債務の計算は不要で、単純に「掛金を拠出した時点」で費用（退職給付費用）として処理して完了します。ＤＢ制度のように「退職給付引当金」という負債は計上しません。'
+    exp:'<div class="xp-c">確定拠出の掛金は、<b>払ったら終わり</b>で、払った額を<mark class="ptm">退職給付費用</mark>にします。</div><p class="xp-w">運用の結果は従業員の責任なので、会社は将来の債務を持ちません。退職給付引当金は計上しません。</p><div class="xp-m"><b>間違えやすい点</b>　確定給付のように引当金を使わないこと。</div>'
   },
   { id:824, calc:'600,000－550,000＝50,000円', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'Ｘ社は確定給付企業年金制度（ＤＢ）の一部を確定拠出年金制度（ＤＣ）に移行した（<strong>退職給付制度の終了</strong>）。<mark class="q-liability">移行により消滅した退職給付債務は600,000円、移換した年金資産は550,000円であった</mark>。<mark class="q-revenue">この移行にともなう損益を計上する</mark>仕訳を示しなさい。',
     en_q:'Company X converted part of its defined benefit (DB) pension plan to a defined contribution (DC) plan. The obligation extinguished was ¥600,000, and the plan assets transferred were ¥550,000. Record the entry recognizing the gain from this conversion.',
     e:[{d:[['退職給付引当金',50000]], c:[['退職給付制度終了益',50000]]}],
-    exp:'ＤＢ制度からＤＣ制度へ制度の一部を移行すると、その部分についてはもはや会社が将来の運用リスクを負わなくなるため、「退職給付制度の終了」として処理します。まるで会社が抱えていた将来の重い約束の一部を、外部に肩代わりしてもらうようなイメージで、消滅する退職給付債務600,000円と、移換する年金資産550,000円の差額（＝会社の正味負担の減少額）50,000円を、退職給付引当金の取崩しと「退職給付制度終了益」（特別利益）として計上します。ＤＢの一部がＤＣに置き換わることで、会社の将来負担が軽くなったことを表しています。'
+    exp:'<div class="xp-c">制度を移すと、<b>消える債務と渡す年金資産の差</b>を<mark class="ptm">退職給付制度終了益</mark>（または損）にします。</div><p class="xp-w">消える債務600,000円、渡す年金資産550,000円です。負担が50,000円軽くなったので利益です。</p><div class="xp-m"><b>間違えやすい点</b>　債務と資産の差だけを損益にすること。全額を損益にしないこと。</div>'
   },
   { id:825, calc:'前期発生分：80,000÷8年＝10,000円\n当期発生分：90,000÷9年＝10,000円\n合計：10,000＋10,000＝20,000円', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'Ｘ社は、前期に発生した数理計算上の差異80,000円（平均残存勤務期間8年で償却中、当期はその2年目にあたる）に加え、当期新たに数理計算上の差異90,000円（平均残存勤務期間9年）が発生した。<mark class="q-expense">当期の償却額の合計（前期発生分の2年目償却＋当期発生分の1年目償却）を費用計上し</mark>、<mark class="q-liability">同額を退職給付引当金に繰り入れる</mark>仕訳を示しなさい。',
     en_q:"Company X is amortizing an actuarial difference of ¥80,000 that arose last period (over an 8-year average remaining service period; this is year 2 of that amortization), and this period a new actuarial difference of ¥90,000 arose (9-year average remaining service period). Record the entry recognizing the combined amortization (year 2 of the prior difference plus year 1 of the new one).",
     e:[{d:[['退職給付費用',20000]], c:[['退職給付引当金',20000]]}],
-    exp:'実務では、数理計算上の差異は毎期のように発生するため、複数の年度に発生した差異が同時に償却されていきます。まるで複数のローンを同時に返済しているようなイメージで、前期発生分（80,000円÷8年＝10,000円、2年目の償却）と、当期新たに発生した分（90,000円÷9年＝10,000円、1年目の償却）を合算して、当期の退職給付費用に加えます：10,000円＋10,000円＝20,000円。「発生年度の異なる複数の差異を、それぞれ独立して償却し、合算する」という実務上の処理方法を確認する問題です。'
+    exp:'<div class="xp-c">発生した年が違う差異は、<b>それぞれの年数で割って合計</b>します。</div><p class="xp-w">前期分80,000円÷8年で10,000円、当期分90,000円÷9年で10,000円、合計20,000円を費用にします。</p><div class="xp-m"><b>間違えやすい点</b>　2つを合わせてから割らないこと。</div>'
   },
   { id:826, calc:'', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'連結財務諸表において、<mark class="q-expense">当期に過去勤務費用の費用処理額（組替調整額）18,000円を、退職給付費用として計上する</mark>とともに、<mark class="q-eq-rx">その他の包括利益（退職給付に係る調整累計額）から同額を減額する</mark>。仕訳を示しなさい。',
     en_q:"On consolidation, record the entry recognizing ¥18,000 of amortized past service cost (a reclassification adjustment) as retirement benefit expense, while reducing accumulated remeasurements of defined benefit plans by the same amount.",
     e:[{d:[['退職給付費用',18000]], c:[['退職給付に係る調整累計額',18000]]}],
-    exp:'数理計算上の差異と同じように、過去勤務費用についても、連結財務諸表では発生時に即時認識した後、個別財務諸表と同じペースで償却した分を「組替調整額」として退職給付費用に計上し、同額を「退職給付に係る調整累計額」から取り崩します。二重計上を防ぐための処理で、退職給付債務・年金資産の総額（退職給付引当金）自体はこの仕訳では変動しません。'
+    exp:'<div class="xp-c">連結で過去勤務費用を費用処理したら、<b>同じ額を<mark class="ptm">退職給付に係る調整累計額</mark>から戻します</b>（組替調整）。</div><p class="xp-w">すでに純資産で認識しているので、費用にした分だけ純資産の側を戻さないと二重になります。</p><div class="xp-m"><b>間違えやすい点</b>　退職給付引当金は、この仕訳では動きません。</div>'
   },
   { id:827, calc:'繰延税金資産：200,000×30％＝60,000円\n退職給付に係る調整累計額：200,000－60,000＝140,000円', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'Ｘ社は退職金規程を改定し、退職給付水準を引き上げた。この結果、<mark class="q-liability">退職給付債務が200,000円増加した（過去勤務費用の発生、不利差異）</mark>。連結財務諸表上、<mark class="q-asset">実効税率30％として税効果を考慮した</mark>うえで、<mark class="q-eq-rx">この差異を認識する</mark>仕訳を示しなさい。',
     en_q:'Company X amended its retirement benefit plan, raising benefit levels. This increased the retirement benefit obligation by ¥200,000 (an unfavorable past service cost). On consolidation, applying tax-effect accounting at an effective tax rate of 30%, record the entry recognizing this difference.',
     e:[{d:[['退職給付に係る調整累計額',140000],['繰延税金資産',60000]], c:[['退職給付引当金',200000]]}],
-    exp:'過去勤務費用の即時認識にも税効果会計を適用します。将来の費用計上（損金算入）につながる不利差異なので、税金負担を軽減する効果（繰延税金資産）60,000円（200,000×30％）を認識し、残り140,000円を税引後の金額として「退職給付に係る調整累計額」に計上します。退職給付引当金（負債）は税効果を挟まず全額200,000円増加させます。'
+    exp:'<div class="xp-c">連結で認識する過去勤務費用にも税効果を適用し、<b>税金の分を<mark class="ptm">繰延税金資産</mark></b>にします。</div><p class="xp-w">不利な200,000円のうち30％の60,000円は将来の税金を減らす前払い、残り140,000円が調整累計額の減少です。</p><div class="xp-m"><b>間違えやすい点</b>　退職給付引当金は税金分を引かず、全額を増やします。</div>'
   },
   { id:828, calc:'270,000－230,000＝40,000円', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'Ｘ社は早期退職優遇制度を実施し、対象者の退職により<mark class="q-liability">退職給付債務が270,000円減少した。対応する年金資産の減少額は230,000円であった</mark>。<mark class="q-revenue">制度の一部終了にともなう損益を計上する</mark>仕訳を示しなさい。',
     en_q:"Company X implemented an early retirement incentive program. The resulting retirements reduced the retirement benefit obligation by ¥270,000, with a corresponding ¥230,000 decrease in plan assets. Record the entry recognizing the gain from this partial plan settlement.",
     e:[{d:[['退職給付引当金',40000]], c:[['退職給付制度終了益',40000]]}],
-    exp:'早期退職優遇制度などにより、対象となる従業員が一斉に退職すると、それに対応する退職給付債務と年金資産がまとめて消滅します（「退職給付制度の一部終了」と呼びます）。まるで一部の社員が退職金を受け取って一気に「卒業」していくイメージで、消滅する退職給付債務270,000円の方が、対応する年金資産の減少額230,000円よりも大きいため、差額40,000円は会社の負担が軽くなったことを意味し、「退職給付制度終了益」として利益計上します。'
+    exp:'<div class="xp-c">早期退職で債務と年金資産が減ったら、<b>その差</b>を<mark class="ptm">退職給付制度終了益</mark>にします。</div><p class="xp-w">消える債務270,000円、減る年金資産230,000円で、負担が40,000円軽くなりました。</p><div class="xp-m"><b>間違えやすい点</b>　退職金の支払いとして全額を費用にしないこと。</div>'
   },
   { id:829, calc:'', level:2, cat:'退職給付', chap:'1級：退職給付会計',
     q:'Ｘ社は業界団体が運営する複数事業主制度の企業年金に加入しており、自社の拠出に対応する年金資産・年金負債を合理的に区分計算することができない。当期の<mark class="q-expense">掛金拠出額120,000円を</mark>、<mark class="q-asset">現金で支払った</mark>場合の仕訳を示しなさい（確定拠出制度に準じて処理する）。',
     en_q:"Company X participates in a multiemployer pension plan operated by an industry association, and cannot reasonably determine its share of plan assets and obligations. Record the entry for this period's cash contribution of ¥120,000, accounted for as if it were a defined contribution plan.",
     e:[{d:[['退職給付費用',120000]], c:[['現金',120000]]}],
-    exp:'複数の企業が共同で加入する年金制度（複数事業主制度）で、自社が負担すべき年金資産・年金負債の金額を合理的に計算できない場合は、通常のＤＢ制度のように複雑な数理計算を行わず、まるで大きな共同プールに参加費を払うだけで自分の取り分が分からないようなイメージで、確定拠出制度と同様に、拠出した掛金の額をそのまま「退職給付費用」として処理することが認められています。「計算できないものは、シンプルに掛金＝費用として扱う」という実務上の簡便的な取り扱いです。'
+    exp:'<div class="xp-c">自社の分を区分できない共同の年金は、<b>確定拠出と同じく掛金を<mark class="ptm">退職給付費用</mark></b>にします。</div><p class="xp-w">自社の債務や資産を計算できないので、払った掛金だけを費用にする簡便な扱いが認められています。</p><div class="xp-m"><b>間違えやすい点</b>　引当金を計上しないこと。</div>'
   },
   { id:830, calc:'', level:2, cat:'退職給付', chap:'1級：退職給付会計',
     q:'従業員数が少ない中小企業であるＸ社は、退職給付会計に「簡便法」を採用している。<mark class="q-liability">期末自己都合要支給額（従業員が全員自己都合で退職した場合に支払うべき額）が期首より50,000円増加した</mark>。<mark class="q-expense">この増加額を退職給付費用として計上する</mark>仕訳を示しなさい。',
     en_q:'Company X, a small business with few employees, uses the simplified method for retirement benefit accounting. The year-end voluntary-resignation benefit obligation (the amount payable if all employees resigned voluntarily) increased by ¥50,000 from the beginning of the year. Record the entry recognizing this increase as retirement benefit expense.',
     e:[{d:[['退職給付費用',50000]], c:[['退職給付引当金',50000]]}],
-    exp:'従業員数の少ない小規模な企業では、数理計算上の差異や利息費用・期待運用収益を細かく計算する原則法の代わりに、「簡便法」を採用することが認められています。簡便法では、期末時点で従業員全員が自己都合退職した場合に支払うべき金額（期末自己都合要支給額）を退職給付債務とみなし、まるで「今すぐ全員が辞めたらいくら払うか」を目安にする簡易な見積り方法で、その期中の増加額をそのまま退職給付費用として計上します。複雑な数理計算をせずに済む、実務的な近似計算です。'
+    exp:'<div class="xp-c">簡便法では、<b>全員が今やめたら払う額（自己都合要支給額）</b>を債務とみて、その増加を費用にします。</div><p class="xp-w">小さな会社は複雑な計算をせず、要支給額の増加50,000円を退職給付費用にします。</p><div class="xp-m"><b>間違えやすい点</b>　要支給額の全額を毎期費用にしないこと。増えた分だけです。</div>'
   },
 
   // ===== 1級：減損会計（応用） =====
@@ -2531,31 +2531,31 @@ const ALL = [
     q:'Ｘ社は建物（帳簿価額800,000円）と機械装置（帳簿価額400,000円）を一体として使用しているため、これらをひとつの資産グループとして減損会計を適用している。<mark class="q-expense">資産グループ全体の回収可能価額は900,000円と算定され、減損損失の認識が必要と判定された</mark>。減損損失300,000円を帳簿価額の比率で<mark class="q-asset">建物</mark>・<mark class="q-asset">機械装置</mark>に配分する仕訳を示しなさい。',
     en_q:'Company X treats a building (book value ¥800,000) and machinery (book value ¥400,000) as a single asset group because they are used together. The group\'s recoverable amount was determined to be ¥900,000, requiring recognition of an impairment loss. Record the entry allocating the ¥300,000 impairment loss to the building and machinery in proportion to their book values.',
     e:[{d:[['減損損失',300000]], c:[['建物',200000],['機械装置',100000]]}],
-    exp:'複数の資産が一体となってキャッシュ・フローを生み出している場合、個々の資産ごとではなく「資産グループ」全体で減損会計を適用します。まるでレストランの建物と厨房設備をセットで「1つの事業」として評価するようなイメージで、グループ全体の帳簿価額1,200,000円（800,000＋400,000）－回収可能価額900,000円＝減損損失300,000円。この総額を、個々の資産の帳簿価額の比率で配分します。建物：300,000×(800,000／1,200,000)＝200,000円、機械装置：300,000×(400,000／1,200,000)＝100,000円。「グループ全体でいくら損したか」を先に計算し、それを構成資産に振り分ける、という2段階の処理がポイントです。'
+    exp:'<div class="xp-c">一体で使う資産は<b>グループ全体で減損を計算</b>し、<b>帳簿価額の比で各資産に分けます</b>。</div><p class="xp-w">帳簿価額の合計1,200,000円と回収可能価額900,000円の差300,000円が減損損失です。</p><p class="xp-w">建物と機械は800,000円と400,000円の比 2：1 なので、200,000円と100,000円に分けます。</p><div class="xp-m"><b>間違えやすい点</b>　1つの資産だけで減損を判定しないこと。</div>'
   },
   { id:778, calc:'のれん：300,000円（全額）\n残り：600,000－300,000＝300,000円\n建物：300,000×600,000／900,000＝200,000円\n備品：300,000×300,000／900,000＝100,000円', level:3, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社が買収した事業（資産グループ帳簿価額900,000円［内訳：建物600,000円・備品300,000円］、のれん帳簿価額300,000円、合計1,200,000円）について、<mark class="q-expense">のれんを含む、より大きな単位で減損損失600,000円を認識した</mark>。減損損失は原則としてのれんに優先的に配分するというルールに従い、<mark class="q-asset">まずのれんの帳簿価額300,000円全額を減損し</mark>、残額300,000円を<mark class="q-asset">建物</mark>・<mark class="q-asset">備品</mark>の帳簿価額比で配分する場合の仕訳を示しなさい。',
     en_q:'On testing a larger unit that includes goodwill (goodwill book value ¥300,000; asset group book value ¥900,000, consisting of a building at ¥600,000 and equipment at ¥300,000; total ¥1,200,000), an impairment loss of ¥600,000 was recognized. Per the rule that impairment losses are first allocated to goodwill, the entire ¥300,000 goodwill balance is written off first, and the remaining ¥300,000 is allocated to the asset group\'s assets by book value. Record the entry.',
     e:[{d:[['減損損失',600000]], c:[['のれん',300000],['建物',200000],['備品',100000]]}],
-    exp:'「のれんを含む、より大きな単位」で減損テストを行った結果、減損損失が生じた場合、原則としてまず「のれん」の帳簿価額を優先的に減損します（のれんは単独では収益を生まない資産なので、最初に切り捨てる扱いです）。まるで会社の看板価値から先に評価を下げていくイメージで、のれん300,000円を全額減損した後、なお残る損失300,000円を、資産グループを構成する各資産（建物・備品）の帳簿価額比率で配分します。建物：300,000×(600,000／900,000)＝200,000円、備品：300,000×(300,000／900,000)＝100,000円。'
+    exp:'<div class="xp-c">のれんを含む単位の減損は、<b>まずのれんから減らし</b>、残りを他の資産の帳簿価額の比で分けます。</div><p class="xp-w">600,000円のうち、のれん300,000円を全部減らし、残り300,000円を建物と備品に 2：1 で分けます。</p><div class="xp-m"><b>間違えやすい点</b>　のれんも他の資産と同じ比で分けないこと。のれんが先です。</div>'
   },
   { id:779, calc:'機械装置：500,000×800,000／2,000,000＝200,000円\n備品：500,000×700,000／2,000,000＝175,000円\n建物：500,000×500,000／2,000,000＝125,000円', level:3, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社の本社建物（共用資産、帳簿価額500,000円）を含めて、より大きな単位で減損テストを行った。この単位には資産グループＡ（機械装置、帳簿価額800,000円）と資産グループＢ（備品、帳簿価額700,000円）も含まれ、合計帳簿価額は2,000,000円である。<mark class="q-expense">より大きな単位全体の回収可能価額が1,500,000円と算定され、減損損失500,000円を認識した</mark>。この損失を帳簿価額の比率で<mark class="q-asset">機械装置</mark>・<mark class="q-asset">備品</mark>・<mark class="q-asset">建物（共用資産）</mark>に配分する仕訳を示しなさい。',
     en_q:"Company X tested a larger unit that includes its headquarters building (a shared asset, book value ¥500,000), together with asset group A (machinery, ¥800,000) and asset group B (equipment, ¥700,000) — total book value ¥2,000,000. The unit's recoverable amount was ¥1,500,000, recognizing an impairment loss of ¥500,000. Record the entry allocating this loss to machinery, equipment, and the building (shared asset) by book value.",
     e:[{d:[['減損損失',500000]], c:[['機械装置',200000],['備品',175000],['建物',125000]]}],
-    exp:'本社建物のように、複数の資産グループに共通して使われ、単独ではキャッシュ・フローを生み出さない資産を「共用資産」と呼びます。まるで工場全体を支える本社ビルのような存在で、共用資産の減損は、共用資産を含む「より大きな単位」全体で判定し、生じた減損損失を各構成資産（資産グループＡ・Ｂ・共用資産）の帳簿価額の比率で配分します。機械装置：500,000×(800,000／2,000,000)＝200,000円、備品：500,000×(700,000／2,000,000)＝175,000円、建物：500,000×(500,000／2,000,000)＝125,000円。「個別の資産グループでは減損の兆候がなくても、共用資産を含めた全体で見ると回収できない」というケースを扱う、1級特有の論点です。'
+    exp:'<div class="xp-c">共用資産を含む単位の減損は、<b>全体で計算し、帳簿価額の比で分けます</b>。</div><p class="xp-w">帳簿価額2,000,000円と回収可能価額1,500,000円の差500,000円を、800,000円・700,000円・500,000円の比で分けます。</p><div class="xp-m"><b>間違えやすい点</b>　共用資産だけに損失を負わせないこと。</div>'
   },
   { id:780, calc:'1,000,000－700,000＝300,000円', level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社が保有する使用を休止している土地（遊休資産、帳簿価額1,000,000円）について、<mark class="q-asset">正味売却価額が700,000円であることが判明した</mark>。遊休資産は使用価値を見積れないため、正味売却価額を回収可能価額として<mark class="q-expense">減損損失を計上する</mark>。仕訳を示しなさい。',
     en_q:'Company X owns idle land (book value ¥1,000,000) that is not in use, and determined its net realizable value to be ¥700,000. Since value in use cannot be estimated for idle assets, the recoverable amount is based solely on net realizable value. Record the impairment loss entry.',
     e:[{d:[['減損損失',300000]], c:[['土地',300000]]}],
-    exp:'稼働を停止している「遊休資産」は、将来キャッシュ・フローを生み出さない（使用価値を見積れない）ため、回収可能価額は正味売却価額（今売ったらいくらか）だけで判定します。まるで使っていない空き地を、今すぐ売るといくらになるかだけで評価するようなイメージで、帳簿価額1,000,000円－正味売却価額700,000円＝減損損失300,000円。通常の固定資産のように「使用価値と正味売却価額のいずれか高い方」を比較する必要がなく、シンプルに売却価値だけで判定する点が特徴です。'
+    exp:'<div class="xp-c">使っていない資産は、<b>売った場合の額（正味売却価額）</b>を回収可能価額にします。</div><p class="xp-w">使わないので、使い続けたときの価値（使用価値）は見積もれません。1,000,000円と700,000円の差300,000円が減損損失です。</p><div class="xp-m"><b>間違えやすい点</b>　使用価値と比べようとしないこと。</div>'
   },
   { id:781, calc:'400,000÷4年＝100,000円', level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社は前期末に機械装置（取得原価1,000,000円、減損損失前の帳簿価額600,000円）について減損損失200,000円を計上した（減損後帳簿価額400,000円、残存耐用年数4年、残存価額ゼロ、定額法）。<mark class="q-expense">当期の減価償却費を計上する</mark>（<mark class="q-as-li">間接法で減価償却累計額に記帳する</mark>）仕訳を示しなさい。',
     en_q:'At the end of last period, Company X recognized a ¥200,000 impairment loss on machinery (acquisition cost ¥1,000,000; pre-impairment book value ¥600,000), leaving a post-impairment book value of ¥400,000, with 4 years of remaining useful life and zero residual value, depreciated straight-line. Record this period\'s depreciation entry.',
     e:[{d:[['減価償却費',100000]], c:[['減価償却累計額',100000]]}],
-    exp:'減損損失を計上した後の資産は、減損後の帳簿価額（取得原価ではなく）を新たな基礎として、残存耐用年数にわたって減価償却を続けます（切放し法）。まるで一度大きく値下げした中古品を、その値下げ後の値段を基準に価値を減らし続けるようなイメージで、減損後帳簿価額400,000円÷残存耐用年数4年＝100,000円。減損は「その時点での評価減」であり、その後は通常どおり規則的に費用配分（減価償却）を続けていく、という考え方です。なお日本基準では、減損後に業績が回復しても減損損失の戻し入れは行いません（IFRSとの大きな違いの一つです）。'
+    exp:'<div class="xp-c">減損したあとは、<b>下げた帳簿価額をもとに</b>、残りの年数で減価償却します。</div><p class="xp-w">減損後の400,000円を残り4年で割り、100,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　取得原価1,000,000円をもとに計算しないこと。</div>'
   },
 
   // ===== 1級：リース会計（応用） =====
@@ -2563,91 +2563,91 @@ const ALL = [
     q:'Ｘ社は<mark class="q-asset">保有する機械装置（帳簿価額800,000円）を</mark>リース会社に1,000,000円で売却し、<mark class="q-asset">現金を受け取った</mark>。同時にこの機械装置をファイナンス・リースとしてリースバックする契約を締結した。セール・アンド・リースバック取引に該当するため、<mark class="q-liability">売却益は繰延べ処理する</mark>。売却時の仕訳を示しなさい。',
     en_q:'Company X sold machinery (book value ¥800,000) to a leasing company for ¥1,000,000 cash, and simultaneously leased it back under a finance lease. Because this qualifies as a sale-and-leaseback transaction, the sale gain is deferred. Record the entry at the time of sale.',
     e:[{d:[['現金',1000000]], c:[['機械装置',800000],['長期前受収益',200000]]}],
-    exp:'セール・アンド・リースバックとは、自社が保有する資産をいったんリース会社に売却し、その資産を改めてリースで借り受ける（リースバックする）取引です。まるで自宅を一度売却してから同じ家を賃貸で借り直すようなイメージで、リースバックがファイナンス・リースに該当する場合、実質的には「その資産を担保にお金を借りた」のと変わらないとみなされ、売却益を通常の固定資産売却益のようにその場で計上せず、いったん「長期前受収益」（負債）として繰延べます。現金1,000,000円－機械装置の帳簿価額800,000円＝売却益相当額200,000円を長期前受収益として計上します。'
+    exp:'<div class="xp-c">売ってすぐファイナンス・リースで借り直すときは、<b>売却益をすぐ計上せず<mark class="ptm">長期前受収益</mark></b>にします。</div><p class="xp-w">実質は、機械を担保にお金を借りたのと同じだからです。1,000,000円と帳簿価額800,000円の差200,000円を繰り延べます。</p><div class="xp-m"><b>間違えやすい点</b>　固定資産売却益にしないこと。</div>'
   },
   { id:783, calc:'', level:2, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'上記のリースバック契約について、<mark class="q-asset">リース資産</mark>・<mark class="q-liability">リース債務</mark>を売却価額1,000,000円で計上する仕訳を示しなさい（利子込み法）。',
     en_q:'For the leaseback above, record the entry recognizing the leased asset and lease liability at the ¥1,000,000 sale price (interest-included method).',
     e:[{d:[['リース資産',1000000]], c:[['リース債務',1000000]]}],
-    exp:'リースバックの開始時は、通常のファイナンス・リースと同様に「リース資産／リース債務」を計上します。セール・アンド・リースバックでは、この金額は売却価額（＝リース物件の見積現金購入価額とみなす）を用いるのが一般的です。前の問題で計上した売却益の繰延べとは別に、リース自体は通常のリース取引と同じ流れで処理します。'
+    exp:'<div class="xp-c">借り直した資産は、ふつうのファイナンス・リースと同じく<mark class="ptm">リース資産・リース債務</mark>にします。</div><p class="xp-w">金額は売った額1,000,000円を使います。</p><div class="xp-m"><b>間違えやすい点</b>　繰り延べた売却益と混同しないこと。こちらはリースそのものの記帳です。</div>'
   },
   { id:784, calc:'減価償却費：1,000,000÷5年＝200,000円\n長期前受収益の取崩し：200,000÷5年＝40,000円', level:3, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'上記のリース資産（計上額1,000,000円、リース期間5年、残存価額ゼロ、定額法）について、<mark class="q-expense">1年分の減価償却費を計上する</mark>（<mark class="q-as-li">間接法でリース資産減価償却累計額に記帳する</mark>）とともに、<mark class="q-liability">繰延べた長期前受収益200,000円を同じ耐用年数にわたって取り崩し、減価償却費から控除する</mark>。1年分の仕訳を示しなさい。',
     en_q:'For the leased asset above (¥1,000,000, 5-year lease term, zero residual value, straight-line), record one year of depreciation, and also amortize the ¥200,000 deferred gain over the same term, offsetting it against depreciation expense.',
     e:[{d:[['減価償却費',200000]], c:[['リース資産減価償却累計額',200000]]}, {d:[['長期前受収益',40000]], c:[['減価償却費',40000]]}],
-    exp:'繰延べた売却益（長期前受収益）は、リース資産の減価償却費の計上に対応させて、同じ期間・比率で取り崩し、減価償却費と相殺します。まるで「値引き分を毎月少しずつ家賃から差し引いていく」ようなイメージで、減価償却費：1,000,000÷5年＝200,000円。長期前受収益の取崩額：200,000÷5年＝40,000円。結果として、損益計算書に表示される正味の減価償却費は200,000－40,000＝160,000円となります。「売却益を一気に利益にせず、資産を使う期間にわたって少しずつ、費用を軽減する形で認識していく」というのがセール・アンド・リースバックの本質です。'
+    exp:'<div class="xp-c">繰り延べた売却益は、<b>減価償却に合わせて少しずつ取り崩し、減価償却費を小さくします</b>。</div><p class="xp-w">減価償却費は1,000,000円÷5年で200,000円、取り崩す額は200,000円÷5年で40,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　取り崩した額を収益の科目にしないこと。減価償却費から差し引きます。</div>'
   },
   { id:785, calc:'1,200,000÷8年＝150,000円', level:3, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社は所有権移転ファイナンス・リース（リース資産計上額1,200,000円、リース物件の経済的耐用年数8年、リース期間5年）を契約した。所有権移転ファイナンス・リースの場合、自己所有の固定資産と同様に経済的耐用年数で減価償却する。<mark class="q-expense">1年分の減価償却費を計上する</mark>（<mark class="q-as-li">間接法でリース資産減価償却累計額に記帳する</mark>）仕訳を示しなさい（定額法・残存価額ゼロ）。',
     en_q:'Company X entered an ownership-transfer finance lease (leased asset ¥1,200,000; economic useful life of the property 8 years; lease term 5 years). Under an ownership-transfer finance lease, depreciation follows the economic useful life, as for owned fixed assets. Record one year of straight-line depreciation with zero residual value.',
     e:[{d:[['減価償却費',150000]], c:[['リース資産減価償却累計額',150000]]}],
-    exp:'リース取引には「所有権移転ファイナンス・リース」（リース期間終了後に所有権が借手に移る）と「所有権移転外ファイナンス・リース」（リース期間終了後に返却する）の2種類があります。所有権移転ファイナンス・リースは、実質的に資産を買ったのと同じなので、まるでローンで購入した車のように、自己所有の固定資産と同様に「経済的耐用年数」（8年）で減価償却します。1,200,000円÷8年＝150,000円。これに対し、所有権移転外ファイナンス・リースは返却が前提のため「リース期間」（5年など、通常は経済的耐用年数より短い）を耐用年数として償却します。この違いを区別できるかが1級で問われるポイントです。'
+    exp:'<div class="xp-c">所有権が移るリースは、<b>自分の資産と同じく経済的耐用年数</b>で償却します。</div><p class="xp-w">1,200,000円を8年で割って150,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　リース期間5年で割らないこと。それは所有権が移らないリースの場合です。</div>'
   },
   { id:786, calc:'2年目期首のリース債務：1,000,000－（240,000－40,000）＝800,000円\n利息：800,000×4％＝32,000円\n元本の返済：240,000－32,000＝208,000円', level:3, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'ファイナンス・リース取引（利子抜き法、リース債務当初計上額1,000,000円、リース期間5年、年間リース料240,000円、利率年4%）について、1年目の利息は40,000円（1,000,000×4%）であった。<mark class="q-expense">2年目の利息費用を利息法で計算し</mark>、<mark class="q-liability">残りをリース債務の返済に充てて</mark>、<mark class="q-asset">2年目のリース料を現金で支払った</mark>ときの仕訳を示しなさい。',
     en_q:'For a finance lease (interest-excluded method, initial lease liability ¥1,000,000, 5-year term, annual lease payment ¥240,000, interest rate 4% per year), first-year interest was ¥40,000 (¥1,000,000 × 4%). Using the effective interest method, compute the second year\'s interest expense and record the second year\'s lease payment entry.',
     e:[{d:[['リース債務',208000],['支払利息',32000]], c:[['現金',240000]]}],
-    exp:'利子抜き法では、リース料の支払いを「元本返済」と「利息」に分けますが、利息法では毎期の期首リース債務残高に利率を掛けて利息を計算します（元本が減るにつれ、利息も減っていきます）。住宅ローンの返済内訳と同じ発想で、1年目：利息40,000円（1,000,000×4%）、元本返済200,000円→期末残高800,000円。2年目：利息32,000円（800,000×4%）、元本返済208,000円（240,000－32,000）。単純に毎年同額の利息を計上する「定額法」とは異なり、実際の借入金の返済と同じ考え方で利息が逓減していく点が特徴です。'
+    exp:'<div class="xp-c">利息法では、<b>期首のリース債務の残高×利率</b>が利息で、残りでリース債務を減らします。</div><p class="xp-w">1年目に200,000円返して残高は800,000円です。2年目の利息は800,000円×4％で32,000円、元本の返済は208,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　1年目と同じ40,000円を利息にしないこと。残高が減れば利息も減ります。</div>'
   },
   { id:831, calc:'建物：150,000×600,000／900,000＝100,000円\n備品：150,000×300,000／900,000＝50,000円', level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社は建物（帳簿価額600,000円）と備品（帳簿価額300,000円）から成る資産グループについて、<mark class="q-expense">回収可能価額750,000円と算定され、減損損失150,000円を認識した</mark>。この損失を帳簿価額の比率で<mark class="q-asset">建物</mark>・<mark class="q-asset">備品</mark>に配分する仕訳を示しなさい。',
     en_q:'For an asset group consisting of a building (book value ¥600,000) and equipment (book value ¥300,000), Company X determined a recoverable amount of ¥750,000, recognizing an impairment loss of ¥150,000. Record the entry allocating this loss to the building and equipment in proportion to book value.',
     e:[{d:[['減損損失',150000]], c:[['建物',100000],['備品',50000]]}],
-    exp:'のれんを含まない資産グループの場合は、生じた減損損失をそのまま構成資産の帳簿価額の比率で配分します（のれんへの優先配分という手順がない、シンプルなケースです）。建物：150,000×(600,000／900,000)＝100,000円、備品：150,000×(300,000／900,000)＝50,000円。'
+    exp:'<div class="xp-c">資産グループの減損損失は、<b>帳簿価額の比で各資産に分けます</b>。</div><p class="xp-w">建物600,000円と備品300,000円は 2：1 なので、150,000円を100,000円と50,000円に分けます。</p><div class="xp-m"><b>間違えやすい点</b>　均等に分けないこと。</div>'
   },
   { id:832, calc:'350,000－300,000＝50,000円', level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社は前期に減損損失を計上した<mark class="q-asset">備品（減損後帳簿価額300,000円）を</mark>、当期に<mark class="q-asset">350,000円で現金売却した</mark>（<mark class="q-revenue">帳簿価額を上回る分は売却益</mark>）。売却時の仕訳を示しなさい。',
     en_q:'Company X sold equipment for ¥350,000 cash this period, on which an impairment loss had been recognized last period (post-impairment book value ¥300,000). Record the sale entry.',
     e:[{d:[['現金',350000]], c:[['備品',300000],['固定資産売却益',50000]]}],
-    exp:'減損損失を計上した資産であっても、その後の売却処理は通常の固定資産売却と同じです。減損「後」の帳簿価額（300,000円、取得原価ではない点に注意）を基準に、売却額との差額を売却損益として計上します。まるで一度大きく値下げされた中古車を、それでも思ったより高く売れたようなイメージで、日本基準では減損の戻し入れが禁止されているため、たとえ売却額が減損前の帳簿価額を上回っても、それは「売却益」として処理され、過去の減損損失が取り消されるわけではありません。'
+    exp:'<div class="xp-c">減損した資産を売ったら、<b>減損後の帳簿価額と売った額の差</b>を売却損益にします。</div><p class="xp-w">300,000円の備品を350,000円で売ったので、50,000円が固定資産売却益です。</p><div class="xp-m"><b>間違えやすい点</b>　取得原価と比べないこと。日本では減損の戻し入れもしません。</div>'
   },
   { id:833, calc:'800,000－600,000＝200,000円', level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社が保有する機械装置（帳簿価額800,000円、資産除去債務の資産計上額を含む）について、<mark class="q-asset">回収可能価額が600,000円と算定され</mark>、<mark class="q-expense">減損損失を計上する</mark>。仕訳を示しなさい。',
     en_q:'Company X holds machinery (book value ¥800,000, including the asset-retirement-obligation capitalized amount) with a determined recoverable amount of ¥600,000. Record the impairment loss entry.',
     e:[{d:[['減損損失',200000]], c:[['機械装置',200000]]}],
-    exp:'資産除去債務に対応する除去費用をあらかじめ資産計上している固定資産（帳簿価額に除去費用相当額が含まれている）も、通常の固定資産と同様に減損会計の対象になります。帳簿価額全体（除去費用の資産計上額を含む）と回収可能価額を比較し、差額を減損損失として計上します。「資産除去債務に対応する資産計上額も、他の取得原価部分とまとめて減損の判定対象になる」という点がポイントです。'
+    exp:'<div class="xp-c">撤去の費用を含めた<b>帳簿価額全体</b>を回収可能価額と比べて減損します。</div><p class="xp-w">帳簿価額800,000円と回収可能価額600,000円の差200,000円が減損損失です。</p><div class="xp-m"><b>間違えやすい点</b>　撤去費用の分を除いて比べないこと。</div>'
   },
   { id:834, calc:'回収可能価額：600,000と650,000の高い方＝650,000円\n減損損失：1,000,000－650,000＝350,000円', level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社が保有する機械装置（帳簿価額1,000,000円）について、<mark class="q-asset">正味売却価額は600,000円、使用価値（将来キャッシュ・フローの割引現在価値）は650,000円と算定された</mark>。回収可能価額はいずれか高い方を採用し、<mark class="q-expense">減損損失を計上する</mark>仕訳を示しなさい。',
     en_q:"Company X's machinery (book value ¥1,000,000) had a net realizable value of ¥600,000 and a value in use (discounted present value of future cash flows) of ¥650,000. The recoverable amount is the higher of the two. Record the impairment loss entry.",
     e:[{d:[['減損損失',350000]], c:[['機械装置',350000]]}],
-    exp:'回収可能価額は「正味売却価額」（今売ったらいくらか）と「使用価値」（今後使い続けることで得られる将来キャッシュ・フローの割引現在価値）のいずれか高い方を採用します。まるで「今すぐ売るのと使い続けるのと、どちらが得か」を天秤にかけるようなイメージで、今回は使用価値650,000円の方が正味売却価額600,000円より高いため、回収可能価額は650,000円。帳簿価額1,000,000円－回収可能価額650,000円＝減損損失350,000円。「売った方が得か、使い続けた方が得か、高い方を選ぶ」というルールです。'
+    exp:'<div class="xp-c">回収可能価額は、<b>売った場合と使い続けた場合の、高い方</b>です。</div><p class="xp-w">正味売却価額600,000円より使用価値650,000円が高いので、650,000円を使います。帳簿価額との差350,000円が減損損失です。</p><div class="xp-m"><b>間違えやすい点</b>　低い方を使わないこと。</div>'
   },
   { id:835, calc:'', level:2, cat:'減損会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社は前期に減損処理した遊休資産である土地（減損後帳簿価額700,000円）を、当期から事業用に転用することとした。転用時点の時価は900,000円であったが、日本基準では減損の戻し入れを行わないため帳簿価額は変更しない。転用時に<mark class="q-asset">「遊休資産」</mark>から<mark class="q-asset">「土地」（事業用）</mark>へ勘定科目を振り替える仕訳を示しなさい（金額は変動しない）。',
     en_q:'Company X is converting idle land (previously impaired, post-impairment book value ¥700,000) to operational use this period. The current fair value is ¥900,000, but since Japanese GAAP prohibits impairment reversal, the book value is not restored. Record the entry reclassifying the account from "idle assets" to "land" (operational use), with no change in amount.',
     e:[{d:[['土地',700000]], c:[['遊休資産',700000]]}],
-    exp:'遊休資産を事業用に転用しても、日本基準では減損損失の戻し入れを行わないため、時価が回復していても帳簿価額はそのまま据え置かれます（700,000円のまま）。まるで一度大きく評価を下げた土地が、その後値上がりしても帳簿上は評価を戻さないようなイメージで、この仕訳は金額を変えずに勘定科目の表示区分だけを付け替えるものです。「一度計上した減損損失は、その後の状況好転があっても取り消さない」という日本基準の原則を、転用というイベントを通じて確認する問題です。'
+    exp:'<div class="xp-c">日本では、<b>減損した資産の価値が戻っても、帳簿価額を戻しません</b>。</div><p class="xp-w">遊休資産から事業用の土地に、帳簿価額700,000円のまま振り替えるだけです。</p><div class="xp-m"><b>間違えやすい点</b>　時価900,000円に戻さないこと。</div>'
   },
   { id:836, calc:'', level:2, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社はファイナンス・リース契約の開始にあたり、頭金（リース料の一部前払い）100,000円を<mark class="q-asset">現金で支払った</mark>。この頭金は<mark class="q-asset">リース資産の取得価額に含める</mark>処理をする場合の仕訳を示しなさい。',
     en_q:'At the inception of a finance lease, Company X paid a ¥100,000 cash down payment (a partial prepayment of lease payments). Record the entry treating this down payment as part of the leased asset\'s acquisition cost.',
     e:[{d:[['リース資産',100000]], c:[['現金',100000]]}],
-    exp:'リース契約開始時に支払う頭金（リース料の一部前払い）は、通常の前払費用のように扱うのではなく、リース資産の取得価額の一部として資産計上します。まるで住宅ローンの頭金が物件価格の一部に含まれるようなイメージで、「将来支払うはずだったリース料の一部を、先に前払いした」と考え、リース債務ではなく、リース資産そのものの取得原価に含めます。'
+    exp:'<div class="xp-c">リースの頭金は、<b>リース資産の取得価額に含めます</b>。</div><p class="xp-w">将来払うリース料の一部を先に払っただけなので、リース資産を増やします。</p><div class="xp-m"><b>間違えやすい点</b>　前払費用にしないこと。</div>'
   },
   { id:837, calc:'残存価額：1,500,000×10％＝150,000円\n減価償却費：（1,500,000－150,000）÷6年＝225,000円', level:3, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社は所有権移転ファイナンス・リース（リース資産計上額1,500,000円、経済的耐用年数6年、残存価額はリース資産計上額の10％）を契約した。<mark class="q-expense">1年分の減価償却費を計上する</mark>（<mark class="q-as-li">間接法でリース資産減価償却累計額に記帳する</mark>）仕訳を示しなさい（定額法）。',
     en_q:'Company X entered an ownership-transfer finance lease (leased asset ¥1,500,000, economic useful life 6 years, residual value 10% of the leased asset amount). Record one year of straight-line depreciation.',
     e:[{d:[['減価償却費',225000]], c:[['リース資産減価償却累計額',225000]]}],
-    exp:'所有権移転ファイナンス・リースは、契約終了後に所有権が借手に移るため、自己所有の固定資産と全く同じ方法で減価償却します。残存価額が設定されている場合は、取得価額から残存価額を差し引いた金額（要償却額）を耐用年数で割ります。残存価額：1,500,000×10％＝150,000円。要償却額：1,500,000－150,000＝1,350,000円。年間償却額：1,350,000÷6年＝225,000円。所有権移転外リース（原則残存価額ゼロ）とは異なり、残存価額の考慮が必要な点に注意しましょう。'
+    exp:'<div class="xp-c">所有権が移るリースで残存価額があるときは、<b>残存価額を除いた額</b>を耐用年数で割ります。</div><p class="xp-w">残存価額は1,500,000円の10％で150,000円、償却する額は1,350,000円、6年で割って225,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　1,500,000円をそのまま割らないこと。</div>'
   },
   { id:838, calc:'備品の取得原価：（1,000,000－800,000）＋50,000＝250,000円', level:3, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社は所有権移転外ファイナンス・リース（リース資産の取得原価1,000,000円、<mark class="q-as-li">減価償却累計額800,000円</mark>）について、リース期間満了時に割安購入選択権を行使し、<mark class="q-asset">追加で50,000円を現金で支払って資産の所有権を取得した</mark>。<mark class="q-asset">リース資産を</mark>通常の固定資産である<mark class="q-asset">備品に振り替える</mark>仕訳を示しなさい。',
     en_q:'Company X exercised a bargain purchase option at the end of a non-ownership-transfer finance lease term (leased asset acquisition cost ¥1,000,000, accumulated depreciation ¥800,000), paying an additional ¥50,000 cash to acquire ownership. Record the entry reclassifying the leased asset into ordinary owned equipment.',
     e:[{d:[['備品',250000],['リース資産減価償却累計額',800000]], c:[['リース資産',1000000],['現金',50000]]}],
-    exp:'所有権移転外ファイナンス・リースでも、契約に「割安購入選択権」（相場よりかなり安い価格でリース物件を買い取れる権利）が付いている場合、これを行使すると、その時点でリース資産としての性格が終わり、まるでレンタカーの契約終了時に格安で買い取るオプションを使うようなイメージで、通常の自己所有の固定資産（備品）に切り替わります。リース資産の帳簿価額200,000円（取得原価1,000,000円－減価償却累計額800,000円）に、追加で支払った買取り代金50,000円を加えた250,000円が、新たな備品としての取得原価になります。'
+    exp:'<div class="xp-c">割安で買い取ったら、<b>リース資産の帳簿価額と追加の支払いの合計</b>を<mark class="ptm">備品</mark>にします。</div><p class="xp-w">帳簿価額は1,000,000円から800,000円を除いた200,000円、追加の50,000円と合わせて250,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　リース資産の取得原価1,000,000円で備品にしないこと。</div>'
   },
   { id:839, calc:'支払リース料：50,000－10,000＝40,000円', level:2, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社はオペレーティング・リース契約（<mark class="q-expense">月額リース料50,000円</mark>のうち、<mark class="q-expense">10,000円は付随するメンテナンスサービス費用</mark>）を締結し、<mark class="q-asset">1ヶ月分を現金で支払った</mark>。リース料とメンテナンス費用を区分して処理する仕訳を示しなさい。',
     en_q:'Company X entered an operating lease (monthly payment ¥50,000, of which ¥10,000 is for bundled maintenance services) and paid one month\'s payment in cash. Record the entry separating the lease payment from the maintenance cost.',
     e:[{d:[['支払リース料',40000],['修繕費',10000]], c:[['現金',50000]]}],
-    exp:'リース契約の中に、リース物件の借入とは別に、保守・メンテナンスサービスの提供が含まれている場合、契約書上の金額を「純粋なリース料」部分と「サービス費用」部分に区分して処理する必要があります。まるで複合機のリース料の中に月額の保守サービス料が組み込まれているようなイメージで、40,000円（リース料相当部分）は「支払リース料」、10,000円（メンテナンス部分）は「修繕費」として、それぞれ別の性質の費用として計上します。「リース料に何が含まれているか」を見極めることが実務上のポイントです。'
+    exp:'<div class="xp-c">リース料に保守サービスが含まれていたら、<b>リース料とサービス料を分けて</b>記帳します。</div><p class="xp-w">50,000円のうち、物を借りる分40,000円は支払リース料、メンテナンスの10,000円は修繕費です。</p><div class="xp-m"><b>間違えやすい点</b>　全額を支払リース料にしないこと。</div>'
   },
   { id:840, calc:'600,000－500,000＝100,000円', level:3, cat:'リース会計', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社は<mark class="q-asset">保有する備品（帳簿価額500,000円）を</mark>リース会社に600,000円で売却し、<mark class="q-asset">現金を受け取った</mark>。同時にこの備品をオペレーティング・リースとしてリースバックする契約を締結した。オペレーティング・リースに該当する場合、<mark class="q-revenue">売却損益は繰延べず、その場で認識する</mark>。売却時の仕訳を示しなさい。',
     en_q:'Company X sold equipment (book value ¥500,000) to a leasing company for ¥600,000 cash, and simultaneously leased it back under an operating lease. Because the leaseback is an operating lease, the sale gain is not deferred and is recognized immediately. Record the entry at the time of sale.',
     e:[{d:[['現金',600000]], c:[['備品',500000],['固定資産売却益',100000]]}],
-    exp:'セール・アンド・リースバックでも、リースバック部分がファイナンス・リースではなく「オペレーティング・リース」（単なる賃貸借）に該当する場合は、ファイナンス・リースのケース（前の応用問題を参照）とは異なり、売却損益を繰延べる必要はなく、通常の固定資産売却と同じようにその場で損益を認識します。まるで単純に資産を売って、別の資産を新たにレンタルし始めるようなイメージで、現金600,000円－帳簿価額500,000円＝売却益100,000円をそのまま計上します。「リースバックがファイナンスか、オペレーティングか」によって処理が正反対になる点が、この論点のハイライトです。'
+    exp:'<div class="xp-c">借り直しがオペレーティング・リースなら、<b>売却益はすぐ計上</b>します。</div><p class="xp-w">ふつうに売って、別に借りただけとみるので、600,000円と500,000円の差100,000円が固定資産売却益です。</p><div class="xp-m"><b>間違えやすい点</b>　ファイナンス・リースのときのように繰り延べないこと。</div>'
   },
 
   // ===== 1級：会計方針の変更・誤謬の訂正 =====
@@ -2655,121 +2655,121 @@ const ALL = [
     q:'Ｘ社は棚卸資産の評価方法を先入先出法から総平均法に変更した（<strong>会計方針の変更</strong>）。この変更を過去の財務諸表に遡って適用した結果、<mark class="q-asset">過去の期首商品棚卸高が総平均法によればより低い金額であったことが判明し</mark>、<mark class="q-equity">利益剰余金期首残高を150,000円減額修正する必要が生じた</mark>（税効果は考慮しない）。遡及適用による修正仕訳を示しなさい。',
     en_q:'Company X changed its inventory valuation method from FIFO to the weighted-average method. Applying this change retrospectively revealed that opening inventory under the new method would have been ¥150,000 lower, requiring a ¥150,000 reduction to opening retained earnings, ignoring tax effects. Record the retrospective-application adjustment entry.',
     e:[{d:[['利益剰余金期首残高',150000]], c:[['繰越商品',150000]]}],
-    exp:'「会計方針の変更」（棚卸資産の評価方法など）は、原則として新たな会計方針を過去の期間にも遡って適用したかのように会計処理します（遡及適用）。まるでルールを変更した後、過去の記録もそのルールで書き直すようなイメージで、過去の損益はすでに確定しているため、当期の損益計算書を通さず、直接「利益剰余金期首残高」を修正します。変更後の方法（総平均法）で計算し直した結果、過去の商品棚卸高が150,000円少なかったことになるため、繰越商品（資産）を減額し、対応する分だけ利益剰余金期首残高を減額します。'
+    exp:'<div class="xp-c">会計方針の変更は、<b>過去にさかのぼって適用し</b>、過去の影響は<mark class="ptm">利益剰余金期首残高</mark>で直します。</div><p class="xp-w">総平均法で計算し直すと、過去の期首商品が150,000円少なかったので、繰越商品と期首の利益剰余金を減らします。</p><div class="xp-m"><b>間違えやすい点</b>　当期の損益で直さないこと。</div>'
   },
   { id:788, calc:'', level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は前期の決算において、<mark class="q-liability">経費80,000円の計上漏れ（未払費用の計上漏れ）があったことを当期に発見した</mark>。過去の誤謬の訂正として、<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示の仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Company X discovered this period that it had failed to accrue ¥80,000 of expenses (an omitted accrued liability) in last period\'s financial statements. Record the retrospective restatement entry correcting this prior-period error, ignoring tax effects.',
     e:[{d:[['利益剰余金期首残高',80000]], c:[['未払費用',80000]]}],
-    exp:'前期以前の財務諸表に誤り（誤謬）があったことが当期に判明した場合、その影響を当期の損益として計上するのではなく、「修正再表示」といって、あたかも誤りがなかったかのように過去の財務諸表を直接修正します。まるで過去のテストの採点ミスを見つけて、今年の成績ではなく過去の記録を修正するようなイメージで、当期の損益計算書を通さず、直接「利益剰余金期首残高」を修正することで、過去の誤りを訂正します。未払費用（負債）の計上漏れだったため、利益剰余金期首残高を減額し、未払費用を追加計上します。'
+    exp:'<div class="xp-c">前期の誤りは、<b>当期の損益で直さず</b>、<mark class="ptm">利益剰余金期首残高</mark>で直します（修正再表示）。</div><p class="xp-w">前期の経費80,000円が漏れていたので、前期の利益は多すぎました。未払費用を計上し、期首の利益剰余金を減らします。</p><div class="xp-m"><b>間違えやすい点</b>　当期の費用として計上しないこと。</div>'
   },
   { id:789, calc:'', level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は前期に<mark class="q-asset">売上高を120,000円過大に計上していたことが当期に判明した（実際には売上が発生していなかった）</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Company X discovered this period that it had overstated sales revenue by ¥120,000 last period (the sale had not actually occurred). Record the retrospective restatement entry, ignoring tax effects.',
     e:[{d:[['利益剰余金期首残高',120000]], c:[['売掛金',120000]]}],
-    exp:'前期に本来計上すべきでなかった売上高（売掛金）が誤って計上されていたケースです。誤りを発見した当期の売上高を減額するのではなく、過去の誤りとして「利益剰余金期首残高」を直接減額し、過大計上されていた売掛金を取り消します。まるで昨年の帳簿の記載ミスを見つけて、今年の帳簿ではなく昨年の記録として訂正するようなイメージで、誤謬の訂正は、発生した年度ではなく発見した年度の当期純利益に影響を与えない、という点がポイントです。'
+    exp:'<div class="xp-c">前期に多すぎた売上は、<b>売掛金を消し、<mark class="ptm">利益剰余金期首残高</mark>を減らして</b>直します。</div><p class="xp-w">実際にはなかった売上120,000円なので、売掛金もありません。</p><div class="xp-m"><b>間違えやすい点</b>　当期の売上を減らさないこと。</div>'
   },
   { id:790, calc:'600,000÷3年＝200,000円', level:3, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社が保有する機械装置（取得原価1,000,000円、これまで耐用年数10年・定額法で償却、期首時点の帳簿価額600,000円）について、今後の使用見込みを再検討した結果、残存耐用年数を当初の残り6年から3年に変更した（<strong>会計上の見積りの変更</strong>）。過去の年度は修正せず、<mark class="q-expense">変更後の残存耐用年数で当期の減価償却費を計上する</mark>（<mark class="q-as-li">間接法で減価償却累計額に記帳する</mark>）仕訳を示しなさい（残存価額ゼロ・定額法）。',
     en_q:'Company X reassessed the useful life of its machinery (acquisition cost ¥1,000,000, previously depreciated straight-line over 10 years, opening book value ¥600,000) and revised the remaining useful life from 6 years to 3 years. Without restating prior periods, record this period\'s depreciation entry using the revised remaining life (zero residual value, straight-line).',
     e:[{d:[['減価償却費',200000]], c:[['減価償却累計額',200000]]}],
-    exp:'「会計上の見積りの変更」（耐用年数の変更、引当金の見積り変更など）は、「会計方針の変更」とは異なり、過去に遡って財務諸表を修正しません（遡及処理をしません）。変更があった期以後の将来に向かって、新しい見積りに基づいて会計処理を行います（プロスペクティブ処理）。まるで「これからの計画を見直しただけで、過去の記録は変えない」というイメージで、期首帳簿価額600,000円を、変更後の残存耐用年数3年で償却：600,000÷3年＝200,000円。「過去は正しかったが、これからの見積りを変えた」という整理なので、利益剰余金の修正は一切発生しない点が、会計方針の変更・誤謬の訂正との大きな違いです。'
+    exp:'<div class="xp-c">見積りの変更は、<b>過去を直さず、当期から新しい見積りで計算</b>します。</div><p class="xp-w">期首の帳簿価額600,000円を、変更後の残り3年で割って200,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　利益剰余金を修正しないこと。見積りの変更には遡及しません。</div>'
   },
   { id:791, calc:'繰延税金資産：100,000×30％＝30,000円\n利益剰余金期首残高の減少：100,000－30,000＝70,000円', level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は前期に<mark class="q-liability">費用100,000円の計上漏れがあったことを当期に発見した</mark>。<strong>誤謬の訂正</strong>による修正再表示（<mark class="q-equity">利益剰余金期首残高の修正</mark>）にあたり、<mark class="q-asset">実効税率30％として税効果を考慮した</mark>仕訳を示しなさい。',
     en_q:'Company X discovered this period that it had failed to record ¥100,000 of expenses last period. In restating the financials, applying tax-effect accounting at an effective tax rate of 30%, record the correcting entry.',
     e:[{d:[['利益剰余金期首残高',70000],['繰延税金資産',30000]], c:[['未払費用',100000]]}],
-    exp:'修正再表示にも税効果会計を適用します。過去に計上漏れだった費用100,000円は、将来（税務上の扱いが確定した時点で）税金負担を軽減する効果を持つため、繰延税金資産30,000円（100,000×30％）を認識します。残り70,000円が税引後ベースでの利益剰余金期首残高の減額分です。誤謬の訂正であっても、通常の決算整理と同じように税効果会計のルールを適用する点を押さえておきましょう。'
+    exp:'<div class="xp-c">誤りの訂正にも税効果を適用し、<b>税金の分を<mark class="ptm">繰延税金資産</mark></b>にします。</div><p class="xp-w">費用の漏れ100,000円のうち、30％の30,000円は将来の税金を減らす分です。期首の利益剰余金は残り70,000円だけ減らします。</p><div class="xp-m"><b>間違えやすい点</b>　利益剰余金を100,000円減らさないこと。</div>'
   },
   { id:841, calc:'600,000÷5年＝120,000円', level:3, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は機械装置（取得原価1,000,000円、期首時点の帳簿価額600,000円、残存耐用年数5年）の減価償却方法を、定率法から定額法に変更した。この変更は「会計上の見積りの変更と区別することが困難な会計方針の変更」に該当するため、遡及適用せず、<mark class="q-expense">変更後の方法により当期の減価償却費を計上する</mark>（<mark class="q-as-li">間接法で減価償却累計額に記帳する</mark>）仕訳を示しなさい（残存価額ゼロ・定額法）。',
     en_q:'Company X changed its depreciation method for machinery (acquisition cost ¥1,000,000, opening book value ¥600,000, 5 years remaining useful life) from the declining-balance method to straight-line. Because this qualifies as "a change in accounting policy that is difficult to distinguish from a change in accounting estimate," it is not applied retrospectively. Record this period\'s depreciation under the new method (zero residual value, straight-line).',
     e:[{d:[['減価償却費',120000]], c:[['減価償却累計額',120000]]}],
-    exp:'減価償却方法の変更（定率法→定額法など）は、本来は「会計方針の変更」に見えますが、日本基準では「会計上の見積りの変更と区別することが困難な会計方針の変更」として特別に扱い、過去に遡って財務諸表を修正しません（遡及適用しません）。まるで「見た目は方針変更でも、実質は見積りの見直しに近い」とみなすようなイメージで、変更した期以後、新しい方法で将来に向かって計算するだけです。期首帳簿価額600,000円÷残存耐用年数5年＝120,000円。「会計方針の変更なのに、なぜか見積りの変更と同じ扱いになる」という、1級で頻出のひっかけポイントです。'
+    exp:'<div class="xp-c">減価償却方法の変更は、<b>見積りの変更と同じく遡及せず</b>、当期から新しい方法で計算します。</div><p class="xp-w">期首の帳簿価額600,000円を残り5年で割り、120,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　方針の変更だからといって、過去にさかのぼらないこと。</div>'
   },
   { id:842, calc:'', level:3, cat:'会計方針の変更', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は売買目的有価証券の評価方法を移動平均法から総平均法に変更した（<strong>会計方針の変更</strong>）。過去の財務諸表に遡って適用した結果、<mark class="q-asset">過去の有価証券の帳簿価額が総平均法によればより高い金額であったことが判明し</mark>、<mark class="q-equity">利益剰余金期首残高を60,000円増額修正する必要が生じた</mark>（税効果は考慮しない）。遡及適用による修正仕訳を示しなさい。',
     en_q:'Company X changed its valuation method for trading securities from the moving-average method to the weighted-average method. Applying this retrospectively revealed that the securities\' book value under the new method would have been ¥60,000 higher, requiring a ¥60,000 increase to opening retained earnings, ignoring tax effects. Record the retrospective-application entry.',
     e:[{d:[['売買目的有価証券',60000]], c:[['利益剰余金期首残高',60000]]}],
-    exp:'棚卸資産の評価方法と同様に、有価証券の評価方法（移動平均法・総平均法など）の変更も「会計方針の変更」に該当し、遡及適用が必要です。今回は変更後の方法（総平均法）によれば過去の有価証券の帳簿価額がより高かったことが判明したため、有価証券（資産）を増額し、対応する分だけ利益剰余金期首残高を増額します（前に学んだ棚卸資産のケースとは逆に、利益剰余金が増える方向の修正です）。'
+    exp:'<div class="xp-c">方針の変更で過去の帳簿価額が多かったとわかったら、<b>資産と<mark class="ptm">利益剰余金期首残高</mark>を増やします</b>。</div><p class="xp-w">総平均法では過去の有価証券が60,000円多かったので、売買目的有価証券と期首の利益剰余金を増やします。</p><div class="xp-m"><b>間違えやすい点</b>　遡及適用は、利益剰余金が減るとは限りません。</div>'
   },
   { id:843, calc:'', level:3, cat:'会計方針の変更', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は棚卸資産の評価方法を総平均法から先入先出法に変更した（<strong>会計方針の変更</strong>）。この変更を過去の財務諸表に遡って適用した結果、<mark class="q-asset">過去の期首商品棚卸高が先入先出法によればより高い金額であったことが判明し</mark>、<mark class="q-equity">利益剰余金期首残高を90,000円増額修正する必要が生じた</mark>（税効果は考慮しない）。遡及適用による修正仕訳を示しなさい。',
     en_q:'Company X changed its inventory valuation method from the weighted-average method to FIFO. Applying this retrospectively revealed that opening inventory under FIFO would have been ¥90,000 higher, requiring a ¥90,000 increase to opening retained earnings, ignoring tax effects. Record the retrospective-application entry.',
     e:[{d:[['繰越商品',90000]], c:[['利益剰余金期首残高',90000]]}],
-    exp:'会計方針の変更による遡及適用は、必ずしも利益剰余金を減らす方向とは限りません。今回のように、変更後の方法（先入先出法）によれば過去の棚卸資産の評価額がより高かった場合は、逆に繰越商品（資産）を増額し、利益剰余金期首残高も増額修正します。まるで計算方法を変えたら過去の在庫が「実は少し多く評価されるべきだった」と判明したようなイメージで、「遡及適用は増える場合も減る場合もある」という点を、最初に学んだ問題（総平均法への変更で減額したケース）と対比して押さえておきましょう。'
+    exp:'<div class="xp-c">方針の変更で過去の期首商品が多かったとわかったら、<b>繰越商品と<mark class="ptm">利益剰余金期首残高</mark>を増やします</b>。</div><p class="xp-w">先入先出法で計算し直すと90,000円多かったので、その分を増やします。</p><div class="xp-m"><b>間違えやすい点</b>　向きを逆にしないこと。</div>'
   },
   { id:844, calc:'', level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は前期の決算において、<mark class="q-as-li">備品の減価償却費40,000円の計上を失念していたことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Company X discovered this period that it had forgotten to record ¥40,000 of depreciation on equipment last period. Record the retrospective restatement entry, ignoring tax effects.',
     e:[{d:[['利益剰余金期首残高',40000]], c:[['減価償却累計額',40000]]}],
-    exp:'減価償却費の計上漏れも、過去の財務諸表の誤りです（誤謬）。当期の減価償却費として今さら計上するのではなく、過去の誤りとして「利益剰余金期首残高」を直接減額し、本来計上すべきだった減価償却累計額を追加します。「見つけた時点の費用にしない、過去に遡って直接純資産を修正する」という誤謬訂正の基本パターンをもう一度確認する問題です。'
+    exp:'<div class="xp-c">前期の減価償却費の漏れは、<b>減価償却累計額を増やし、<mark class="ptm">利益剰余金期首残高</mark>を減らします</b>。</div><p class="xp-w">前期に費用が40,000円少なかったので、前期の利益が多すぎました。</p><div class="xp-m"><b>間違えやすい点</b>　当期の減価償却費にしないこと。</div>'
   },
   { id:845, calc:'', level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は前期に、本来は修繕費として費用処理すべきであった<mark class="q-asset">支出（<strong>収益的支出</strong>）70,000円を、誤って建物の取得原価に含めて資産計上していた（<strong>資本的支出</strong>として処理していた）ことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい（減価償却の影響は考慮しない、税効果は考慮しない）。',
     en_q:'Company X discovered this period that it had mistakenly capitalized ¥70,000 of expenditure into the cost of a building last period, when it should have been expensed as repairs. Record the retrospective restatement entry (ignore the depreciation impact and tax effects).',
     e:[{d:[['利益剰余金期首残高',70000]], c:[['建物',70000]]}],
-    exp:'本来は費用にすべき支出（収益的支出）を、誤って資産（建物などの資本的支出）に計上してしまうケースも誤謬に該当します。まるで単なる補修費用を「リフォーム扱い」で資産に計上してしまったミスを直すようなイメージで、過大に計上されていた建物（資産）を減額し、対応する分だけ利益剰余金期首残高を減額して訂正します。「資産に計上しすぎていた」誤りも、収益・費用の計上誤りと同じように、利益剰余金期首残高を通じて修正する点は共通です。'
+    exp:'<div class="xp-c">費用にすべき修繕を建物にしていた誤りは、<b>建物を減らし、<mark class="ptm">利益剰余金期首残高</mark>を減らします</b>。</div><p class="xp-w">前期に費用にすべき70,000円を資産にしていたので、前期の利益が多すぎました。</p><div class="xp-m"><b>間違えやすい点</b>　当期の修繕費にしないこと。</div>'
   },
   { id:846, calc:'120,000－80,000＝40,000円', level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は前期末の貸倒引当金の設定にあたり、計算式の入力ミスにより、<mark class="q-as-li">本来120,000円計上すべきところを80,000円しか計上していなかったことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Company X discovered this period that a calculation input error had caused it to record only ¥80,000 of allowance for doubtful accounts last period, when ¥120,000 was required. Record the retrospective restatement entry, ignoring tax effects.',
     e:[{d:[['利益剰余金期首残高',40000]], c:[['貸倒引当金',40000]]}],
-    exp:'単純な計算ミスによって引当金が過少に計上されていた場合も誤謬に該当します（後で判明した新しい情報に基づく「見積りの変更」とは違い、当時すでに入手できていた情報の使い方を間違えた場合は誤謬です）。まるでExcelの計算式の入力ミスを後から見つけたようなイメージで、不足していた40,000円（120,000円－80,000円）を追加計上し、利益剰余金期首残高を減額します。'
+    exp:'<div class="xp-c">計算のミスで引当金が少なかったのは<b>誤り</b>なので、<mark class="ptm">利益剰余金期首残高</mark>で直します。</div><p class="xp-w">120,000円のところ80,000円しか計上していなかったので、不足の40,000円を足します。</p><div class="xp-m"><b>間違えやすい点</b>　新しい情報による見積りの変更と混同しないこと。当時わかっていた情報の使い方の誤りは「誤謬」です。</div>'
   },
   { id:847, calc:'', level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は前期末の実地棚卸において、<mark class="q-asset">倉庫の一角にあった商品60,000円分を数え忘れており、期末商品棚卸高が過小に計上されていたことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Company X discovered this period that, during last period\'s physical inventory count, ¥60,000 of goods in a corner of the warehouse were overlooked, understating ending inventory. Record the retrospective restatement entry, ignoring tax effects.',
     e:[{d:[['繰越商品',60000]], c:[['利益剰余金期首残高',60000]]}],
-    exp:'実地棚卸の数え忘れのような、単純な事実誤認・集計ミスも誤謬に該当します。倉庫の隅にあった在庫を数え忘れていたケースで、過小だった繰越商品（資産）を追加計上し、対応する分だけ利益剰余金期首残高を増額修正します。誤謬の内容によって利益剰余金が増えるか減るかは変わりますが、「発見した期の損益にせず、利益剰余金期首残高を直接修正する」という処理方法自体は常に共通です。'
+    exp:'<div class="xp-c">前期末の商品の数え忘れは、<b>繰越商品と<mark class="ptm">利益剰余金期首残高</mark>を増やして</b>直します。</div><p class="xp-w">期末商品が少ないと売上原価が多くなり、前期の利益は60,000円少なすぎました。</p><div class="xp-m"><b>間違えやすい点</b>　利益剰余金を減らさないこと。数え忘れは利益を少なくします。</div>'
   },
   { id:848, calc:'', level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は前期の法人税等の計算において、税率の適用誤りにより、<mark class="q-liability">本来より30,000円少なく法人税等を計上していたことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい。',
     en_q:'Company X discovered this period that, due to an incorrect tax rate applied last period, income taxes were understated by ¥30,000. Record the retrospective restatement entry.',
     e:[{d:[['利益剰余金期首残高',30000]], c:[['未払法人税等',30000]]}],
-    exp:'損益項目だけでなく、税金費用（法人税等）の計算誤りも誤謬の訂正の対象になります。まるで確定申告の税率適用ミスを後から修正するようなイメージで、過少に計上されていた未払法人税等（負債）を追加計上し、利益剰余金期首残高を減額します。「税金の計算を間違えていた」というのも、会計上は他の費用の計上漏れと同じ枠組みで訂正します。'
+    exp:'<div class="xp-c">前期の税金の計算の誤りも、<b>未払法人税等を足し、<mark class="ptm">利益剰余金期首残高</mark>を減らして</b>直します。</div><p class="xp-w">税金が30,000円少なかったので、前期の利益が多すぎました。</p><div class="xp-m"><b>間違えやすい点</b>　当期の法人税等にしないこと。</div>'
   },
   { id:849, calc:'2,000,000×3％－40,000＝20,000円', level:2, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は過去の貸倒実績率の見直しにより、当期末の貸倒引当金の設定率を売掛金残高の2％から3％に変更した（<strong>会計上の見積りの変更</strong>）。<mark class="q-expense">当期末売掛金残高2,000,000円に対する引当金の追加計上額（見積りの変更に伴う当期の影響分）を計上する</mark>（<mark class="q-as-li">同額を貸倒引当金に繰り入れる</mark>）仕訳を示しなさい（差額補充法、前期末引当金残高40,000円）。',
     en_q:"Company X revised its allowance rate for doubtful accounts from 2% to 3% of receivables, based on updated historical loss experience. Given a year-end receivables balance of ¥2,000,000 and a prior allowance balance of ¥40,000, record the entry recognizing the additional allowance required (using the incremental method).",
     e:[{d:[['貸倒引当金繰入',20000]], c:[['貸倒引当金',20000]]}],
-    exp:'過去の貸倒実績（実際にどれくらい貸し倒れたか）が変化したことに基づいて引当金の設定率を見直すのは、新しい情報に基づく合理的な判断であり、「会計上の見積りの変更」に該当します。まるで保険の掛け金を最新のリスクデータに基づいて見直すようなイメージで、過去に遡って修正はせず、変更した当期以降の引当金の計算に、新しい設定率（3％）をそのまま反映させます。60,000円（2,000,000×3％）－40,000円（前期末残高）＝20,000円を当期に追加計上します。'
+    exp:'<div class="xp-c">実績を見直して設定率を変えたのは<b>見積りの変更</b>なので、<b>当期の繰入で調整</b>します。</div><p class="xp-w">2,000,000円×3％で60,000円、前期末の残高40,000円との差20,000円を繰り入れます。</p><div class="xp-m"><b>間違えやすい点</b>　利益剰余金を修正しないこと。</div>'
   },
   { id:850, calc:'550,000－500,000＝50,000円', level:2, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社が計上している資産除去債務（帳簿価額500,000円）について、<mark class="q-liability">将来の除去費用の見積りが変更され（<strong>会計上の見積りの変更</strong>）、資産除去債務の金額を550,000円に修正する必要が生じた</mark>。<mark class="q-asset">見積りの変更による増加額を計上する</mark>仕訳を示しなさい（対応する資産の帳簿価額を増加させる）。',
     en_q:"Company X's recognized asset retirement obligation (book value ¥500,000) required revision to ¥550,000 due to a change in the estimated future removal cost. Record the entry recognizing the increase from this estimate change (increasing the corresponding asset's book value).",
     e:[{d:[['機械装置',50000]], c:[['資産除去債務',50000]]}],
-    exp:'資産除去債務は「将来、その資産を撤去・処分するのにいくらかかるか」という見積りに基づいて計上します。物価上昇や技術動向の変化などにより、この見積り自体が変わることがあります。まるで将来の解体費用の見積りを、資材価格の上昇に合わせて見直すようなイメージで、これも「会計上の見積りの変更」に該当し、過去に遡って修正せず、変更があった時点で差額（50,000円）を資産除去債務（負債）と対応する固定資産（資産）の両方に反映させます。増加した分の固定資産は、残存耐用年数にわたって今後の減価償却を通じて費用化されます。'
+    exp:'<div class="xp-c">撤去の費用の見積りが増えたら、<b>資産除去債務と、対応する資産の両方を増やします</b>。</div><p class="xp-w">増えた50,000円を機械装置に足し、残りの年数で減価償却していきます。</p><div class="xp-m"><b>間違えやすい点</b>　増えた分を一度に費用にしないこと。</div>'
   },
   { id:851, calc:'4,000,000×1.5％－40,000＝20,000円', level:2, cat:'会計上の見積りの変更', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は過去の保証実績データの見直しにより、製品保証引当金の設定率を売上高の1％から1.5％に変更した（<strong>会計上の見積りの変更</strong>）。<mark class="q-expense">当期売上高4,000,000円に対する引当金の追加計上額を計上する</mark>（<mark class="q-liability">同額を引当金に繰り入れる</mark>）仕訳を示しなさい（差額補充法、前期末引当金残高40,000円）。',
     en_q:"Company X revised its product warranty provision rate from 1% to 1.5% of sales, based on updated warranty claim experience. Given sales of ¥4,000,000 and a prior provision balance of ¥40,000, record the entry recognizing the additional provision required.",
     e:[{d:[['商品保証引当金繰入',20000]], c:[['商品保証引当金',20000]]}],
-    exp:'製品保証引当金の設定率の見直しも、貸倒引当金と同じ「会計上の見積りの変更」です。まるで過去の故障発生率のデータをもとに、保証コストの見積りを更新するようなイメージで、過去の実績データが更新されたことに基づく合理的な判断なので、遡及適用はせず、当期の引当金計算に新しい設定率（1.5％）をそのまま反映させます。60,000円（4,000,000×1.5％）－40,000円（前期末残高）＝20,000円を追加計上します。'
+    exp:'<div class="xp-c">保証の実績を見直して設定率を変えたのは<b>見積りの変更</b>なので、<b>当期の繰入で調整</b>します。</div><p class="xp-w">4,000,000円×1.5％で60,000円、残高40,000円との差20,000円を繰り入れます。</p><div class="xp-m"><b>間違えやすい点</b>　遡及して直さないこと。</div>'
   },
   { id:852, calc:'', level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は前期の退職給付費用の計算において、勤務費用の集計ミスにより、<mark class="q-liability">本来より50,000円少なく退職給付費用を計上していたことを当期に発見した</mark>。<mark class="q-equity">前期以前の損益への影響は利益剰余金期首残高で修正する</mark>修正再表示（<strong>誤謬の訂正</strong>）の仕訳を示しなさい（税効果は考慮しない）。',
     en_q:"Company X discovered this period that a clerical error in tallying service cost caused last period's retirement benefit expense to be understated by ¥50,000. Record the retrospective restatement entry, ignoring tax effects.",
     e:[{d:[['利益剰余金期首残高',50000]], c:[['退職給付引当金',50000]]}],
-    exp:'退職給付会計のような複雑な見積りを伴う領域でも、「入手可能だった情報に基づく計算を単純に間違えた」場合は、見積りの変更ではなく誤謬に該当します。まるで複雑な計算式の中の1つの数字を打ち間違えていたようなイメージで、不足していた退職給付引当金50,000円を追加計上し、利益剰余金期首残高を減額して訂正します。「新しい情報で見積りが変わった」のか「当時の情報の使い方を間違えた」のかを区別することが、誤謬と見積りの変更を見分けるポイントです。'
+    exp:'<div class="xp-c">集計ミスで退職給付費用が少なかったのは<b>誤り</b>なので、<mark class="ptm">利益剰余金期首残高</mark>で直します。</div><p class="xp-w">不足の50,000円を退職給付引当金に足し、期首の利益剰余金を減らします。</p><div class="xp-m"><b>間違えやすい点</b>　見積りの変更と混同しないこと。</div>'
   },
   { id:853, calc:'繰延税金資産：90,000×30％＝27,000円\n利益剰余金期首残高の減少：90,000－27,000＝63,000円', level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は前期に<mark class="q-asset">売上高（売掛金）を90,000円過大に計上していたことを当期に発見した</mark>。<strong>誤謬の訂正</strong>による修正再表示（<mark class="q-equity">利益剰余金期首残高の修正</mark>）にあたり、<mark class="q-asset">実効税率30％として税効果を考慮した</mark>仕訳を示しなさい。',
     en_q:'Company X discovered this period that it had overstated sales revenue (accounts receivable) by ¥90,000 last period. In restating the financials, applying tax-effect accounting at an effective tax rate of 30%, record the correcting entry.',
     e:[{d:[['利益剰余金期首残高',63000],['繰延税金資産',27000]], c:[['売掛金',90000]]}],
-    exp:'誤謬の訂正にも税効果会計を適用します。過大計上されていた売上高（売掛金）90,000円を取り消すと、将来的に税務上の調整を通じて税金負担が軽減される効果を持つため、繰延税金資産27,000円（90,000×30％）を認識します。残り63,000円が税引後ベースでの利益剰余金期首残高の減額分です。'
+    exp:'<div class="xp-c">前期の売上の過大を直すときも税効果を考え、<b>税金の分を<mark class="ptm">繰延税金資産</mark></b>にします。</div><p class="xp-w">売掛金90,000円を消し、30％の27,000円を繰延税金資産、残り63,000円だけ期首の利益剰余金を減らします。</p><div class="xp-m"><b>間違えやすい点</b>　利益剰余金を90,000円減らさないこと。</div>'
   },
   { id:854, calc:'繰延税金負債：50,000×30％＝15,000円\n利益剰余金期首残高の増加：50,000－15,000＝35,000円', level:3, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は前期末の実地棚卸において、<mark class="q-asset">商品50,000円分を数え忘れており、期末商品棚卸高が過小に計上されていたことを当期に発見した</mark>。<strong>誤謬の訂正</strong>による修正再表示（<mark class="q-equity">利益剰余金期首残高の修正</mark>）にあたり、<mark class="q-liability">実効税率30％として税効果（<strong>将来加算一時差異</strong>）を考慮した</mark>仕訳を示しなさい。',
     en_q:'Company X discovered this period that, during last period\'s physical inventory count, ¥50,000 of goods were overlooked, understating ending inventory. In restating the financials, applying tax-effect accounting at an effective tax rate of 30%, record the correcting entry.',
     e:[{d:[['繰越商品',50000]], c:[['繰延税金負債',15000],['利益剰余金期首残高',35000]]}],
-    exp:'資産の過小計上（棚卸資産の数え忘れなど）を修正すると、過去の利益がその分増えていたはずだったことになるため、将来的な税金負担が増える効果（将来加算一時差異）を持ち、繰延税金負債15,000円（50,000×30％）を認識します。残り35,000円が税引後ベースでの利益剰余金期首残高の増額分です。修正再表示のたびに、その内容が「将来減算」なのか「将来加算」なのかを見極めて、繰延税金資産・負債のどちらを計上するか判断する必要があります。'
+    exp:'<div class="xp-c">利益を増やす訂正では、<b>税金の分を<mark class="ptm">繰延税金負債</mark></b>にします。</div><p class="xp-w">数え忘れの商品50,000円を足すと、前期の利益が増えます。30％の15,000円は将来払う税金なので負債、残り35,000円が利益剰余金の増加です。</p><div class="xp-m"><b>間違えやすい点</b>　繰延税金資産にしないこと。利益が増える訂正は負債です。</div>'
   },
   { id:855, calc:'', level:2, cat:'誤謬の訂正', chap:'1級：会計方針の変更・誤謬の訂正',
     q:'Ｘ社は前々期および前期の2期にわたり、リース料の計上区分を誤っており、<mark class="q-liability">各期10,000円ずつ、合計20,000円の費用の計上漏れがあったことを当期に発見した</mark>。この累積影響額を<mark class="q-equity">利益剰余金期首残高で修正再表示する</mark>（<strong>誤謬の訂正</strong>）仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Company X discovered this period that a misclassification of lease payments over two prior periods resulted in ¥10,000 of unrecorded expense each period, totaling ¥20,000. Record the entry restating this cumulative effect, ignoring tax effects.',
     e:[{d:[['利益剰余金期首残高',20000]], c:[['未払費用',20000]]}],
-    exp:'誤謬が1期だけでなく複数の過去の期間にわたって生じていた場合は、それぞれの期の影響額を合計した「累積影響額」を、当期首の利益剰余金期首残高に対する一括修正として反映させます。まるで数年分の記帳ミスを一気にまとめて精算するようなイメージで、前々期分10,000円＋前期分10,000円＝合計20,000円。何年前の誤りであっても、発見した期の損益には一切影響させず、あくまで期首の純資産を直接修正する、という誤謬訂正の原則は変わりません。'
+    exp:'<div class="xp-c">何期にもわたる誤りは、<b>影響額を合計して<mark class="ptm">利益剰余金期首残高</mark>で一度に</b>直します。</div><p class="xp-w">前々期と前期の10,000円ずつ、合計20,000円の費用の漏れを未払費用にします。</p><div class="xp-m"><b>間違えやすい点</b>　期ごとに分けて当期の損益にしないこと。</div>'
   },
 
   // ===== 1級：標準原価計算（差異分析・応用） =====
@@ -2777,25 +2777,25 @@ const ALL = [
     q:'Ｘ社は製品を製造するにあたり、材料Ａ（標準単価＠200円）と材料Ｂ（標準単価＠100円）を標準配合比率7：3で投入している。当月、実際には材料Ａ750kg・材料Ｂ300kgを投入し（合計1,050kg）、標準配合比率で計算した実際投入量ベースの配合量は材料Ａ735kg・材料Ｂ315kgであった。<mark class="q-expense">配合差異を計算し</mark>、<mark class="q-asset">仕掛品から</mark>配合差異勘定へ振り替える仕訳を示しなさい（不利差異）。',
     en_q:'Company X combines material A (standard price ¥200/kg) and material B (standard price ¥100/kg) in a standard mix ratio of 7:3. This month it actually used 750kg of A and 300kg of B (total 1,050kg); at the standard mix ratio, the actual total input implies 735kg of A and 315kg of B. Compute the mix variance and record the entry transferring it from work-in-process to the mix variance account (unfavorable).',
     e:[{d:[['配合差異',1500]], c:[['仕掛品',1500]]}],
-    exp:'配合差異とは、複数の材料を組み合わせて製品を作る場合に、実際の配合比率が標準の配合比率とズレたことによって生じる差異です。まるでカレーのレシピで「肉多め・野菜少なめ」にアレンジしたら食材費が変わったようなイメージで、標準よりも単価の高い材料Ａを多く（735kg→750kg、15kg超過）、単価の低い材料Ｂを少なく（315kg→300kg、15kg減少）投入した結果、材料Ａ：200円×(735－750)＝△3,000円、材料Ｂ：100円×(315－300)＝＋1,500円、合計△1,500円（不利差異）が生じました。投入量の合計（1,050kg）は変わらなくても、「高い材料の比率を増やした」ことでコストが増加しています。'
+    exp:'<div class="xp-c">配合差異は、<b>材料の組み合わせの割合が標準とずれた</b>ことから生じる差異です。</div><p class="xp-w">合計1,050kgを標準の比で分けると、Ａ735kg・Ｂ315kgです。実際は高いＡを15kg多く、安いＢを15kg少なく使いました。</p><p class="xp-w">Ａは200円×15kgで3,000円の不利、Ｂは100円×15kgで1,500円の有利、合わせて1,500円の不利差異です。</p><div class="xp-m"><b>間違えやすい点</b>　合計の投入量の差（歩留差異）と混同しないこと。</div>'
   },
   { id:793, calc:'材料Ａ：200円×（700－735）kg＝△7,000円\n材料Ｂ：100円×（300－315）kg＝△1,500円\n合計：△8,500円（不利差異）', level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'上記のＸ社において、標準投入量は材料Ａ700kg・材料Ｂ300kg（標準配合比率での実際生産量に対する必要量）であった。<mark class="q-expense">歩留差異を計算し</mark>、<mark class="q-asset">仕掛品から</mark>歩留差異勘定へ振り替える仕訳を示しなさい（不利差異）。',
     en_q:'For Company X above, the standard input required for actual output (at the standard mix ratio) was 700kg of A and 300kg of B. Compute the yield variance and record the entry transferring it from work-in-process to the yield variance account (unfavorable).',
     e:[{d:[['歩留差異',8500]], c:[['仕掛品',8500]]}],
-    exp:'歩留差異とは、材料の配合比率は標準どおりだったとしても、投入量の合計そのものが標準より多かった（＝歩留り＝原材料が製品に変わる効率が悪かった）ことによって生じる差異です。まるで料理の下ごしらえで皮を厚く剥きすぎて材料を無駄にしてしまったようなイメージで、標準配合比率のまま計算した必要量合計1,000kg（700kg＋300kg）に対し、実際には1,050kg（配合比率どおりで735kg＋315kg）を投入したため、50kg分（歩留りの悪化分）が余分にコストとしてかかっています。材料Ａ：200円×(700－735)＝△7,000円、材料Ｂ：100円×(300－315)＝△1,500円、合計△8,500円（不利差異）。'
+    exp:'<div class="xp-c">歩留差異は、<b>投入した量の合計が標準より多かった（少なかった）</b>ことから生じる差異です。</div><p class="xp-w">標準ならＡ700kg・Ｂ300kgで済むところ、標準の比で735kg・315kgを使いました。</p><p class="xp-w">Ａは200円×35kgで7,000円、Ｂは100円×15kgで1,500円、合計8,500円の不利差異です。</p><div class="xp-m"><b>間違えやすい点</b>　実際の投入量（750kg・300kg）で計算しないこと。標準の比で分けた量と比べます。</div>'
   },
   { id:794, calc:'仕掛品：100,000×20％＝20,000円\n製品：100,000×30％＝30,000円\n売上原価：100,000×50％＝50,000円', level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は標準原価計算を採用しており、当月の原価差異（不利差異）100,000円が比較的多額であったため、期末の<mark class="q-asset">仕掛品</mark>・<mark class="q-asset">製品</mark>・<mark class="q-expense">売上原価</mark>の標準原価の比率（仕掛品20％・製品30％・売上原価50％）で配分することとした。<mark class="q-expense">原価差異を配分する</mark>仕訳を示しなさい。',
     en_q:'Company X uses standard costing. This month\'s cost variance (¥100,000 unfavorable) was relatively large, so it is allocated across ending work-in-process, finished goods, and cost of goods sold in proportion to their standard cost balances (WIP 20%, finished goods 30%, COGS 50%). Record the allocation entry.',
     e:[{d:[['仕掛品',20000],['製品',30000],['売上原価',50000]], c:[['原価差異',100000]]}],
-    exp:'標準原価計算で生じた原価差異は、原則として当月の売上原価に賦課（すべて売上原価に加算）します。ただし、差異の金額が「比較的多額」である場合は、棚卸資産（期末仕掛品・期末製品）にもその発生原因が及んでいると考え、まるで大きな値上がりコストを在庫商品にも按分して反映させるようなイメージで、各在庫と売上原価の残高比率で配分します。100,000円×仕掛品20％＝20,000円、製品30％＝30,000円、売上原価50％＝50,000円。「差異が小さければ全部売上原価、大きければ在庫にも配分」という原価差異の会計処理の原則を扱う問題です。'
+    exp:'<div class="xp-c">原価差異が多額なら、<b>期末の仕掛品・製品・売上原価に比で分けます</b>。</div><p class="xp-w">在庫にも原因が及んでいるとみて、100,000円を 20％・30％・50％ で分けます。</p><div class="xp-m"><b>間違えやすい点</b>　少額のときのように全部を売上原価にしないこと。</div>'
   },
   { id:795, calc:'', level:2, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は標準原価計算を採用しており、<mark class="q-expense">当月の原価差異（有利差異）15,000円は少額であった</mark>ため、<mark class="q-expense">全額を売上原価に賦課する</mark>こととした。仕訳を示しなさい（有利差異のため売上原価を減額する）。',
     en_q:"Company X uses standard costing. This month's cost variance (¥15,000 favorable) was small, so it is charged entirely to cost of goods sold. Record the entry (a favorable variance reduces cost of goods sold).",
     e:[{d:[['原価差異',15000]], c:[['売上原価',15000]]}],
-    exp:'原価差異が少額の場合は、簡便的に全額をその月の売上原価に賦課します。有利差異（実際原価が標準原価より少なくて済んだ）の場合は、売上原価を減額する方向で処理します。まるで予算より安く仕入れられた分、その月の原価がまるまる浮いたようなイメージで、「儲けが出た分だけ、売上原価が少なくて済んだ」ことになります。反対に不利差異であれば、売上原価を増額する方向で調整します。'
+    exp:'<div class="xp-c">少額の原価差異は、<b>全額を売上原価で調整</b>します。有利差異なら売上原価を減らします。</div><p class="xp-w">実際の原価が標準より15,000円少なかったので、売上原価を15,000円減らします。</p><div class="xp-m"><b>間違えやすい点</b>　有利差異で売上原価を増やさないこと。</div>'
   },
 
   // ===== 1級：活動基準原価計算（ABC）・本社工場会計 =====
@@ -2803,133 +2803,133 @@ const ALL = [
     q:'Ｘ社は活動基準原価計算（ABC）を採用しており、段取活動にかかる<mark class="q-expense">製造間接費240,000円を</mark>、段取回数（合計80回）を配賦基準として、活動基準配賦率＠3,000円で各製品に配賦する。製品Ａに40回・製品Ｂに40回の段取りが行われた場合、<mark class="q-asset">製造間接費を仕掛品へ配賦する</mark>仕訳を示しなさい。',
     en_q:'Company X uses activity-based costing (ABC). ¥240,000 of overhead from the setup activity is allocated using the number of setups (80 total) as the cost driver, at an activity rate of ¥3,000 per setup. Products A and B each required 40 setups. Record the entry allocating overhead to work-in-process.',
     e:[{d:[['仕掛品',240000]], c:[['製造間接費',240000]]}],
-    exp:'活動基準原価計算（ABC）は、製造間接費を「生産量」ではなく「活動（段取り・検査・発注など）の発生回数」を基準に配賦する方法です。まるで工場の共通コストを「誰がどれだけ手間をかけさせたか」で公平に割り勘するようなイメージで、段取活動にかかる費用240,000円を、段取り回数合計80回で割ると、活動基準配賦率＠3,000円／回。製品Ａ・Ｂともに40回ずつ段取りが行われたため、それぞれ120,000円（40回×3,000円）が配賦されます。従来の「直接作業時間」などの単一基準による配賦よりも、実際に原価を発生させている活動の実態に即して配賦できる点がABCの利点です。'
+    exp:'<div class="xp-c">ABCでは、<b>活動ごとに、その活動の回数などを基準</b>に製造間接費を配ります。</div><p class="xp-w">段取りの費用240,000円を80回で割ると1回3,000円です。製品Ａ・Ｂに40回ずつで120,000円ずつ配ります。</p><div class="xp-m"><b>間違えやすい点</b>　直接作業時間などひとつの基準でまとめて配らないこと。</div>'
   },
   { id:797, calc:'200時間×＠300円＝60,000円', level:3, cat:'ABC', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は検査活動にかかる<mark class="q-expense">製造間接費150,000円を</mark>、検査時間（合計500時間）を配賦基準として活動基準配賦率＠300円で配賦している（<strong>活動基準原価計算＝ABC</strong>）。製品Ｃに200時間の検査が行われた場合、<mark class="q-asset">製品Ｃへ配賦される製造間接費を仕掛品へ計上する</mark>仕訳を示しなさい。',
     en_q:'Company X allocates ¥150,000 of overhead from the inspection activity using inspection hours (500 total) as the cost driver, at an activity rate of ¥300 per hour. Product C required 200 inspection hours. Record the entry allocating the overhead assigned to Product C to work-in-process.',
     e:[{d:[['仕掛品',60000]], c:[['製造間接費',60000]]}],
-    exp:'検査活動という別のコストプールについても同様に、活動の発生量（検査時間）を基準に配賦率を計算します。150,000円÷500時間＝＠300円／時間。製品Ｃに200時間の検査が行われたため、60,000円（200時間×300円）が製品Ｃに配賦されます。ABCでは、このように活動（コストドライバー）ごとに複数の配賦基準を使い分けるのが特徴です。'
+    exp:'<div class="xp-c">検査活動の費用は、<b>検査時間を基準</b>に配ります。</div><p class="xp-w">150,000円÷500時間で1時間300円、製品Ｃは200時間で60,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　ほかの活動の配賦率を使わないこと。</div>'
   },
   { id:798, calc:'', sides:['本社側','工場側'], level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は本社会計と工場会計を独立させている（本社工場会計）。<mark class="q-asset">本社は工場のために材料500,000円を購入し</mark>、<mark class="q-asset">現金で支払い（<strong>立替払い</strong>）</mark>、そのまま<mark class="q-other">工場へ送付した</mark>（<mark class="q-other">工場側では本社勘定で受け入れる</mark>）。①本社側②工場側の仕訳をそれぞれ示しなさい。',
     en_q:"Company X keeps separate head-office and factory ledgers. The head office purchased ¥500,000 of materials for the factory, paying cash, and shipped them directly to the factory. Record the entries on (1) the head office's books and (2) the factory's books.",
     e:[{d:[['工場',500000]], c:[['現金',500000]]}, {d:[['材料',500000]], c:[['本社',500000]]}],
-    exp:'本社工場会計では、本社と工場がそれぞれ独立した帳簿を持ちます。まるで支店と本店がそれぞれ独自の家計簿をつけているようなイメージで、本社と工場の間の取引は、通常の外部取引と同じように仕訳しますが、相手科目には「工場」「本社」という内部取引専用の勘定（照合勘定）を使います。①本社側：材料代金を立替払いし、工場に送付したので「工場」勘定（本社から見た工場への債権のようなもの）を借方に、現金を貸方に計上。②工場側：材料を受け入れたので「材料」を借方に、本社からの送付分として「本社」勘定（工場から見た本社への債務）を貸方に計上します。この2つの帳簿を合算すると、内部取引（工場・本社勘定）は相殺されて消えます。'
+    exp:'<div class="xp-c">本社工場会計では、本社と工場の間の取引を、<b>お互いを相手（「工場」「本社」）</b>にして記帳します。</div><p class="xp-w">本社は材料代を払い、工場に送ったので「工場／現金」。工場は材料を受け取ったので「材料／本社」です。</p><p class="xp-w">2つの帳簿を合わせると、工場勘定と本社勘定は消え合います。</p><div class="xp-m"><b>間違えやすい点</b>　本社側で材料を計上しないこと。材料を持つのは工場です。</div>'
   },
   { id:799, calc:'', sides:['工場側','本社側'], level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'上記のＸ社において、<mark class="q-asset">工場で製品600,000円が完成し</mark>、<mark class="q-other">ただちに本社倉庫へ発送した</mark>（工場では製品勘定を持たず、<mark class="q-asset">完成した製品はすべて本社が管理する</mark>。<mark class="q-other">本社側は工場勘定を相手に受け入れる</mark>）。①工場側②本社側の仕訳をそれぞれ示しなさい。',
     en_q:"For Company X above, the factory completed ¥600,000 of finished goods and shipped them directly to the head office warehouse (the factory keeps no finished goods account; the head office manages all finished goods). Record the entries on (1) the factory's books and (2) the head office's books.",
     e:[{d:[['本社',600000]], c:[['仕掛品',600000]]}, {d:[['製品',600000]], c:[['工場',600000]]}],
-    exp:'工場では、完成した製品を自ら保管せず、すぐに本社へ送付する場合があります。まるで工場直送のネット通販のように、①工場側：仕掛品（製造中の原価）が完成し、本社に送ったので「本社」勘定を借方（本社への送付＝本社に対する債権的な意味合い）に、仕掛品を貸方に計上。②本社側：工場から製品を受け入れたので「製品」を借方に、「工場」勘定を貸方に計上します。本社工場会計では、このように工場側の帳簿には「製品」勘定が登場しないケースも典型的な出題パターンです。'
+    exp:'<div class="xp-c">工場が製品の勘定を持たないときは、<b>完成品を仕掛品から直接本社へ</b>送ります。</div><p class="xp-w">工場は「本社／仕掛品」、本社は受け取った製品を「製品／工場」と記帳します。</p><div class="xp-m"><b>間違えやすい点</b>　工場側で製品の勘定を使わないこと。</div>'
   },
   { id:856, calc:'材料Ｃ：300円×（528－500）kg＝8,400円\n材料Ｄ：150円×（352－380）kg＝△4,200円\n合計：4,200円（有利差異）', level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は材料Ｃ（標準単価＠300円）と材料Ｄ（標準単価＠150円）を標準配合比率6：4で投入している。当月、実際には材料Ｃ500kg・材料Ｄ380kgを投入し（合計880kg）、標準配合比率で計算した実際投入量ベースの配合量は材料Ｃ528kg・材料Ｄ352kgであった。<mark class="q-expense">配合差異を計算し</mark>、<mark class="q-asset">仕掛品から</mark>配合差異勘定へ振り替える仕訳を示しなさい（有利差異）。',
     en_q:'Company X combines material C (standard price ¥300/kg) and material D (standard price ¥150/kg) in a standard mix ratio of 6:4. This month it actually used 500kg of C and 380kg of D (total 880kg); at the standard mix ratio, the actual total input implies 528kg of C and 352kg of D. Compute the mix variance and record the entry transferring it from work-in-process to the mix variance account (favorable).',
     e:[{d:[['仕掛品',4200]], c:[['配合差異',4200]]}],
-    exp:'標準よりも単価の高い材料Ｃを少なく（528kg→500kg、28kg減少）、単価の低い材料Ｄを多く（352kg→380kg、28kg増加）投入した結果、材料Ｃ：300円×(528－500)＝＋8,400円、材料Ｄ：150円×(352－380)＝△4,200円、合計＋4,200円（有利差異）となりました。まるで高級食材の使用量を控えめにして、コストを抑えることに成功したレシピ改良のようなイメージで、安い材料の比率を増やしたことでコストが節約されています。有利差異の場合は、不利差異のときとは逆に、仕掛品を借方、配合差異を貸方に計上します。'
+    exp:'<div class="xp-c">安い材料の割合を増やせたので、<b>配合差異は有利</b>です。</div><p class="xp-w">標準の比なら、Ｃ528kg・Ｄ352kgです。高いＣを28kg少なく（8,400円の有利）、安いＤを28kg多く（4,200円の不利）使い、合わせて4,200円の有利です。</p><div class="xp-m"><b>間違えやすい点</b>　有利差異は「仕掛品／配合差異」。向きを逆にしないこと。</div>'
   },
   { id:857, calc:'材料Ｃ：300円×（540－528）kg＝3,600円\n材料Ｄ：150円×（360－352）kg＝1,200円\n合計：4,800円（有利差異）', level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'上記のＸ社において、標準投入量は材料Ｃ540kg・材料Ｄ360kg（標準配合比率での実際生産量に対する必要量）であった。<mark class="q-expense">歩留差異を計算し</mark>、<mark class="q-asset">仕掛品から</mark>歩留差異勘定へ振り替える仕訳を示しなさい（有利差異）。',
     en_q:'For Company X above, the standard input required for actual output (at the standard mix ratio) was 540kg of C and 360kg of D. Compute the yield variance and record the entry transferring it from work-in-process to the yield variance account (favorable).',
     e:[{d:[['仕掛品',4800]], c:[['歩留差異',4800]]}],
-    exp:'標準配合比率のまま計算した必要量合計900kg（540kg＋360kg）に対し、実際の投入量合計は880kg（配合比率どおりで528kg＋352kg）で済んだため、20kg分だけ材料の無駄が少なく、歩留りが良かったことになります。まるで丁寧な作業で食材ロスを減らせた料理人のようなイメージで、材料Ｃ：300円×(540－528)＝＋3,600円、材料Ｄ：150円×(360－352)＝＋1,200円、合計＋4,800円（有利差異）。歩留りが標準より良かった分、コストが節約されたことを表しています。'
+    exp:'<div class="xp-c">投入した量の合計が標準より少なく済んだので、<b>歩留差異は有利</b>です。</div><p class="xp-w">標準ならＣ540kg・Ｄ360kgのところ、528kg・352kgで済みました。Ｃは300円×12kgで3,600円、Ｄは150円×8kgで1,200円、合計4,800円の有利です。</p><div class="xp-m"><b>間違えやすい点</b>　実際の投入量で計算しないこと。</div>'
   },
   { id:858, calc:'材料（予定価格）：1,000kg×＠250円＝250,000円\n材料受入価格差異：260,000－250,000＝10,000円', level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は材料の購入時点で価格差異を把握する方式を採用している。<mark class="q-asset">材料1,000kgを予定価格＠250円（合計250,000円）で購入する予定であったが、実際には＠260円（合計260,000円）で購入し</mark>、<mark class="q-asset">現金で支払った</mark>。購入時の仕訳を示しなさい（材料は予定価格で受け入れ、<mark class="q-expense">実際との差額は材料受入価格差異とする</mark>）。',
     en_q:'Company X recognizes material price variances at the point of purchase. It purchased 1,000kg of material at an actual price of ¥260/kg (total ¥260,000) versus a standard price of ¥250/kg (total ¥250,000), paying cash. Record the purchase entry (materials are recorded at standard price).',
     e:[{d:[['材料',250000],['材料受入価格差異',10000]], c:[['現金',260000]]}],
-    exp:'材料の価格差異を「消費時点」ではなく「購入（受入）時点」で把握する方法を「材料受入価格差異」と呼びます。まるで仕入れた瞬間にレシートを見て「予算オーバーした分」をすぐに帳簿につけるようなイメージで、材料そのものは予定価格（＠250円）で帳簿に受け入れ、実際の支払額（260,000円）との差額10,000円は、購入した時点ですぐに「材料受入価格差異」（不利差異）として区分します。この方法のメリットは、材料を消費するたびに複雑な価格差異の計算をしなくて済み、材料勘定が常に予定価格で統一される点です。'
+    exp:'<div class="xp-c">買ったときに価格のずれをつかむ方法では、<b>材料は予定価格で受け入れ</b>、差を<mark class="ptm">材料受入価格差異</mark>にします。</div><p class="xp-w">予定の250,000円で材料を記帳し、実際の260,000円との差10,000円を不利差異にします。</p><div class="xp-m"><b>間違えやすい点</b>　材料を実際の価格で記帳しないこと。</div>'
   },
   { id:859, calc:'予定配賦額：400,000×5％＝20,000円\n差異：22,000－20,000＝2,000円（不利差異）', level:3, cat:'標準原価計算', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は材料の購入にあたり、材料副費（引取運賃等）を購入代価の5％で予定配賦している。材料の購入代価は400,000円、<mark class="q-expense">実際にかかった材料副費は22,000円であった</mark>。予定配賦額との<mark class="q-expense">差異を材料副費差異として計上する</mark>仕訳を示しなさい。',
     en_q:"Company X applies incidental material costs (freight-in, etc.) at a predetermined rate of 5% of purchase price. The purchase price was ¥400,000, while actual incidental costs were ¥22,000. Record the entry recognizing the variance from the applied amount.",
     e:[{d:[['材料副費差異',2000]], c:[['材料副費',2000]]}],
-    exp:'材料副費（引取運賃、購入手数料など）も、実際発生額を都度集計するのは煩雑なため、購入代価に対する一定率で「予定配賦」することがあります。まるで送料をあらかじめ「商品代金の5％」とざっくり見積もっておき、後で実際の請求額と精算するようなイメージで、予定配賦額20,000円（400,000×5％）に対し、実際発生額は22,000円だったため、2,000円の不利差異（予定より多くかかった）が生じます。材料副費勘定を予定配賦額でいったん締め、実際発生額との差額を「材料副費差異」として区分します。'
+    exp:'<div class="xp-c">材料副費の<b>予定配賦額と実際の発生額の差</b>を<mark class="ptm">材料副費差異</mark>にします。</div><p class="xp-w">予定は400,000円×5％で20,000円、実際は22,000円です。2,000円多くかかった不利差異です。</p><div class="xp-m"><b>間違えやすい点</b>　実際の額で材料に足さないこと。予定で配ってから差を出します。</div>'
   },
   { id:860, calc:'12回×＠3,000円＝36,000円', level:2, cat:'ABC', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は発注活動にかかる<mark class="q-expense">製造間接費90,000円を</mark>、発注回数（合計30回）を配賦基準として活動基準配賦率＠3,000円で配賦している（<strong>活動基準原価計算＝ABC</strong>）。製品Ｄに12回の発注が行われた場合、<mark class="q-asset">製品Ｄへ配賦される製造間接費を仕掛品へ計上する</mark>仕訳を示しなさい。',
     en_q:'Company X allocates ¥90,000 of overhead from the ordering activity using the number of purchase orders (30 total) as the cost driver, at an activity rate of ¥3,000 per order. Product D required 12 purchase orders. Record the entry allocating the overhead assigned to Product D to work-in-process.',
     e:[{d:[['仕掛品',36000]], c:[['製造間接費',36000]]}],
-    exp:'発注活動（購買部門が材料や部品を発注する業務）も、ABCでは独立したコストプールとして扱われます。90,000円÷30回＝＠3,000円／回。製品Ｄに12回分の発注が発生したため、36,000円（12回×3,000円）が製品Ｄに配賦されます。段取活動・検査活動と同じように、活動の発生量に応じて配賦する考え方は共通です。'
+    exp:'<div class="xp-c">発注活動の費用は、<b>発注回数を基準</b>に配ります（ABC）。</div><p class="xp-w">90,000円÷30回で1回3,000円、製品Ｄは12回で36,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　別の活動の基準を使わないこと。</div>'
   },
   { id:861, calc:'配賦率：300,000÷1,000時間＝＠300円\n製品Ｅ：300時間×＠300円＝90,000円', level:2, cat:'ABC', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は従来、<mark class="q-expense">製造間接費300,000円を</mark>直接作業時間（合計1,000時間）を基準に一律配賦していたが、製品Ｅに要した直接作業時間は300時間であった。ABC導入前の伝統的な配賦方法による<mark class="q-asset">製品Ｅへの配賦額を仕掛品へ計上する</mark>仕訳を示しなさい。',
     en_q:'Before adopting ABC, Company X allocated ¥300,000 of overhead uniformly based on direct labor hours (1,000 total). Product E required 300 direct labor hours. Record the entry allocating overhead to Product E under the traditional (pre-ABC) method.',
     e:[{d:[['仕掛品',90000]], c:[['製造間接費',90000]]}],
-    exp:'ABC導入前の伝統的な原価計算では、直接作業時間や機械稼働時間など「単一の配賦基準」で製造間接費をまとめて配賦します。まるで会社の共通経費を全社員数で単純に割り勘するような大雑把な方法で、300,000円÷1,000時間＝＠300円／時間。製品Ｅの作業時間300時間分：90,000円（300時間×300円）が配賦されます。ABC（活動ごとに複数の配賦基準を使う）と比べて計算はシンプルですが、活動の実態を反映しにくく、原価の歪みが生じやすいという欠点があります。両者を対比して理解しておきましょう。'
+    exp:'<div class="xp-c">ABC導入前は、<b>直接作業時間などひとつの基準</b>でまとめて配っていました。</div><p class="xp-w">300,000円÷1,000時間で1時間300円、製品Ｅは300時間で90,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　簡単ですが、手間のかかる製品の原価が実態より小さくなりやすい点を、ABCとの違いとして押さえること。</div>'
   },
   { id:862, calc:'35回×＠2,000円＝70,000円', level:2, cat:'ABC', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は品質検査活動にかかる<mark class="q-expense">製造間接費200,000円を</mark>、検査回数（合計100回）を配賦基準として活動基準配賦率＠2,000円で配賦している。製品Ｆに35回の検査が行われた場合、<mark class="q-asset">製品Ｆへ配賦される製造間接費を仕掛品へ計上する</mark>仕訳を示しなさい。',
     en_q:'Company X allocates ¥200,000 of overhead from the quality inspection activity using the number of inspections (100 total) as the cost driver, at an activity rate of ¥2,000 per inspection. Product F required 35 inspections. Record the entry allocating the overhead assigned to Product F to work-in-process.',
     e:[{d:[['仕掛品',70000]], c:[['製造間接費',70000]]}],
-    exp:'検査活動のコストドライバーは「検査時間」（すでに学んだ例）だけでなく、「検査回数」を使うこともあります。どちらのドライバーがより実態を表すかは、活動の性質によって使い分けます。200,000円÷100回＝＠2,000円／回。製品Ｆに35回の検査が行われたため、70,000円（35回×2,000円）が配賦されます。同じ「検査」という活動でも、時間基準か回数基準かでコストドライバーの選び方が変わる、という実務上の判断ポイントを扱う問題です。'
+    exp:'<div class="xp-c">同じ検査活動でも、<b>検査回数を基準</b>に配ることがあります。</div><p class="xp-w">200,000円÷100回で1回2,000円、製品Ｆは35回で70,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　時間を基準にするか回数を基準にするかは、問題の指示に従うこと。</div>'
   },
   { id:863, calc:'本社の従業員の給料：500,000－300,000＝200,000円', sides:['本社側','工場側'], level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は本社工場会計を採用しており、本社が全従業員の<mark class="q-expense">給与500,000円</mark>（うち<mark class="q-expense">工場従業員分300,000円</mark>）を、<mark class="q-asset">現金で一括支払った</mark>。<mark class="q-other">工場従業員分は工場勘定で工場へ付け替え</mark>、<mark class="q-other">工場側は本社勘定で受け入れる</mark>。①本社側②工場側の仕訳をそれぞれ示しなさい。',
     en_q:"Company X keeps separate head-office and factory ledgers. The head office paid all employees' salaries of ¥500,000 in cash in one lump sum (of which ¥300,000 relates to factory employees). Record the entries on (1) the head office's books and (2) the factory's books.",
     e:[{d:[['給料',200000],['工場',300000]], c:[['現金',500000]]}, {d:[['賃金・給料',300000]], c:[['本社',300000]]}],
-    exp:'本社が全社員分の給与をまとめて支払う場合、本社は自社負担分（本社従業員分200,000円）を「給料」として計上し、工場負担分（300,000円）は「工場」勘定（内部取引の照合勘定）として区分します。まるで家族の共通口座から全員分の支払いをまとめて済ませ、後で誰がいくら使ったか精算するようなイメージで、工場側は、本社が立て替えて支払ってくれた自分たちの給与を「賃金・給料」として計上し、相手科目に「本社」勘定（本社への債務）を計上します。「本社が全部払うが、工場の分は内部で精算する」という構造です。'
+    exp:'<div class="xp-c">本社が工場の給与も払ったら、<b>工場の分は「工場」勘定</b>で付け替えます。</div><p class="xp-w">本社は自分の分200,000円を給料、工場の分300,000円を工場勘定にします。工場は「賃金・給料／本社」です。</p><div class="xp-m"><b>間違えやすい点</b>　本社が全額を給料にしないこと。</div>'
   },
   { id:864, calc:'', sides:['本社側','工場側'], level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は本社工場会計を採用しており、固定資産（機械装置）はすべて本社の帳簿で管理している。工場で使用する<mark class="q-expense">機械装置の当月減価償却費50,000円について</mark>、<mark class="q-as-li">本社は減価償却累計額を計上し</mark>、<mark class="q-other">工場勘定に付け替え</mark>、<mark class="q-other">工場は本社勘定を相手に受け入れる</mark>。①本社側②工場側の仕訳をそれぞれ示しなさい。',
     en_q:"Company X keeps separate head-office and factory ledgers, with all fixed assets (machinery) recorded on the head office's books. Record the entries on (1) the head office's books and (2) the factory's books for this month's ¥50,000 depreciation on machinery used at the factory.",
     e:[{d:[['工場',50000]], c:[['減価償却累計額',50000]]}, {d:[['製造間接費',50000]], c:[['本社',50000]]}],
-    exp:'固定資産を本社が一括管理している場合、工場で使う機械装置の減価償却費であっても、資産の減少（減価償却累計額の増加）自体は本社の帳簿で記録します。まるでグループ会社の設備を親会社が一括管理し、使用料だけを子会社に請求するようなイメージで、本社は工場のための費用を負担した形になるので「工場」勘定（内部債権）を借方に計上します。工場側は、この減価償却費を自らの製造原価（製造間接費）として受け入れ、相手科目に「本社」勘定（内部債務）を計上します。「資産の管理は本社、費用の発生は工場」という役割分担を仕訳で表現しています。'
+    exp:'<div class="xp-c">本社が管理する機械の減価償却費は、<b>本社で累計額を記帳し、工場へ付け替え</b>ます。</div><p class="xp-w">本社は「工場／減価償却累計額」、工場は「製造間接費／本社」と記帳します。</p><div class="xp-m"><b>間違えやすい点</b>　工場側で減価償却累計額を使わないこと。</div>'
   },
   { id:865, calc:'', sides:['工場側','本社側'], level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は本社工場会計を採用しており、工場は完成した製品を本社を経由せず、得意先へ直接発送・販売することがある。工場が<mark class="q-asset">製品（原価400,000円）を</mark>得意先へ<mark class="q-revenue">600,000円で直接販売し</mark>、<mark class="q-asset">販売代金は本社の当座預金口座に振り込まれた</mark>。①工場側（<mark class="q-expense">売上原価</mark>を<mark class="q-other">本社勘定で本社へ付け替える</mark>）②本社側（売上を計上し、<mark class="q-other">売上原価を工場勘定で受け入れる</mark>）の仕訳をそれぞれ示しなさい。',
     en_q:"Company X's factory sometimes ships and sells finished goods directly to customers without routing through the head office. The factory sold goods (cost ¥400,000) directly to a customer, and the ¥600,000 proceeds were deposited into the head office's checking account. Record the entries on (1) the factory's books (transferring the cost) and (2) the head office's books (recognizing the sale).",
     e:[{d:[['本社',400000]], c:[['製品',400000]]}, {d:[['当座預金',600000],['売上原価',400000]], c:[['売上',600000],['工場',400000]]}],
-    exp:'工場が得意先へ製品を直接発送・販売するケースでも、売上の計上自体は原則として本社側で行います（工場は製造・出荷の実行部隊、本社が販売・会計の窓口という役割分担）。まるで工場から直接発送される通販商品でも、売上計上や経理処理は本社が一元管理するようなイメージで、①工場側：出荷した製品（原価400,000円）を製品勘定から減らし、本社に対する内部債権として「本社」勘定を計上します。②本社側：得意先からの入金600,000円を「売上」として計上するとともに、工場から引き継いだ原価400,000円を「売上原価」として計上し、その相手科目として「工場」勘定（内部債務）を計上します。'
+    exp:'<div class="xp-c">工場が直接発送しても、<b>売上は本社で計上</b>し、工場は原価を本社へ付け替えます。</div><p class="xp-w">工場は「本社／製品」、本社は売上600,000円と、工場から引き継いだ売上原価400,000円を記帳します。</p><div class="xp-m"><b>間違えやすい点</b>　工場側で売上を計上しないこと。</div>'
   },
   { id:866, calc:'125,000×25／125＝25,000円', level:3, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社の工場は、本社へ製品（原価400,000円）を振替価格500,000円（原価に25％の内部利益を加算）で発送している。決算時点で、本社の製品在庫のうち振替価格125,000円分（原価100,000円相当）が未販売のまま残っていた。<mark class="q-expense">この未実現の内部利益を消去し</mark>、<mark class="q-as-li">同額を繰延内部利益として繰り延べる</mark>仕訳を示しなさい。',
     en_q:"Company X's factory ships products to the head office at a transfer price of ¥500,000 (cost ¥400,000 plus a 25% internal markup). At year-end, ¥125,000 (at transfer price; ¥100,000 at cost) of this inventory remained unsold at the head office. Record the entry eliminating the unrealized internal profit.",
     e:[{d:[['内部利益控除',25000]], c:[['繰延内部利益',25000]]}],
-    exp:'工場が本社へ製品を振替価格（原価400,000円に25％の利益を上乗せした500,000円）で送っている場合、本社に残っている未販売の製品在庫にも、まだ実現していない「内部利益」が含まれてしまっています。まるでグループ会社間で商品を転売するたびに少しずつ利益を上乗せしていくと、在庫の評価額が実態より膨らんでしまうようなイメージで、決算にあたっては、この未実現の内部利益（125,000円×25／125＝25,000円）を、貸借対照表上の棚卸資産の評価額から除く必要があります。借方に「内部利益控除」（損益計算書上、売上原価の調整項目）、貸方に「繰延内部利益」（貸借対照表の評価性引当のような性質の科目）を計上し、翌期に振り戻します。'
+    exp:'<div class="xp-c">本社の在庫に残る<b>工場が上乗せした利益</b>は、<mark class="ptm">繰延内部利益</mark>として繰り延べます。</div><p class="xp-w">在庫125,000円は、原価に25％を上乗せした額です。125,000円×25/125で25,000円が内部利益です。</p><div class="xp-m"><b>間違えやすい点</b>　125,000円×25％で計算しないこと。上乗せ後の額に対する割合は 25/125 です。</div>'
   },
   { id:867, calc:'', sides:['合算時'], level:2, cat:'本社工場会計', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社の本社工場会計において、決算時に<mark class="q-other">本社元帳の「工場」勘定残高は800,000円（借方）</mark>、<mark class="q-other">工場元帳の「本社」勘定残高は800,000円（貸方）</mark>であり、両者は一致していた。この場合、合算財務諸表を作成するにあたり、内部取引を相殺消去する仕訳を示しなさい。',
     en_q:"In Company X's head-office/factory accounting, at year-end the head office's \"Factory\" account had an ¥800,000 debit balance, matching the factory's \"Head Office\" account ¥800,000 credit balance. When preparing combined financial statements, record the entry eliminating this internal transaction.",
     e:[{d:[['本社',800000]], c:[['工場',800000]]}],
-    exp:'本社工場会計では、本社の「工場」勘定と工場の「本社」勘定は、通常、常に同額（貸借逆）になっているはずです（内部取引のたびにセットで記帳しているため）。まるで家計簿の「貸した」「借りた」がぴったり一致するのを確認するようなイメージで、合算した財務諸表（本社と工場を1つにまとめたもの）を作成する際は、この内部取引専用の勘定（照合勘定）を相殺消去し、外部から見える金額だけを残します。連結会計における債権債務の相殺消去と同じ考え方が、本社工場会計にも当てはまります。'
+    exp:'<div class="xp-c">合算するときは、<b>本社勘定と工場勘定を消し合います</b>。</div><p class="xp-w">両方とも800,000円で一致しているので、そのまま相殺できます。</p><div class="xp-m"><b>間違えやすい点</b>　一致していないときは、まず未達を直してから消します。</div>'
   },
   { id:878, calc:'', sides:['Ａ事業部側','Ｂ事業部側'], level:2, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社は事業部制を採用しており、<mark class="q-asset">Ａ事業部は製品（部品）を</mark>全部原価（製造原価）400,000円で<mark class="q-other">Ｂ事業部へ振り替え</mark>、<mark class="q-asset">Ｂ事業部はこれを材料として</mark><mark class="q-other">Ａ事業部から受け入れた</mark>。振替価格に利益を加算しない場合の①Ａ事業部側②Ｂ事業部側の仕訳を示しなさい。',
     en_q:'Company X uses a divisional structure. Division A transferred parts to Division B at full cost (manufacturing cost) of ¥400,000, with no profit markup on the transfer price. Record the entries on (1) Division A\'s books and (2) Division B\'s books.',
     e:[{d:[['B事業部',400000]], c:[['製品',400000]]}, {d:[['材料',400000]], c:[['A事業部',400000]]}],
-    exp:'全部原価基準による振替は、振り渡す事業部（Ａ事業部）が製造原価のまま、利益を一切乗せずに振り替える方法です。まるで社内の別部署に材料を「原価そのまま」で融通するイメージで、Ａ事業部にとっては利益がゼロなので、業績評価の観点からは不満が残る場合がありますが、グループ全体で見れば最もシンプルで、内部利益の消去も不要という利点があります。「A事業部」「B事業部」という勘定は、本社工場会計の「本社」「工場」勘定と同じ、事業部間の内部取引を管理するための照合勘定です。'
+    exp:'<div class="xp-c">原価のまま振り替えるときは、<b>利益を出さず</b>、照合勘定（「Ｂ事業部」「Ａ事業部」）を使います。</div><p class="xp-w">Ａ事業部は「Ｂ事業部／製品」、Ｂ事業部は「材料／Ａ事業部」と記帳します。</p><div class="xp-m"><b>間違えやすい点</b>　Ａ事業部で売上や収益を計上しないこと。</div>'
   },
   { id:879, calc:'', sides:['Ａ事業部側','Ａ事業部側'], level:3, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社のＡ事業部は、<mark class="q-revenue">外部市場での販売価格（市価）500,000円</mark>（<mark class="q-expense">原価400,000円</mark>）で<mark class="q-other">Ｂ事業部へ</mark><mark class="q-asset">製品を振り替えた</mark>。Ａ事業部側の仕訳を示しなさい。',
     en_q:"Company X's Division A transferred products to Division B at the external market price of ¥500,000 (cost ¥400,000). Record the entry on Division A's books.",
     e:[{d:[['B事業部',500000]], c:[['製品振替収益',500000]]}, {d:[['売上原価',400000]], c:[['製品',400000]]}],
-    exp:'市価基準による振替は、外部の市場価格をそのまま使って事業部間の取引を行う方法です。まるで社内の別部署にも「外部のお客さんと同じ値段」で売るようなイメージで、Ａ事業部からみれば、外部に売ったのと同じように「収益」（製品振替収益）を認識でき、原価との差額100,000円が事業部の利益として業績評価に反映されます。ただし、Ｂ事業部にとっては外部から買うのと同じコストがかかるため、グループ全体で見ると「内部利益」が生じている点に注意が必要です（決算時の消去は別問参照）。'
+    exp:'<div class="xp-c">市価で振り替えると、Ａ事業部は<b>振替収益と売上原価</b>を計上し、利益が出ます。</div><p class="xp-w">振替収益500,000円と売上原価400,000円で、Ａ事業部の利益は100,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　グループ全体では、この利益はまだ外に売れていない内部利益です。</div>'
   },
   { id:880, calc:'', sides:['Ｂ事業部側'], level:2, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'上記のＢ事業部は、<mark class="q-other">Ａ事業部から</mark>振替価格500,000円で<mark class="q-asset">製品を材料として受け入れた</mark>。Ｂ事業部側の仕訳を示しなさい。',
     en_q:"Division B above received products from Division A at the transfer price of ¥500,000. Record the entry on Division B's books.",
     e:[{d:[['材料',500000]], c:[['A事業部',500000]]}],
-    exp:'受け入れる側（Ｂ事業部）は、外部から購入する場合と同じように、振替価格（500,000円）をそのまま材料の取得原価として計上します。Ｂ事業部にとっては、この振替価格が外部購入価格と同じかどうかに関わらず、実際に負担した金額として処理する点がポイントです。振替価格の決め方（全部原価・市価・交渉価格）が違っても、受け入れ側の処理そのものは変わりません。'
+    exp:'<div class="xp-c">受け取る側は、<b>振替価格をそのまま材料の取得原価</b>にします。</div><p class="xp-w">Ｂ事業部は「材料／Ａ事業部」で500,000円を記帳します。</p><div class="xp-m"><b>間違えやすい点</b>　原価400,000円で記帳しないこと。</div>'
   },
   { id:881, calc:'300,000－240,000＝60,000円', level:3, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'上記の取引について、決算時点でＢ事業部がＡ事業部から受け入れた製品（振替価格500,000円、原価400,000円相当）のうち、300,000円分（原価240,000円相当）がまだ外部に販売されずＢ事業部の在庫として残っていた。<mark class="q-expense">この未実現の内部利益を消去し</mark>、<mark class="q-as-li">同額を繰延内部利益として繰り延べる</mark>仕訳を示しなさい。',
     en_q:"At year-end, of the products Division B received from Division A (transfer price ¥500,000, cost ¥400,000), ¥300,000 (at transfer price; cost ¥240,000) remained unsold in Division B's inventory. Record the entry eliminating the unrealized internal profit.",
     e:[{d:[['内部利益控除',60000]], c:[['繰延内部利益',60000]]}],
-    exp:'市価基準や原価に利益を上乗せする方式で事業部間の振替を行うと、受け入れた事業部の在庫にまだ売れ残りがある場合、そこに含まれる内部利益（グループ全体では実現していない利益）を、連結財務諸表や合算財務諸表を作成する際に消去する必要があります。本社工場会計で学んだ「内部利益控除」「繰延内部利益」と全く同じ処理です。300,000円×20％（利益率）＝60,000円が未実現の内部利益です。'
+    exp:'<div class="xp-c">受け取った事業部の在庫に残る内部利益は、<mark class="ptm">繰延内部利益</mark>として繰り延べます。</div><p class="xp-w">振替価格500,000円のうち原価は400,000円、利益は20％です。残っている300,000円×20％で60,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　原価に対する割合（25％）で計算しないこと。振替価格に対する割合を使います。</div>'
   },
   { id:882, calc:'', sides:['Ａ事業部側','Ａ事業部側'], level:3, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社のＡ事業部とＢ事業部は、事業部間の交渉により<mark class="q-revenue">振替価格を450,000円</mark>（<mark class="q-expense">Ａ事業部の原価400,000円</mark>、市価500,000円の中間）に合意し、<mark class="q-asset">製品を</mark><mark class="q-other">Ｂ事業部へ振り替えた</mark>。Ａ事業部側の仕訳を示しなさい。',
     en_q:"Divisions A and B of Company X negotiated a transfer price of ¥450,000 (between Division A's cost of ¥400,000 and the market price of ¥500,000). Record the entry on Division A's books.",
     e:[{d:[['B事業部',450000]], c:[['製品振替収益',450000]]}, {d:[['売上原価',400000]], c:[['製品',400000]]}],
-    exp:'交渉価格基準は、全部原価（400,000円）と市価（500,000円）の間で、事業部同士が話し合って振替価格を決める方法です。まるで社内の2つのチームが「お互い納得できる値段」を話し合って決めるようなイメージで、今回は中間の450,000円で合意しました。Ａ事業部の利益は50,000円（450,000－400,000）となり、全部原価基準（利益ゼロ）と市価基準（利益100,000円）の中間的な結果になります。「両事業部が納得できる価格を交渉で決める」という、実務でもよく使われる柔軟な方法です。'
+    exp:'<div class="xp-c">交渉で決めた価格で振り替えると、<b>原価と振替価格の差</b>がＡ事業部の利益になります。</div><p class="xp-w">振替収益450,000円と売上原価400,000円で、利益は50,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　市価や原価の金額を使わないこと。</div>'
   },
   { id:883, calc:'', sides:['合算時'], level:2, cat:'振替価格', chap:'1級：原価計算（差異分析・ABC・本社工場）',
     q:'Ｘ社（<strong>事業部制</strong>）の決算時、<mark class="q-other">Ａ事業部元帳の「Ｂ事業部」勘定残高は450,000円（借方）</mark>、<mark class="q-other">Ｂ事業部元帳の「Ａ事業部」勘定残高は450,000円（貸方）</mark>であった。合算財務諸表を作成するにあたり、この内部取引を相殺消去する仕訳を示しなさい。',
     en_q:"At year-end, Division A's \"Division B\" account had a ¥450,000 debit balance, matching Division B's \"Division A\" account ¥450,000 credit balance. When preparing combined financial statements, record the entry eliminating this internal transaction.",
     e:[{d:[['A事業部',450000]], c:[['B事業部',450000]]}],
-    exp:'事業部制でも、本社工場会計と同様に、事業部間の内部取引を管理するための照合勘定（「Ａ事業部」「Ｂ事業部」）を使います。決算時に合算財務諸表を作る際は、グループ内部でのお金の動きに過ぎない部分（内部取引残高）を相殺消去し、外部との取引だけが財務諸表に反映されるようにします。事業部制であっても本社工場会計であっても、「内部取引は最終的に相殺してゼロにする」という考え方は共通です。'
+    exp:'<div class="xp-c">合算するときは、<b>事業部どうしの照合勘定を消し合います</b>。</div><p class="xp-w">Ａ事業部の「Ｂ事業部」とＢ事業部の「Ａ事業部」が、どちらも450,000円で一致しています。</p><div class="xp-m"><b>間違えやすい点</b>　片方だけ消さないこと。</div>'
   },
 
   // ===== PDF教材準拠（新版）差し替え開始 =====
