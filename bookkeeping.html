@@ -1974,85 +1974,85 @@ const ALL = [
     q:'Ｐ社はＳ社株式80％を取得し支配を獲得した。取得に際し、<mark class="q-expense">外部の会計士・弁護士への報酬（取得関連費用）30,000円を</mark>、<mark class="q-asset">現金で支払った</mark>。この取得関連費用の仕訳を示しなさい。',
     en_q:'Company P acquired 80% of Company S, gaining control. In connection with the acquisition, paid ¥30,000 cash in professional fees (acquisition-related costs) to outside accountants/lawyers. Record the entry for these acquisition-related costs.',
     e:[{d:[['支払手数料',30000]], c:[['現金',30000]]}],
-    exp:'「取得関連費用」とは、M&A（会社を買うこと）のときに払う、弁護士や会計士への相談料・仲介手数料のことです。家を買うときの仲介手数料や司法書士報酬が「家そのものの価値」ではなく「取引の手続き費用」であるのと同じで、会計のルールでは「S社株式の値段（取得原価）には含めず、払った期の費用として処理する」と決められています。理由は、この費用は「株式そのものの価値」ではなく「取引を成立させるための事務コスト」だからです。仕訳は普通の経費の支払いと同じで、「支払手数料（費用）／現金（資産の減少）」となります。'
+    exp:'<div class="xp-c">子会社を買うための手数料は、<b>株の取得原価に入れず</b>、その期の<mark class="ptm">支払手数料</mark>にします。</div><p class="xp-w">弁護士や会計士への報酬は、株そのものの価値ではなく、取引をまとめるための事務の費用です。</p><p class="xp-w">株の値段に混ぜると、のれんが大きく見えてしまうため、連結では払った期の費用にします。</p><div class="xp-m"><b>間違えやすい点</b>　個別の帳簿で子会社株式の取得原価に含める扱いと混同しないこと。この問題は連結の考え方です。</div>'
   },
   { id:727, calc:'評価差額：650,000－500,000＝150,000円', level:3, cat:'連結会計', chap:'1級：連結会計',
     q:'Ｓ社（子会社）の土地は帳簿価額500,000円であるが、<mark class="q-asset">支配獲得時の時価は650,000円であった</mark>。<mark class="q-equity">子会社の資産を時価評価し、帳簿価額との差額を評価差額とする</mark>連結修正仕訳を示しなさい（税効果は考慮しない）。',
     en_q:'Subsidiary S\'s land has a book value of ¥500,000 but a fair value of ¥650,000 at the date control was obtained. Record the consolidation entry revaluing the subsidiary\'s asset to fair value (ignore tax effects).',
     e:[{d:[['土地',150000]], c:[['評価差額',150000]]}],
-    exp:'連結会計では、子会社を「まるごと仲間に迎え入れる」ときに、子会社の資産・負債を「今の本当の価値（時価）」に評価し直すというルールがあります。これを「子会社の資産・負債の時価評価」と言います。土地の場合、帳簿には昔買ったときの値段（500,000円）が残っていますが、まるで中古住宅を今の相場で査定し直すように、今売ったら650,000円になるなら、差額150,000円を「評価差額」という純資産の勘定に計上します。「評価差額」は、後で資本連結（親会社の投資とS社の純資産を相殺する処理）のときに、S社の純資産の一部として扱われます。'
+    exp:'<div class="xp-c">支配したときは、子会社の資産を<b>その日の時価に測り直し</b>、差額を<mark class="ptm">評価差額</mark>（純資産）にします。</div><p class="xp-w">親会社が払った代金は、子会社の資産の「今の価値」を見て決めています。投資と資本を正しく比べるため、子会社の側も時価にそろえます。</p><p class="xp-w">土地は500,000円から650,000円へ、差の150,000円が評価差額です。評価差額は、あとの資本連結で子会社の資本の一部として消去されます。</p><div class="xp-m"><b>間違えやすい点</b>　評価差額を利益（収益）にしないこと。売ったわけではないので純資産に置きます。</div>'
   },
   { id:728, calc:'時価との差額：650,000－500,000＝150,000円\n繰延税金負債：150,000×30％＝45,000円\n評価差額：150,000－45,000＝105,000円', level:3, cat:'連結会計', chap:'1級：連結会計',
     q:'Ｓ社（子会社）の土地は帳簿価額500,000円であるが、<mark class="q-asset">支配獲得時の時価は650,000円であった</mark>（<mark class="q-liability">実効税率30％</mark>）。税効果を考慮して<mark class="q-equity">子会社の資産を時価評価し、差額を評価差額とする</mark>連結修正仕訳を示しなさい。',
     en_q:'Same fact pattern as above (land: book ¥500,000, fair value ¥650,000), but now apply a 30% effective tax rate. Record the fair-value revaluation entry including the tax effect.',
     e:[{d:[['土地',150000]], c:[['繰延税金負債',45000],['評価差額',105000]]}],
-    exp:'前問に税金の影響を追加したバージョンです。土地の評価差額150,000円は、将来この土地を売却したときに税金がかかる原因になるので、その将来の税金分だけ「繰延税金負債」（将来支払う税金）として先取りで計上します。繰延税金負債：150,000×30％＝45,000円。残りの105,000円（＝150,000－45,000、税引後の正味の評価差額）だけが本当の意味での「評価差額」（純資産）になります。「評価が上がった分、丸ごと得するわけではなく、税金分は差し引いて考える」というのがポイントです。'
+    exp:'<div class="xp-c">時価に測り直した値上がり分のうち、<b>将来の税金の分は<mark class="ptm">繰延税金負債</mark></b>、残りが評価差額です。</div><p class="xp-w">土地を売れば、値上がり分150,000円に税金がかかります。その30％の45,000円は将来払う税金なので、今のうちに負債にします。</p><p class="xp-w">評価差額は、税金を除いた105,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　評価差額を150,000円のまま計上しないこと。税効果を考える問題では税金分を除きます。</div>'
   },
   { id:729, calc:'Ｓ社の資本（純資産）：500,000＋200,000＋100,000＝800,000円\n非支配株主持分：800,000×20％＝160,000円\nのれん：700,000－800,000×80％＝60,000円', level:3, cat:'連結会計', chap:'1級：連結会計',
     q:'Ｐ社はＳ社（支配獲得時の純資産：<mark class="q-equity">資本金500,000円</mark>・<mark class="q-equity">利益剰余金200,000円</mark>・<mark class="q-equity">評価差額100,000円</mark>）の<mark class="q-asset">株式80％を700,000円で取得し</mark>支配を獲得した。資本連結（投資と資本の相殺消去）の仕訳を示しなさい（<mark class="q-equity">Ｓ社資本の20％は非支配株主持分とし</mark>、<mark class="q-asset">投資と資本の差額はのれんとする</mark>）。',
     en_q:'Company P acquired 80% of Company S (net assets at acquisition: capital ¥500,000, retained earnings ¥200,000, revaluation surplus ¥100,000) for ¥700,000, gaining control. Record the capital consolidation entry (elimination of the investment against equity).',
     e:[{d:[['資本金',500000],['利益剰余金',200000],['評価差額',100000],['のれん',60000]], c:[['S社株式',700000],['非支配株主持分',160000]]}],
-    exp:'資本連結は連結会計の一番の基本作業です。①まずS社の純資産をぜんぶ足します：資本金500,000＋利益剰余金200,000＋評価差額100,000＝800,000円（これが「時価ベースのS社の正味の価値」）。②Ｐ社の取り分（80％）＝640,000円、残り20％は「非支配株主持分」（P社以外の株主の取り分）として160,000円を純資産に計上します。③Ｐ社が払った700,000円と、Ｐ社の取り分640,000円との差額60,000円は「のれん」（S社を高く買った理由＝ブランド力や将来性への対価）として資産計上します。まるで老舗店舗を、看板の価値まで込みで買い取るようなイメージです。'
+    exp:'<div class="xp-c">資本連結は、<b>子会社の資本と親会社の投資を消し合い</b>、外の株主の分は<mark class="ptm">非支配株主持分</mark>、払いすぎた分は<mark class="ptm">のれん</mark>にします。</div><p class="xp-w">Ｓ社の資本は資本金・利益剰余金・評価差額の合計800,000円です。そのうちＰ社の分は80％の640,000円、残り20％の160,000円が非支配株主持分です。</p><p class="xp-w">Ｐ社は700,000円払っているので、持分640,000円との差60,000円がのれんです。</p><div class="xp-m"><b>間違えやすい点</b>　非支配株主持分を投資額700,000円から計算しないこと。子会社の資本×20％で計算します。</div>'
   },
   { id:730, calc:'段階取得に係る差益：200,000－180,000＝20,000円', level:3, cat:'連結会計', chap:'1級：連結会計',
     q:'Ｐ社はＳ社株式を2段階で取得した。Ｘ1年度末：Ｓ社株式20％を180,000円で取得。Ｘ2年度末：追加でＳ社株式40％を400,000円で取得し、合計60％保有として支配を獲得した。支配獲得時点でのＳ社株式20％（既存保有分）の<mark class="q-asset">時価は200,000円であった</mark>。<mark class="q-revenue">既存投資を時価に評価替えする</mark>仕訳を示しなさい（段階取得）。',
     en_q:'Company P acquired Company S\'s shares in two stages: 20% for ¥180,000 at the end of Year 1, and an additional 40% for ¥400,000 at the end of Year 2 (gaining control with 60% total). At the date control was obtained, the fair value of the previously held 20% was ¥200,000. Record the entry revaluing the existing investment to fair value (step acquisition).',
     e:[{d:[['S社株式',20000]], c:[['段階取得に係る差益',20000]]}],
-    exp:'「段階取得」とは、一気に支配株主になるのではなく、少しずつ株を買い増して最終的に子会社化するケースです。まるで少額投資からコツコツ持ち株を増やしていって、ある日ついに筆頭株主になるようなイメージです。この場合、「支配を獲得した瞬間」に、それまで持っていた分（20％）も含めて全部を「今の時価」で評価し直すというルールがあります。以前180,000円で買った20％分が、今では200,000円の価値になっていたので、差額20,000円を「段階取得に係る差益」（連結上の収益）として計上します。'
+    exp:'<div class="xp-c">段階取得では、支配した日に<b>前から持っていた株も時価に評価し直し</b>、差を<mark class="ptm">段階取得に係る差益</mark>にします。</div><p class="xp-w">支配を得た日に、それまでの持分も含めて「全部を時価で買った」と考えるためです。</p><p class="xp-w">前に180,000円で買った20％は、支配した日の時価で200,000円です。差の20,000円が差益です。</p><div class="xp-m"><b>間違えやすい点</b>　追加で買った40％分まで評価替えしないこと。追加分はすでに時価で買っています。</div>'
   },
   { id:731, calc:'非支配株主持分の減少：1,000,000×20％＝200,000円\n資本剰余金の減少：250,000－200,000＝50,000円', level:3, cat:'連結会計', chap:'1級：連結会計',
     q:'Ｐ社はＳ社株式60％を保有し、既に支配している（非支配株主持分40％）。追加で<mark class="q-asset">Ｓ社株式20％を250,000円で取得した</mark>（合計80％保有）。<mark class="q-equity">追加取得時のＳ社純資産は1,000,000円であった</mark>。追加取得の連結修正仕訳を示しなさい（<mark class="q-equity">取得した持分だけ非支配株主持分を減らし</mark>、<mark class="q-equity">差額は資本剰余金とする</mark>）。',
     en_q:'Company P already controls Company S with a 60% holding (non-controlling interest 40%). P acquired an additional 20% for ¥250,000 (80% total). S\'s net assets at the time of additional acquisition were ¥1,000,000. Record the consolidation entry for the additional acquisition.',
     e:[{d:[['非支配株主持分',200000],['資本剰余金',50000]], c:[['S社株式',250000]]}],
-    exp:'すでに子会社にしている会社の株を「追加で」買い増すケースです。もう支配は獲得済みなので、のれんは新たに計算しません。まるでグループ会社の株を仲間内で融通し合うようなイメージで、非支配株主（他の株主）から株を買い取ることになるので、非支配株主持分のうち買い取った分（Ｓ社純資産1,000,000×20％＝200,000円）を減らします。実際に払った金額250,000円との差額50,000円は、損益ではなく「資本剰余金」（純資産の内訳の一つ）の減少として処理します。「グループ内の株主構成が変わっただけ」なので、儲けや損としては扱わないのがポイントです。'
+    exp:'<div class="xp-c">支配したあとの追加取得は、<b>のれんを作らず</b>、払った額と減る非支配株主持分の差を<mark class="ptm">資本剰余金</mark>で調整します。</div><p class="xp-w">すでに支配しているので、株主の内訳が変わるだけの「グループ内の株主どうしの取引」とみます。</p><p class="xp-w">減る非支配株主持分は1,000,000円×20％の200,000円です。250,000円払ったので、差の50,000円は資本剰余金を減らします。</p><div class="xp-m"><b>間違えやすい点</b>　差額をのれんにしないこと。のれんは支配を得たときにだけ計上します。</div>'
   },
   { id:732, calc:'非支配株主持分の増加：1,200,000×20％＝240,000円\n売却した株式の帳簿価額：800,000×20／80＝200,000円\n資本剰余金の増加：300,000－240,000＝60,000円（個別の売却益100,000円は取り消す）', level:3, cat:'連結会計', chap:'1級：連結会計',
     q:'Ｐ社はＳ社株式80％（取得原価800,000円）を保有している。このうち20％を300,000円で売却した（売却後60％保有・支配は継続）。<mark class="q-equity">売却時のＳ社純資産は1,200,000円</mark>。個別財務諸表上、売却価額300,000円と<mark class="q-asset">売却原価200,000円（＝800,000×20/80）</mark>の差額100,000円を<mark class="q-revenue">「子会社株式売却益」として計上済みである</mark>。連結修正仕訳を示しなさい（<mark class="q-equity">売却した持分は非支配株主持分に振り替え</mark>、<mark class="q-equity">売却益は資本剰余金に修正する</mark>）。',
     en_q:'Company P holds 80% of Company S (cost ¥800,000). It sold 20% for ¥300,000 (retaining 60%, control continues). S\'s net assets at the time of sale were ¥1,200,000. On P\'s individual financial statements, a ¥100,000 gain (sale price ¥300,000 less cost basis ¥200,000, i.e. 800,000×20/80) was already recorded as "gain on sale of subsidiary shares." Record the consolidation adjusting entry.',
     e:[{d:[['S社株式',200000],['子会社株式売却益',100000]], c:[['非支配株主持分',240000],['資本剰余金',60000]]}],
-    exp:'子会社株式を一部だけ売っても、まだ支配が続いている（60％保有で子会社のまま）場合、連結上は「損益」として扱いません。理由は「グループの外に売ったわけではなく、単に株主の内訳（親会社の取り分と非支配株主の取り分）が変わっただけ」だからです。まるで家族経営の会社の株を親戚内でやり取りしただけのようなイメージです。①個別財務諸表で計上した「子会社株式売却益」100,000円は、連結上は取り消します。②非支配株主の取り分は、売った20％分だけ増えます：Ｓ社純資産1,200,000×20％＝240,000円。③この240,000円と、取り消した売却益100,000円との差額140,000円は「資本剰余金」の減少として調整します。'
+    exp:'<div class="xp-c">支配が続く一部売却は、<b>売却益を出さず</b>、増える非支配株主持分との差を<mark class="ptm">資本剰余金</mark>で調整します。</div><p class="xp-w">外に売ったのではなく、グループの株主の内訳が変わっただけなので、連結では損益にしません。</p><p class="xp-w">個別で出した売却益100,000円を取り消し、売った20％分の非支配株主持分240,000円（1,200,000円×20％）を増やします。残りの差60,000円が資本剰余金です。</p><div class="xp-m"><b>間違えやすい点</b>　個別の売却益100,000円を連結にそのまま残さないこと。</div>'
   },
   { id:733, calc:'', level:2, cat:'連結会計', chap:'1級：連結会計',
     q:'Ｐ社はＳ社（子会社）に対して<mark class="q-asset">500,000円を貸し付けている</mark>（<mark class="q-liability">Ｓ社側ではＰ社からの借入金500,000円となっている</mark>）。連結財務諸表を作成するにあたり、この債権債務を相殺消去する仕訳を示しなさい。',
     en_q:'Company P has lent ¥500,000 to subsidiary S. When preparing consolidated financial statements, record the entry eliminating this intercompany receivable/payable.',
     e:[{d:[['借入金',500000]], c:[['貸付金',500000]]}],
-    exp:'連結財務諸表は「グループ全体を1つの会社」として見た財務諸表です。Ｐ社が貸してＳ社が借りたお金は、グループの外から見れば「自分の左のポケットから右のポケットにお金を移しただけ」で、実質的な貸し借りはありません。そこでＰ社の「貸付金」（資産）とＳ社の「借入金」（負債）を、金額をぶつけ合って両方ともゼロにします。この作業を「連結上の相殺消去」と呼びます。'
+    exp:'<div class="xp-c">グループ内の貸し借りは、<b>貸付金と借入金を両方消します</b>（債権債務の相殺消去）。</div><p class="xp-w">グループ全体を1つの会社とみれば、同じ会社の中でお金を移しただけで、外への貸し借りはありません。</p><div class="xp-m"><b>間違えやすい点</b>　片方だけ消さないこと。資産と負債を同時に同じ額だけ消します。</div>'
   },
   { id:734, calc:'', level:2, cat:'連結会計', chap:'1級：連結会計',
     q:'上記の貸付金に対応する利息について、Ｐ社は<mark class="q-revenue">受取利息20,000円</mark>、Ｓ社は<mark class="q-expense">支払利息20,000円</mark>をそれぞれ計上している。連結財務諸表を作成するにあたり、この収益・費用を相殺消去する仕訳を示しなさい。',
     en_q:'For the loan above, P recorded interest income of ¥20,000 and S recorded interest expense of ¥20,000. When preparing consolidated financial statements, record the entry eliminating this intercompany revenue/expense.',
     e:[{d:[['受取利息',20000]], c:[['支払利息',20000]]}],
-    exp:'前問の貸付金・借入金とセットで発生する利息も同じ考え方です。Ｐ社が受け取った利息（収益）とＳ社が支払った利息（費用）は、グループ全体で見れば「グループ内でお金が動いただけ」で、外部から見た本当の収益・費用ではありません。まるで家族間でお小遣いを貸し借りしても、家計全体としては何も増えていないのと同じで、そこで「受取利息」と「支払利息」を相殺してゼロにします。貸付金・借入金の元本だけでなく、そこから生まれる利息も必ずセットで消去する、と覚えておきましょう。'
+    exp:'<div class="xp-c">グループ内の利息は、<b>受取利息と支払利息を両方消します</b>。</div><p class="xp-w">貸付金と借入金を消したなら、そこから生まれた利息もグループの中のやりとりです。外から稼いだ収益ではありません。</p><div class="xp-m"><b>間違えやすい点</b>　元本だけ消して利息を残さないこと。いつもセットで消します。</div>'
   },
   { id:735, calc:'', level:3, cat:'連結会計', chap:'1級：連結会計',
     q:'Ｐ社はＳ社へ<mark class="q-asset">現金100,000円を送金した</mark>が、決算日時点でＳ社側では未処理（未達）であった。①Ｓ社側で未達取引を整理する仕訳（<mark class="q-liability">借入金として処理</mark>）②その後、<mark class="q-asset">Ｐ社の貸付金</mark>とＳ社の借入金を相殺消去する仕訳を示しなさい。',
     en_q:'Company P remitted ¥100,000 cash to subsidiary S, but as of the balance sheet date, S had not yet recorded the receipt (in transit). Record ①the entry on S\'s books to recognize the in-transit item (as a loan payable) and ②the subsequent elimination of the intercompany receivable/payable.',
     e:[{d:[['現金',100000]], c:[['借入金',100000]]}, {d:[['借入金',100000]], c:[['貸付金',100000]]}],
-    exp:'「未達取引」とは、親会社は送金の記録をつけたのに、子会社側の帳簿にまだその入金が反映されていない状態のことです（銀行の処理が決算日をまたいでしまった、などが原因）。振込がまだ相手の通帳に記帳されていない「タイムラグ」のようなイメージです。このままでは相殺消去（貸付金と借入金をぶつけ合う作業）がうまくできないので、①まずＳ社側の帳簿を「本来あるべき状態」に修正します（現金を受け取った記録を追加）。②その上で、Ｐ社の「貸付金」とＳ社の「借入金」を相殺消去します。「相殺消去の前に、まず両社の帳簿の金額を一致させる」というのがこの処理のポイントです。'
+    exp:'<div class="xp-c">相殺の前に、まず<b>届いていない側（Ｓ社）の帳簿を正しくしてから</b>、貸付金と借入金を消します。</div><p class="xp-w">Ｐ社は送金を記録したのに、Ｓ社はまだ記録していない（未達）ので、このままでは金額が合いません。</p><p class="xp-w">①Ｓ社に現金と借入金100,000円を記録し、②そのあと貸付金と借入金を相殺します。</p><div class="xp-m"><b>間違えやすい点</b>　未達を直さずに相殺しないこと。両社の金額が一致してから消します。</div>'
   },
   { id:736, calc:'未実現利益：100,000－80,000＝20,000円\n非支配株主の負担分：20,000×20％＝4,000円', level:3, cat:'連結会計', chap:'1級：連結会計',
     q:'Ｓ社（子会社、Ｐ社持分80％）は<mark class="q-expense">原価80,000円の商品をＰ社に100,000円で販売した</mark>。<mark class="q-asset">期末にＰ社の在庫にこの商品が全量残っている</mark>。①未実現利益の消去②<mark class="q-other">未実現利益の20％を非支配株主に帰属する当期純利益から減らし</mark>、<mark class="q-equity">同額だけ非支配株主持分も減らす</mark>按分の仕訳を示しなさい（<strong>アップストリーム取引</strong>）。',
     en_q:'Subsidiary S (80% owned by P) sold goods costing ¥80,000 to P for ¥100,000. All of these goods remain in P\'s ending inventory. Record ①the elimination of unrealized profit and ②the allocation to non-controlling interests (upstream transaction).',
     e:[{d:[['売上原価',20000]], c:[['棚卸資産',20000]]}, {d:[['非支配株主持分',4000]], c:[['非支配株主に帰属する当期純利益',4000]]}],
-    exp:'「アップストリーム」とは、子会社（Ｓ社）から親会社（Ｐ社）へ商品が流れる取引のことです（逆に親会社→子会社は「ダウンストリーム」）。①Ｓ社が乗せた利益20,000円（＝100,000－80,000）は、Ｐ社の在庫にまだ残っている＝グループ外にまだ売れていないので、「未実現利益」として消去します（売上原価を増やして在庫の評価を下げる）。まるでグループ内でぐるぐる回っているだけの商品にまだ「本当の儲け」を認めないイメージです。②アップストリームの場合、この利益はもともと「Ｓ社の利益」なので、非支配株主（Ｓ社の他の株主）にも一部負担してもらう必要があります。非支配株主の負担分：20,000×20％＝4,000円。この4,000円分だけ、非支配株主の取り分（非支配株主持分）を減らします。ダウンストリーム（親→子）の場合はこの按分は行わない点が違いです。'
+    exp:'<div class="xp-c">子会社から親会社への販売（アップストリーム）の未実現利益は消去し、<b>その一部を<mark class="ptm">非支配株主</mark>にも負担させます</b>。</div><p class="xp-w">Ｐ社の在庫に残っている利益20,000円は、まだグループの外に売れていないので消します（売上原価を増やし、在庫を減らす）。</p><p class="xp-w">この利益はＳ社が出したものなので、外の株主の持分20％の4,000円は非支配株主持分を減らします。</p><div class="xp-m"><b>間違えやすい点</b>　親会社から子会社への販売（ダウンストリーム）では、非支配株主への負担はさせません。向きを確かめること。</div>'
   },
   { id:737, calc:'500,000×20％＝100,000円', level:2, cat:'連結会計', chap:'1級：連結会計',
     q:'Ｓ社（子会社）の<mark class="q-equity">当期純利益は500,000円であった（Ｐ社持分80％、非支配株主持分20％）</mark>。<mark class="q-other">非支配株主に帰属する当期純利益を計上し</mark>、非支配株主持分に振り替える仕訳を示しなさい。',
     en_q:'Subsidiary S\'s net income for the period was ¥500,000 (P holds 80%, non-controlling interest 20%). Record the entry allocating the non-controlling interests\' share of net income to non-controlling interests.',
     e:[{d:[['非支配株主に帰属する当期純利益',100000]], c:[['非支配株主持分',100000]]}],
-    exp:'子会社が稼いだ利益は、親会社の取り分だけでなく、非支配株主（他の株主）の取り分もあります。Ｓ社の当期純利益500,000円のうち、非支配株主の持分割合20％にあたる100,000円は、連結損益計算書上「非支配株主に帰属する当期純利益」として区分し、非支配株主持分（純資産）を増やします。まるでグループ全体の利益をケーキのように切り分けて、それぞれの株主の皿に配るイメージです。「子会社の儲けのうち、親会社の分は親会社の利益剰余金へ、他の株主の分は非支配株主持分へ」と、取り分に応じて分けます。'
+    exp:'<div class="xp-c">子会社の利益のうち<b>外の株主の分は<mark class="ptm">非支配株主に帰属する当期純利益</mark></b>にし、非支配株主持分を増やします。</div><p class="xp-w">連結ではＳ社の利益を全部取り込んでいます。そのうち20％の100,000円は親会社の株主のものではないので分けます。</p><div class="xp-m"><b>間違えやすい点</b>　親会社の持分80％の400,000円を振り替えないこと。外の株主の20％だけです。</div>'
   },
   { id:738, calc:'50,000×20％＝10,000円', level:3, cat:'連結会計', chap:'1級：連結会計',
     q:'Ｓ社（子会社、Ｐ社持分80％）が保有する<mark class="q-eq-rx">その他有価証券に評価益50,000円が生じた</mark>（税効果は考慮しない）。連結上、この評価差額のうち非支配株主に帰属する部分を<mark class="q-equity">非支配株主持分に振り替える</mark>仕訳を示しなさい。',
     en_q:'Subsidiary S (80% owned by P) recognized a ¥50,000 unrealized gain on available-for-sale securities (ignore tax effects). Record the entry allocating the non-controlling interests\' share of this valuation gain to non-controlling interests.',
     e:[{d:[['その他有価証券評価差額金',10000]], c:[['非支配株主持分',10000]]}],
-    exp:'子会社が保有する有価証券の評価差額（純資産直入項目）も、当期純利益と同じように、親会社と非支配株主で取り分を分ける必要があります。評価益50,000円のうち非支配株主の持分20％にあたる10,000円は、非支配株主持分（純資産）へ振り替えます。「損益計算書を通らない純資産の変動（評価差額など）も、当期純利益と同じ考え方で持分割合に応じて按分する」というのがポイントです。'
+    exp:'<div class="xp-c">子会社の評価差額金も、利益と同じく<b>持分の割合で分け</b>、外の株主の分は<mark class="ptm">非支配株主持分</mark>へ移します。</div><p class="xp-w">評価益50,000円は子会社の純資産の増加です。20％の10,000円は外の株主のものです。</p><div class="xp-m"><b>間違えやすい点</b>　損益計算書を通らない増加だからといって、按分を忘れないこと。</div>'
   },
   { id:739, calc:'利益剰余金当期首残高：100,000＋5,000＋15,000＝120,000円\nのれん：50,000－5,000＝45,000円\n非支配株主持分：100,000＋15,000＝115,000円', level:3, cat:'連結会計', chap:'1級：連結会計',
     q:'前期末に資本連結仕訳（<mark class="q-equity">資本金400,000円・利益剰余金100,000円</mark>・<mark class="q-asset">のれん50,000円</mark>／<mark class="q-asset">Ｓ社株式450,000円</mark>・<mark class="q-equity">非支配株主持分100,000円</mark>）を行った。前期中、<mark class="q-asset">のれん償却5,000円</mark>・<mark class="q-equity">非支配株主に帰属する前期純利益15,000円</mark>が発生した。当期首の開始仕訳（前期末までの純資産の動きを反映したもの）を示しなさい。',
     en_q:'At the end of last period, a capital consolidation entry was recorded (capital ¥400,000, retained earnings ¥100,000, goodwill ¥50,000 / S shares ¥450,000, non-controlling interests ¥100,000). During last period, goodwill amortization of ¥5,000 and non-controlling interests\' share of last period\'s net income of ¥15,000 occurred. Record this period\'s opening entry, reflecting the cumulative effect through the end of last period.',
     e:[{d:[['資本金',400000],['利益剰余金当期首残高',120000],['のれん',45000]], c:[['S社株式',450000],['非支配株主持分',115000]]}],
-    exp:'連結の仕訳は、個別財務諸表（Ｐ社・Ｓ社それぞれの帳簿）には一切記録されません。そのため、連結精算表を作るたびに「過去に行った連結修正を最初からもう一度全部やり直す」必要があります。これを「開始仕訳」と呼びます。まるで毎年新しい白紙のノートに、過去の記録をすべて書き写し直す作業のようなものです。前期末の資本連結仕訳をベースに、①のれん償却5,000円（費用なので利益剰余金を減らす）②非支配株主に帰属する前期純利益15,000円（非支配株主持分を増やす）の2つの累積効果を反映させます。過去分の損益の動きは、当期の損益計算書には出せないので、代わりに「利益剰余金当期首残高」という純資産の勘定にまとめて計上します：100,000＋5,000（のれん償却の累積）＋15,000（非支配株主帰属利益の累積）＝120,000円。のれんは償却済みの5,000円を差し引いて45,000円、非支配株主持分は15,000円増えて115,000円になります。'
+    exp:'<div class="xp-c">連結の仕訳は個別の帳簿に残らないので、<b>毎期、前期までの修正をやり直します（開始仕訳）</b>。前期の損益の分は<mark class="ptm">利益剰余金当期首残高</mark>で受けます。</div><p class="xp-w">前期のれん償却5,000円と、非支配株主に帰属する利益15,000円は、前期の利益を減らしています。今期の損益には出せないので、期首の利益剰余金にまとめます。</p><p class="xp-w">そのため利益剰余金は100,000円に20,000円を足して120,000円、のれんは45,000円、非支配株主持分は115,000円になります。</p><div class="xp-m"><b>間違えやすい点</b>　前期の損益項目（のれん償却など）を、そのままの科目で書かないこと。</div>'
   },
 
   // ===== 1級：企業結合・事業分離 =====
@@ -2060,121 +2060,121 @@ const ALL = [
     q:'Ｐ社はＳ社を吸収合併し、<mark class="q-equity">Ｓ社株主にＰ社株式100株（1株当たり時価8,000円）を交付した</mark>。合併により引き継いだＳ社の資産・負債の時価は、<mark class="q-asset">諸資産2,000,000円</mark>・<mark class="q-liability">諸負債1,300,000円</mark>であった。合併の仕訳を示しなさい（増加する資本金は全額資本金とし、<mark class="q-asset">取得原価が純資産の時価を上回る分はのれんとする</mark>）。',
     en_q:'Company P absorbed Company S in a merger, issuing 100 P shares (fair value ¥8,000 each) to S\'s shareholders. The fair values of S\'s assets and liabilities taken over were: assets ¥2,000,000, liabilities ¥1,300,000. Record the merger entry (the full increase is credited to Capital).',
     e:[{d:[['諸資産',2000000],['のれん',100000]], c:[['諸負債',1300000],['資本金',800000]]}],
-    exp:'合併の会計処理（パーチェス法）は、Ｓ社を「時価で丸ごと買った」と考えて処理します。まるで老舗の店を看板ごと買収するイメージです。対価（取得原価）＝交付した株式の時価：100株×8,000円＝800,000円。引き継いだ純資産（時価）：諸資産2,000,000－諸負債1,300,000＝700,000円。対価800,000円の方が引き継いだ純資産700,000円より高いので、差額100,000円は「のれん」（ブランド力や将来の収益力に対して余分に払った分）として資産計上します。'
+    exp:'<div class="xp-c">合併は<b>相手の会社を時価で買ったとみて</b>、払った額が純資産を上回る分を<mark class="ptm">のれん</mark>にします。</div><p class="xp-w">払った額は新株100株×8,000円で800,000円です。受け入れた純資産は2,000,000円から1,300,000円を除いた700,000円です。</p><p class="xp-w">差の100,000円が、ブランドや将来の稼ぐ力に払った分（のれん）です。</p><div class="xp-m"><b>間違えやすい点</b>　純資産を帳簿価額で計算しないこと。合併では時価を使います。</div>'
   },
   { id:741, calc:'取得原価：50株×6,000円＝300,000円\n純資産（時価）：1,500,000－1,000,000＝500,000円\n負ののれん発生益：500,000－300,000＝200,000円', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社はＳ社を吸収合併し、<mark class="q-equity">Ｓ社株主にＰ社株式50株（1株当たり時価6,000円）を交付した</mark>。合併により引き継いだＳ社の資産・負債の時価は、<mark class="q-asset">諸資産1,500,000円</mark>・<mark class="q-liability">諸負債1,000,000円</mark>であった。<mark class="q-revenue">受け入れた純資産が交付した株式の時価を上回る差額は負ののれん発生益とする</mark>。合併の仕訳を示しなさい。',
     en_q:'Company P absorbed Company S, issuing 50 P shares (fair value ¥6,000 each). Fair values taken over: assets ¥1,500,000, liabilities ¥1,000,000. Record the merger entry.',
     e:[{d:[['諸資産',1500000]], c:[['諸負債',1000000],['資本金',300000],['負ののれん発生益',200000]]}],
-    exp:'対価（取得原価）：50株×6,000円＝300,000円。引き継いだ純資産（時価）：1,500,000－1,000,000＝500,000円。今回は対価300,000円より引き継いだ純資産500,000円の方が大きい、つまり「バーゲンセールでお買い得に買えた」状態です。この差額200,000円は「負ののれん発生益」として、その期の収益に一括計上します（のれんとは逆で、資産にはせず、すぐに利益にする点に注意）。'
+    exp:'<div class="xp-c">払った額が受け入れた純資産より少ないときは、差を<mark class="ptm">負ののれん発生益</mark>として、<b>その期の利益</b>にします。</div><p class="xp-w">払った額は50株×6,000円で300,000円、受け入れた純資産は500,000円です。安く手に入れた差200,000円が利益です。</p><div class="xp-m"><b>間違えやすい点</b>　負ののれんを資産や負債にしないこと。その期の収益に一括計上します。</div>'
   },
   { id:742, calc:'', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社はＳ社の発行済株式全部（100％）を取得し、完全親子会社関係を創設する株式交換を行った。対価として<mark class="q-equity">Ｐ社株式を交付し</mark>、<mark class="q-asset">Ｓ社の時価純資産は900,000円であった</mark>。Ｐ社（完全親会社）の個別財務諸表上、Ｓ社株式の取得原価を計上する仕訳を示しなさい（資本金を全額計上する）。',
     en_q:'Company P acquired 100% of Company S\'s shares via a share exchange, creating a wholly-owned parent-subsidiary relationship, issuing P shares as consideration. S\'s fair value net assets were ¥900,000. On P\'s (the wholly-owning parent\'s) individual financial statements, record the entry recognizing the cost of the S shares (crediting the full amount to Capital).',
     e:[{d:[['S社株式',900000]], c:[['資本金',900000]]}],
-    exp:'株式交換は、合併のように会社そのものが1つになるわけではなく、「Ｓ社の株を全部Ｐ社の株と交換して、Ｓ社をＰ社の100％子会社にする」手続きです。まるでグループ会社に迎え入れる養子縁組のようなイメージで、合併と違い、Ｓ社の資産・負債を直接Ｐ社の帳簿に受け入れるのではなく、Ｐ社の個別財務諸表上は「Ｓ社株式」という投資（資産）を計上するだけにとどまります。Ｓ社の資産・負債は、後で連結財務諸表を作るときに合算されます。'
+    exp:'<div class="xp-c">株式交換では、親会社は<b>子会社の株を受け取り、自社の株を渡す</b>だけで、子会社の資産・負債は受け入れません。</div><p class="xp-w">Ｓ社はそのまま残り、Ｐ社の100％子会社になります。Ｐ社の帳簿には投資としてＳ社株式900,000円が載ります。</p><div class="xp-m"><b>間違えやすい点</b>　合併のようにＳ社の資産・負債をＰ社の帳簿に入れないこと。それは連結のときに合算します。</div>'
   },
   { id:743, calc:'資本金：1,200,000＋800,000＝2,000,000円', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社とＳ社は株式移転により、共同で新設完全親会社Ｈ社を設立した。Ｈ社の個別財務諸表上、<mark class="q-asset">Ｐ社株式（時価1,200,000円）</mark>と<mark class="q-asset">Ｓ社株式（時価800,000円）</mark>を取得原価として計上し、<mark class="q-equity">資本金を全額計上する</mark>仕訳を示しなさい。',
     en_q:'Companies P and S jointly established a new wholly-owning parent company H via a share transfer. On H\'s individual financial statements, record the entry recognizing the cost of the P shares (fair value ¥1,200,000) and S shares (fair value ¥800,000) received, crediting the full amount to Capital.',
     e:[{d:[['P社株式',1200000],['S社株式',800000]], c:[['資本金',2000000]]}],
-    exp:'株式移転は、既存の会社（Ｐ社・Ｓ社）ではなく、まったく新しい会社（Ｈ社）を作って、その新会社の下にＰ社とＳ社を完全子会社としてぶら下げる手続きです。まるで2つの会社が結婚して、新しい「持株会社」という名字の下に入るようなイメージです。株式交換が「既存の会社同士」で行うのに対し、株式移転は「新会社を作る」点が違います。新設されたＨ社の個別財務諸表には、Ｐ社株式とＳ社株式という2つの投資（資産）が計上され、対応する金額が資本金になります。'
+    exp:'<div class="xp-c">株式移転では、<b>新しく作った親会社</b>が、元の2社の株を受け取って資本金にします。</div><p class="xp-w">Ｈ社はＰ社株式1,200,000円とＳ社株式800,000円を受け入れ、合計2,000,000円を資本金にします。</p><div class="xp-m"><b>間違えやすい点</b>　既存の会社どうしで行う株式交換と混同しないこと。株式移転は新会社を作ります。</div>'
   },
   { id:744, calc:'', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社は自社の一事業部門（時価：<mark class="q-asset">資産1,500,000円</mark>・<mark class="q-liability">負債800,000円</mark>）を吸収分割によりＳ社へ移転し、対価として<mark class="q-asset">Ｓ社株式700,000円を受け取った</mark>。Ｐ社（分割会社）の仕訳を示しなさい。',
     en_q:'Company P transferred one of its business segments (fair value: assets ¥1,500,000, liabilities ¥800,000) to Company S via a company split, receiving S shares worth ¥700,000 as consideration. Record the entry on P\'s (the splitting company\'s) books.',
     e:[{d:[['諸負債',800000],['S社株式',700000]], c:[['諸資産',1500000]]}],
-    exp:'会社分割は「事業（資産と負債のセット）を丸ごと他社へ渡す」手続きです。まるで会社の一部門をパッケージごと引っ越しさせるイメージで、渡す側（分割会社＝Ｐ社）は、移転する資産・負債を帳簿から取り除き、代わりに受け取った対価（Ｓ社株式）を計上します。移転する純資産（時価）：1,500,000－800,000＝700,000円。今回は対価700,000円とちょうど同額なので、差益・差損は生じません。'
+    exp:'<div class="xp-c">事業を渡す側（分割会社）は、<b>渡した資産・負債を消し、受け取った株を計上</b>します。</div><p class="xp-w">渡した純資産は1,500,000円から800,000円を除いた700,000円で、受け取った株と同じ額なので損益は出ません。</p><div class="xp-m"><b>間違えやすい点</b>　渡した負債も消すのを忘れないこと。資産だけでなく負債も一緒に移ります。</div>'
   },
   { id:745, calc:'', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｓ社は、Ｐ社の一事業部門（時価：<mark class="q-asset">資産1,500,000円</mark>・<mark class="q-liability">負債800,000円</mark>）を吸収分割により承継し、対価として<mark class="q-equity">Ｓ社株式700,000円をＰ社に交付した</mark>。Ｓ社（承継会社）の仕訳を示しなさい（増加する資本金は全額資本金とする）。',
     en_q:'Company S received a business segment from Company P (fair value: assets ¥1,500,000, liabilities ¥800,000) via a company split, issuing S shares worth ¥700,000 to P as consideration. Record the entry on S\'s (the receiving company\'s) books (the full increase is credited to Capital).',
     e:[{d:[['諸資産',1500000]], c:[['諸負債',800000],['資本金',700000]]}],
-    exp:'前問の「渡す側」に対して、こちらは「受け取る側」（承継会社＝Ｓ社）の仕訳です。まるで引っ越してきた事業部門を新居に迎え入れるようなイメージで、受け入れた資産・負債をそのまま計上し、対価として交付した自社株式の分だけ資本金を増やします。合併の仕訳とよく似ていますが、合併は「会社そのもの」を丸ごと受け入れるのに対し、会社分割は「特定の事業だけ」を切り出して受け入れる点が違います。'
+    exp:'<div class="xp-c">事業を受け取る側（承継会社）は、<b>受け入れた資産・負債を計上</b>し、渡した自社の株の分を<mark class="ptm">資本金</mark>にします。</div><p class="xp-w">純資産700,000円を受け入れ、その対価として株を発行したので、同じ額だけ資本金が増えます。</p><div class="xp-m"><b>間違えやすい点</b>　合併と違い、会社全体ではなく事業の一部だけを受け入れる点を押さえること。</div>'
   },
   { id:746, calc:'譲渡した純資産（帳簿価額）：2,000,000－1,200,000＝800,000円\n事業譲渡益：900,000－800,000＝100,000円', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社は自社の一事業（帳簿価額：<mark class="q-asset">資産2,000,000円</mark>・<mark class="q-liability">負債1,200,000円</mark>）を、Ｓ社へ事業譲渡し、対価として<mark class="q-asset">現金900,000円を受け取った</mark>。<mark class="q-revenue">事業譲渡益（または損）</mark>を含めた仕訳を示しなさい。',
     en_q:'Company P sold one of its businesses (book value: assets ¥2,000,000, liabilities ¥1,200,000) to Company S for ¥900,000 cash. Record the entry, including the gain (or loss) on the business sale.',
     e:[{d:[['諸負債',1200000],['現金',900000]], c:[['諸資産',2000000],['事業譲渡益',100000]]}],
-    exp:'事業譲渡は、株式のやり取りではなく「現金など」を対価とする点が会社分割と違います（会社分割は原則株式が対価、事業譲渡は現金などの財産が対価）。まるで会社の一部門を丸ごと現金で売却するイメージです。譲渡する事業の帳簿価額（純資産）：2,000,000－1,200,000＝800,000円。受け取った現金900,000円との差額100,000円は「事業譲渡益」（収益）として計上します。'
+    exp:'<div class="xp-c">事業譲渡は<b>現金などで売る</b>ので、帳簿の純資産との差を<mark class="ptm">事業譲渡益</mark>にします。</div><p class="xp-w">渡す事業の純資産は2,000,000円から1,200,000円を除いた800,000円で、900,000円で売れたので差の100,000円が利益です。</p><div class="xp-m"><b>間違えやすい点</b>　株で受け取る会社分割と混同しないこと。対価が現金なら事業譲渡です。</div>'
   },
   { id:747, calc:'受け入れた純資産（時価）：2,200,000－1,200,000＝1,000,000円\n負ののれん発生益：1,000,000－900,000＝100,000円', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｓ社はＰ社から一事業（時価：<mark class="q-asset">資産2,200,000円</mark>・<mark class="q-liability">負債1,200,000円</mark>）を事業譲受し、対価として<mark class="q-asset">現金900,000円を支払った</mark>。<mark class="q-revenue">負ののれん</mark>を含めた仕訳を示しなさい。',
     en_q:'Company S acquired a business from Company P (fair value: assets ¥2,200,000, liabilities ¥1,200,000), paying ¥900,000 cash as consideration. Record the entry, including any negative goodwill.',
     e:[{d:[['諸資産',2200000]], c:[['諸負債',1200000],['現金',900000],['負ののれん発生益',100000]]}],
-    exp:'事業を譲り受ける側（Ｓ社）の仕訳です。受け入れる純資産（時価）：2,200,000－1,200,000＝1,000,000円。支払った対価は900,000円で、受け入れた純資産の方が100,000円多いので「お買い得」＝負ののれん発生益（収益）を計上します。事業譲渡・会社分割・合併のどれでも、「対価＜受け入れた純資産」なら負ののれん発生益、「対価＞受け入れた純資産」ならのれん、という判定方法は共通です。'
+    exp:'<div class="xp-c">事業を買う側は、<b>時価の純資産より安く買えた差</b>を<mark class="ptm">負ののれん発生益</mark>にします。</div><p class="xp-w">受け入れた純資産は2,200,000円から1,200,000円を除いた1,000,000円、払ったのは900,000円です。差の100,000円が利益です。</p><div class="xp-m"><b>間違えやすい点</b>　「払った額が多ければのれん、少なければ負ののれん」という判定は、合併・分割・譲渡で共通です。</div>'
   },
   { id:748, calc:'その他資本剰余金：1,000,000－600,000＝400,000円', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社は完全子会社であるＳ社（帳簿価額：<mark class="q-asset">諸資産1,000,000円</mark>・<mark class="q-liability">諸負債600,000円</mark>）を吸収合併した。共通支配下の取引に該当するため、Ｓ社の資産・負債は帳簿価額で引き継ぐ。合併の仕訳を示しなさい（増加する資本金はゼロとし、<mark class="q-equity">差額はその他資本剰余金とする</mark>）。',
     en_q:'Company P absorbed its wholly-owned subsidiary S (book values: assets ¥1,000,000, liabilities ¥600,000) in a merger. As this is a transaction under common control, S\'s assets and liabilities are carried over at book value. Record the merger entry (no increase to Capital; the difference is credited to Other Capital Surplus).',
     e:[{d:[['諸資産',1000000]], c:[['諸負債',600000],['その他資本剰余金',400000]]}],
-    exp:'すでに100％子会社になっている会社を合併する場合は「グループ内部の組織再編」に過ぎず、グループ外の視点では何も変わっていません（これを「共通支配下の取引」と言います）。まるで同じ家族の中で引っ越し作業をするようなもので、そのため、通常の合併のように時価評価をしたり、のれんを計算したりはせず、Ｓ社の資産・負債を帳簿価額のまま、そっくりそのままＰ社に移すだけです。差額（1,000,000－600,000＝400,000円）は「のれん」ではなく「その他資本剰余金」として処理します。「グループ内の引っ越しなので、儲け・損は発生しない」というイメージです。'
+    exp:'<div class="xp-c">100％子会社の合併は<b>グループ内の移し替え</b>なので、<b>帳簿価額のまま</b>引き継ぎ、差を<mark class="ptm">その他資本剰余金</mark>にします。</div><p class="xp-w">外から見て何も変わらない取引（共通支配下の取引）なので、時価評価もせず、のれんも出しません。</p><p class="xp-w">引き継ぐ純資産は1,000,000円から600,000円を除いた400,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　時価で受け入れたり、のれんを計算したりしないこと。</div>'
   },
   { id:749, calc:'', level:2, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社はＳ社を吸収合併するにあたり、新株の交付事務費用（印刷費・証券会社手数料等）80,000円を<mark class="q-asset">現金で支払った</mark>。<mark class="q-expense">株式交付費として支出時に費用処理する</mark>仕訳を示しなさい。',
     en_q:'In connection with absorbing Company S, Company P paid ¥80,000 cash for share-issuance administrative costs (printing, brokerage fees, etc.). Record the entry recognizing this as share issuance costs.',
     e:[{d:[['株式交付費',80000]], c:[['現金',80000]]}],
-    exp:'合併や増資で新しく株式を発行するときにかかる事務費用（印刷代・証券会社への手数料など）は「株式交付費」という勘定で処理します。まるで結婚式の招待状印刷代のような事務コストです。似た名前の「取得関連費用」（弁護士・会計士への相談料）は必ずその場で費用にしますが、株式交付費は原則として支出時の費用ですが、資産（繰延資産）として計上して数年かけて償却することも認められています。「M&Aの相談料」と「株式発行の事務費用」は名前は似ていますが別物、と覚えておきましょう。'
+    exp:'<div class="xp-c">新しく株を発行するための事務の費用は<mark class="ptm">株式交付費</mark>にします。</div><p class="xp-w">印刷代や証券会社への手数料は、株を発行するためにかかった費用です。原則として支出したときの費用にします。</p><div class="xp-m"><b>間違えやすい点</b>　合併の相談料（取得関連費用）と混同しないこと。こちらは支払手数料です。</div>'
   },
   { id:800, calc:'', level:2, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社はＳ社を吸収合併するにあたり、<mark class="q-expense">デューデリジェンス費用（弁護士・公認会計士への報酬）50,000円を</mark>、<mark class="q-asset">現金で支払った</mark>。取得関連費用の会計処理として、発生時に費用処理する仕訳を示しなさい。',
     en_q:'In connection with absorbing Company S, Company P paid ¥50,000 cash for due diligence fees (legal and accounting advisory fees). Record the entry expensing these acquisition-related costs as incurred.',
     e:[{d:[['支払手数料',50000]], c:[['現金',50000]]}],
-    exp:'企業結合にかかる取得関連費用（デューデリジェンス費用、アドバイザリー報酬など）は、取得原価（のれんの計算に含める金額）には含めず、発生した期の費用として処理します。まるで家を買うときの不動産鑑定料や司法書士報酬のような手続きコストです。「のれんは買収対象そのものの価値に対して払った超過額であり、手続きにかかった事務コストとは性質が違う」という考え方です。前問（株式交付費）とは異なる勘定科目（支払手数料）を使う点に注意しましょう。'
+    exp:'<div class="xp-c">合併のための調査や相談の報酬は、<b>取得原価に入れず</b>、その期の<mark class="ptm">支払手数料</mark>にします。</div><p class="xp-w">相手の会社の価値ではなく、取引をまとめるための事務の費用だからです。取得原価に入れると、のれんが大きく見えてしまいます。</p><div class="xp-m"><b>間違えやすい点</b>　株を発行するための費用（株式交付費）と科目を混同しないこと。</div>'
   },
   { id:801, calc:'', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社はＳ社を吸収合併し、対価として<mark class="q-asset">現金600,000円</mark>に加え、Ｓ社の将来の業績目標達成を条件とする<mark class="q-liability">条件付取得対価（アーンアウト、公正価値50,000円）を計上した</mark>。引き継いだＳ社の資産・負債の時価は、<mark class="q-asset">諸資産900,000円</mark>・<mark class="q-liability">諸負債300,000円</mark>であった。合併時の仕訳を示しなさい（<mark class="q-asset">取得原価が純資産の時価を上回る分はのれんとする</mark>）。',
     en_q:"Company P absorbed Company S, paying ¥600,000 cash plus recognizing a contingent consideration (earnout, fair value ¥50,000) payable if S meets future performance targets. Fair values taken over: assets ¥900,000, liabilities ¥300,000. Record the merger entry.",
     e:[{d:[['諸資産',900000],['のれん',50000]], c:[['諸負債',300000],['現金',600000],['条件付取得対価',50000]]}],
-    exp:'条件付取得対価（アーンアウト条項）とは、「将来、業績目標を達成したら追加で対価を払う」という約束です。まるで成功報酬型のボーナス契約のようなもので、この将来の支払義務も、企業結合時点の公正価値（見積額）で負債として認識し、取得原価（のれんの計算のもと）に含めます。対価総額：現金600,000円＋条件付取得対価50,000円＝650,000円。引き継いだ純資産600,000円との差額50,000円がのれんです。'
+    exp:'<div class="xp-c">業績しだいで後から払うかもしれない対価も、<b>今の見積額で負債にして取得原価に含め</b>ます（条件付取得対価）。</div><p class="xp-w">払う対価は現金600,000円と見積り50,000円の合計650,000円です。受け入れた純資産は600,000円なので、差の50,000円がのれんです。</p><div class="xp-m"><b>間違えやすい点</b>　条件付きだからといって、取得原価から外さないこと。</div>'
   },
   { id:802, calc:'', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'上記の<mark class="q-liability">条件付取得対価（当初の公正価値50,000円）について</mark>、測定期間内（企業結合日から1年以内）に新たな情報が判明し、<mark class="q-liability">公正価値の見積りを70,000円に修正した</mark>。差額20,000円を<mark class="q-asset">のれんの調整として処理する</mark>仕訳を示しなさい。',
     en_q:'For the contingent consideration above (initial fair value ¥50,000), new information came to light within the measurement period (within one year of the acquisition date), revising the fair value estimate to ¥70,000. Record the entry treating the ¥20,000 difference as an adjustment to goodwill.',
     e:[{d:[['のれん',20000]], c:[['条件付取得対価',20000]]}],
-    exp:'企業結合日時点で入手可能だった情報に基づく見積りの修正が「測定期間」（原則1年以内）中に生じた場合、その修正はのれんの金額を直接調整します（過去に遡って、企業結合時点の見積りが違っていたと考えるイメージ）。まるで契約直後に価格交渉のやり直しが認められる猶予期間のようなもので、測定期間を過ぎてからの見積り変更は、のれんを調整せず、その期の損益として処理する点が対照的です（次問参照）。'
+    exp:'<div class="xp-c">合併から1年以内（測定期間）の見積りの見直しは、<b>合併時の取得原価の修正</b>として<mark class="ptm">のれん</mark>で調整します。</div><p class="xp-w">合併の時点の事情がわかって見積りを直しただけなので、合併時の金額を直すと考えます。増えた20,000円だけのれんを増やします。</p><div class="xp-m"><b>間違えやすい点</b>　測定期間内の修正を損益にしないこと。損益にするのは1年を過ぎてからです。</div>'
   },
   { id:803, calc:'', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'上記の<mark class="q-liability">条件付取得対価（帳簿価額70,000円）について</mark>、測定期間経過後に業績目標の達成状況が確定し、<mark class="q-liability">実際の支払額が90,000円となった</mark>。差額20,000円を<mark class="q-expense">損益として処理する</mark>仕訳を示しなさい。',
     en_q:'For the contingent consideration above (book value ¥70,000), after the measurement period ended, the actual performance outcome was determined and the amount payable became ¥90,000. Record the entry recognizing the ¥20,000 difference in profit or loss.',
     e:[{d:[['条件付取得対価',70000],['取得対価精算損',20000]], c:[['未払金',90000]]}],
-    exp:'測定期間を過ぎてから条件付取得対価の金額が確定・変動した場合は、企業結合時点の見積りをさかのぼって修正するのではなく、確定した期の「損益」として処理します。まるで契約後しばらく経ってから精算金額が変わった場合、もう最初の見積りには遡らず、その時点の損益として扱うイメージです。負債（条件付取得対価）70,000円を取り崩し、実際に支払うことになった90,000円との差額20,000円を費用（取得対価精算損）として計上します。'
+    exp:'<div class="xp-c">測定期間を過ぎてから金額が変わったら、合併時には戻らず、<b>その期の損益</b>にします。</div><p class="xp-w">負債70,000円を消し、実際に払う90,000円を未払金にします。差の20,000円が取得対価精算損です。</p><div class="xp-m"><b>間違えやすい点</b>　1年を過ぎてからのれんを調整しないこと。</div>'
   },
   { id:804, calc:'資本金：1,200,000－500,000＝700,000円', level:2, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社は自社の一事業部門（帳簿価額：<mark class="q-asset">資産1,200,000円</mark>・<mark class="q-liability">負債500,000円</mark>）を新設分割により、新たに設立するＴ社へ移転した。<mark class="q-equity">Ｔ社の資本金は全額この移転による純資産額とする</mark>。Ｔ社（新設会社）側の仕訳を示しなさい。',
     en_q:'Company P transferred one of its business segments (book value: assets ¥1,200,000, liabilities ¥500,000) to newly-established Company T via a newly-formed company split. T\'s Capital equals the full net assets transferred. Record the entry on T\'s (the newly-formed company\'s) books.',
     e:[{d:[['諸資産',1200000]], c:[['諸負債',500000],['資本金',700000]]}],
-    exp:'新設分割は、既存の会社（吸収分割の場合のＳ社）ではなく、新しく設立する会社に事業を移転する会社分割の方法です。まるで独立部門を切り出して新会社として起業させるようなイメージで、受け入れ側（新設されたＴ社）の処理は、吸収分割の承継会社の場合と基本的に同じで、引き継いだ資産・負債をそのまま計上し、対応する分を資本金として計上します。「既存の会社に事業を渡すか、新しい会社を作って渡すか」が吸収分割と新設分割の違いで、会計処理の基本パターンは共通です。'
+    exp:'<div class="xp-c">新しく作る会社（新設分割）は、<b>受け入れた資産・負債を計上し、純資産を<mark class="ptm">資本金</mark>にします</b>。</div><p class="xp-w">受け入れる純資産は1,200,000円から500,000円を除いた700,000円です。会社を新しく作るので、その全額が資本金です。</p><div class="xp-m"><b>間違えやすい点</b>　吸収分割の承継会社と処理の形は同じ。違いは、受け取る会社が既存か新設かだけです。</div>'
   },
   { id:805, calc:'移転した資産：500,000＋700,000＝1,200,000円', level:2, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'上記のＰ社（分割会社）は、新設分割により<mark class="q-asset">Ｔ社株式700,000円を受け取った</mark>一方、<mark class="q-asset">移転した資産（諸資産）は帳簿から消え</mark>、移転した<mark class="q-liability">負債500,000円はＴ社に引き継がれ、Ｐ社の帳簿からは消える</mark>。Ｐ社側の仕訳を示しなさい。',
     en_q:"For Company P (the splitting company) above, record the entry recognizing the ¥700,000 of T shares received as consideration for the newly-formed company split.",
     e:[{d:[['諸負債',500000],['T社株式',700000]], c:[['諸資産',1200000]]}],
-    exp:'事業を渡す側（分割会社＝Ｐ社）は、移転した資産・負債を帳簿から取り除き、その対価として受け取った新設会社の株式（Ｔ社株式）を投資として計上します。吸収分割の分割会社の処理（すでに存在する会社に事業を渡すケース）とまったく同じ考え方で、渡す相手が「既存の会社」か「これから設立される新しい会社」かの違いだけです。諸負債500,000円＋Ｔ社株式700,000円＝諸資産1,200,000円で貸借が一致します。'
+    exp:'<div class="xp-c">事業を渡す側は、<b>渡した資産・負債を消し、新会社の株を計上</b>します。</div><p class="xp-w">資産1,200,000円を減らし、負債500,000円を消し、受け取ったＴ社株式700,000円を計上します。</p><div class="xp-m"><b>間違えやすい点</b>　渡した負債を消し忘れないこと。</div>'
   },
   { id:806, calc:'', level:2, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社は他社と共同で、新会社（共同支配企業）Ｊ社を設立するにあたり、<mark class="q-asset">現金300,000円を出資した</mark>。Ｐ社の持分比率は40％で、重要な影響力を有するに留まる（支配は獲得しない）。持分法を適用する場合のＰ社の仕訳（<mark class="q-asset">出資額は関係会社株式とする</mark>）を示しなさい。',
     en_q:'Company P contributed ¥300,000 cash to jointly establish new company J (a jointly-controlled entity) with another company. P\'s ownership is 40%, giving it significant influence but not control. Record the entry under the equity method.',
     e:[{d:[['関係会社株式',300000]], c:[['現金',300000]]}],
-    exp:'複数の会社が共同で支配する企業（共同支配企業、ジョイントベンチャー）は、単独では支配していないため、通常の子会社のように連結せず、「持分法」（投資の額を、相手の業績に応じて増減させる方法）を適用します。まるで複数の会社が共同出資で作った合弁会社のようなもので、出資時点では、単純に出資額を「関係会社株式」として計上するだけで、通常の子会社株式取得や合併のような、のれんの計算は行いません（持分法ではのれん相当額は投資額に含まれたまま個別に区分しません）。'
+    exp:'<div class="xp-c">共同で作った会社に出資したら、<b>出資額をそのまま<mark class="ptm">関係会社株式</mark></b>にします。</div><p class="xp-w">単独で支配していないので連結はせず、持分法で扱います。出資のときは出資額を計上するだけで、のれんは計算しません。</p><div class="xp-m"><b>間違えやすい点</b>　子会社株式にしないこと。40％で支配していないので関係会社株式です。</div>'
   },
   { id:807, calc:'①抱合せ株式評価益：250,000－200,000＝50,000円\n②取得原価：600,000＋250,000＝850,000円\n純資産（時価）：1,800,000－1,050,000＝750,000円\nのれん：850,000－750,000＝100,000円', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社は、あらかじめ保有していたＳ社株式（帳簿価額200,000円）に加え、Ｓ社を吸収合併した。合併により交付した新株の時価は<mark class="q-equity">600,000円</mark>、引き継いだＳ社の<mark class="q-asset">資産（時価1,800,000円）</mark>・<mark class="q-liability">負債（時価1,050,000円）</mark>であった。①<mark class="q-revenue">抱合せ株式の評価替え（帳簿価額200,000円→時価250,000円）</mark>②合併の仕訳（新株の時価600,000円＋評価後の<mark class="q-asset">抱合せ株式250,000円</mark>＝取得原価850,000円）をそれぞれ示しなさい（<mark class="q-asset">取得原価が純資産の時価を上回る分はのれんとする</mark>）。',
     en_q:"Company P absorbed Company S, having already held S shares (book value ¥200,000) before the merger. The fair value of newly-issued shares was ¥600,000; S's assets (fair value ¥1,800,000) and liabilities (fair value ¥1,050,000) were taken over. Record ①the revaluation of the pre-existing (\"tote-awase\") shares from book value ¥200,000 to fair value ¥250,000, and ②the merger entry (acquisition cost = new shares ¥600,000 + revalued pre-existing shares ¥250,000 = ¥850,000).",
     e:[{d:[['S社株式',50000]], c:[['抱合せ株式評価益',50000]]}, {d:[['諸資産',1800000],['のれん',100000]], c:[['諸負債',1050000],['資本金',600000],['S社株式',250000]]}],
-    exp:'「抱合せ株式」とは、合併する前からすでに保有していた、合併される側（Ｓ社）の株式のことです。まるで結婚前からすでに交際していた相手と、正式に一緒になるようなイメージで、合併にあたっては、①まずこの抱合せ株式を合併時点の時価（250,000円）に評価替えし、帳簿価額との差額（50,000円）を「抱合せ株式評価益」として損益に計上します。②その上で、合併の取得原価は「新たに交付した株式の時価（600,000円）」＋「評価替え後の抱合せ株式（250,000円）」＝850,000円となります。これと引き継いだＳ社の時価純資産750,000円（1,800,000－1,050,000）との差額100,000円がのれんです。'
+    exp:'<div class="xp-c">合併の前から持っていた相手の株（抱合せ株式）は、<b>まず時価に評価替え</b>し、そのうえで<b>取得原価に含めます</b>。</div><p class="xp-w">①200,000円から時価250,000円への評価替えで、抱合せ株式評価益50,000円を計上します。</p><p class="xp-w">②取得原価は新株600,000円と評価後の株250,000円の合計850,000円です。純資産750,000円との差100,000円がのれんです。</p><div class="xp-m"><b>間違えやすい点</b>　抱合せ株式を取得原価に入れ忘れないこと。</div>'
   },
   { id:808, calc:'識別可能な純資産：600,000＋150,000－200,000＝550,000円\nのれん：1,000,000－550,000＝450,000円', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社はＳ社を吸収合併した。合併対価は<mark class="q-asset">現金1,000,000円</mark>。引き継いだＳ社の資産・負債の時価は、<mark class="q-asset">諸資産600,000円</mark>・<mark class="q-liability">諸負債200,000円</mark>に加え、新たに識別された<mark class="q-asset">顧客関連資産（無形資産）150,000円が認められた</mark>（<strong>取得原価の配分</strong>）。合併の仕訳を示しなさい（<mark class="q-asset">取得原価が純資産の時価を上回る分はのれんとする</mark>）。',
     en_q:"Company P absorbed Company S for ¥1,000,000 cash. Fair values taken over were: assets ¥600,000, liabilities ¥200,000, plus a newly identified customer-related intangible asset of ¥150,000. Record the merger entry.",
     e:[{d:[['諸資産',600000],['顧客関連資産',150000],['のれん',450000]], c:[['諸負債',200000],['現金',1000000]]}],
-    exp:'企業結合では、対象会社の資産・負債を時価評価して引き継ぎますが、その際、対象会社の個別財務諸表には計上されていなかった無形資産（顧客関連資産・商標権・技術関連資産など）が新たに識別されることがあります（PPA：Purchase Price Allocation、取得原価の配分）。まるで買収した会社の「見えない資産」を丁寧に棚卸しして値札をつけていくような作業です。今回は「顧客関連資産」150,000円が新たに認識されました。のれんは、対価1,000,000円から、識別可能純資産（諸資産600,000＋顧客関連資産150,000－諸負債200,000＝550,000円）を差し引いた450,000円です。識別可能な無形資産をきちんと分離して計上するほど、のれん（正体不明の超過収益力）の金額は小さくなる、という関係を理解しておきましょう。'
+    exp:'<div class="xp-c">合併で新しく見つかった無形資産（顧客関連資産など）は<b>時価で資産に計上し</b>、残りを<mark class="ptm">のれん</mark>にします。</div><p class="xp-w">受け入れる純資産は600,000円に150,000円を足し、200,000円を除いた550,000円です。払った1,000,000円との差450,000円がのれんです。</p><div class="xp-m"><b>間違えやすい点</b>　無形資産を見落とすと、のれんが大きくなりすぎます。</div>'
   },
   { id:809, calc:'資本金・資本準備金：400,000×1／2＝200,000円ずつ', level:3, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ｐ社はすでにＳ社株式60％を保有していたが、残り40％の少数株主（<strong>非支配株主</strong>）から株式交換によりＳ社を完全子会社化した。<mark class="q-asset">交付したＰ社株式の時価は400,000円であった</mark>。会社法の規定により、増加する払込資本のうち<mark class="q-equity">半額を資本金</mark>、<mark class="q-equity">残り半額を資本準備金とする</mark>場合のＰ社個別財務諸表上の仕訳を示しなさい。',
     en_q:'Company P already held 60% of Company S, and acquired the remaining 40% from minority shareholders via a share exchange to make S a wholly-owned subsidiary. The fair value of P shares issued was ¥400,000. Under the Companies Act, half of the increase in paid-in capital is credited to Capital and half to Capital Surplus. Record the entry on P\'s individual financial statements.',
     e:[{d:[['S社株式',400000]], c:[['資本金',200000],['資本準備金',200000]]}],
-    exp:'すでに子会社化している会社の残りの株式（非支配株主の持分）を株式交換で取得するケースです。まるでグループ会社の残り株を最後まで買い集めて完全子会社化するイメージで、個別財務諸表上は、通常の株式交換と同じく「Ｓ社株式」という投資を追加取得したものとして計上します。会社法上、新株発行の対価は全額を資本金にする必要はなく、その一部（最大半額）を「資本準備金」とすることができます。今回は半分ずつとする指示なので、400,000円を200,000円ずつ資本金と資本準備金に計上します。'
+    exp:'<div class="xp-c">株式交換で子会社株を受け取り、自社の株を渡します。指示があれば、<b>払込資本を資本金と<mark class="ptm">資本準備金</mark>に分けます</b>。</div><p class="xp-w">渡した株の時価400,000円をＳ社株式とし、半分ずつ資本金と資本準備金にします。</p><div class="xp-m"><b>間違えやすい点</b>　指示を読まずに全額を資本金にしないこと。</div>'
   },
 
   // ===== 1級：金融商品会計（デリバティブ・ヘッジ会計） =====
@@ -2182,121 +2182,121 @@ const ALL = [
     q:'Ｘ社は国債先物の取引を行うため、<mark class="q-asset">証券会社に先物取引差入証拠金50,000円</mark>を、<mark class="q-asset">現金で差し入れた</mark>。この取引の仕訳を示しなさい。',
     en_q:'Company X deposited ¥50,000 cash with a securities firm as a margin deposit (先物取引差入証拠金) to trade government bond futures. Record this entry.',
     e:[{d:[['先物取引差入証拠金',50000]], c:[['現金',50000]]}],
-    exp:'先物取引は「将来の一定時点で、あらかじめ決めた価格で売買する」契約です。実際に売買するまでの間、証券会社に担保として証拠金を預けます。まるでスポーツジムの入会時に預ける保証金のようなもので、証拠金はまだ損益が確定したわけではなく、後で返ってくる「預け金」的な性質なので、資産の勘定科目（先物取引差入証拠金）として計上します。「保証金を預けて取引の枠を確保している状態」とイメージすると分かりやすいです。'
+    exp:'<div class="xp-c">先物取引の証拠金は、<b>取引の保証として預けたお金</b>なので<mark class="ptm">先物取引差入証拠金</mark>（資産）にします。</div><p class="xp-w">証拠金は損益ではなく、取引を終えれば戻ってくるお金です。</p><div class="xp-m"><b>間違えやすい点</b>　費用にしないこと。</div>'
   },
   { id:751, calc:'', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社は保有する国債先物について、決算日に時価評価を行ったところ、<mark class="q-asset">契約時と比べて50,000円値上がりしていることが判明した</mark>。<mark class="q-other">値上がり分は先物損益として処理する</mark>。決算時の評価替えの仕訳を示しなさい。',
     en_q:'At fiscal year-end, Company X marked its government bond futures position to market and found the value had risen ¥50,000 since the contract date. Record the year-end revaluation entry.',
     e:[{d:[['先物取引差金',50000]], c:[['先物損益',50000]]}],
-    exp:'デリバティブ（先物・オプション・スワップなど）は原則として「時価評価」が強制され、評価差額はその期の損益として即座に計上します（これは他の有価証券と大きく違う点です）。まるでFXの含み損益をリアルタイムでチェックするようなもので、値上がり分は「先物取引差金」という資産（未収の含み益）を計上し、相手科目として「先物損益」という収益（デリバティブ評価損益）を計上します。'
+    exp:'<div class="xp-c">デリバティブは<b>決算で時価に直し、差額をその期の損益</b>にします。</div><p class="xp-w">先物の値上がり50,000円は、先物取引差金（資産）を増やし、先物損益（収益）にします。</p><div class="xp-m"><b>間違えやすい点</b>　有価証券のように純資産に入れないこと。デリバティブの評価差額は原則として損益です。</div>'
   },
   { id:752, calc:'', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社は<mark class="q-asset">コール・オプションを30,000円で購入し</mark>、<mark class="q-asset">代金を現金で支払った</mark>。オプション取得時の仕訳を示しなさい。',
     en_q:'Company X purchased a call option for ¥30,000 cash. Record the entry at the time of acquiring the option.',
     e:[{d:[['オプション資産',30000]], c:[['現金',30000]]}],
-    exp:'オプション（権利）を買うために支払った金額（オプション料）は、「その権利を将来行使できる」という価値を持つ資産なので、「オプション資産」として計上します。まるで「後で好きなタイミングでこの値段で買える券」を買うようなもので、まだ権利を行使していない段階では、実際に株式などを売買したわけではないので、損益は一切発生しません。「権利そのものにお金を払って買った」という状態です。'
+    exp:'<div class="xp-c">オプションを買ったお金は、<b>権利という資産</b>（<mark class="ptm">オプション資産</mark>）にします。</div><p class="xp-w">将来決まった値段で買える権利を、お金を払って手に入れました。まだ売買していないので損益は出ません。</p><div class="xp-m"><b>間違えやすい点</b>　買ったときに費用にしないこと。</div>'
   },
   { id:753, calc:'45,000－30,000＝15,000円', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社が保有するオプション（取得原価30,000円）について、<mark class="q-asset">決算日の時価は45,000円であった</mark>。<mark class="q-other">評価差額はオプション差損益として処理する</mark>。決算時の評価替えの仕訳を示しなさい。',
     en_q:"Company X's option (cost ¥30,000) had a fair value of ¥45,000 at fiscal year-end. Record the year-end revaluation entry.",
     e:[{d:[['オプション資産',15000]], c:[['オプション差損益',15000]]}],
-    exp:'オプションも先物と同様、決算日には時価評価が必要です。時価（45,000円）と帳簿価額（30,000円）との差額15,000円だけ「オプション資産」を増額し、相手科目として評価損益（オプション差損益）を計上します。値下がりしていれば逆に評価損を計上します。デリバティブは原則として決算日ごとに時価評価が強制される点が、他の資産と大きく異なります。'
+    exp:'<div class="xp-c">オプションも<b>決算で時価に直し、差額を損益</b>にします。</div><p class="xp-w">帳簿の30,000円から時価45,000円へ、差の15,000円だけオプション資産を増やし、オプション差損益にします。</p><div class="xp-m"><b>間違えやすい点</b>　値下がりのときは逆に資産を減らし、損失にします。</div>'
   },
   { id:754, calc:'', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社は将来の外貨建取引（<strong>ヘッジ対象</strong>）に備えて為替予約（ヘッジ手段）を締結し、繰延ヘッジ会計を適用している。決算日において、<mark class="q-asset">為替予約の時価が30,000円上昇して資産となり</mark>、<mark class="q-eq-rx">その評価益を繰り延べる</mark>。税効果を考慮しない場合の仕訳を示しなさい。',
     en_q:"Company X entered into a forward foreign exchange contract as a hedge for a future foreign-currency transaction and applies deferred hedge accounting. At fiscal year-end, the forward contract's fair value gain was ¥30,000. Record the entry, ignoring tax effects.",
     e:[{d:[['為替予約',30000]], c:[['繰延ヘッジ損益',30000]]}],
-    exp:'「繰延ヘッジ会計」とは、ヘッジ手段（為替予約など）の評価損益を、対象となる取引（ヘッジ対象）が実際に発生するまで損益計算書に出さず、純資産の部（その他包括利益）に一旦保留しておく方法です。まるで保険金を受け取っても、実際の事故が確定するまで金庫にしまっておくようなイメージで、評価益が出ても「収益」にはせず、「繰延ヘッジ損益」という純資産の科目に振り替えます。ヘッジ対象の取引が実際に発生した時点で、初めて損益として実現させます。'
+    exp:'<div class="xp-c">繰延ヘッジ会計では、ヘッジ手段の評価益を<b>損益にせず、<mark class="ptm">繰延ヘッジ損益</mark>（純資産）にためておきます</b>。</div><p class="xp-w">ヘッジ対象の損益がまだ出ていないので、手段の損益だけ先に出すと、ヘッジの効果が見えなくなります。両方の損益が同じ期に出るまで繰り延べます。</p><div class="xp-m"><b>間違えやすい点</b>　為替予約の評価益をそのまま収益にしないこと。</div>'
   },
   { id:755, calc:'繰延税金負債：30,000×30％＝9,000円\n繰延ヘッジ損益：30,000－9,000＝21,000円', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社は上記と同様の為替予約について繰延ヘッジ会計を適用しており、<mark class="q-asset">決算日の時価評価益は30,000円であった</mark>。<mark class="q-liability">実効税率30％として税効果会計を適用した場合</mark>（<mark class="q-eq-rx">税効果控除後の額は繰延ヘッジ損益とする</mark>）の仕訳を示しなさい。',
     en_q:'For the same forward contract under deferred hedge accounting, the fair value gain at fiscal year-end was ¥30,000. Record the entry applying tax-effect accounting at an effective tax rate of 30%.',
     e:[{d:[['為替予約',30000]], c:[['繰延税金負債',9000],['繰延ヘッジ損益',21000]]}],
-    exp:'繰延ヘッジ損益は純資産に計上される項目ですが、この評価益は将来課税対象になる（税金を増やす）含み益なので、税効果会計を適用して「繰延税金負債」（将来支払う税金）を認識します。評価益30,000円のうち、税金相当額9,000円（30,000×30％）を繰延税金負債として差し引き、残り21,000円を税引後の金額として繰延ヘッジ損益（純資産）に計上します。'
+    exp:'<div class="xp-c">繰り延べる評価益にも税効果を適用し、<b>税金の分は<mark class="ptm">繰延税金負債</mark></b>、残りを繰延ヘッジ損益にします。</div><p class="xp-w">評価益30,000円は将来税金を増やすので、30％の9,000円を負債にし、21,000円を繰延ヘッジ損益にします。</p><div class="xp-m"><b>間違えやすい点</b>　純資産に入れる項目なので、相手は法人税等調整額ではありません。</div>'
   },
   { id:756, calc:'', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社はその他有価証券（<strong>ヘッジ対象</strong>、帳簿価額200,000円）について、時価下落リスクをヘッジするためデリバティブ取引を行い、時価ヘッジ会計を適用している。決算日において、<mark class="q-asset">その他有価証券の時価が40,000円下落し</mark>（<mark class="q-expense">評価損を計上</mark>）、<mark class="q-asset">ヘッジ手段であるデリバティブの時価が40,000円上昇し</mark>、<mark class="q-revenue">評価益が生じた</mark>。①その他有価証券の評価替えと②デリバティブの評価替えの仕訳をそれぞれ示しなさい。',
     en_q:"Company X applies fair value hedge accounting to hedge the price-decline risk of available-for-sale securities (book value ¥200,000) using a derivative. At fiscal year-end, the securities' fair value fell by ¥40,000 while the hedging derivative recorded a ¥40,000 valuation gain. Record (1) the securities revaluation and (2) the derivative revaluation.",
     e:[{d:[['投資有価証券評価損',40000]], c:[['その他有価証券',40000]]}, {d:[['デリバティブ資産',40000]], c:[['有価証券評価益',40000]]}],
-    exp:'「時価ヘッジ会計」は繰延ヘッジと違い、ヘッジ対象（その他有価証券）の評価損益も、ヘッジ手段（デリバティブ）の評価損益も、両方ともその期の損益として計上する方法です。その他有価証券の評価差額は通常「純資産直入」ですが、時価ヘッジを適用すると例外的に損益計算書を通します。まるでシーソーの両端に損益を置いて釣り合わせるように、値下がり損40,000円と、デリバティブの値上がり益40,000円が同時に計上されるため、両者が相殺され、ヘッジの効果（リスクを打ち消す）が損益計算書上でも見える化されます。'
+    exp:'<div class="xp-c">時価ヘッジでは、<b>ヘッジ対象とヘッジ手段の評価損益を両方その期の損益</b>にして打ち消し合わせます。</div><p class="xp-w">その他有価証券の値下がり40,000円は、ふつうは純資産ですが、時価ヘッジでは損失にします。デリバティブの値上がり40,000円は利益です。</p><div class="xp-m"><b>間違えやすい点</b>　その他有価証券の評価差額を、いつもどおり純資産に入れないこと。</div>'
   },
   { id:757, calc:'有価証券利息：20,000＋8,500＝28,500円', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社は満期保有目的で他社社債（額面2,000,000円、額面より安く取得）を保有している。<mark class="q-asset">当期のクーポン利息の受取額は20,000円であり</mark>、<mark class="q-asset">実効利子率法によって計算された金利調整差額（取得差額）の償却額は8,500円であった</mark>。利息法による<mark class="q-revenue">当期の有価証券利息計上</mark>の仕訳を示しなさい。',
     en_q:"Company X holds another company's bonds (face value ¥2,000,000, acquired below face value) as held-to-maturity securities. This period's coupon interest received was ¥20,000, and the amortization of the acquisition discount computed under the effective interest method was ¥8,500. Record this period's bond interest entry using the effective interest method.",
     e:[{d:[['現金',20000],['満期保有目的債券',8500]], c:[['有価証券利息',28500]]}],
-    exp:'満期保有目的の債券を額面より安く取得した場合、その差額（金利調整差額）は「実質的な利息」の一部とみなされ、満期までの期間にわたって毎期コツコツ償却（帳簿価額に加算）していきます（＝利息法）。クーポン利息20,000円に加えて、償却額8,500円も「有価証券利息」という収益に含めます。償却した分は現金では受け取っていないため、相手科目は現金ではなく「満期保有目的債券」（帳簿価額を増やす）になります。'
+    exp:'<div class="xp-c">利息法では、<b>受け取ったクーポンと償却額の合計を<mark class="ptm">有価証券利息</mark></b>にし、償却額は債券の帳簿価額に足します。</div><p class="xp-w">安く買った差額は利息の一部とみて、満期までに少しずつ帳簿価額に足します。受け取っていない8,500円は現金ではなく債券を増やします。</p><div class="xp-m"><b>間違えやすい点</b>　クーポン20,000円だけを利息にしないこと。</div>'
   },
   { id:758, calc:'', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社は取引先Ｙ社に対する貸付金1,000,000円について、Ｙ社の財政状態が著しく悪化したため、貸倒懸念先（<strong>貸倒懸念債権</strong>）として個別に将来キャッシュ・フローを見積り（<strong>キャッシュ・フロー見積法</strong>）、<mark class="q-expense">繰入額150,000円を費用計上し</mark>、<mark class="q-as-li">同額の貸倒引当金を設定する</mark>こととした。決算時の仕訳を示しなさい。',
     en_q:"Company X holds a ¥1,000,000 loan receivable from Company Y. Because Y's financial condition has significantly deteriorated, X classifies it as a doubtful claim, estimates future cash flows individually, and recognizes an allowance for doubtful accounts of ¥150,000. Record the year-end entry.",
     e:[{d:[['貸倒引当金繰入',150000]], c:[['貸倒引当金',150000]]}],
-    exp:'金融商品会計基準では、金銭債権を「一般債権」「貸倒懸念債権」「破産更生債権等」の3区分に分けて評価します。貸倒懸念先（経営破綻はしていないが返済に重大な問題がある先）については、まるで危険水準に入った患者を個別に検査するように、個別に将来キャッシュ・フローを見積り、その現在価値と債権額との差額を貸倒引当金として計上します（キャッシュ・フロー見積法）。費用側は「貸倒引当金繰入」、資産のマイナスとして「貸倒引当金」を計上します。'
+    exp:'<div class="xp-c">返済が危ない貸付金（貸倒懸念債権）は、<b>個別に回収できない額を見積もり、貸倒引当金</b>にします。</div><p class="xp-w">将来の回収額を見積もって、帳簿の額との差150,000円を、貸倒引当金繰入（費用）と貸倒引当金にします。</p><div class="xp-m"><b>間違えやすい点</b>　一般の債権と同じ一律の率で計算しないこと。</div>'
   },
   { id:759, calc:'', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社は転換社債型新株予約権付社債（額面1,000,000円）を発行し、<mark class="q-asset">払込金額1,000,000円を現金で受け取った</mark>。区分法により、<mark class="q-liability">社債の対価部分950,000円</mark>・<mark class="q-equity">新株予約権の対価部分50,000円に区分して処理する</mark>。発行時の仕訳を示しなさい。',
     en_q:'Company X issued convertible bonds with warrants (face value ¥1,000,000) and received ¥1,000,000 in cash. Under the split method, ¥950,000 is allocated to the bond (liability) component and ¥50,000 to the warrant (equity) component. Record the issuance entry.',
     e:[{d:[['現金',1000000]], c:[['社債',950000],['新株予約権',50000]]}],
-    exp:'転換社債型新株予約権付社債は「社債（負債）」と「新株予約権（将来株式に転換できる権利＝純資産）」がセットになった複合金融商品です。まるで「借金」と「将来の株主になれる権利」がひとまとめになったハイブリッド商品のようなもので、「区分法」では、払込金額を合理的な基準で社債部分と新株予約権部分に分けて、それぞれ別の勘定科目（負債と純資産）で計上します（両方をまとめて「社債」で計上する「一括法」という方法もあります）。'
+    exp:'<div class="xp-c">区分法では、払込金を<b>社債の部分（負債）と新株予約権の部分（純資産）に分けて</b>記帳します。</div><p class="xp-w">株に変えられる権利が付いた社債は、借金と株を買う権利のセットです。950,000円を社債、50,000円を新株予約権にします。</p><div class="xp-m"><b>間違えやすい点</b>　一括法（全額を社債）と混同しないこと。</div>'
   },
   { id:760, calc:'資本金：950,000＋50,000＝1,000,000円', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社は上記の転換社債型新株予約権付社債（<mark class="q-liability">社債部分の帳簿価額950,000円</mark>・<mark class="q-equity">新株予約権50,000円</mark>）について、社債権者からの請求により全額が株式に転換された。<mark class="q-equity">増加する資本金は全額とする</mark>場合の仕訳を示しなさい。',
     en_q:'The bondholder exercised the conversion right on the entire convertible bond above (bond component book value ¥950,000, warrants ¥50,000). Record the conversion entry, assuming the full amount is credited to Common Stock.',
     e:[{d:[['社債',950000],['新株予約権',50000]], c:[['資本金',1000000]]}],
-    exp:'転換社債が株式に転換されると、それまで負債だった「社債」と純資産だった「新株予約権」が、どちらも新しく発行する株式の対価（＝資本金）に振り替わります。まるでクーポン券がついに商品と引き換えられる瞬間のようなイメージで、区分法で処理していた場合は、社債部分と新株予約権部分をそれぞれ帳簿価額のまま資本金に振り替えるだけで、転換時に損益は発生しません。「負債と純資産の一部が、そのまま資本金という別の純資産に組み替わる」というイメージです。'
+    exp:'<div class="xp-c">社債が株に転換されたら、<b>社債と新株予約権の帳簿価額を<mark class="ptm">資本金</mark>に振り替え</b>ます。</div><p class="xp-w">借金と権利が、株主の払込みに変わっただけなので、損益は出ません。</p><div class="xp-m"><b>間違えやすい点</b>　新株予約権の50,000円を振り替え忘れないこと。</div>'
   },
   { id:810, calc:'', level:2, cat:'金融商品', chap:'1級：金融商品',
     q:'<mark class="q-asset">Ｘ社は保有する先物取引差金50,000円（借方残高）について</mark>、反対売買を行い決済した。<mark class="q-asset">決済による最終的な差益は60,000円であった</mark>（先物取引差金50,000円を解消し、<mark class="q-other">追加の差益10,000円を計上</mark>）。決済時の仕訳を示しなさい。',
     en_q:'Company X settled its futures position (previously recognized as a ¥50,000 debit-balance futures margin receivable) through an offsetting transaction. The final gain on settlement was ¥60,000 (eliminating the ¥50,000 receivable and recognizing an additional ¥10,000 gain). Record the settlement entry.',
     e:[{d:[['現金',60000]], c:[['先物取引差金',50000],['先物損益',10000]]}],
-    exp:'先物取引を反対売買（買っていたものを売る、または売っていたものを買い戻す）することで決済すると、それまで「先物取引差金」（未収の評価益）として計上していた金額が現金として実際に受け取れます。まるでゲームの中の仮想通貨をようやく現実のお金に換金するようなイメージで、決済による最終的な差益が60,000円で、すでに先物取引差金として50,000円を計上済みだったため、差額の10,000円が追加の先物損益（収益）として計上されます。'
+    exp:'<div class="xp-c">先物を反対売買で決済したら、<b>計上していた差金を消し、受け取った額との差を追加の損益</b>にします。</div><p class="xp-w">受け取った60,000円のうち、50,000円はすでに差金として計上済みです。残りの10,000円だけ先物損益を追加します。</p><div class="xp-m"><b>間違えやすい点</b>　60,000円全額を利益にしないこと。</div>'
   },
   { id:811, calc:'', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社は借入金の金利変動リスク（<strong>ヘッジ対象</strong>）をヘッジするため金利スワップ契約を締結し、繰延ヘッジ会計を適用している。決算日において、<mark class="q-asset">この金利スワップの時価が25,000円上昇して資産となり</mark>、<mark class="q-eq-rx">その評価益を繰り延べる</mark>（税効果は考慮しない）。仕訳を示しなさい。',
     en_q:'Company X entered an interest rate swap to hedge the interest rate risk on its borrowings and applies deferred hedge accounting. At fiscal year-end, the swap\'s fair value gain was ¥25,000, ignoring tax effects. Record the entry.',
     e:[{d:[['スワップ資産',25000]], c:[['繰延ヘッジ損益',25000]]}],
-    exp:'金利スワップとは、「変動金利」と「固定金利」を交換する契約で、借入金の金利変動リスクをヘッジする目的でよく使われます。まるで変動金利の住宅ローンを固定金利に一時的に切り替えるような保険的な取引で、為替予約と同じように、繰延ヘッジ会計を適用すれば、評価益はその期の損益にはせず、いったん純資産の部「繰延ヘッジ損益」として繰延べます。ヘッジ対象（借入金の金利変動）の影響が実際に生じたときに、初めて損益として認識します。'
+    exp:'<div class="xp-c">金利スワップにも繰延ヘッジ会計を適用し、評価益は<mark class="ptm">繰延ヘッジ損益</mark>（純資産）にためておきます。</div><p class="xp-w">借入金の金利の影響が出るまで、手段の損益を繰り延べて、対象と手段の損益を同じ期に出します。</p><div class="xp-m"><b>間違えやすい点</b>　評価益をその期の収益にしないこと。</div>'
   },
   { id:812, calc:'株式の取得原価：1,000,000＋45,000＝1,045,000円', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社は<mark class="q-asset">保有するコール・オプション（帳簿価額45,000円、原資産である株式を1株＠1,000円で1,000株購入できる権利）を権利行使し</mark>、<mark class="q-asset">株式1,000,000円を取得した</mark>。権利行使時の仕訳を示しなさい（<mark class="q-asset">現金で権利行使価額を支払う</mark>）。',
     en_q:'Company X exercised a call option (book value ¥45,000, the right to buy 1,000 shares at ¥1,000/share) and acquired shares worth ¥1,000,000. Record the entry at exercise, paying the exercise price in cash.',
     e:[{d:[['有価証券',1045000]], c:[['オプション資産',45000],['現金',1000000]]}],
-    exp:'コール・オプションを権利行使すると、それまで資産として計上していた「オプション資産」（権利そのものの価値）は、新しく取得する株式（原資産）の取得原価の一部に振り替わります。株式の取得原価＝権利行使価額（1,000,000円）＋オプション資産の帳簿価額（45,000円）＝1,045,000円。まるで前売り券を実際の入場券に引き換えるようなイメージで、「オプションを買うために払ったお金も、結局は株式を安く買うための費用だった」と考えます。'
+    exp:'<div class="xp-c">オプションを使って株を買ったら、<b>払ったお金とオプションの帳簿価額の合計</b>が株の取得原価です。</div><p class="xp-w">1,000,000円と45,000円の合計1,045,000円で有価証券を計上し、オプション資産を消します。</p><div class="xp-m"><b>間違えやすい点</b>　オプション資産を損失にしないこと。株を手に入れるための費用の一部です。</div>'
   },
   { id:813, calc:'', level:2, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社が保有するコール・オプション（帳簿価額30,000円）について、<mark class="q-asset">原資産の株価が権利行使価額を下回ったまま満期を迎え、権利を行使せずに失効させた</mark>。<mark class="q-other">帳簿価額はオプション差損益として処理する</mark>。仕訳を示しなさい。',
     en_q:"Company X's call option (book value ¥30,000) expired unexercised because the underlying share price stayed below the exercise price through maturity. Record the entry.",
     e:[{d:[['オプション差損益',30000]], c:[['オプション資産',30000]]}],
-    exp:'オプションの原資産（株式など）の時価が、権利行使したら損をする水準にとどまったまま満期を迎えると、権利を行使せずに放棄（失効）します。まるで使わなかった割引券がそのまま期限切れになってしまうようなもので、この場合、それまで資産として計上していたオプション資産の帳簿価額の全額が、そのまま損失（オプション差損益）になります。「権利を買うために払ったお金が、まるまる無駄になった」というイメージです。'
+    exp:'<div class="xp-c">使わずに失効したオプションは、<b>帳簿価額の全額が損失</b>になります。</div><p class="xp-w">権利を使うと損をするので使わなかった結果、払ったお金はむだになりました。30,000円をオプション差損益にします。</p><div class="xp-m"><b>間違えやすい点</b>　オプション資産を残したままにしないこと。</div>'
   },
   { id:814, calc:'800,000－300,000＝500,000円', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社が保有する子会社株式（帳簿価額800,000円、市場価格なし）について、子会社の財政状態が著しく悪化し、<mark class="q-asset">1株当たり純資産額を基準に評価した実質価額が300,000円まで下落した</mark>。<mark class="q-expense">実価法により評価損を計上する</mark>仕訳を示しなさい。',
     en_q:"Company X holds subsidiary shares (book value ¥800,000, no market price). The subsidiary's financial condition deteriorated significantly, and the substantial value (based on net assets per share) fell to ¥300,000. Record the write-down entry under the substantial value method.",
     e:[{d:[['子会社株式評価損',500000]], c:[['子会社株式',500000]]}],
-    exp:'市場価格のない株式（子会社株式や非上場の関連会社株式など）は、時価評価ができないため、通常は取得原価のまま据え置きます。しかし、発行会社の財政状態が著しく悪化し、実質価額（1株当たり純資産額など）が取得原価に比べて著しく低下した場合は、まるで経営が傾いた会社の実力を健康診断するように、「実価法」により帳簿価額を実質価額まで切り下げます。800,000円－300,000円＝500,000円の評価損を計上します。これは減損に近い考え方で、原則として回復の見込みがない限り、切り下げた金額はそのまま据え置かれます。'
+    exp:'<div class="xp-c">市場価格のない株は、価値が大きく下がったら、<b>実質価額まで帳簿価額を下げます（実価法）</b>。</div><p class="xp-w">1株あたり純資産などで測った実質価額300,000円まで下げ、差の500,000円を子会社株式評価損にします。</p><div class="xp-m"><b>間違えやすい点</b>　時価がないからといって、取得原価のまま放置しないこと。</div>'
   },
   { id:815, calc:'', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社が保有する先物取引について、決算日の時価評価により<mark class="q-other">合計30,000円の評価損が生じた</mark>。<mark class="q-asset">これまで計上していた先物取引差金（借方残高、帳簿価額10,000円）を取り崩した</mark>うえで、<mark class="q-liability">超過額20,000円をデリバティブ負債として計上する</mark>仕訳を示しなさい。',
     en_q:"Company X's futures position had a total fair value loss of ¥30,000 at fiscal year-end. Record the entry eliminating the previously recognized futures margin receivable (debit balance, book value ¥10,000) and recognizing the ¥20,000 excess as a derivative liability.",
     e:[{d:[['先物損益',30000]], c:[['先物取引差金',10000],['デリバティブ負債',20000]]}],
-    exp:'デリバティブの時価評価によって評価損が生じ、その金額が従来の資産計上額（先物取引差金）を上回る場合は、資産をゼロまで取り崩したうえで、超過分を新たに負債（デリバティブ負債）として計上します。まるで貯金箱の中身がゼロになってもまだ借金が残っているような状態で、含み益の状態から含み損の状態に転じた、という状況です。10,000円（資産の取崩し）＋20,000円（新たな負債計上）＝合計30,000円が当期の評価損（先物損益）となります。'
+    exp:'<div class="xp-c">評価損が資産（先物取引差金）を上回ったら、<b>資産をゼロまで消し、残りを<mark class="ptm">デリバティブ負債</mark></b>にします。</div><p class="xp-w">30,000円の損のうち、10,000円は差金を消し、残りの20,000円は負債にします。</p><div class="xp-m"><b>間違えやすい点</b>　先物取引差金をマイナスの資産にしないこと。超えた分は負債です。</div>'
   },
   { id:816, calc:'500,000－400,000＝100,000円', level:2, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社が保有する満期保有目的の債券（帳簿価額500,000円）について、発行会社の信用状態が著しく悪化したため、<mark class="q-asset">時価400,000円まで評価減し</mark>、回復の見込みがないため<mark class="q-expense">減損処理を行う</mark>。仕訳を示しなさい。',
     en_q:"Company X's held-to-maturity bonds (book value ¥500,000) are written down to their fair value of ¥400,000 due to a significant deterioration in the issuer's credit standing, with no prospect of recovery. Record the impairment entry.",
     e:[{d:[['投資有価証券評価損',100000]], c:[['満期保有目的債券',100000]]}],
-    exp:'満期保有目的の債券は、通常は時価評価をせず取得原価（または償却原価）のまま計上しますが、発行会社の財政状態の悪化などにより時価が著しく下落し、かつ回復の見込みがないと判断される場合は、例外的に強制的な評価減（減損処理）を行います。500,000円－400,000円＝100,000円を「投資有価証券評価損」として計上し、満期保有目的債券の帳簿価額を直接切り下げます。'
+    exp:'<div class="xp-c">満期保有目的債券でも、<b>時価が大きく下がって回復しないなら減損</b>し、時価まで帳簿価額を下げます。</div><p class="xp-w">500,000円から400,000円へ、差の100,000円を投資有価証券評価損にします。</p><div class="xp-m"><b>間違えやすい点</b>　満期保有目的だから絶対に評価しない、と覚えないこと。</div>'
   },
   { id:817, calc:'', level:3, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社は為替予約（<strong>ヘッジ手段</strong>）についてヘッジ会計を適用していたが、ヘッジ対象であった外貨建取引が中止になったため、ヘッジ会計の要件を満たさなくなった。<mark class="q-eq-rx">繰延べていた繰延ヘッジ損益（貸方残高）40,000円を</mark>、ただちに<mark class="q-other">当期の損益（為替差損益）に振り替える</mark>仕訳を示しなさい。',
     en_q:'Company X applied hedge accounting to a forward contract, but the hedged foreign-currency transaction was cancelled, so the hedge accounting requirements are no longer met. Record the entry immediately reclassifying the deferred hedge gain (¥40,000 credit balance) into current-period profit or loss (foreign exchange gain/loss).',
     e:[{d:[['繰延ヘッジ損益',40000]], c:[['為替差損益',40000]]}],
-    exp:'ヘッジ会計は、ヘッジ対象（今回は外貨建取引）とヘッジ手段（為替予約）がセットで存在することを前提に適用されます。ヘッジ対象そのものが消滅・中止になると、もはやヘッジとしての意味がなくなるため、ヘッジ会計を続けることができません（ヘッジ会計の中止）。まるで保険をかけていた対象そのものがなくなってしまい、保険契約だけが宙に浮くようなイメージで、それまで純資産の部に繰延べていた評価損益を、その時点でただちに当期の損益に振り替えます。「ヘッジの前提が崩れたので、繰延べていた分を一気に精算する」というイメージです。'
+    exp:'<div class="xp-c">ヘッジ対象がなくなったら、繰り延べていた損益を<b>すぐにその期の損益</b>に振り替えます。</div><p class="xp-w">繰り延べていたのはヘッジ対象と損益を合わせるためです。対象がなくなれば、繰り延べる理由もなくなります。</p><div class="xp-m"><b>間違えやすい点</b>　繰延ヘッジ損益を残したままにしないこと。</div>'
   },
   { id:818, calc:'', level:2, cat:'金融商品', chap:'1級：金融商品',
     q:'Ｘ社は転換社債型新株予約権付社債（額面1,000,000円）を発行し、<mark class="q-asset">払込金額1,000,000円を現金で受け取った</mark>。一括法により、<mark class="q-liability">社債と新株予約権を区分せず、全額を社債として処理する</mark>場合の発行時の仕訳を示しなさい。',
     en_q:'Company X issued convertible bonds with warrants (face value ¥1,000,000) and received ¥1,000,000 cash. Under the single-instrument method, the bond and warrant are not separated and the entire amount is recorded as a bond. Record the issuance entry.',
     e:[{d:[['現金',1000000]], c:[['社債',1000000]]}],
-    exp:'転換社債型新株予約権付社債の会計処理には、社債部分と新株予約権部分を分けて計上する「区分法」（すでに学んだ方法）のほかに、区分せず全額を社債として一括計上する「一括法」があります。まるで福袋の中身を分けずにまとめて「福袋」という1つの商品として扱うようなイメージで、一括法では、払込金額の全額をそのまま「社債」（負債）として計上するだけで、新株予約権（純資産）は計上しません。どちらの方法を採用するかは会社の任意ですが、区分法の方が「負債性の部分」と「資本性の部分」を明確に分けられるため、実務ではより多く使われています。'
+    exp:'<div class="xp-c">一括法では、払込金の全額を<b>分けずに<mark class="ptm">社債</mark></b>にします。</div><p class="xp-w">社債と新株予約権を区分しない方法なので、1,000,000円を社債（負債）にします。</p><div class="xp-m"><b>間違えやすい点</b>　区分法と混同しないこと。問題の指示を確かめます。</div>'
   },
 
   // ===== 1級：外貨換算会計（在外子会社の換算） =====
@@ -2304,148 +2304,148 @@ const ALL = [
     q:'Ｐ社は在外子会社Ｓ社の株式80％を取得し支配を獲得した。<mark class="q-asset">取得対価は60,000ドルで、取得時のレートは1ドル＝100円であり</mark>、<mark class="q-asset">現金で支払った</mark>。個別財務諸表上の仕訳を示しなさい。',
     en_q:"Company P acquired an 80% stake in overseas subsidiary S, obtaining control, for $60,000 paid in cash at the transaction-date rate of ¥100/USD. Record the entry in P's separate financial statements.",
     e:[{d:[['S社株式',6000000]], c:[['現金',6000000]]}],
-    exp:'在外子会社の株式を外貨で取得した場合も、通常の外貨建取引と同じく「取得時のレート（HR：Historical Rate）」で円換算します。海外通販で買い物をした日のレートで請求額が確定するのと同じ発想で、60,000ドル×100円＝6,000,000円。この金額は、その後為替レートが変動しても動かしません（株式のような非貨幣性項目は取得時のレートで固定されるのが原則です）。'
+    exp:'<div class="xp-c">外国の子会社の株を外貨で買ったら、<b>買った日のレート</b>で円にします。</div><p class="xp-w">60,000ドル×100円で6,000,000円です。株は、その後レートが変わっても換算し直しません。</p><div class="xp-m"><b>間違えやすい点</b>　決算日のレートで換算し直さないこと。</div>'
   },
   { id:762, calc:'40,000ドル×（110円－100円）＝400,000円', level:3, cat:'外貨換算', chap:'1級：連結会計',
     q:'Ｐ社は在外子会社Ｓ社の支配獲得にあたり、外貨建てのれん40,000ドル（取得時レート1ドル＝100円、円換算額4,000,000円）を連結上計上した。決算時レートが1ドル＝110円になった場合、<mark class="q-asset">連結上ののれんを決算時レートで再換算し</mark>、差額を<mark class="q-eq-rx">「為替換算調整勘定」として計上する</mark>仕訳を示しなさい。',
     en_q:"Company P recognized foreign-currency-denominated goodwill of $40,000 (¥4,000,000 at the ¥100/USD transaction-date rate) on consolidation. When the closing rate became ¥110/USD, record the entry retranslating the goodwill at the closing rate, with the difference recognized as a foreign currency translation adjustment.",
     e:[{d:[['のれん',400000]], c:[['為替換算調整勘定',400000]]}],
-    exp:'連結上計上した外貨建てのれんは、外貨建ての「資産」として扱われるため、決算時レート（CR）で換算替えします。40,000ドル×取得時100円＝4,000,000円（計上時）→40,000ドル×決算時110円＝4,400,000円（換算後）。まるで外貨預金の残高が円換算でどう評価されるか毎回変わるようなイメージです。差額400,000円は、のれん自体の価値が変わったわけではなく為替相場の変動によるものなので、損益（のれん償却額など）にはせず、純資産の部の「為替換算調整勘定」に計上します。'
+    exp:'<div class="xp-c">外貨のれんは<b>決算日のレートで換算し直し</b>、差額は損益ではなく<mark class="ptm">為替換算調整勘定</mark>（純資産）にします。</div><p class="xp-w">40,000ドルは100円で4,000,000円、110円で4,400,000円です。増えた400,000円はのれんの価値の変化ではなく、為替の変化です。</p><div class="xp-m"><b>間違えやすい点</b>　差額を為替差損益（損益）にしないこと。</div>'
   },
   { id:763, calc:'500,000×20％＝100,000円', level:3, cat:'外貨換算', chap:'1級：連結会計',
     q:'在外子会社Ｓ社（Ｐ社の持株比率80％）の財務諸表を換算した結果、<mark class="q-eq-rx">連結上「為替換算調整勘定」（貸方）500,000円が生じた</mark>。このうち<mark class="q-equity">非支配株主持分相当額（20％）を按分する</mark>仕訳を示しなさい。',
     en_q:"Translating overseas subsidiary S's (80%-owned by P) financial statements produced a credit foreign currency translation adjustment of ¥500,000 on consolidation. Record the entry allocating the non-controlling interests' 20% share.",
     e:[{d:[['為替換算調整勘定',100000]], c:[['非支配株主持分',100000]]}],
-    exp:'為替換算調整勘定は「在外子会社の純資産全体」に対して生じるものなので、親会社の持分だけでなく非支配株主の持分にも按分する必要があります。500,000円×非支配株主持分比率20％＝100,000円を、親会社持分の為替換算調整勘定から非支配株主持分に付け替えます（残り400,000円が親会社に帰属する為替換算調整勘定として連結貸借対照表に残ります）。為替の影響もまた、株主同士でケーキを切り分けるように配分されるのです。'
+    exp:'<div class="xp-c">為替換算調整勘定も子会社の純資産の変化なので、<b>外の株主の分を<mark class="ptm">非支配株主持分</mark></b>に移します。</div><p class="xp-w">500,000円のうち20％の100,000円は非支配株主のものです。</p><div class="xp-m"><b>間違えやすい点</b>　親会社の分（80％）を移さないこと。</div>'
   },
   { id:764, calc:'4,000ドル×105円＝420,000円', level:3, cat:'外貨換算', chap:'1級：連結会計',
     q:'Ｐ社は<mark class="q-asset">連結上計上した外貨建てのれん（取得時40,000ドル、取得時レート1ドル＝100円）</mark>を10年間で均等償却している。<mark class="q-expense">当期の償却額（4,000ドル）を、期中平均レート（AR）1ドル＝105円で換算した</mark>仕訳を示しなさい。',
     en_q:"Company P amortizes foreign-currency goodwill (acquired for $40,000 at ¥100/USD) recognized on consolidation over 10 years straight-line. Record this period's amortization of $4,000, translated at the average rate (AR) of ¥105/USD.",
     e:[{d:[['のれん償却額',420000]], c:[['のれん',420000]]}],
-    exp:'のれんの「償却額」は費用（フロー項目）にあたるため、決算時レート（CR）ではなく「期中平均レート（AR）」で換算するのが原則です。4,000ドル×105円＝420,000円。一方、のれんという「資産」の残高そのものは決算時レートで換算するため（前問参照）、償却額の換算レートと残高の換算レートが異なる点が実務上のポイントです。まるで「その日ごとの支出は平均レートで記録、財布の中身自体は今日のレートで評価する」ような使い分けです。'
+    exp:'<div class="xp-c">のれんの償却額は費用なので、<b>期中平均レート</b>で換算します。</div><p class="xp-w">4,000ドル×105円で420,000円です。のれんの残高は決算日のレートで換算するので、使うレートが違います。</p><div class="xp-m"><b>間違えやすい点</b>　償却額を取得時のレートや決算日のレートで換算しないこと。</div>'
   },
   { id:765, calc:'当期純利益：50,000ドル×103円＝5,150,000円\n非支配株主の分：5,150,000×20％＝1,030,000円', level:3, cat:'外貨換算', chap:'1級：連結会計',
     q:'在外子会社Ｓ社（Ｐ社の持株比率80％）の当期純利益は50,000ドルであった。連結上、期中平均レート（AR）1ドル＝103円で換算する。<mark class="q-other">非支配株主に帰属する当期純利益（20％相当）を計上し</mark>、<mark class="q-equity">同額を非支配株主持分に加える</mark>仕訳を示しなさい。',
     en_q:"Overseas subsidiary S's (80%-owned by P) net income was $50,000. On consolidation this is translated at the average rate (AR) of ¥103/USD. Record the entry recognizing the 20% portion attributable to non-controlling interests.",
     e:[{d:[['非支配株主に帰属する当期純利益',1030000]], c:[['非支配株主持分',1030000]]}],
-    exp:'損益計算書の項目（収益・費用・当期純利益）は、原則として「期中平均レート（AR）」で円換算します。50,000ドル×103円＝5,150,000円（円換算後の当期純利益）。このうち非支配株主の持分20％相当額1,030,000円を、非支配株主に帰属する当期純利益として振り替えます。決算時レートを使う貸借対照表項目とは、換算に使うレートの種類が異なる点に注意しましょう。'
+    exp:'<div class="xp-c">子会社の利益は<b>期中平均レート</b>で換算し、外の株主の分を<mark class="ptm">非支配株主持分</mark>に振り替えます。</div><p class="xp-w">50,000ドル×103円で5,150,000円、その20％の1,030,000円が非支配株主の分です。</p><div class="xp-m"><b>間違えやすい点</b>　決算日のレートを使わないこと。損益は期中平均レートです。</div>'
   },
   { id:766, calc:'', level:3, cat:'外貨換算', chap:'1級：連結会計',
     q:'Ｐ社は保有する在外子会社Ｓ社株式をすべて売却し、<mark class="q-eq-rx">連結上計上されていた為替換算調整勘定300,000円（貸方残高、親会社帰属分）を</mark>、<mark class="q-revenue">子会社株式売却損益に振り替える</mark>こととした。仕訳を示しなさい。',
     en_q:"Company P sold its entire stake in overseas subsidiary S. Record the entry reclassifying the ¥300,000 credit-balance foreign currency translation adjustment (the parent's attributable portion) recognized on consolidation into gain/loss on sale of subsidiary shares.",
     e:[{d:[['為替換算調整勘定',300000]], c:[['子会社株式売却益',300000]]}],
-    exp:'「その他有価証券評価差額金」は売却しても損益に振り替えられませんが、「為替換算調整勘定」は在外子会社株式を売却（連結範囲から外れる）した時点で、これとは異なり「実現」したものとしてその期の損益に振り替えられます（リサイクリング）。まるで「含み損益として眺めていただけの評価差額が、手放した瞬間にようやく確定した利益として計算に入る」ようなイメージで、これは1級試験でよく問われる重要な相違点です。'
+    exp:'<div class="xp-c">子会社の株を全部売ったら、たまっていた<b>為替換算調整勘定を損益（売却益）に振り替え</b>ます。</div><p class="xp-w">手放したことで、為替の変化による増加が実際に確定したとみます。</p><div class="xp-m"><b>間違えやすい点</b>　為替換算調整勘定を残したままにしないこと。</div>'
   },
   { id:767, calc:'30,000ドル×105円＝3,150,000円', level:2, cat:'外貨換算', chap:'1級：連結会計',
     q:'在外子会社Ｓ社は、<mark class="q-asset">現地で機械装置を30,000ドルで購入し</mark>、<mark class="q-asset">現金で支払った</mark>。取得時のレートは1ドル＝105円であった。Ｓ社の現地帳簿（円換算後）における仕訳を示しなさい。',
     en_q:"Overseas subsidiary S purchased machinery locally for $30,000 cash. The transaction-date rate was ¥105/USD. Record the entry in S's local books, translated to yen.",
     e:[{d:[['機械装置',3150000]], c:[['現金',3150000]]}],
-    exp:'固定資産のような非貨幣性項目は、取得時のレート（HR）で換算し、その後の決算時レートの変動があっても換算替えしません（取得原価のまま据え置きます）。海外で買った家具の値段が、日本に持ち帰った後も購入時のレートで記録され続けるようなイメージです。30,000ドル×105円＝3,150,000円。この金額は、減価償却を通じて費用化される際も、取得時に確定したこの円換算額を基準に計算します。'
+    exp:'<div class="xp-c">外国で買った固定資産は、<b>買った日のレート</b>で円にし、その後は換算し直しません。</div><p class="xp-w">30,000ドル×105円で3,150,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　決算日のレートで換算し直さないこと。</div>'
   },
   { id:768, calc:'80,000ドル×104円＝8,320,000円', level:2, cat:'外貨換算', chap:'1級：連結会計',
     q:'在外子会社Ｓ社は、当期に<mark class="q-revenue">商品を80,000ドル分販売した</mark>（<mark class="q-asset">掛け</mark>）。連結上の損益計算書に反映させる際は、期中平均レート（AR）1ドル＝104円で換算する。この売上高を計上する仕訳を示しなさい。',
     en_q:"Overseas subsidiary S sold $80,000 of merchandise on credit during the period. For consolidation purposes this is translated at the average rate (AR) of ¥104/USD. Record the entry recognizing this sales revenue.",
     e:[{d:[['売掛金',8320000]], c:[['売上',8320000]]}],
-    exp:'損益計算書項目（収益・費用）は、個々の取引が発生した都度のレートではなく、実務上は簡便的に「期中平均レート（AR）」でまとめて換算するのが一般的です。80,000ドル×104円＝8,320,000円。これに対し、対応する売掛金（貸借対照表項目）は、決算時には改めて決算時レート（CR）で換算し直される点に注意が必要です（のれんと同じ考え方です）。'
+    exp:'<div class="xp-c">外国の子会社の売上は、<b>期中平均レート</b>で換算します。</div><p class="xp-w">80,000ドル×104円で8,320,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　売掛金の残高は決算日に、決算日のレートで換算し直す点も覚えておくこと。</div>'
   },
 
   { id:1361, calc:'取込み：200,000×30％＝60,000\n投資差額：400,000－1,200,000×30％＝40,000、÷10年＝4,000', level:2, sides:['利益の取込み','投資差額の償却'], cat:'持分法', chap:'1級：連結会計',
     q:'Ｐ社は、当期首に<mark class="q-asset">Ａ社の株式の30％を400,000円で取得</mark>し、持分法を適用している。取得時のＡ社の純資産（時価）は1,200,000円であり、<mark class="q-revenue">投資差額は10年で均等償却</mark>する。当期、<mark class="q-revenue">Ａ社は当期純利益200,000円を計上した</mark>。当期の持分法の仕訳を示しなさい。',
     e:[{d:[['関連会社株式',60000]],c:[['持分法による投資利益',60000]]},{d:[['持分法による投資利益',4000]],c:[['関連会社株式',4000]]}],
-    exp:'持分法では、関連会社が出した利益のうち自社の持分の分だけ、関連会社株式（投資）を増やし、「持分法による投資利益」にします。投資額と純資産の持分との差（のれん相当）は、毎年償却して投資利益から減らします。'
+    exp:'<div class="xp-c">持分法では、関連会社の利益の<b>自分の持分だけ投資を増やし</b>、投資差額の償却は<b>投資利益を減らします</b>。</div><p class="xp-w">利益200,000円の30％、60,000円を関連会社株式と持分法による投資利益にします。</p><p class="xp-w">投資差額は、払った400,000円と純資産の30％の360,000円の差40,000円です。10年で割った4,000円を減らします。</p><div class="xp-m"><b>間違えやすい点</b>　投資差額を「のれん」という科目で計上しないこと。持分法では投資の中に含めたままです。</div>'
   },
   { id:1362, calc:'持分法では、配当は投資の払戻しとして関連会社株式を減らす', level:2, cat:'持分法', chap:'1級：連結会計',
     q:'Ｐ社は、<mark class="q-asset">持分法を適用しているＡ社（持分30％）</mark>から、配当金15,000円を現金で受け取り、<mark class="q-revenue">受取配当金として計上している</mark>。連結上の修正仕訳を示しなさい。',
     e:[{d:[['受取配当金',15000]],c:[['関連会社株式',15000]]}],
-    exp:'持分法では、関連会社の利益をすでに取り込んでいます。配当を受け取っても新しい利益ではなく、投資の一部が戻ってきただけなので、受取配当金を取り消して関連会社株式を減らします。'
+    exp:'<div class="xp-c">持分法では、関連会社からの配当は<b>投資の回収</b>なので、受取配当金を取り消して<mark class="ptm">関連会社株式</mark>を減らします。</div><p class="xp-w">関連会社の利益はすでに取り込んでいるので、配当をまた収益にすると二重になります。</p><div class="xp-m"><b>間違えやすい点</b>　受取配当金を残さないこと。</div>'
   },
   { id:1363, calc:'消去額：20,000×30％＝6,000（持分相当額のみ）', level:2, cat:'持分法', chap:'1級：連結会計',
     q:'Ｐ社は、持分法を適用しているＡ社（持分30％）に商品を販売している。Ａ社の期末の在庫には、<mark class="q-revenue">Ｐ社が付加した利益20,000円</mark>が含まれている。連結上の修正仕訳を示しなさい（<mark class="q-asset">関連会社株式を減額する方法</mark>による）。',
     e:[{d:[['持分法による投資利益',6000]],c:[['関連会社株式',6000]]}],
-    exp:'親会社が関連会社に売った商品が関連会社の在庫に残っている場合、上乗せした利益のうち自社の持分の分だけを取り消します。関連会社株式を減らし、持分法による投資利益を減らします。'
+    exp:'<div class="xp-c">関連会社に売った商品が残っていたら、利益のうち<b>自分の持分の分だけ</b>消します。</div><p class="xp-w">20,000円の30％、6,000円を持分法による投資利益から減らし、関連会社株式を減らします。</p><div class="xp-m"><b>間違えやすい点</b>　子会社のように全額を消さないこと。持分の分だけです。</div>'
   },
   { id:1364, calc:'税効果：100,000×30％＝30,000（消去で利益が減った分の税金を前払いとみる）', level:2, sides:['未実現利益の消去','税効果'], cat:'連結税効果', chap:'1級：連結会計',
     q:'Ｐ社は、子会社Ｓ社に商品を販売している。<mark class="q-asset">Ｓ社の期末の在庫</mark>には、<mark class="q-expense">Ｐ社が付加した利益100,000円</mark>が含まれている。未実現利益を消去し、<mark class="q-asset">税効果会計を適用する</mark>（<mark class="q-other">実効税率30％</mark>）。連結修正仕訳を示しなさい。',
     e:[{d:[['売上原価',100000]],c:[['商品',100000]]},{d:[['繰延税金資産',30000]],c:[['法人税等調整額',30000]]}],
-    exp:'グループ内で上乗せした利益は、外部に売れるまで消去します（売上原価を増やし、商品を減らす）。消去で利益が減った分は、将来の税金の前払いにあたるので、税率を掛けて「繰延税金資産」を計上します。'
+    exp:'<div class="xp-c">未実現利益を消したら、<b>消した利益の税金の分を<mark class="ptm">繰延税金資産</mark></b>にします。</div><p class="xp-w">未実現利益100,000円を消すと連結の利益が減ります。その分の税金はすでに払っているので、30％の30,000円は税金の前払いです。</p><div class="xp-m"><b>間違えやすい点</b>　相手科目を繰延税金負債にしないこと。利益が減る調整なので資産です。</div>'
   },
   { id:1369, calc:'', level:2, sides:['(1)船荷証券の受取','(2)転売'], cat:'収益認識', chap:'1級：収益認識・資産',
     q:'Ｘ社は、海外から商品を輸入している。<br>(1) 輸入した<mark class="q-asset">商品の船荷証券200,000円を受け取り</mark>、<mark class="q-liability">代金は掛けとした</mark>。商品はまだ船で運ばれている途中である。<br>(2) 上記の船荷証券を、商品が着く前に、<mark class="q-revenue">他社に300,000円で売り渡し</mark>、<mark class="q-asset">代金は掛けとした</mark>。売上原価は、そのつど<mark class="q-expense">仕入勘定に振り替える</mark>。',
     e:[{d:[['未着品',200000]],c:[['買掛金',200000]]},{d:[['売掛金',300000],['仕入',200000]],c:[['未着品売上',300000],['未着品',200000]]}],
-    exp:'船荷証券は、運送中の商品を受け取る権利を表す。受け取った時点で、手元の商品と区別して「未着品」とする。船荷証券を転売したときは、通常の売上と区別して「未着品売上」とし、その原価を未着品から仕入に振り替える。'
+    exp:'<div class="xp-c">船荷証券を受け取ったら、運送中の商品として<mark class="ptm">未着品</mark>にします。転売したら<mark class="ptm">未着品売上</mark>を計上します。</div><p class="xp-w">船荷証券は、着いた商品を受け取る権利です。持っていれば商品と同じように売れます。</p><p class="xp-w">転売したら、売上300,000円とあわせて、原価200,000円を未着品から仕入に移します。</p><div class="xp-m"><b>間違えやすい点</b>　船荷証券を受け取った時点で仕入にしないこと。</div>'
   },
   { id:1370, calc:'仕入：200,000＋5,000＝205,000', level:2, cat:'収益認識', chap:'1級：収益認識・資産',
     q:'Ｘ社は、<mark class="q-asset">未着品として計上していた船荷証券200,000円</mark>と引換えに、輸入した商品を受け取った。<mark class="q-expense">引取運賃5,000円</mark>は<mark class="q-asset">現金で支払った</mark>。三分法で記帳している。商品を受け取ったときの仕訳を示しなさい。',
     e:[{d:[['仕入',205000]],c:[['未着品',200000],['現金',5000]]}],
-    exp:'商品が着いて受け取ったら、未着品を通常の仕入に振り替える。引取運賃は付随費用なので、仕入の額に含める。'
+    exp:'<div class="xp-c">商品が着いたら、<mark class="ptm">未着品</mark>を<b>仕入に振り替え</b>、引取運賃も仕入に含めます。</div><p class="xp-w">船荷証券200,000円と運賃5,000円の合計205,000円が仕入です。</p><div class="xp-m"><b>間違えやすい点</b>　運賃を別の費用にしないこと。買うための費用は仕入原価です。</div>'
   },
   { id:1371, calc:'元本の回収：240,000－50,000＝190,000', level:2, sides:['(1)リース開始','(2)リース料の受取'], cat:'リース', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社（貸し手）は、所有権が移転しないファイナンス・リース取引を行っている。<br>(1) リース物件を<mark class="q-liability">1,000,000円で掛けで購入し</mark>、ただちに<mark class="q-asset">借り手にリースした</mark>。<br>(2) 1回目のリース料240,000円を<mark class="q-asset">現金で受け取った</mark>。このうち<mark class="q-revenue">利息相当額は50,000円</mark>である（売上高を計上せずに利息相当額を各期に配分する方法による）。',
     e:[{d:[['リース投資資産',1000000]],c:[['買掛金',1000000]]},{d:[['現金',240000]],c:[['リース投資資産',190000],['受取利息',50000]]}],
-    exp:'ファイナンス・リースの貸し手は、物件を貸したのではなく、売って代金を分割で受け取るのと同じとみる。所有権が移転しない取引では、回収する権利を「リース投資資産」とする。受け取ったリース料は、元本の回収と利息に分ける。'
+    exp:'<div class="xp-c">ファイナンス・リースの貸し手は、<b>物件を売って代金を分割で受け取る</b>とみて、<mark class="ptm">リース投資資産</mark>にします。</div><p class="xp-w">リース料240,000円のうち、利息50,000円は受取利息、残り190,000円は元本の回収なのでリース投資資産を減らします。</p><div class="xp-m"><b>間違えやすい点</b>　リース料の全額を収益にしないこと。</div>'
   },
   { id:1372, calc:'', level:2, cat:'リース', chap:'1級：固定資産の応用（減損・リース）',
     q:'Ｘ社（貸し手）は、リース期間の終わりに<mark class="q-asset">所有権が借り手に移転する</mark>ファイナンス・リース取引で、<mark class="q-liability">800,000円で掛けで購入した</mark>物件を、ただちに借り手にリースした。リース開始時の仕訳を示しなさい（売上高を計上せずに利息相当額を各期に配分する方法による）。',
     e:[{d:[['リース債権',800000]],c:[['買掛金',800000]]}],
-    exp:'所有権が借り手に移転するリース取引では、貸し手の権利は、売った物の代金を受け取る債権と同じである。そのため、リース投資資産ではなく「リース債権」とする。'
+    exp:'<div class="xp-c">所有権が借り手に移るリースでは、貸し手の権利は<mark class="ptm">リース債権</mark>です。</div><p class="xp-w">売った物の代金を受け取る債権と同じだからです。所有権が移らないものはリース投資資産です。</p><div class="xp-m"><b>間違えやすい点</b>　リース投資資産と混同しないこと。所有権が移るかどうかで分けます。</div>'
   },
   { id:1373, calc:'取得企業の株式：600,000（適正な帳簿価額の株主資本）＋被取得企業の株式：400,000（時価）＝1,000,000', level:2, cat:'企業結合', chap:'1級：企業結合・事業分離',
     q:'Ａ社とＢ社は、<mark class="q-asset">株式移転によって完全親会社Ｐ社を設立した</mark>。Ａ社が取得企業である。株式移転日の前日のＡ社の株主資本の適正な帳簿価額は600,000円、Ｂ社の株式の時価は400,000円であった。Ｐ社は、増加する払込資本を<mark class="q-equity">全額資本金とする</mark>。Ｐ社の仕訳を示しなさい。',
     e:[{d:[['子会社株式',1000000]],c:[['資本金',1000000]]}],
-    exp:'株式移転では、新しく作った親会社が、Ａ社・Ｂ社の株主に自社の株式を渡し、両社の株式を受け取る。取得企業（Ａ社）の株式は、Ａ社の株主資本の適正な帳簿価額で受け入れ、被取得企業（Ｂ社）の株式は時価で受け入れる。'
+    exp:'<div class="xp-c">株式移転では、<b>取得企業の株は帳簿価額、もう一方の株は時価</b>で受け入れます。</div><p class="xp-w">Ａ社株式は株主資本の帳簿価額600,000円、Ｂ社株式は時価400,000円で、合計1,000,000円を子会社株式と資本金にします。</p><div class="xp-m"><b>間違えやすい点</b>　両方を時価で計上しないこと。</div>'
   },
   { id:1374, calc:'償還分の帳簿価額：196,000＋4,000＝200,000', level:2, sides:['(1)償却原価法','(2)抽選償還'], cat:'社債', chap:'1級：負債・純資産・外貨・税効果',
     q:'Ｘ社は、<mark class="q-liability">社債の一部を、抽選によって額面で償還した</mark>。<br>(1) 償還する社債（額面200,000円、帳簿価額196,000円）について、<mark class="q-expense">償還日までの償却額4,000円</mark>を計上した（償却原価法・定額法）。<br>(2) 額面200,000円を<mark class="q-asset">当座預金から支払って</mark>、社債を償還した。',
     e:[{d:[['社債利息',4000]],c:[['社債',4000]]},{d:[['社債',200000]],c:[['当座預金',200000]]}],
-    exp:'抽選償還は、あらかじめ決めた日に、抽選で選んだ社債を額面で返す方法である。償還する分について、償還日までの償却額を社債利息として計上し、帳簿価額を額面に合わせてから償還する。そのため、償還損益は出ない。'
+    exp:'<div class="xp-c">社債を償還するときは、<b>先に償却額を計上して帳簿価額を額面にそろえて</b>から消します。</div><p class="xp-w">帳簿価額196,000円に償却額4,000円を足して200,000円にし、額面で払うので償還損益は出ません。</p><div class="xp-m"><b>間違えやすい点</b>　償却を忘れると、差額が償還損になってしまいます。</div>'
   },
   { id:1375, calc:'', level:2, sides:['(1)試用品の発送','(2)買取りの意思表示'], cat:'収益認識', chap:'1級：収益認識・資産',
     q:'Ｘ社は、試用販売を行っている。三分法で記帳している。<br>(1) <mark class="q-asset">原価60,000円の商品を、試用のために顧客に送った</mark>。<br>(2) 顧客から、上記の商品を<mark class="q-revenue">売価90,000円で買い取る</mark>との意思表示があり、<mark class="q-asset">代金は掛けとした</mark>。売上原価は、そのつど<mark class="q-expense">仕入勘定に振り替える</mark>。',
     e:[{d:[['試用品',60000]],c:[['仕入',60000]]},{d:[['売掛金',90000],['仕入',60000]],c:[['試用品売上',90000],['試用品',60000]]}],
-    exp:'試用のために送った商品は、まだ売れていないので、手元の商品と区別して「試用品」とする。顧客が買い取ると言った時点で、商品の支配が顧客に移るので、「試用品売上」を計上する。'
+    exp:'<div class="xp-c">試用に送った商品は<mark class="ptm">試用品</mark>にし、<b>買い取りの意思が示されたときに売上</b>にします。</div><p class="xp-w">送っただけでは、まだ売れたことになりません。意思表示があってはじめて試用品売上90,000円と、原価60,000円の振替をします。</p><div class="xp-m"><b>間違えやすい点</b>　送った時点で売上にしないこと。</div>'
   },
   // ===== 1級：退職給付会計 =====
   { id:769, calc:'', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'<mark class="q-liability">Ｘ社の年金資産の実際運用収益が期待運用収益を50,000円下回り、数理計算上の差異（不利差異）50,000円が発生した</mark>。連結財務諸表上、<mark class="q-eq-rx">この差異を即時に「退職給付に係る調整累計額」として認識する</mark>仕訳を示しなさい（税効果は考慮しない）。',
     en_q:"Company X's actual return on plan assets fell short of the expected return by ¥50,000, generating an unfavorable actuarial difference of ¥50,000. On consolidation, record the entry immediately recognizing this difference in accumulated remeasurements of defined benefit plans, ignoring tax effects.",
     e:[{d:[['退職給付に係る調整累計額',50000]], c:[['退職給付引当金',50000]]}],
-    exp:'個別財務諸表では、数理計算上の差異は発生時に全額を費用にはせず、「未認識数理計算上の差異」として翌期以降に少しずつ償却していきます。しかし連結財務諸表では、この未認識部分も含めて退職給付債務と年金資産の差額全額をそのままＢ／Ｓに計上するルールになっており、まるで個人的な借金の帳簿を、家族全体の連結家計簿では隠さず全部見せるようなイメージで、未認識だった差異はその期の包括利益（純資産の部「退職給付に係る調整累計額」）として即時に認識されます。これが「個別上は将来に繰延べ、連結上は即時認識」という、1級で頻出の重要な相違点です。'
+    exp:'<div class="xp-c">連結では、数理計算上の差異を<b>すぐに純資産（<mark class="ptm">退職給付に係る調整累計額</mark>）で認識</b>します。</div><p class="xp-w">運用が期待より50,000円少なかったので、その分だけ積立不足が増え、負債（退職給付引当金）が増えます。</p><p class="xp-w">個別ではこの差異を少しずつ費用にしますが、連結では全額をすぐに貸借対照表に載せます。</p><div class="xp-m"><b>間違えやすい点</b>　連結で、差異を少しずつ費用にする個別の処理をしないこと。</div>'
   },
   { id:770, calc:'', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'Ｘ社は前期に発生した数理計算上の差異50,000円を、平均残存勤務期間10年にわたって定額法で費用処理している。<mark class="q-expense">当期の償却額（5,000円）を費用計上し</mark>、<mark class="q-liability">同額を退職給付引当金に繰り入れる</mark>仕訳を示しなさい（個別財務諸表上の処理）。',
     en_q:"Company X amortizes an actuarial difference of ¥50,000 that arose last period straight-line over an average remaining service period of 10 years. Record this period's amortization of ¥5,000 in the separate (unconsolidated) financial statements.",
     e:[{d:[['退職給付費用',5000]], c:[['退職給付引当金',5000]]}],
-    exp:'個別財務諸表では、数理計算上の差異は発生時に全額を費用処理せず、平均残存勤務期間などの一定の年数にわたって規則的に償却していきます。まるで大きな出費をローンで分割払いするように、50,000円÷10年＝5,000円を毎期の「退職給付費用」に追加していきます。段階的に費用化する点が、即時認識する連結上の処理と異なります。'
+    exp:'<div class="xp-c">個別では、数理計算上の差異を<b>決めた年数で少しずつ<mark class="ptm">退職給付費用</mark>にします</b>。</div><p class="xp-w">50,000円を10年で割った5,000円を、毎年の費用にし、退職給付引当金に繰り入れます。</p><div class="xp-m"><b>間違えやすい点</b>　連結の「すぐに認識する」処理と混同しないこと。</div>'
   },
   { id:771, calc:'', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'Ｘ社は退職金規程を改定し、退職給付水準を引き下げた。この結果、<mark class="q-liability">退職給付債務が400,000円減少した（過去勤務費用の発生、有利差異）</mark>。連結財務諸表上、<mark class="q-eq-rx">この全額を即時に認識する</mark>仕訳を示しなさい（税効果は考慮しない）。',
     en_q:"Company X amended its retirement benefit plan, reducing benefit levels. This decreased the retirement benefit obligation by ¥400,000 (a favorable past service cost). On consolidation, record the entry immediately recognizing this full amount, ignoring tax effects.",
     e:[{d:[['退職給付引当金',400000]], c:[['退職給付に係る調整累計額',400000]]}],
-    exp:'退職給付水準の「引き下げ」による過去勤務費用は、退職給付債務を減らす方向（会社にとって有利）に働きます。まるで会社が将来の年金支給額を見直して、負担が軽くなったようなイメージで、連結財務諸表上は、この有利差異も即時にＢ／Ｓへ反映するため、「退職給付引当金」（負債）を減額し、相手科目として純資産の部の「退職給付に係る調整累計額」を増額します。'
+    exp:'<div class="xp-c">連結では、給付の引下げで減った債務を<b>すぐに認識</b>し、<mark class="ptm">退職給付に係る調整累計額</mark>を増やします。</div><p class="xp-w">将来払う額が400,000円減ったので、負債を減らし、その分だけ純資産を増やします。</p><div class="xp-m"><b>間違えやすい点</b>　引下げは有利なので、増えるのは純資産です。向きを逆にしないこと。</div>'
   },
   { id:772, calc:'', level:2, cat:'退職給付', chap:'1級：退職給付会計',
     q:'Ｘ社は確定給付企業年金制度に基づき、<mark class="q-liability">年金資産に掛金150,000円を拠出し、その分だけ退職給付引当金を減らした</mark>。<mark class="q-asset">掛金は現金で支払った</mark>。仕訳を示しなさい。',
     en_q:'Under its defined benefit pension plan, Company X contributed ¥150,000 cash to plan assets. Record the entry.',
     e:[{d:[['退職給付引当金',150000]], c:[['現金',150000]]}],
-    exp:'会社が年金基金に掛金を拠出すると、その分だけ会社の負担（退職給付債務と年金資産の差額＝退職給付引当金）が減少します。まるで将来の分割払いを一部前払いして残債を減らすようなイメージで、「将来払うはずだったお金を、先に年金基金へ払い込んだ」ということから、退職給付引当金（負債）を直接減額します。'
+    exp:'<div class="xp-c">年金資産に掛金を払ったら、その分だけ<b><mark class="ptm">退職給付引当金</mark>を減らします</b>。</div><p class="xp-w">将来の支払いに備えて、外部の年金に先に払い込んだので、会社の負担が減ります。</p><div class="xp-m"><b>間違えやすい点</b>　掛金を費用にしないこと。費用は決算で計算します。</div>'
   },
   { id:773, calc:'120,000＋40,000－15,000＋8,000－3,000＝150,000円', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'当期の退職給付費用を計算する。<mark class="q-expense">勤務費用120,000円・利息費用40,000円・期待運用収益15,000円・数理計算上の差異の費用処理額8,000円（費用側）・過去勤務費用の費用処理額△3,000円（利益側）</mark>。退職給付費用を計上し、<mark class="q-liability">同額を退職給付引当金に繰り入れる</mark>仕訳を示しなさい。',
     en_q:'Compute this period\'s retirement benefit expense: service cost ¥120,000, interest cost ¥40,000, expected return on plan assets ¥15,000, amortization of actuarial differences ¥8,000 (expense-increasing), amortization of past service cost -¥3,000 (expense-reducing). Record the entry recognizing the retirement benefit expense.',
     e:[{d:[['退職給付費用',150000]], c:[['退職給付引当金',150000]]}],
-    exp:'個別財務諸表上の退職給付費用は、①勤務費用（当期労働により新たに発生した給付義務）＋②利息費用（割引計算により時の経過で増える現在価値相当額）－③期待運用収益（年金資産の運用で得られるはずの収益）＋④数理計算上の差異の費用処理額（過去に繰延べた差異のうち当期償却分）＋⑤過去勤務費用の費用処理額、の合計で計算します。まるで住宅ローンの毎月の支払額が「元本」「利息」「保険料」などいくつもの要素の合計で決まるのと似ています。120,000＋40,000－15,000＋8,000－3,000＝150,000円。過去勤務費用の償却額がマイナス（△3,000円）になっているのは、退職給付水準の引き下げ（会社に有利な改定）による過去勤務費用を償却しているためです。'
+    exp:'<div class="xp-c">退職給付費用は、<b>勤務費用と利息費用から期待運用収益を差し引き、差異の償却を調整</b>して計算します。</div><p class="xp-w">120,000円と40,000円の合計から15,000円を差し引き、不利な差異8,000円を足し、有利な過去勤務費用3,000円を差し引いて150,000円です。</p><div class="xp-m"><b>間違えやすい点</b>　期待運用収益を足さないこと。運用で増える分は費用を減らします。</div>'
   },
   { id:774, calc:'', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'連結財務諸表において、<mark class="q-expense">当期に数理計算上の差異の費用処理額（組替調整額）12,000円を、退職給付費用として計上する</mark>とともに、<mark class="q-eq-rx">その他の包括利益（退職給付に係る調整累計額）から同額を減額する</mark>。仕訳を示しなさい。',
     en_q:"On consolidation, record the entry recognizing ¥12,000 of amortized actuarial differences (a reclassification adjustment) as retirement benefit expense, while reducing accumulated remeasurements of defined benefit plans by the same amount.",
     e:[{d:[['退職給付費用',12000]], c:[['退職給付に係る調整累計額',12000]]}],
-    exp:'連結財務諸表では、数理計算上の差異は発生した期に全額を「退職給付に係る調整累計額」（純資産）として即時認識済みです（別問参照）。翌期以降、この差異の一部を個別財務諸表と同じように償却して「退職給付費用」として当期純利益に計上する際は、二重計上を防ぐため、まるで一度全部記録した内容を後から少しずつ本当の帳簿に移し替えるように、同額を「退職給付に係る調整累計額」から取り崩します（これを「組替調整額」と呼びます）。退職給付債務・年金資産の総額（＝退職給付引当金）自体は変動しません。'
+    exp:'<div class="xp-c">連結で差異を費用処理したら、<b>同じ額を<mark class="ptm">退職給付に係る調整累計額</mark>から戻します</b>（組替調整）。</div><p class="xp-w">その差異はすでに純資産で認識しています。費用にもすると二重になるので、純資産の側を戻します。</p><div class="xp-m"><b>間違えやすい点</b>　費用だけ計上して、調整累計額を戻し忘れないこと。</div>'
   },
   { id:775, calc:'繰延税金資産：100,000×30％＝30,000円\n退職給付に係る調整累計額：100,000－30,000＝70,000円', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'<mark class="q-liability">Ｘ社の年金資産の実際運用収益が期待運用収益を100,000円下回り、数理計算上の差異（不利差異）100,000円が発生した</mark>。連結財務諸表上、<mark class="q-asset">実効税率30％として税効果を考慮した</mark>うえで、<mark class="q-eq-rx">この差異を「退職給付に係る調整累計額」として計上する</mark>仕訳を示しなさい。',
     en_q:"Company X's actual return on plan assets fell short of the expected return by ¥100,000, generating an unfavorable actuarial difference of ¥100,000. On consolidation, applying tax-effect accounting at an effective tax rate of 30%, record the entry recognizing this difference in accumulated remeasurements of defined benefit plans.",
     e:[{d:[['退職給付に係る調整累計額',70000],['繰延税金資産',30000]], c:[['退職給付引当金',100000]]}],
-    exp:'連結財務諸表で即時認識する退職給付に係る差異にも、税効果会計を適用します。将来の費用計上（損金算入）につながる不利差異なので、税金負担を軽減する効果（繰延税金資産）30,000円（100,000×30％）を認識し、残り70,000円を税引後の金額として純資産の部「退職給付に係る調整累計額」に計上します。退職給付引当金（負債）は税効果を挟まず全額100,000円増加させます。'
+    exp:'<div class="xp-c">連結で認識する差異にも税効果を適用し、<b>税金の分を<mark class="ptm">繰延税金資産</mark></b>、残りを調整累計額にします。</div><p class="xp-w">不利な差異100,000円は将来の費用になり、税金を減らします。その30％の30,000円は前払いの税金です。</p><div class="xp-m"><b>間違えやすい点</b>　退職給付引当金は税金分を引かず、全額100,000円を増やします。</div>'
   },
   { id:776, calc:'240,000÷8年＝30,000円', level:3, cat:'退職給付', chap:'1級：退職給付会計',
     q:'Ｘ社は前期に発生した過去勤務費用（退職給付水準の引き上げによるもの）240,000円を、平均残存勤務期間8年にわたって定額法で費用処理している。<mark class="q-expense">当期の償却額を費用計上し</mark>、<mark class="q-liability">同額を退職給付引当金に繰り入れる</mark>仕訳を示しなさい（個別財務諸表上の処理）。',
